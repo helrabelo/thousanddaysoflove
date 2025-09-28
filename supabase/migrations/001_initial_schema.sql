@@ -1,12 +1,12 @@
 -- Mil Dias de Amor - Initial Database Schema
 -- Migration 001: Core tables for Brazilian wedding website
 
--- Enable necessary extensions
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+-- Enable necessary extensions (gen_random_uuid is built-in in modern PostgreSQL)
+-- CREATE EXTENSION IF NOT EXISTS "uuid-ossp"; -- Not needed for gen_random_uuid()
 
 -- Create guests table
 CREATE TABLE public.guests (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(320) NOT NULL UNIQUE,
     phone VARCHAR(20), -- Brazilian phone format: +55 (11) 99999-9999
@@ -23,7 +23,7 @@ CREATE TABLE public.guests (
 
 -- Create gifts table
 CREATE TABLE public.gifts (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
     price DECIMAL(10,2) NOT NULL, -- Brazilian Real (BRL) with centavos
@@ -40,7 +40,7 @@ CREATE TABLE public.gifts (
 
 -- Create payments table
 CREATE TABLE public.payments (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     gift_id UUID NOT NULL REFERENCES public.gifts(id) ON DELETE CASCADE,
     guest_id UUID REFERENCES public.guests(id) ON DELETE SET NULL,
     amount DECIMAL(10,2) NOT NULL,
@@ -54,7 +54,7 @@ CREATE TABLE public.payments (
 
 -- Create wedding_config table
 CREATE TABLE public.wedding_config (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     wedding_date DATE NOT NULL,
     rsvp_deadline DATE NOT NULL,
     venue_name VARCHAR(255) NOT NULL,

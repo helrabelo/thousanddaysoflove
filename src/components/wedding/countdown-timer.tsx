@@ -131,7 +131,7 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
         </h3>
 
         <div className="grid grid-cols-4 gap-3 mb-4">
-          {timeUnits.map((unit, index) => (
+          {timeUnits.map((unit) => (
             <div key={unit.label} className="text-center">
               <motion.div
                 key={unit.value}

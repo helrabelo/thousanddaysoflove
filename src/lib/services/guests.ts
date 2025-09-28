@@ -1,5 +1,4 @@
 import { createClient } from '@/lib/supabase/client'
-import { createClient as createServerClient, createAdminClient } from '@/lib/supabase/server'
 import { Guest } from '@/types/wedding'
 import { generateInvitationCode } from '@/lib/utils/wedding'
 import { Database } from '@/types/database'
@@ -160,80 +159,7 @@ export class GuestService {
     return data
   }
 
-  // Server-side admin functions with proper authorization
-  static async getAllGuestsServer(): Promise<Guest[]> {
-    try {
-      const adminClient = createAdminClient()
-
-      const { data, error } = await adminClient
-        .from('guests')
-        .select('*')
-        .order('created_at', { ascending: false })
-
-      if (error) {
-        console.error('Error fetching guests:', error)
-        return []
-      }
-
-      return data || []
-    } catch (error) {
-      console.error('Error in getAllGuestsServer:', error)
-      return []
-    }
-  }
-
-  static async getGuestStatsServer() {
-    try {
-      const adminClient = createAdminClient()
-
-      const { data: guests, error } = await adminClient
-        .from('guests')
-        .select('attending, plus_one')
-
-      if (error || !guests) {
-        console.error('Error fetching guest stats:', error)
-        return {
-          total: 0,
-          attending: 0,
-          notAttending: 0,
-          pending: 0,
-          totalWithPlusOnes: 0
-        }
-      }
-
-      const stats = guests.reduce((acc, guest) => {
-        acc.total++
-
-        if (guest.attending === true) {
-          acc.attending++
-          acc.totalWithPlusOnes += guest.plus_one ? 2 : 1
-        } else if (guest.attending === false) {
-          acc.notAttending++
-        } else {
-          acc.pending++
-        }
-
-        return acc
-      }, {
-        total: 0,
-        attending: 0,
-        notAttending: 0,
-        pending: 0,
-        totalWithPlusOnes: 0
-      })
-
-      return stats
-    } catch (error) {
-      console.error('Error in getGuestStatsServer:', error)
-      return {
-        total: 0,
-        attending: 0,
-        notAttending: 0,
-        pending: 0,
-        totalWithPlusOnes: 0
-      }
-    }
-  }
+  // Note: Server-side functions moved to separate server module
 
   static async getGuestStats() {
     const supabase = createClient()
@@ -287,26 +213,6 @@ export class GuestService {
     return !error
   }
 
-  static async deleteGuestServer(id: string): Promise<boolean> {
-    try {
-      const adminClient = createAdminClient()
-
-      const { error } = await adminClient
-        .from('guests')
-        .delete()
-        .eq('id', id)
-
-      if (error) {
-        console.error('Error deleting guest:', error)
-        return false
-      }
-
-      return true
-    } catch (error) {
-      console.error('Error in deleteGuestServer:', error)
-      return false
-    }
-  }
 
   // Real-time subscriptions for admin dashboard
   static subscribeToGuestChanges(callback: (payload: any) => void) {

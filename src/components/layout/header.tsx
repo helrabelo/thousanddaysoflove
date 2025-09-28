@@ -36,7 +36,6 @@ const navigationItems = [
 
 const Header: React.FC<HeaderProps> = ({
   variant = "default",
-  showCountdown = false,
   className
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
