@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Hel & Ylana Wedding Website 💕
+
+A beautiful, modern wedding website built for Hel and Ylana's November 11th, 2025 wedding - celebrating 1000 days together!
+
+## Features
+
+- 🎊 **RSVP System** - Guest management with dietary restrictions and plus-ones
+- 🎁 **Gift Registry** - Integrated with Mercado Pago for PIX payments
+- 📧 **Email Automation** - SendGrid integration for confirmations and reminders
+- 📱 **QR Code Sharing** - Easy WhatsApp sharing for invitations
+- ⏰ **Countdown Timer** - Live countdown to the big day
+- 📋 **Admin Dashboard** - Manage guests, RSVPs, and gifts
+- 🌟 **Beautiful Design** - Romantic, mobile-first responsive design
+
+## Tech Stack
+
+- **Frontend**: Next.js 14 + TypeScript + Tailwind CSS
+- **Database**: Supabase (PostgreSQL)
+- **Payments**: Mercado Pago (PIX support for Brazil)
+- **Email**: SendGrid
+- **Hosting**: Vercel
+- **Styling**: Tailwind CSS + Framer Motion
 
 ## Getting Started
 
-First, run the development server:
+1. **Clone and install dependencies**
+   ```bash
+   npm install
+   ```
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+2. **Set up environment variables**
+   ```bash
+   cp .env.local.example .env.local
+   # Fill in your Supabase, SendGrid, and Mercado Pago credentials
+   ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+3. **Run the development server**
+   ```bash
+   npm run dev
+   ```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+4. **Open [http://localhost:3000](http://localhost:3000)** in your browser
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Environment Variables
 
-## Learn More
+See `.env.local.example` for all required environment variables:
 
-To learn more about Next.js, take a look at the following resources:
+- **Supabase**: Database and authentication
+- **SendGrid**: Email notifications
+- **Mercado Pago**: Payment processing with PIX support
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Wedding Date: November 11th, 2025 🗓️
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This special date marks our 1000th day together - a milestone worth celebrating!
 
-## Deploy on Vercel
+## Domain Recommendations
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `HelaAndYlana1000.love` ⭐ (Primary choice)
+- `ThousandDaysOfLove.wedding`
+- `HelYlana1111.com`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Documentation
+
+All comprehensive documentation is available in the Obsidian vault:
+`HelSky Vault/02 Code/Helsky Labs/Hel&Ylana/`
+
+---
+
+Built with ❤️ for Hel & Ylana's special day
