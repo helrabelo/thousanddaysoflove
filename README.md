@@ -1,4 +1,4 @@
-# Hel & Ylana Wedding Website 💕
+# Thousand Days of Love 💕
 
 A beautiful, modern wedding website built for Hel and Ylana's November 11th, 2025 wedding - celebrating 1000 days together!
 
@@ -53,16 +53,14 @@ See `.env.local.example` for all required environment variables:
 
 This special date marks our 1000th day together - a milestone worth celebrating!
 
-## Domain Recommendations
+## Domain
 
-- `HelaAndYlana1000.love` ⭐ (Primary choice)
-- `ThousandDaysOfLove.wedding`
-- `HelYlana1111.com`
+🌐 **Live at**: [thousandaysof.love](https://thousandaysof.love)
 
 ## Documentation
 
 All comprehensive documentation is available in the Obsidian vault:
-`HelSky Vault/02 Code/Helsky Labs/Hel&Ylana/`
+`HelSky Vault/02 Code/Helsky Labs/ThousandDaysOfLove/`
 
 ---
 
