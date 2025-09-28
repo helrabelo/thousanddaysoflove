@@ -6,7 +6,21 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "type-check": "tsc --noEmit",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "supabase:restart": "supabase stop && supabase start",
+    "supabase:reset": "supabase db reset",
+    "supabase:studio": "open http://127.0.0.1:54323",
+    "supabase:status": "supabase status",
+    "db:reset": "supabase db reset",
+    "db:migrate": "supabase db push",
+    "db:generate": "supabase gen types typescript --local --schema public > src/types/supabase.ts",
+    "db:seed": "supabase db reset --debug",
+    "dev:full": "npm run supabase:start && npm run dev",
+    "setup:local": "cp .env.local.example .env.local && npm run supabase:start",
+    "mailpit": "open http://127.0.0.1:54324"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",

@@ -39,3 +39,22 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# supabase
+supabase/.branches
+supabase/.temp
+supabase/logs
+supabase/.gitignore
+
+# Supabase CLI generated types (regenerate with npm run db:generate)
+src/types/supabase.ts
+
+# Wedding-specific sensitive files
+/public/images/gifts/*
+!/public/images/gifts/.gitkeep
+
+# Local environment overrides
+.env.local.backup
+.env.development.local
+.env.test.local
+.env.production.local
