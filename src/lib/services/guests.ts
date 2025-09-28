@@ -1,8 +1,30 @@
 import { createClient } from '@/lib/supabase/client'
+import { createClient as createServerClient, createAdminClient } from '@/lib/supabase/server'
 import { Guest } from '@/types/wedding'
 import { generateInvitationCode } from '@/lib/utils/wedding'
+import { Database } from '@/types/database'
+
+type SupabaseClient = ReturnType<typeof createClient>
 
 export class GuestService {
+  // Email validation for Brazilian email formats
+  private static validateBrazilianEmail(email: string): boolean {
+    const brazilianEmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    return brazilianEmailRegex.test(email)
+  }
+
+  // Phone validation for Brazilian phone formats
+  private static validateBrazilianPhone(phone: string): boolean {
+    if (!phone) return true // Phone is optional
+
+    // Brazilian phone formats:
+    // +55 (11) 99999-9999
+    // +55 11 99999-9999
+    // (11) 99999-9999
+    // 11 99999-9999
+    const brazilianPhoneRegex = /^(\+55\s?)?\(?[1-9]{2}\)?\s?9?\d{4}-?\d{4}$/
+    return brazilianPhoneRegex.test(phone.replace(/\s/g, ''))
+  }
   static async findByEmail(email: string): Promise<Guest | null> {
     const supabase = createClient()
 
@@ -138,6 +160,81 @@ export class GuestService {
     return data
   }
 
+  // Server-side admin functions with proper authorization
+  static async getAllGuestsServer(): Promise<Guest[]> {
+    try {
+      const adminClient = createAdminClient()
+
+      const { data, error } = await adminClient
+        .from('guests')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        console.error('Error fetching guests:', error)
+        return []
+      }
+
+      return data || []
+    } catch (error) {
+      console.error('Error in getAllGuestsServer:', error)
+      return []
+    }
+  }
+
+  static async getGuestStatsServer() {
+    try {
+      const adminClient = createAdminClient()
+
+      const { data: guests, error } = await adminClient
+        .from('guests')
+        .select('attending, plus_one')
+
+      if (error || !guests) {
+        console.error('Error fetching guest stats:', error)
+        return {
+          total: 0,
+          attending: 0,
+          notAttending: 0,
+          pending: 0,
+          totalWithPlusOnes: 0
+        }
+      }
+
+      const stats = guests.reduce((acc, guest) => {
+        acc.total++
+
+        if (guest.attending === true) {
+          acc.attending++
+          acc.totalWithPlusOnes += guest.plus_one ? 2 : 1
+        } else if (guest.attending === false) {
+          acc.notAttending++
+        } else {
+          acc.pending++
+        }
+
+        return acc
+      }, {
+        total: 0,
+        attending: 0,
+        notAttending: 0,
+        pending: 0,
+        totalWithPlusOnes: 0
+      })
+
+      return stats
+    } catch (error) {
+      console.error('Error in getGuestStatsServer:', error)
+      return {
+        total: 0,
+        attending: 0,
+        notAttending: 0,
+        pending: 0,
+        totalWithPlusOnes: 0
+      }
+    }
+  }
+
   static async getGuestStats() {
     const supabase = createClient()
 
@@ -188,5 +285,99 @@ export class GuestService {
       .eq('id', id)
 
     return !error
+  }
+
+  static async deleteGuestServer(id: string): Promise<boolean> {
+    try {
+      const adminClient = createAdminClient()
+
+      const { error } = await adminClient
+        .from('guests')
+        .delete()
+        .eq('id', id)
+
+      if (error) {
+        console.error('Error deleting guest:', error)
+        return false
+      }
+
+      return true
+    } catch (error) {
+      console.error('Error in deleteGuestServer:', error)
+      return false
+    }
+  }
+
+  // Real-time subscriptions for admin dashboard
+  static subscribeToGuestChanges(callback: (payload: any) => void) {
+    const supabase = createClient()
+
+    return supabase
+      .channel('guests_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'guests',
+        },
+        callback
+      )
+      .subscribe()
+  }
+
+  // Export guest data for wedding planning
+  static async exportGuestsCSV(): Promise<string> {
+    const guests = await this.getAllGuests()
+
+    const headers = [
+      'Nome',
+      'Email',
+      'Telefone',
+      'Confirmação',
+      'Acompanhante',
+      'Nome do Acompanhante',
+      'Restrições Alimentares',
+      'Pedidos Especiais',
+      'Código do Convite',
+      'Data do RSVP'
+    ]
+
+    const rows = guests.map(guest => [
+      guest.name,
+      guest.email,
+      guest.phone || '',
+      guest.attending === true ? 'Confirmado' : guest.attending === false ? 'Não Confirmado' : 'Pendente',
+      guest.plus_one ? 'Sim' : 'Não',
+      guest.plus_one_name || '',
+      guest.dietary_restrictions || '',
+      guest.special_requests || '',
+      guest.invitation_code,
+      guest.rsvp_date ? new Date(guest.rsvp_date).toLocaleDateString('pt-BR') : ''
+    ])
+
+    const csvContent = [headers, ...rows]
+      .map(row => row.map(field => `"${field}"`).join(','))
+      .join('\n')
+
+    return csvContent
+  }
+
+  // Send RSVP reminders
+  static async getGuestsNeedingReminders(): Promise<Guest[]> {
+    const supabase = createClient()
+    const rsvpDeadline = new Date(process.env.RSVP_DEADLINE || '2025-11-01')
+    const reminderCutoff = new Date()
+    reminderCutoff.setDate(reminderCutoff.getDate() + 14) // 2 weeks before deadline
+
+    const { data, error } = await supabase
+      .from('guests')
+      .select('*')
+      .is('attending', null)
+      .is('rsvp_date', null)
+      .lte('created_at', reminderCutoff.toISOString())
+
+    if (error || !data) return []
+    return data
   }
 }
