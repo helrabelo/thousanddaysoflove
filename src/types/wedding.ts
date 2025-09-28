@@ -9,6 +9,7 @@ export interface Guest {
   plus_one_name?: string;
   invitation_code: string;
   rsvp_date?: string;
+  special_requests?: string;
   created_at: string;
   updated_at: string;
 }

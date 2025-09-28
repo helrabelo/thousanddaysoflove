@@ -1,26 +1,243 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Romantic Wedding Color Palette */
+  --blush-50: #fdf2f8;
+  --blush-100: #fce7f3;
+  --blush-200: #fbcfe8;
+  --blush-300: #f9a8d4;
+  --blush-400: #f472b6;
+  --blush-500: #ec4899;
+  --blush-600: #db2777;
+  --blush-700: #be185d;
+  --blush-800: #9d174d;
+  --blush-900: #831843;
+
+  --sage-50: #f0f9f0;
+  --sage-100: #dcf4dc;
+  --sage-200: #bae8ba;
+  --sage-300: #8dd68d;
+  --sage-400: #5abf5a;
+  --sage-500: #34a834;
+  --sage-600: #268826;
+  --sage-700: #1f6e1f;
+  --sage-800: #1c581c;
+  --sage-900: #18471b;
+
+  --burgundy-50: #fdf2f2;
+  --burgundy-100: #fde8e8;
+  --burgundy-200: #fbd5d5;
+  --burgundy-300: #f8b4b4;
+  --burgundy-400: #f38686;
+  --burgundy-500: #ef4444;
+  --burgundy-600: #dc2626;
+  --burgundy-700: #b91c1c;
+  --burgundy-800: #991b1b;
+  --burgundy-900: #7f1d1d;
+
+  --cream-50: #fffef7;
+  --cream-100: #fffbeb;
+  --cream-200: #fef3c7;
+  --cream-300: #fde68a;
+  --cream-400: #fcd34d;
+  --cream-500: #fbbf24;
+  --cream-600: #f59e0b;
+  --cream-700: #d97706;
+  --cream-800: #b45309;
+  --cream-900: #92400e;
+
+  --gold-50: #fffbeb;
+  --gold-100: #fef3c7;
+  --gold-200: #fde68a;
+  --gold-300: #fcd34d;
+  --gold-400: #fbbf24;
+  --gold-500: #f59e0b;
+  --gold-600: #d97706;
+  --gold-700: #b45309;
+  --gold-800: #92400e;
+  --gold-900: #78350f;
+
+  /* Semantic Colors */
+  --background: var(--cream-50);
+  --foreground: var(--burgundy-900);
+  --muted: var(--sage-100);
+  --muted-foreground: var(--sage-700);
+  --card: var(--cream-50);
+  --card-foreground: var(--burgundy-800);
+  --popover: var(--cream-50);
+  --popover-foreground: var(--burgundy-900);
+  --border: var(--blush-200);
+  --input: var(--cream-100);
+  --primary: var(--blush-500);
+  --primary-foreground: white;
+  --secondary: var(--sage-500);
+  --secondary-foreground: white;
+  --accent: var(--gold-400);
+  --accent-foreground: var(--burgundy-900);
+  --destructive: var(--burgundy-500);
+  --destructive-foreground: white;
+  --ring: var(--blush-400);
+  --radius: 12px;
 }
 
 @theme inline {
+  --color-blush-50: var(--blush-50);
+  --color-blush-100: var(--blush-100);
+  --color-blush-200: var(--blush-200);
+  --color-blush-300: var(--blush-300);
+  --color-blush-400: var(--blush-400);
+  --color-blush-500: var(--blush-500);
+  --color-blush-600: var(--blush-600);
+  --color-blush-700: var(--blush-700);
+  --color-blush-800: var(--blush-800);
+  --color-blush-900: var(--blush-900);
+
+  --color-sage-50: var(--sage-50);
+  --color-sage-100: var(--sage-100);
+  --color-sage-200: var(--sage-200);
+  --color-sage-300: var(--sage-300);
+  --color-sage-400: var(--sage-400);
+  --color-sage-500: var(--sage-500);
+  --color-sage-600: var(--sage-600);
+  --color-sage-700: var(--sage-700);
+  --color-sage-800: var(--sage-800);
+  --color-sage-900: var(--sage-900);
+
+  --color-burgundy-50: var(--burgundy-50);
+  --color-burgundy-100: var(--burgundy-100);
+  --color-burgundy-200: var(--burgundy-200);
+  --color-burgundy-300: var(--burgundy-300);
+  --color-burgundy-400: var(--burgundy-400);
+  --color-burgundy-500: var(--burgundy-500);
+  --color-burgundy-600: var(--burgundy-600);
+  --color-burgundy-700: var(--burgundy-700);
+  --color-burgundy-800: var(--burgundy-800);
+  --color-burgundy-900: var(--burgundy-900);
+
+  --color-cream-50: var(--cream-50);
+  --color-cream-100: var(--cream-100);
+  --color-cream-200: var(--cream-200);
+  --color-cream-300: var(--cream-300);
+  --color-cream-400: var(--cream-400);
+  --color-cream-500: var(--cream-500);
+  --color-cream-600: var(--cream-600);
+  --color-cream-700: var(--cream-700);
+  --color-cream-800: var(--cream-800);
+  --color-cream-900: var(--cream-900);
+
+  --color-gold-50: var(--gold-50);
+  --color-gold-100: var(--gold-100);
+  --color-gold-200: var(--gold-200);
+  --color-gold-300: var(--gold-300);
+  --color-gold-400: var(--gold-400);
+  --color-gold-500: var(--gold-500);
+  --color-gold-600: var(--gold-600);
+  --color-gold-700: var(--gold-700);
+  --color-gold-800: var(--gold-800);
+  --color-gold-900: var(--gold-900);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-ring: var(--ring);
+
+  --font-heading: "Playfair Display", serif;
+  --font-body: "Inter", sans-serif;
+  --border-radius: var(--radius);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  border-color: var(--border);
 }
 
 body {
-  background: var(--background);
+  background: linear-gradient(135deg, var(--cream-50) 0%, var(--blush-50) 100%);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
+  line-height: 1.6;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--cream-100);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--blush-300);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--blush-400);
+}
+
+/* Glass morphism effect */
+.glass {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+/* Romantic gradient backgrounds */
+.bg-romantic-gradient {
+  background: linear-gradient(135deg, var(--blush-100) 0%, var(--cream-100) 50%, var(--sage-100) 100%);
+}
+
+.bg-hero-gradient {
+  background: linear-gradient(135deg, var(--blush-50) 0%, var(--cream-50) 25%, var(--sage-50) 50%, var(--blush-50) 75%, var(--cream-50) 100%);
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes heartbeat {
+  0%, 50%, 100% { transform: scale(1); }
+  25%, 75% { transform: scale(1.1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-heartbeat {
+  animation: heartbeat 2s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
 }
