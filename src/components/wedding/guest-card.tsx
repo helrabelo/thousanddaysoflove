@@ -355,7 +355,7 @@ const GuestCard: React.FC<GuestCardProps> = ({
           {guest.message && (
             <div className="text-sm">
               <p className="text-sage-600 line-clamp-2">
-                "{guest.message}"
+                &ldquo;{guest.message}&rdquo;
               </p>
             </div>
           )}

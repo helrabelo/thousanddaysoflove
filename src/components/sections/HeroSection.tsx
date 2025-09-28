@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import CountdownTimer from '@/components/ui/CountdownTimer'
 import { Heart, Calendar, MapPin } from 'lucide-react'
+import Link from 'next/link'
 
 export default function HeroSection() {
   return (
@@ -44,10 +45,10 @@ export default function HeroSection() {
         >
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight">
             <span className="block bg-gradient-to-r from-rose-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Thousand
+              Mil
             </span>
             <span className="block bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 bg-clip-text text-transparent">
-              Days of Love
+              Dias de Amor
             </span>
           </h1>
         </motion.div>
@@ -79,7 +80,7 @@ export default function HeroSection() {
         >
           <div className="flex items-center justify-center gap-2 text-xl md:text-2xl text-gray-600">
             <Calendar className="h-6 w-6" />
-            <span>November 11th, 2025</span>
+            <span>11 de Novembro de 2025</span>
           </div>
         </motion.div>
 
@@ -91,9 +92,9 @@ export default function HeroSection() {
           className="mb-12"
         >
           <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            After 1,000 beautiful days together, we&apos;re ready to begin forever.
+            Após 1.000 dias lindos juntos, estamos prontos para começar o para sempre.
             <br className="hidden md:block" />
-            Join us as we celebrate our love story and the start of our new chapter.
+            Junte-se a nós para celebrar nossa história de amor e o início do nosso novo capítulo.
           </p>
         </motion.div>
 
@@ -114,12 +115,18 @@ export default function HeroSection() {
           transition={{ delay: 1.1, duration: 0.6 }}
           className="flex flex-col sm:flex-row gap-4 justify-center items-center"
         >
-          <button className="bg-gradient-to-r from-rose-500 to-purple-600 hover:from-rose-600 hover:to-purple-700 text-white font-semibold py-4 px-8 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-            RSVP Now
-          </button>
-          <button className="bg-white/20 backdrop-blur-md border border-white/30 hover:bg-white/30 text-gray-700 font-semibold py-4 px-8 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-            View Registry
-          </button>
+          <Link
+            href="/rsvp"
+            className="bg-gradient-to-r from-rose-500 to-purple-600 hover:from-rose-600 hover:to-purple-700 text-white font-semibold py-4 px-8 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-block"
+          >
+            Confirmar Presença
+          </Link>
+          <Link
+            href="#registry"
+            className="bg-white/20 backdrop-blur-md border border-white/30 hover:bg-white/30 text-gray-700 font-semibold py-4 px-8 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-block"
+          >
+            Ver Lista de Presentes
+          </Link>
         </motion.div>
 
         {/* Venue Info */}
@@ -131,7 +138,7 @@ export default function HeroSection() {
         >
           <div className="flex items-center justify-center gap-2 text-gray-500">
             <MapPin className="h-5 w-5" />
-            <span>Location details coming soon</span>
+            <span>Detalhes do local em breve</span>
           </div>
         </motion.div>
       </div>

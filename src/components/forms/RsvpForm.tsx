@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/Input'
+import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/Textarea'
 import { RadioGroup } from '@/components/ui/RadioGroup'
 import { Checkbox } from '@/components/ui/Checkbox'
@@ -35,7 +35,7 @@ export function RsvpForm({ initialGuest, onSuccess, onError }: RsvpFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [currentStep, setCurrentStep] = useState(1)
 
-  const handleInputChange = (field: keyof RsvpFormData, value: any) => {
+  const handleInputChange = (field: keyof RsvpFormData, value: string | boolean | null) => {
     setFormData(prev => ({ ...prev, [field]: value }))
 
     // Clear error when user starts typing

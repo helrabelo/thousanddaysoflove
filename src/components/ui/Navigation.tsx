@@ -6,10 +6,10 @@ import { Menu, X, Heart } from 'lucide-react'
 import Link from 'next/link'
 
 const navItems = [
-  { name: 'Our Story', href: '#story' },
-  { name: 'RSVP', href: '#rsvp' },
-  { name: 'Registry', href: '#registry' },
-  { name: 'Details', href: '#details' },
+  { name: 'Nossa História', href: '#story' },
+  { name: 'Confirmação', href: '/rsvp' },
+  { name: 'Lista de Presentes', href: '#registry' },
+  { name: 'Detalhes', href: '#details' },
 ]
 
 export default function Navigation() {

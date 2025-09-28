@@ -15,10 +15,10 @@ export default function StoryPreview() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-rose-600 to-purple-600 bg-clip-text text-transparent mb-6">
-            Our Love Story
+            Nossa História de Amor
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Every great love story is unique, but ours is measured in days that led to forever.
+            Toda grande história de amor é única, mas a nossa é medida em dias que levaram ao para sempre.
           </p>
         </motion.div>
 
@@ -35,9 +35,9 @@ export default function StoryPreview() {
               <div className="bg-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                 <Heart className="h-8 w-8 text-rose-500" fill="currentColor" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-800 mb-3">Day 1</h3>
+              <h3 className="text-2xl font-bold text-gray-800 mb-3">Dia 1</h3>
               <p className="text-gray-600">
-                The day our hearts first met and we knew something magical was beginning.
+                O dia em que nossos corações se encontraram e soubemos que algo mágico estava começando.
               </p>
             </div>
           </motion.div>
@@ -54,9 +54,9 @@ export default function StoryPreview() {
               <div className="bg-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                 <Star className="h-8 w-8 text-purple-500" fill="currentColor" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-800 mb-3">Day 500</h3>
+              <h3 className="text-2xl font-bold text-gray-800 mb-3">Dia 500</h3>
               <p className="text-gray-600">
-                Halfway to our thousand days, we knew we wanted to spend every day together.
+                Na metade dos nossos mil dias, soubéramos que queríamos passar todos os dias juntos.
               </p>
             </div>
           </motion.div>
@@ -73,9 +73,9 @@ export default function StoryPreview() {
               <div className="bg-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                 <Calendar className="h-8 w-8 text-pink-500" fill="currentColor" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-800 mb-3">Day 1000</h3>
+              <h3 className="text-2xl font-bold text-gray-800 mb-3">Dia 1000</h3>
               <p className="text-gray-600">
-                Our wedding day - when a thousand days of love becomes a lifetime promise.
+                Nosso dia de casamento - quando mil dias de amor se tornam uma promessa para a vida toda.
               </p>
             </div>
           </motion.div>
@@ -89,7 +89,7 @@ export default function StoryPreview() {
           className="text-center mt-12"
         >
           <button className="bg-white/20 backdrop-blur-md border border-white/30 hover:bg-white/30 text-gray-700 font-semibold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-            Read Our Full Story
+            Leia Nossa História Completa
           </button>
         </motion.div>
       </div>

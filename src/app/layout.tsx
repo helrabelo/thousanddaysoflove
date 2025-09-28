@@ -15,20 +15,20 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Thousand Days of Love | Hel & Ylana's Wedding",
-  description: "Join Hel and Ylana as they celebrate their 1000 days of love with their wedding on November 11th, 2025. RSVP, explore their registry, and be part of their special day.",
-  keywords: "wedding, Hel and Ylana, November 11 2025, thousand days of love, RSVP, wedding registry",
+  title: "Mil Dias de Amor | Casamento Hel & Ylana",
+  description: "Junte-se a Hel e Ylana para celebrar seus 1000 dias de amor com o casamento em 11 de novembro de 2025. Confirme presença, explore nossa lista de presentes e faça parte do nosso dia especial.",
+  keywords: "casamento, Hel e Ylana, 11 novembro 2025, mil dias de amor, RSVP, lista de presentes",
   authors: [{ name: "Hel & Ylana" }],
   openGraph: {
-    title: "Thousand Days of Love | Hel & Ylana's Wedding",
-    description: "Join us as we celebrate 1000 days of love becoming forever on November 11th, 2025",
+    title: "Mil Dias de Amor | Casamento Hel & Ylana",
+    description: "Junte-se a nós para celebrar 1000 dias de amor se tornando para sempre em 11 de novembro de 2025",
     type: "website",
     url: "https://thousandaysof.love",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Thousand Days of Love | Hel & Ylana's Wedding",
-    description: "Join us as we celebrate 1000 days of love becoming forever on November 11th, 2025",
+    title: "Mil Dias de Amor | Casamento Hel & Ylana",
+    description: "Junte-se a nós para celebrar 1000 dias de amor se tornando para sempre em 11 de novembro de 2025",
   },
 };
 
@@ -38,7 +38,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <body
         className={`${inter.variable} ${playfair.variable} font-sans antialiased`}
       >

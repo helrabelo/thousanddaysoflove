@@ -28,9 +28,9 @@ export default function CountdownTimer({ className = '' }: CountdownTimerProps) 
         transition={{ duration: 0.6 }}
       >
         <div className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-rose-400 via-pink-500 to-purple-600 bg-clip-text text-transparent">
-          Just Married! 💕
+          Recém Casados! 💕
         </div>
-        <p className="text-xl md:text-2xl text-gray-600 mt-4">Our thousand days of love led to this moment</p>
+        <p className="text-xl md:text-2xl text-gray-600 mt-4">Nossos mil dias de amor levaram a este momento</p>
       </motion.div>
     )
   }
@@ -44,9 +44,9 @@ export default function CountdownTimer({ className = '' }: CountdownTimerProps) 
         transition={{ duration: 0.6 }}
       >
         <div className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-rose-400 via-pink-500 to-purple-600 bg-clip-text text-transparent">
-          Today&apos;s the Day! 🎉
+          Hoje é o Dia! 🎉
         </div>
-        <p className="text-xl md:text-2xl text-gray-600 mt-4">Our thousand days of love culminate today</p>
+        <p className="text-xl md:text-2xl text-gray-600 mt-4">Nossos mil dias de amor culminam hoje</p>
       </motion.div>
     )
   }
@@ -70,7 +70,7 @@ export default function CountdownTimer({ className = '' }: CountdownTimerProps) 
               {countdown.days}
             </div>
             <div className="text-sm md:text-lg font-medium text-gray-700 mt-2">
-              {countdown.days === 1 ? 'Day' : 'Days'}
+              {countdown.days === 1 ? 'Dia' : 'Dias'}
             </div>
           </div>
         </motion.div>
@@ -86,7 +86,7 @@ export default function CountdownTimer({ className = '' }: CountdownTimerProps) 
               {countdown.hours}
             </div>
             <div className="text-sm md:text-lg font-medium text-gray-700 mt-2">
-              {countdown.hours === 1 ? 'Hour' : 'Hours'}
+              {countdown.hours === 1 ? 'Hora' : 'Horas'}
             </div>
           </div>
         </motion.div>
@@ -102,7 +102,7 @@ export default function CountdownTimer({ className = '' }: CountdownTimerProps) 
               {countdown.minutes}
             </div>
             <div className="text-sm md:text-lg font-medium text-gray-700 mt-2">
-              {countdown.minutes === 1 ? 'Minute' : 'Minutes'}
+              {countdown.minutes === 1 ? 'Minuto' : 'Minutos'}
             </div>
           </div>
         </motion.div>
@@ -114,7 +114,7 @@ export default function CountdownTimer({ className = '' }: CountdownTimerProps) 
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4, duration: 0.6 }}
       >
-        Until our thousand days of love become forever
+        Até que nossos mil dias de amor se tornem para sempre
       </motion.p>
     </motion.div>
   )

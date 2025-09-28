@@ -4,7 +4,7 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: "default" | "confirmed" | "pending" | "declined" | "romantic" | "gold"
+  variant?: "default" | "confirmed" | "pending" | "declined" | "romantic" | "gold" | "success" | "warning" | "destructive"
   size?: "sm" | "md" | "lg"
   children: React.ReactNode
 }
@@ -19,7 +19,10 @@ const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
       pending: "bg-gold-100 text-gold-700 border border-gold-200 shadow-sm",
       declined: "bg-burgundy-100 text-burgundy-700 border border-burgundy-200 shadow-sm",
       romantic: "bg-gradient-to-r from-blush-100 to-blush-200 text-blush-700 border border-blush-300 shadow-sm",
-      gold: "bg-gradient-to-r from-gold-200 to-gold-300 text-gold-800 border border-gold-400 shadow-sm font-semibold"
+      gold: "bg-gradient-to-r from-gold-200 to-gold-300 text-gold-800 border border-gold-400 shadow-sm font-semibold",
+      success: "bg-sage-100 text-sage-700 border border-sage-200 shadow-sm",
+      warning: "bg-gold-100 text-gold-700 border border-gold-200 shadow-sm",
+      destructive: "bg-burgundy-100 text-burgundy-700 border border-burgundy-200 shadow-sm"
     }
 
     const sizes = {
