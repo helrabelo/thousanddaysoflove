@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Image from "next/image"
 import { motion } from "framer-motion"
 import { Heart, Calendar, MapPin, Camera, Star } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
@@ -130,7 +131,7 @@ const Timeline: React.FC<TimelineProps> = ({
       <div className="space-y-8">
         {sortedEvents.map((event, index) => {
           const Icon = eventIcons[event.type]
-          const isEven = index % 2 === 0
+          // const isEven = index % 2 === 0
 
           return (
             <motion.div
@@ -211,11 +212,12 @@ const Timeline: React.FC<TimelineProps> = ({
                       </div>
 
                       {showImages && event.imageUrl && variant === "detailed" && (
-                        <div className="relative overflow-hidden rounded-xl">
-                          <img
+                        <div className="relative overflow-hidden rounded-xl h-48">
+                          <Image
                             src={event.imageUrl}
                             alt={event.title}
-                            className="w-full h-48 object-cover transition-transform duration-300 hover:scale-110"
+                            fill
+                            className="object-cover transition-transform duration-300 hover:scale-110"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                           <div className="absolute bottom-2 right-2">

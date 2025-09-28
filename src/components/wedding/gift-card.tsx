@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Image from "next/image"
 import { motion } from "framer-motion"
 import { Gift, Heart, Check, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -148,10 +149,11 @@ const GiftCard: React.FC<GiftCardProps> = ({
       >
         {gift.imageUrl && (
           <div className="relative h-48 overflow-hidden">
-            <img
+            <Image
               src={gift.imageUrl}
               alt={gift.name}
-              className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+              fill
+              className="object-cover transition-transform duration-300 hover:scale-110"
             />
             <div className="absolute top-4 left-4">
               <Badge variant={priorityColors[gift.priority]}>

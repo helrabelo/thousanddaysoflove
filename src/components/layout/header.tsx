@@ -127,16 +127,15 @@ const Header: React.FC<HeaderProps> = ({
 
             {/* RSVP Button (Desktop) */}
             <div className="hidden lg:block">
-              <Button
-                variant="romantic"
-                size="sm"
-                asChild
-              >
-                <Link href="/rsvp">
+              <Link href="/rsvp">
+                <Button
+                  variant="romantic"
+                  size="sm"
+                >
                   <Heart className="h-4 w-4 mr-2" />
                   Confirmar Presença
-                </Link>
-              </Button>
+                </Button>
+              </Link>
             </div>
 
             {/* Mobile Menu Button */}
@@ -200,17 +199,16 @@ const Header: React.FC<HeaderProps> = ({
                   transition={{ delay: navigationItems.length * 0.1 }}
                   className="pt-4 border-t border-blush-200"
                 >
-                  <Button
-                    variant="romantic"
-                    size="md"
-                    className="w-full"
-                    asChild
-                  >
-                    <Link href="/rsvp">
+                  <Link href="/rsvp" className="w-full">
+                    <Button
+                      variant="romantic"
+                      size="md"
+                      className="w-full"
+                    >
                       <Heart className="h-4 w-4 mr-2" />
                       Confirmar Presença
-                    </Link>
-                  </Button>
+                    </Button>
+                  </Link>
                 </motion.div>
               </div>
             </motion.div>
