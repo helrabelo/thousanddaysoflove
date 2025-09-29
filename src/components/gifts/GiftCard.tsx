@@ -8,6 +8,7 @@ import { Gift } from '@/types/wedding'
 import { Button } from '@/components/ui/button'
 import PaymentModal from '@/components/payments/PaymentModal'
 import { Badge } from '@/components/ui/badge'
+import { giftStories } from '@/lib/utils/wedding'
 
 interface GiftCardProps {
   gift: Gift
@@ -57,21 +58,27 @@ export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
     }
   }
 
-  // Generate romantic context for gift categories
+  // Use romantic context from wedding utils with couple's specific stories
   const getRomanticContext = (category: string, name: string) => {
-    const contexts = {
-      'Casa': 'Para construir nosso lar com amor',
-      'Cozinha': 'Para temperar nosso amor com sabores especiais',
-      'Quarto': 'Para sonhar juntos todos os dias',
-      'Banheiro': 'Para cuidar um do outro com carinho',
-      'Sala': 'Para receber amigos e família com alegria',
-      'Experiências': 'Para criar memórias que durarão para sempre',
-      'Eletrônicos': 'Para conectar nossos corações à tecnologia',
-      'Decoração': 'Para encher nosso lar de beleza e amor',
-      'Jardim': 'Para cultivar nosso amor como uma flor',
-      default: 'Escolhido com amor para nossos mil dias juntos'
+    // First check for specific gift stories from their unique history
+    const story = giftStories[category as keyof typeof giftStories];
+    if (story) return story;
+
+    // Fallback for specific items that might have unique meanings
+    if (name.toLowerCase().includes('remédio') || name.toLowerCase().includes('chá')) {
+      return '🍵 Como aquele remédio e chá que mudou tudo - "na hora já sabia que era ela"';
     }
-    return contexts[category as keyof typeof contexts] || contexts.default
+    if (name.toLowerCase().includes('bicicleta')) {
+      return '🚲 Para lembrar dos sonhos da faculdade quando passava de bike pelo apartamento dos sonhos';
+    }
+    if (name.toLowerCase().includes('câmera') || name.toLowerCase().includes('foto')) {
+      return '📸 Para o Hel capturar cada momento dos próximos mil dias';
+    }
+    if (name.toLowerCase().includes('vinho')) {
+      return '🍷 Para nossas noites caseiras de introvertidos apaixonados';
+    }
+
+    return 'Escolhido com amor para construir nossos sonhos da faculdade que viraram realidade 🏠';
   }
 
   const handlePaymentSuccess = (paymentId: string) => {
@@ -154,6 +161,13 @@ export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
             <p className="text-sm line-clamp-3 mb-3" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
               {gift.description}
             </p>
+
+            {/* Romantic story on hover */}
+            <div className="opacity-0 hover:opacity-100 transition-opacity duration-300 mb-2">
+              <p className="text-xs italic" style={{ color: 'var(--decorative)', fontFamily: 'var(--font-crimson)' }}>
+                {getRomanticContext(gift.category, gift.name)}
+              </p>
+            </div>
             <div className="flex items-center justify-between">
               <span className="text-xl font-bold" style={{ color: 'var(--decorative)', fontFamily: 'var(--font-playfair)' }}>
                 {formatBRL(gift.price)}
@@ -209,7 +223,7 @@ export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
                   <span className="font-medium" style={{ fontFamily: 'var(--font-playfair)' }}>Presente Realizado com Amor</span>
                 </div>
                 <p className="text-sm" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
-                  Obrigado a todos que contribuíram!
+  Obrigado! Vocês estão ajudando a construir nosso lar dos sonhos! 🏠✨
                 </p>
               </div>
             ) : (
@@ -221,6 +235,7 @@ export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
                   color: 'var(--white-soft)',
                   fontFamily: 'var(--font-playfair)'
                 }}
+                title={getRomanticContext(gift.category, gift.name)}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.background = 'var(--secondary-text)'
                   e.currentTarget.style.transform = 'translateY(-1px)'
@@ -231,7 +246,7 @@ export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
                 }}
               >
                 <QrCode className="w-4 h-4" />
-                Presentear com Amor via PIX
+Presentear com Amor para os Mil Dias 💕
               </button>
             )}
 

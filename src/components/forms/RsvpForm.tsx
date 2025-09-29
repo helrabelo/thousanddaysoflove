@@ -9,7 +9,7 @@ import { RadioGroup } from '@/components/ui/RadioGroup'
 import { Checkbox } from '@/components/ui/Checkbox'
 import { validateRsvpForm, formatFormErrors, type RsvpFormData } from '@/lib/validation/forms'
 import { GuestService } from '@/lib/services/guests'
-import { formatPhoneNumber } from '@/lib/utils/wedding'
+import { formatPhoneNumber, personalizedRSVPMessages } from '@/lib/utils/wedding'
 import { Guest } from '@/types/wedding'
 
 interface RsvpFormProps {
@@ -125,13 +125,13 @@ export function RsvpForm({ initialGuest, onSuccess, onError }: RsvpFormProps) {
   const attendingOptions = [
     {
       value: 'true',
-      label: '✨ Sim, estarei presente!',
-      description: 'Mal posso esperar para celebrar os mil dias de amor de vocês!'
+      label: '✨ Sim, estarei presente para celebrar!',
+      description: 'Mal posso esperar para ver nossos caseiros favoritos dizerem "sim"!'
     },
     {
       value: 'false',
       label: '💔 Infelizmente não poderei comparecer',
-      description: 'Sentiremos muito sua falta, mas estaremos unidos pelo amor'
+      description: 'Sentiremos muito sua falta, mas nosso amor nos conecta mesmo à distância'
     }
   ]
 
@@ -144,9 +144,9 @@ export function RsvpForm({ initialGuest, onSuccess, onError }: RsvpFormProps) {
             Passo {currentStep} de 3
           </span>
           <span className="text-sm text-gray-600">
-            {currentStep === 1 && 'Encontrando você na nossa história de amor...'}
-            {currentStep === 2 && 'Confirmando sua presença em nosso grande dia'}
-            {currentStep === 3 && 'Cuidaremos de você com todo carinho'}
+            {currentStep === 1 && personalizedRSVPMessages.welcome}
+            {currentStep === 2 && personalizedRSVPMessages.confirmation}
+            {currentStep === 3 && personalizedRSVPMessages.dietaryNeeds}
           </span>
         </div>
 
@@ -172,11 +172,11 @@ export function RsvpForm({ initialGuest, onSuccess, onError }: RsvpFormProps) {
               className="space-y-6"
             >
               <div className="text-center mb-8">
-                <h2 className="text-2xl font-playfair font-bold text-burgundy-800 mb-2">
-                  Vamos começar! 💕
+                <h2 className="text-2xl mb-2" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)', fontWeight: '600' }}>
+                  Bem-vindo à nossa história de 1000 dias! 💕
                 </h2>
-                <p className="text-gray-600">
-                  Conte-nos um pouco sobre você
+                <p style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
+                  Como dois caseiros que se encontraram, queremos conhecer você melhor
                 </p>
               </div>
 
@@ -236,11 +236,11 @@ export function RsvpForm({ initialGuest, onSuccess, onError }: RsvpFormProps) {
               className="space-y-6"
             >
               <div className="text-center mb-8">
-                <h2 className="text-2xl font-playfair font-bold text-burgundy-800 mb-2">
-                  Você virá celebrar nossos mil dias? 🎉
+                <h2 className="text-2xl mb-2" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)', fontWeight: '600' }}>
+                  Você estará conosco no Constable Galerie? 🎉
                 </h2>
-                <p className="text-gray-600">
-                  Sua presença tornará nosso dia ainda mais especial!
+                <p style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
+                  Onde a arte encontra o amor e nossos 1000 dias viram para sempre!
                 </p>
               </div>
 
@@ -264,7 +264,7 @@ export function RsvpForm({ initialGuest, onSuccess, onError }: RsvpFormProps) {
                     checked={formData.plusOne}
                     onChange={(e) => handleInputChange('plusOne', e.target.checked)}
                     label="Trarei um acompanhante"
-                    description="Se você deseja trazer alguém especial"
+                    description={personalizedRSVPMessages.plusOne}
                   />
 
                   {formData.plusOne && (
@@ -306,11 +306,11 @@ export function RsvpForm({ initialGuest, onSuccess, onError }: RsvpFormProps) {
               className="space-y-6"
             >
               <div className="text-center mb-8">
-                <h2 className="text-2xl font-playfair font-bold text-burgundy-800 mb-2">
-                  Quase lá! ✨
+                <h2 className="text-2xl mb-2" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)', fontWeight: '600' }}>
+                  Últimos toques de amor! ✨
                 </h2>
-                <p className="text-gray-600">
-                  Últimos detalhes para tornar tudo perfeito
+                <p style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
+                  Como sempre cuidamos dos nossos amigos em casa, queremos cuidar de você também
                 </p>
               </div>
 
@@ -319,7 +319,7 @@ export function RsvpForm({ initialGuest, onSuccess, onError }: RsvpFormProps) {
                 value={formData.dietaryRestrictions}
                 onChange={(e) => handleInputChange('dietaryRestrictions', e.target.value)}
                 placeholder="Ex: vegetariano, alérgico a frutos do mar, intolerante à lactose..."
-                helperText="Queremos garantir que você tenha uma experiência gastronômica incrível!"
+                helperText="Nossa paixão por boa comida inclui cuidar bem de todos vocês!"
                 rows={3}
               />
 
@@ -328,7 +328,7 @@ export function RsvpForm({ initialGuest, onSuccess, onError }: RsvpFormProps) {
                 value={formData.specialRequests}
                 onChange={(e) => handleInputChange('specialRequests', e.target.value)}
                 placeholder="Algum pedido especial ou uma mensagem carinhosa para os noivos..."
-                helperText="Conte-nos se há algo especial que podemos fazer por você ou deixe uma mensagem ❤️"
+                helperText="Como Linda (👑), Cacao (🍫), Olivia (🌸) e Oliver (⚡) sempre nos ensinam sobre amor, queremos que se sinta especial!"
                 rows={4}
               />
 
@@ -342,7 +342,7 @@ export function RsvpForm({ initialGuest, onSuccess, onError }: RsvpFormProps) {
                   isLoading={isSubmitting}
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? 'Enviando com amor...' : 'Confirmar presença nos mil dias 💕'}
+                  {isSubmitting ? 'Enviando com amor para o Constable Galerie...' : personalizedRSVPMessages.finalButton}
                 </Button>
               </div>
             </motion.div>

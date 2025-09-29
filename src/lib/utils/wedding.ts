@@ -18,16 +18,43 @@ export function getCountdown() {
   };
 }
 
-// Special milestone messages for countdown romance
+// Mensagens românticas específicas baseadas na história real de Hel & Ylana
 export function getCountdownMessage(days: number): string {
-  if (days === 0) return "Hoje é o grande dia! ✨"
-  if (days === 1) return "Amanhã nos casamos! 💕"
-  if (days <= 7) return "Uma semana de amor pela frente!"
-  if (days <= 30) return "O mês mais especial das nossas vidas!"
-  if (days === 365) return "Exatamente um ano para o sim!"
-  if (days === 1000) return "Mil dias até o para sempre!"
-  if (days >= 500 && days <= 600) return "Quinhentos dias de preparação para a eternidade"
-  return "Contando os dias até o para sempre..."
+  // Mensagens específicas para os momentos mais importantes
+  if (days === 0) return "Hoje nossos 1000 dias viram para sempre! 💒"
+  if (days === 1) return "Amanhã é o grande dia no Constable Galerie! ✨"
+  if (days <= 7) return "Uma semana para nosso sonho no altar! 🤍"
+  if (days <= 14) return "Duas semanas para celebrar nossos mil dias de amor!"
+  if (days <= 30) return "O mês mais especial desde Guaramiranga 💕"
+  if (days <= 50) return "Finalizando os preparativos no apartamento dos sonhos 🏠"
+  if (days === 100) return "100 dias para celebrar nossos 1000! 🎉"
+  if (days <= 180) return "Seis meses para o dia em que seremos uma família! 👰🤵"
+  if (days <= 365) return "Contando cada dia desde 'na hora já sabia que era ela'..."
+  if (days === 1000) return "De volta ao início: mil dias depois, aqui estamos! 💫"
+
+  // Referências específicas aos momentos únicos
+  if (days >= 900 && days <= 950) return "Lembrando do remédio e chá que mudou tudo 🍵"
+  if (days >= 800 && days <= 850) return "Como em Casa Fontana + Avatar VIP F11/F12 🎬"
+  if (days >= 700 && days <= 750) return "Guaramiranga espontâneo: 'não consegui esperar' 🏔️"
+  if (days >= 600 && days <= 650) return "Realizando o sonho do apartamento da faculdade 🎓"
+  if (days >= 500 && days <= 550) return "Se Mangue Azul não tivesse fechado... mas o destino nos trouxe aqui 🎭"
+  if (days >= 400 && days <= 450) return "Nossa família de 4 pets: Linda, Cacao, Olivia e Oliver 🐾"
+
+  return "Mil dias de amor se preparando para a eternidade 💫"
+}
+
+// Easter egg para clique no countdown
+export function getCountdownEasterEgg(): string {
+  const messages = [
+    "Desde aquele primeiro 'oi' no WhatsApp... 📱",
+    "Do Tinder ao altar Constable Galerie 💕",
+    "Caseiros e introvertidos que se completam 🏠",
+    "Remédio e chá: momento que mudou tudo 🍵",
+    "'Na hora já sabia que era ela' ✨",
+    "Linda (👑), Cacao (🍫), Olivia (🌸), Oliver (⚡) - nossa família",
+    "Do sonho da faculdade à casa própria 🎓🏠"
+  ];
+  return messages[Math.floor(Math.random() * messages.length)];
 }
 
 export function formatPhoneNumber(phone: string): string {
@@ -163,7 +190,7 @@ export function formatBrazilianDateTime(date: string | Date): string {
 }
 
 // QR Code utilities for mobile-first Brazilian experience
-export function generateQRCodeData(invitationCode: string, baseUrl: string = 'https://thousandaysof.love'): string {
+export function generateQRCodeData(invitationCode: string, baseUrl: string = 'https://thousanddaysoflove.vercel.app'): string {
   return `${baseUrl}/rsvp?code=${invitationCode}`;
 }
 
@@ -203,6 +230,25 @@ export function generateWeddingTimelineData() {
   };
 }
 
+// Utilities específicas para micro-interações românticas
+export function getRandomPetReaction() {
+  const pets = Object.values(petsPersonalities);
+  const randomPet = pets[Math.floor(Math.random() * pets.length)];
+  return `${randomPet.emoji} ${randomPet.story}`;
+}
+
+export function getBicycleAnimation() {
+  return "Pedalando pelos sonhos da faculdade... 🚲";
+}
+
+export function getCameraFlash() {
+  return "Capturando cada momento precioso 📸✨";
+}
+
+export function getWineClinkSound() {
+  return "Noites de vinho e conversas em casa 🍷🔊";
+}
+
 // Brazilian wedding specific utilities
 export function getBrazilianWeddingGreeting(timeOfDay: 'morning' | 'afternoon' | 'evening'): string {
   const greetings = {
@@ -225,3 +271,92 @@ export function getBrazilianRelationshipTitle(relationship: string, gender: 'M' 
 
   return titles[relationship as keyof typeof titles] || titles.other;
 }
+
+// Funcionalidades específicas dos 4 pets únicos de Hel & Ylana
+export const petsPersonalities = {
+  linda: {
+    emoji: "👑",
+    name: "Linda",
+    description: "Autista, mongol e perfeita desde sempre",
+    story: "A matriarca da família! Mãe da Olivia e Oliver",
+    speciality: "Perfeição em forma de pet"
+  },
+  cacao: {
+    emoji: "🍫",
+    name: "Cacao",
+    description: "Chegou logo após o namoro",
+    story: "Nossa companhia fiel desde março de 2023",
+    speciality: "Doce como chocolate"
+  },
+  olivia: {
+    emoji: "🌸",
+    name: "Olivia",
+    description: "Filha da Linda",
+    story: "Princesinha que expandiu nossa família",
+    speciality: "Delicada como uma flor"
+  },
+  oliver: {
+    emoji: "⚡",
+    name: "Oliver",
+    description: "Filho da Linda",
+    story: "O príncipe que completou nossos 4 pets",
+    speciality: "Energia pura e amor"
+  }
+};
+
+// Easter eggs românticos específicos
+export function getSpecialMoments() {
+  return {
+    firstMessage: "Desde aquele primeiro 'oi' no WhatsApp",
+    apartmentDream: "O apartamento dos sonhos da faculdade que virou realidade",
+    avatarDate: "VIP F11 e F12 - nossa primeira aventura no cinema",
+    guaramirangaSpontaneous: "Não consegui esperar o jantar planejado em Guaramiranga",
+    mangueAzulMemory: "Se o Mangue Azul não tivesse fechado, seria lá nosso casamento",
+    medicineAndTea: "O remédio e chá - momento em que 'já sabia que era ela'",
+    couplePhilosophy: "O que temos entre nós é muito maior do que qualquer um pode imaginar"
+  };
+}
+
+// Mensagens personalizadas para o RSVP baseadas na história
+export const personalizedRSVPMessages = {
+  welcome: "Encontrando você na nossa história de 1000 dias...",
+  confirmation: "Confirme sua presença em nosso grande dia no Constable Galerie",
+  dietaryNeeds: "Cuidaremos de você com todo carinho (como sempre fizemos em casa)",
+  plusOne: "Mais amor é sempre bem-vindo em nossa celebração! 💕",
+  success: "Mal podemos esperar para celebrar nossos 1000 dias com você! ✨",
+  finalButton: "Confirmar presença nos mil dias 💕"
+};
+
+// Histórias específicas para presentes baseadas na personalidade do casal
+export const giftStories = {
+  "Casa": "Para construir nosso lar próprio - o sonho da faculdade que virou realidade 🏠",
+  "Cozinha": "Para nossas noites de boa comida e vinho em casa 🍷",
+  "Quarto": "Para nosso cantinho de introvertidos apaixonados 💤",
+  "Sala": "Para receber amigos e família com alegria em nosso lar 🏡",
+  "Banheiro": "Para cuidar um do outro com carinho todos os dias 💕",
+  "Experiências": "Para criar mais memórias como Guaramiranga e viagens 🌊",
+  "Eletrodomésticos": "Para temperar nosso amor com sabores especiais 🍳",
+  "Decoração": "Para encher nosso lar dos sonhos de beleza ✨",
+  "Pets": "Para nossa família de 4 patinhas: Linda, Cacao, Olivia e Oliver 🐾",
+  "Vinhos": "Para nossas noites de introvertidos apaixonados em casa 🍷",
+  "Fotografia": "Para capturar cada momento dos nossos próximos mil dias 📸",
+  "Fitness": "Para mantermos nossa paixão por exercícios juntos 🏋️",
+  "Moda": "Para a criatividade e estilo único da Ylana ✨",
+  "Tecnologia": "Para o amor do Hel por inovação e fotografia 📱"
+};
+
+// Local romântico específico do casamento
+export const venueStory = {
+  title: "Constable Galerie - Onde a Arte Encontra o Amor",
+  subtitle: "Nosso plano B que virou plano perfeito",
+  description: "Se o Mangue Azul não tivesse fechado, nosso casamento seria lá. Mas o destino nos levou ao Constable Galerie, onde celebraremos nossos 1000 dias rodeados de arte, assim como nossa história é uma obra de arte única.",
+  directions: "Siga seu coração até nós - será fácil encontrar o lugar onde dois introvertidos se tornaram uma família 💕",
+  arrival: "Chegue com tranquilidade, saia com alegria"
+};
+
+// Filosofia do casal para o footer ou seções especiais
+export const couplePhilosophy = {
+  quote: "Tem o que as pessoas sabem de nós, tem o que elas veem de nós, e tem o que nós temos entre nós...",
+  emphasis: "E o que nós temos entre nós é muito maior.",
+  signature: "- Hel & Ylana, 1000 dias depois"
+};

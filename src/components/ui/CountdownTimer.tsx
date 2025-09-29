@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { getCountdown, getCountdownMessage } from '@/lib/utils/wedding'
+import { motion, AnimatePresence } from 'framer-motion'
+import { getCountdown, getCountdownMessage, getCountdownEasterEgg, getSpecialMoments } from '@/lib/utils/wedding'
 import { CardAccent } from '@/components/ui/BotanicalDecorations'
 
 interface CountdownTimerProps {
@@ -11,6 +11,9 @@ interface CountdownTimerProps {
 
 export default function CountdownTimer({ className = '' }: CountdownTimerProps) {
   const [countdown, setCountdown] = useState(getCountdown())
+  const [showEasterEgg, setShowEasterEgg] = useState(false)
+  const [easterEggMessage, setEasterEggMessage] = useState('')
+  const specialMoments = getSpecialMoments()
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -38,7 +41,7 @@ export default function CountdownTimer({ className = '' }: CountdownTimerProps) 
             letterSpacing: '0.05em'
           }}
         >
-          Recém Casados!
+          Nossos Mil Dias Viraram Para Sempre!
         </div>
         <p
           style={{
@@ -49,7 +52,7 @@ export default function CountdownTimer({ className = '' }: CountdownTimerProps) 
             fontStyle: 'italic'
           }}
         >
-          Nossos mil dias de amor levaram a este momento
+          Do primeiro 'oi' no WhatsApp ao altar - que jornada incrível! 💕
         </p>
       </motion.div>
     )
@@ -73,7 +76,7 @@ export default function CountdownTimer({ className = '' }: CountdownTimerProps) 
             letterSpacing: '0.05em'
           }}
         >
-          Hoje é o Dia!
+          Hoje é o Grande Dia no Constable Galerie!
         </div>
         <p
           style={{
@@ -84,7 +87,7 @@ export default function CountdownTimer({ className = '' }: CountdownTimerProps) 
             fontStyle: 'italic'
           }}
         >
-          Nossos mil dias de amor culminam hoje
+          Onde a arte encontra o amor e nossos mil dias viram eternidade ✨
         </p>
       </motion.div>
     )
@@ -97,6 +100,15 @@ export default function CountdownTimer({ className = '' }: CountdownTimerProps) 
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
     >
+      <div
+        className="cursor-pointer love-cursor transition-all duration-300 hover:scale-105"
+        onClick={() => {
+          setEasterEggMessage(getCountdownEasterEgg())
+          setShowEasterEgg(true)
+          setTimeout(() => setShowEasterEgg(false), 4000)
+        }}
+        title="Clique para revelar um momento especial da nossa história"
+      >
       <div className="flex flex-col md:flex-row justify-center items-center gap-8 md:gap-20">
         {/* Days */}
         <motion.div
@@ -124,6 +136,9 @@ export default function CountdownTimer({ className = '' }: CountdownTimerProps) 
               }}
             >
               {countdown.days}
+                <div className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-romantic-pulse">
+                  💖
+                </div>
             </div>
             <div
               className="text-sm md:text-lg"
@@ -140,16 +155,15 @@ export default function CountdownTimer({ className = '' }: CountdownTimerProps) 
           </div>
         </motion.div>
 
-        {/* Elegant Botanical Separator */}
-        <div className="hidden md:flex items-center justify-center">
-          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <g stroke="var(--decorative)" strokeWidth="1" fill="none" opacity="0.6">
-              <circle cx="20" cy="20" r="8" />
-              <circle cx="20" cy="20" r="3" fill="var(--decorative)" opacity="0.3" />
-              <path d="M12 20 Q16 16 20 20 Q24 24 28 20" strokeLinecap="round" />
-              <path d="M20 12 Q16 16 20 20 Q24 16 20 12" strokeLinecap="round" opacity="0.5" />
-            </g>
-          </svg>
+        {/* Romantic floating hearts */}
+        <div className="hidden md:flex items-center justify-center relative">
+          <motion.div
+            className="absolute text-2xl"
+            animate={{ y: [-5, 5, -5] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+          >
+            💕
+          </motion.div>
         </div>
 
         {/* Hours */}
@@ -178,6 +192,9 @@ export default function CountdownTimer({ className = '' }: CountdownTimerProps) 
               }}
             >
               {countdown.hours}
+                <div className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-romantic-pulse">
+                  🕐
+                </div>
             </div>
             <div
               className="text-sm md:text-lg"
@@ -194,16 +211,15 @@ export default function CountdownTimer({ className = '' }: CountdownTimerProps) 
           </div>
         </motion.div>
 
-        {/* Elegant Botanical Separator */}
-        <div className="hidden md:flex items-center justify-center">
-          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <g stroke="var(--decorative)" strokeWidth="1" fill="none" opacity="0.6">
-              <circle cx="20" cy="20" r="8" />
-              <circle cx="20" cy="20" r="3" fill="var(--decorative)" opacity="0.3" />
-              <path d="M12 20 Q16 16 20 20 Q24 24 28 20" strokeLinecap="round" />
-              <path d="M20 12 Q16 16 20 20 Q24 16 20 12" strokeLinecap="round" opacity="0.5" />
-            </g>
-          </svg>
+        {/* Romantic floating sparkles */}
+        <div className="hidden md:flex items-center justify-center relative">
+          <motion.div
+            className="absolute text-2xl"
+            animate={{ y: [5, -5, 5] }}
+            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+          >
+            ✨
+          </motion.div>
         </div>
 
         {/* Minutes */}
@@ -232,6 +248,9 @@ export default function CountdownTimer({ className = '' }: CountdownTimerProps) 
               }}
             >
               {countdown.minutes}
+                <div className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-romantic-pulse">
+                  ⏰
+                </div>
             </div>
             <div
               className="text-sm md:text-lg"
@@ -271,24 +290,90 @@ export default function CountdownTimer({ className = '' }: CountdownTimerProps) 
         </div>
       </motion.div>
 
-      <motion.p
-        className="mt-8 text-center"
+      </div>
+
+      {/* Easter Egg Modal */}
+      <AnimatePresence>
+        {showEasterEgg && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: -20 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ background: 'rgba(44, 44, 44, 0.8)' }}
+          >
+            <div
+              className="max-w-md p-8 rounded-2xl text-center relative animate-gentle-bounce"
+              style={{
+                background: 'var(--white-soft)',
+                border: '2px solid var(--decorative)',
+                boxShadow: '0 20px 40px var(--shadow-medium)'
+              }}
+            >
+              <div className="text-4xl mb-4 animate-love-sparkle">
+                💕
+              </div>
+              <p
+                className="text-lg mb-6"
+                style={{
+                  fontFamily: 'var(--font-crimson)',
+                  color: 'var(--primary-text)',
+                  fontStyle: 'italic',
+                  lineHeight: '1.6'
+                }}
+              >
+                {easterEggMessage}
+              </p>
+              <button
+                onClick={() => setShowEasterEgg(false)}
+                className="px-6 py-2 rounded-full transition-all duration-200 text-sm"
+                style={{
+                  background: 'var(--decorative)',
+                  color: 'var(--white-soft)',
+                  fontFamily: 'var(--font-playfair)'
+                }}
+              >
+                ✨ Continuar sonhando ✨
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <motion.div
+        className="mt-8 text-center space-y-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4, duration: 0.6 }}
-        style={{
-          fontFamily: 'var(--font-crimson)',
-          fontSize: 'clamp(1.125rem, 3vw, 1.375rem)',
-          lineHeight: '1.8',
-          color: 'var(--secondary-text)',
-          fontStyle: 'italic',
-          maxWidth: '600px',
-          marginLeft: 'auto',
-          marginRight: 'auto'
-        }}
       >
-        Até que nossos mil dias de amor se tornem para sempre
-      </motion.p>
+        <p
+          style={{
+            fontFamily: 'var(--font-crimson)',
+            fontSize: 'clamp(1.125rem, 3vw, 1.375rem)',
+            lineHeight: '1.8',
+            color: 'var(--secondary-text)',
+            fontStyle: 'italic',
+            maxWidth: '600px',
+            marginLeft: 'auto',
+            marginRight: 'auto'
+          }}
+        >
+          Até que nossos mil dias de amor se tornem para sempre
+        </p>
+
+        {/* Filosofia do casal */}
+        <div className="mt-6 opacity-80">
+          <p
+            className="text-sm italic"
+            style={{
+              fontFamily: 'var(--font-crimson)',
+              color: 'var(--text-muted)'
+            }}
+          >
+            "{specialMoments.couplePhilosophy}"
+          </p>
+        </div>
+      </motion.div>
     </motion.div>
   )
 }

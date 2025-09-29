@@ -6,15 +6,47 @@ import { Menu, X, Heart } from 'lucide-react'
 import Link from 'next/link'
 
 const navItems = [
-  { name: 'Nossa História', href: '/historia', icon: '♥' },
-  { name: 'Galeria', href: '/galeria', icon: '📸' },
-  { name: 'Confirmação', href: '/rsvp', icon: '💌' },
-  { name: 'Lista de Presentes', href: '/presentes', icon: '🎁' },
-  { name: 'Local', href: '/local', icon: '📍' },
+  {
+    name: 'Nossa História',
+    href: '/historia',
+    icon: '♥',
+    hoverMessage: 'Do Tinder ao altar 💕',
+    easterEgg: 'primeiro oi no WhatsApp'
+  },
+  {
+    name: 'Galeria',
+    href: '/galeria',
+    icon: '📸',
+    hoverMessage: '1000 dias em fotografias 📸',
+    easterEgg: 'cada momento capturado'
+  },
+  {
+    name: 'Confirmação',
+    href: '/rsvp',
+    icon: '💌',
+    hoverMessage: 'Venha celebrar conosco no Constable Galerie 📝',
+    easterEgg: 'sua presença é o maior presente'
+  },
+  {
+    name: 'Lista de Presentes',
+    href: '/presentes',
+    icon: '🎁',
+    hoverMessage: 'Ajudem a construir nosso lar 🏠',
+    easterEgg: 'apartamento dos sonhos'
+  },
+  {
+    name: 'Local',
+    href: '/local',
+    icon: '📍',
+    hoverMessage: 'Onde a arte encontra o amor 🎭',
+    easterEgg: 'se Mangue Azul não tivesse fechado...'
+  },
 ]
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null)
+  const [showTooltip, setShowTooltip] = useState(false)
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50" style={{ background: 'var(--white-soft)', borderBottom: '1px solid var(--border-subtle)' }}>
@@ -35,7 +67,7 @@ export default function Navigation() {
                   href={item.href}
                   className="flex items-center gap-2 transition-all duration-300 relative"
                   style={{
-                    fontFamily: 'var(--details-font)',
+                    fontFamily: 'var(--font-playfair)',
                     color: 'var(--secondary-text)',
                     fontWeight: '400',
                     fontSize: '0.9rem',
@@ -45,16 +77,40 @@ export default function Navigation() {
                   onMouseEnter={(e) => {
                     e.currentTarget.style.color = 'var(--primary-text)'
                     e.currentTarget.style.transform = 'translateY(-1px)'
+                    setHoveredItem(item.name)
+                    setShowTooltip(true)
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.color = 'var(--secondary-text)'
                     e.currentTarget.style.transform = 'translateY(0)'
+                    setHoveredItem(null)
+                    setShowTooltip(false)
                   }}
                 >
-                  <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-sm">
+                  <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-sm animate-gentle-bounce">
                     {item.icon}
                   </span>
                   {item.name}
+
+                  {/* Tooltip romântico */}
+                  {hoveredItem === item.name && showTooltip && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.8 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-2 rounded-lg text-xs whitespace-nowrap z-50"
+                      style={{
+                        background: 'var(--white-soft)',
+                        color: 'var(--primary-text)',
+                        border: '1px solid var(--border-subtle)',
+                        boxShadow: '0 4px 12px var(--shadow-subtle)',
+                        fontFamily: 'var(--font-crimson)',
+                        fontStyle: 'italic'
+                      }}
+                    >
+                      {item.hoverMessage}
+                      <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 rotate-45" style={{ background: 'var(--white-soft)', border: '1px solid var(--border-subtle)' }}></div>
+                    </motion.div>
+                  )}
                 </Link>
               </motion.div>
             ))}
@@ -90,7 +146,7 @@ export default function Navigation() {
                   onClick={() => setIsOpen(false)}
                   className="flex items-center justify-center gap-2 transition-all duration-200 text-center py-2"
                   style={{
-                    fontFamily: 'var(--details-font)',
+                    fontFamily: 'var(--font-playfair)',
                     color: 'var(--secondary-text)',
                     fontWeight: '400',
                     fontSize: '0.9rem',
@@ -100,14 +156,19 @@ export default function Navigation() {
                     e.currentTarget.style.color = 'var(--primary-text)'
                     e.currentTarget.style.background = 'var(--accent)'
                     e.currentTarget.style.borderRadius = '8px'
+                    e.currentTarget.style.transform = 'scale(1.05)'
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.color = 'var(--secondary-text)'
                     e.currentTarget.style.background = 'transparent'
+                    e.currentTarget.style.transform = 'scale(1)'
                   }}
                 >
-                  <span className="text-sm">{item.icon}</span>
+                  <span className="text-sm animate-gentle-bounce">{item.icon}</span>
                   {item.name}
+                  <div className="text-xs opacity-60 mt-1" style={{ fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
+                    {item.easterEgg}
+                  </div>
                 </Link>
               ))}
             </div>

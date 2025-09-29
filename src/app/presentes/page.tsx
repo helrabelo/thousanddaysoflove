@@ -116,7 +116,7 @@ export default function PresentsPage() {
         <div className="container mx-auto px-4 py-16">
           <div className="text-center mb-12">
             <div className="w-12 h-12 border-4 rounded-full animate-spin mx-auto mb-4" style={{ borderColor: 'var(--decorative)', borderTopColor: 'var(--primary-text)' }} />
-            <p style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)', fontStyle: 'italic' }}>Carregando lista de presentes...</p>
+            <p style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)', fontStyle: 'italic' }}>Preparando ideias para construir nosso lar...</p>
           </div>
         </div>
       </div>
@@ -138,12 +138,12 @@ export default function PresentsPage() {
               <GiftIcon className="w-6 h-6" style={{ color: 'var(--white-soft)' }} />
             </div>
             <h1 className="text-4xl font-bold" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)', letterSpacing: '0.15em' }}>
-              Lista de Presentes
+              Ajudem a Construir Nosso Lar
             </h1>
           </div>
           <p className="text-lg max-w-2xl mx-auto" style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)', fontStyle: 'italic', lineHeight: '1.8' }}>
-            Ajudem Hel & Ylana a começar esta nova jornada juntos!
-            Cada presente é um símbolo do amor e carinho que vocês têm por nós.
+            Para nossa casa própria e nossa família de 4 patinhas!
+            Linda 👑, Cacao 🍫, Olivia 🌸 e Oliver ⚡ também agradecem cada gesto de carinho.
           </p>
         </motion.div>
 
@@ -155,19 +155,19 @@ export default function PresentsPage() {
         >
           <div className="rounded-xl p-6 text-center" style={{ background: 'var(--white-soft)', border: '1px solid var(--border-subtle)', boxShadow: '0 2px 8px var(--shadow-subtle)' }}>
             <div className="text-2xl font-bold mb-2" style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-playfair)' }}>{stats.total}</div>
-            <div className="text-sm" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>Presentes</div>
+            <div className="text-sm" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>Itens do Lar</div>
           </div>
           <div className="rounded-xl p-6 text-center" style={{ background: 'var(--white-soft)', border: '1px solid var(--border-subtle)', boxShadow: '0 2px 8px var(--shadow-subtle)' }}>
             <div className="text-2xl font-bold mb-2" style={{ color: 'var(--decorative)', fontFamily: 'var(--font-playfair)' }}>{stats.completed}</div>
-            <div className="text-sm" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>Completos</div>
+            <div className="text-sm" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>Conquistados</div>
           </div>
           <div className="rounded-xl p-6 text-center" style={{ background: 'var(--white-soft)', border: '1px solid var(--border-subtle)', boxShadow: '0 2px 8px var(--shadow-subtle)' }}>
             <div className="text-lg font-bold mb-2" style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-playfair)' }}>{formatBRL(stats.totalValue)}</div>
-            <div className="text-sm" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>Valor Total</div>
+            <div className="text-sm" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>Sonho Total</div>
           </div>
           <div className="rounded-xl p-6 text-center" style={{ background: 'var(--white-soft)', border: '1px solid var(--border-subtle)', boxShadow: '0 2px 8px var(--shadow-subtle)' }}>
             <div className="text-lg font-bold mb-2" style={{ color: 'var(--decorative)', fontFamily: 'var(--font-playfair)' }}>{formatBRL(stats.completedValue)}</div>
-            <div className="text-sm" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>Arrecadado</div>
+            <div className="text-sm" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>Amor Recebido</div>
           </div>
         </motion.div>
 
@@ -311,10 +311,10 @@ export default function PresentsPage() {
               <Sparkles className="w-8 h-8" style={{ color: 'var(--decorative)' }} />
             </div>
             <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)' }}>
-              Nenhum presente encontrado
+              Em breve, ideias para nosso novo lar
             </h3>
             <p className="mb-4" style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)', fontStyle: 'italic' }}>
-              Tente ajustar os filtros para ver mais opções
+              Ajuste os filtros para descobrir como nos ajudar a construir nosso cantinho
             </p>
             <Button
               onClick={() => {
@@ -340,24 +340,24 @@ export default function PresentsPage() {
         >
           <Heart className="w-12 h-12 mx-auto mb-6" style={{ color: 'var(--white-soft)' }} />
           <h3 className="text-2xl font-bold mb-6" style={{ fontFamily: 'var(--font-playfair)', letterSpacing: '0.15em' }}>
-            Obrigado por Celebrar Conosco!
+            Obrigado por Ajudar a Construir Nosso Lar!
           </h3>
           <p className="max-w-2xl mx-auto mb-8" style={{ fontFamily: 'var(--font-crimson)', fontStyle: 'italic', lineHeight: '1.8', color: 'var(--white-soft)', opacity: '0.9' }}>
-            Cada presente é uma manifestação do amor que vocês têm por nós.
-            Estamos ansiosos para compartilhar nossa alegria no dia 20 de novembro de 2025!
+            Cada presente nos ajuda a transformar nossa casa própria em um lar ainda mais especial.
+            Linda, Cacao, Olivia e Oliver também agradecem! Nos vemos no Constable Galerie em 20 de novembro de 2025!
           </p>
           <div className="flex items-center justify-center gap-4 text-sm">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--white-soft)' }} />
-              <span style={{ fontFamily: 'var(--font-crimson)', fontSize: '0.875rem' }}>Pagamento seguro com PIX</span>
+              <span style={{ fontFamily: 'var(--font-crimson)', fontSize: '0.875rem' }}>PIX brasileiro, rápido e seguro</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--white-soft)' }} />
-              <span style={{ fontFamily: 'var(--font-crimson)', fontSize: '0.875rem' }}>Confirmação instantânea</span>
+              <span style={{ fontFamily: 'var(--font-crimson)', fontSize: '0.875rem' }}>Confirmação na hora do carinho</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--white-soft)' }} />
-              <span style={{ fontFamily: 'var(--font-crimson)', fontSize: '0.875rem' }}>Com amor, Hel & Ylana</span>
+              <span style={{ fontFamily: 'var(--font-crimson)', fontSize: '0.875rem' }}>"O que temos entre nós é muito maior" - Hel & Ylana</span>
             </div>
           </div>
         </motion.div>

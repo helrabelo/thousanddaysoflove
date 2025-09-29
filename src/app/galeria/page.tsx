@@ -15,13 +15,13 @@ import { SupabaseGalleryService } from '@/lib/services/supabaseGalleryService'
 const realTimelineEvents: TimelineEvent[] = [
   {
     id: '1',
-    date: '2022-03-12',
-    title: 'Dia 1 - O Início',
-    description: 'Onde tudo começou... O primeiro encontro que mudaria nossas vidas para sempre. Um café simples que se tornou o marco zero da nossa história de amor. ✨',
+    date: '2023-01-06',
+    title: 'Dia 1 - O Primeiro "Oi"',
+    description: 'Do Tinder ao WhatsApp: aquele primeiro "oi" que mudou tudo. Quem diria que um match se tornaria a mais linda história de 1000 dias? ✨',
     media_type: 'photo',
     media_url: '/images/gallery/dia-1.jpg',
     thumbnail_url: '/images/gallery/dia-1-thumb.jpg',
-    location: 'Primeiro encontro',
+    location: 'WhatsApp - Primeiro Contato',
     milestone_type: 'first_date',
     is_major_milestone: true,
     order_index: 1,
@@ -29,13 +29,13 @@ const realTimelineEvents: TimelineEvent[] = [
   },
   {
     id: '2',
-    date: '2023-07-24',
-    title: 'Dia 500 - Meio Caminho',
-    description: '500 dias de amor construindo nosso futuro juntos. Neste marco especial, já sabíamos que éramos feitos um para o outro. Cada dia nos aproximando do nosso para sempre. 💕',
+    date: '2024-03-15',
+    title: 'Dia 434 - Nossa Casa Própria',
+    description: 'O apartamento dos sonhos! Hel passava de bicicleta na faculdade sonhando em morar aqui. Anos de trabalho duro para nossa casa própria com 4 pets. 🏠💕',
     media_type: 'photo',
     media_url: '/images/gallery/dia-500.jpg',
     thumbnail_url: '/images/gallery/dia-500-thumb.jpg',
-    location: 'Celebrando nosso meio caminho',
+    location: 'Nosso Apartamento dos Sonhos',
     milestone_type: 'anniversary',
     is_major_milestone: true,
     order_index: 2,
@@ -45,7 +45,7 @@ const realTimelineEvents: TimelineEvent[] = [
     id: '3',
     date: '2025-11-20',
     title: 'Dia 1000 - Para Sempre',
-    description: '1000 dias se tornando eternidade. Hoje celebramos não apenas mil dias de amor, mas o começo da nossa jornada como marido e mulher. De mil dias para toda a eternidade. 💑',
+    description: 'Constable Galerie, 10h30. Exatos 1000 dias após aquele primeiro "oi" no WhatsApp. Caseiros e introvertidos celebrando com quem mais amamos. Mil dias virando eternidade. 💑',
     media_type: 'photo',
     media_url: '/images/gallery/dia-1000-casamento.jpg',
     thumbnail_url: '/images/gallery/dia-1000-thumb.jpg',
@@ -60,16 +60,16 @@ const realTimelineEvents: TimelineEvent[] = [
 const mockMediaItems: MediaItem[] = [
   {
     id: '1',
-    title: 'Primeiro Beijo',
-    description: 'O momento mágico do nosso primeiro beijo no jardim do café',
+    title: 'Casa Fontana & Avatar VIP',
+    description: 'Nosso primeiro encontro: jantar no Casa Fontana + Avatar VIP F11/F12. A química foi instantânea!',
     url: '/images/gallery/primeiro-beijo.jpg',
     thumbnail_url: '/images/gallery/primeiro-beijo-thumb.jpg',
     media_type: 'photo',
     aspect_ratio: 1.5,
     category: 'dates',
     tags: ['romântico', 'primeiro', 'especial'],
-    date_taken: '2022-11-20',
-    location: 'São Paulo, SP',
+    date_taken: '2023-01-14',
+    location: 'Casa Fontana, Fortaleza',
     is_featured: true,
     is_public: true,
     upload_date: '2024-01-01T00:00:00Z',
@@ -78,16 +78,16 @@ const mockMediaItems: MediaItem[] = [
   },
   {
     id: '2',
-    title: 'Noite Romântica',
-    description: 'Jantar à luz de velas no nosso restaurante favorito',
+    title: 'O Gesto Decisivo',
+    description: 'Ylana levando remédio e chá quando Hel ficou doente. "Na hora eu já sabia: é ela"',
     url: '/images/gallery/jantar-romantico.jpg',
     thumbnail_url: '/images/gallery/jantar-romantico-thumb.jpg',
     media_type: 'photo',
     aspect_ratio: 1.2,
     category: 'dates',
     tags: ['jantar', 'romântico', 'intimidade'],
-    date_taken: '2023-02-14',
-    location: 'Restaurante Vila Madalena, São Paulo',
+    date_taken: '2023-02-15',
+    location: 'Casa do Hel, Fortaleza',
     is_featured: false,
     is_public: true,
     upload_date: '2024-01-01T00:00:00Z',
@@ -96,16 +96,16 @@ const mockMediaItems: MediaItem[] = [
   },
   {
     id: '3',
-    title: 'Dia na Praia',
-    description: 'Nosso primeiro fim de semana na praia - sol, mar e muito amor',
+    title: 'Guaramiranga Espontâneo',
+    description: 'Planejei jantar especial, mas não consegui esperar! Pedi namoro na manhã, nas montanhas',
     url: '/images/gallery/praia-juntos.jpg',
     thumbnail_url: '/images/gallery/praia-juntos-thumb.jpg',
     media_type: 'photo',
     aspect_ratio: 1.8,
     category: 'travel',
     tags: ['praia', 'viagem', 'diversão'],
-    date_taken: '2023-07-15',
-    location: 'Guarujá, SP',
+    date_taken: '2023-02-25',
+    location: 'Guaramiranga, Ceará',
     is_featured: true,
     is_public: true,
     upload_date: '2024-01-01T00:00:00Z',
@@ -114,16 +114,16 @@ const mockMediaItems: MediaItem[] = [
   },
   {
     id: '4',
-    title: 'Video do Pedido',
-    description: 'O momento mais emocionante das nossas vidas capturado em vídeo',
+    title: 'O Pedido em Icaraí',
+    description: '"Vamos jantar no restaurante" virou surpresa na suíte com câmeras ligadas. O SIM mais lindo!',
     url: '/videos/gallery/pedido-completo.mp4',
     thumbnail_url: '/images/gallery/pedido-video-thumb.jpg',
     media_type: 'video',
     aspect_ratio: 1.77,
     category: 'proposal',
     tags: ['pedido', 'emoção', 'noivado'],
-    date_taken: '2024-05-10',
-    location: 'Praia de Copacabana, Rio de Janeiro',
+    date_taken: '2025-08-30',
+    location: 'Icaraí de Amontada, Ceará',
     is_featured: true,
     is_public: true,
     upload_date: '2024-01-01T00:00:00Z',
@@ -132,16 +132,16 @@ const mockMediaItems: MediaItem[] = [
   },
   {
     id: '5',
-    title: 'Festa de Noivado',
-    description: 'Celebrando nosso noivado com amigos e família',
+    title: 'Nossa Família de 4 Pets',
+    description: 'Linda 👑 (autista perfeita), Cacao 🍫, Olivia 🌸 e Oliver ⚡ - nossa família completa!',
     url: '/images/gallery/festa-noivado.jpg',
     thumbnail_url: '/images/gallery/festa-noivado-thumb.jpg',
     media_type: 'photo',
     aspect_ratio: 1.3,
     category: 'friends',
     tags: ['festa', 'celebração', 'amigos'],
-    date_taken: '2024-06-20',
-    location: 'Buffet Vila Olímpia, São Paulo',
+    date_taken: '2024-03-10',
+    location: 'Nossa Casa Própria, Fortaleza',
     is_featured: false,
     is_public: true,
     upload_date: '2024-01-01T00:00:00Z',
@@ -150,16 +150,16 @@ const mockMediaItems: MediaItem[] = [
   },
   {
     id: '6',
-    title: 'Preparativos do Casamento',
-    description: 'Escolhendo o vestido perfeito para o grande dia',
+    title: 'Mangue Azul & Rio/Búzios',
+    description: '2º aniversário no nosso favorito Mangue Azul + viagem dos sonhos em hotel 5 estrelas',
     url: '/images/gallery/escolha-vestido.jpg',
     thumbnail_url: '/images/gallery/escolha-vestido-thumb.jpg',
     media_type: 'photo',
     aspect_ratio: 1.1,
     category: 'wedding_prep',
     tags: ['vestido', 'preparativos', 'noiva'],
-    date_taken: '2024-08-15',
-    location: 'Atelier de Noivas, São Paulo',
+    date_taken: '2024-10-25',
+    location: 'Mangue Azul, Fortaleza / Rio & Búzios',
     is_featured: false,
     is_public: true,
     upload_date: '2024-01-01T00:00:00Z',
@@ -168,16 +168,16 @@ const mockMediaItems: MediaItem[] = [
   },
   {
     id: '7',
-    title: 'Ensaio Pré-Wedding',
-    description: 'Nosso ensaio fotográfico no Ibirapuera com o fotógrafo',
+    title: 'Natal em Casa PRÓPRIA',
+    description: 'Primeiro Natal recebendo a família em NOSSA casa. Não mais alugada - era nosso lar!',
     url: '/images/gallery/ensaio-pre-wedding.jpg',
     thumbnail_url: '/images/gallery/ensaio-pre-wedding-thumb.jpg',
     media_type: 'photo',
     aspect_ratio: 1.4,
     category: 'professional',
     tags: ['ensaio', 'fotografia', 'amor'],
-    date_taken: '2024-09-10',
-    location: 'Parque Ibirapuera, São Paulo',
+    date_taken: '2024-12-25',
+    location: 'Nossa Casa Própria, Fortaleza',
     is_featured: true,
     is_public: true,
     upload_date: '2024-01-01T00:00:00Z',
@@ -186,16 +186,16 @@ const mockMediaItems: MediaItem[] = [
   },
   {
     id: '8',
-    title: 'Com a Família Dele',
-    description: 'Domingo em família - almoço, risadas e muito carinho',
+    title: 'Pensando no Futuro',
+    description: 'Ylana congelou óvulos aos 34 anos - cuidando do nosso futuro, planejando nossa família',
     url: '/images/gallery/familia-dele.jpg',
     thumbnail_url: '/images/gallery/familia-dele-thumb.jpg',
     media_type: 'photo',
     aspect_ratio: 1.6,
     category: 'family',
     tags: ['família', 'domingo', 'união'],
-    date_taken: '2024-07-28',
-    location: 'Casa da Família, São Paulo',
+    date_taken: '2025-04-15',
+    location: 'Fortaleza, Ceará',
     is_featured: false,
     is_public: true,
     upload_date: '2024-01-01T00:00:00Z',
@@ -268,10 +268,10 @@ export default function GaleriaPage() {
           >
             <div className="w-16 h-16 border-4 rounded-full animate-spin mx-auto mb-6" style={{ borderColor: 'var(--decorative)', borderTopColor: 'var(--primary-text)' }} />
             <h2 className="text-3xl font-bold mb-4" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)', letterSpacing: '0.15em' }}>
-              Carregando memórias...
+              Preparando nossos 1000 dias...
             </h2>
             <p style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)', fontStyle: 'italic', fontSize: '1.125rem' }}>
-              Preparando momentos especiais da nossa jornada de amor
+              Do primeiro "oi" no WhatsApp até o Constable Galerie...
             </p>
           </motion.div>
         </div>
@@ -430,20 +430,21 @@ export default function GaleriaPage() {
             viewport={{ once: true }}
           >
             <h2 className="text-4xl md:text-5xl font-bold mb-6" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--white-soft)', letterSpacing: '0.15em' }}>
-              Faça Parte da Nossa História
+              Venham para o Constable Galerie
             </h2>
             <div className="w-24 h-px mx-auto mb-8" style={{ background: 'var(--white-soft)', opacity: '0.6' }} />
             <p className="text-xl mb-8 leading-relaxed" style={{ fontFamily: 'var(--font-crimson)', color: 'var(--white-soft)', fontStyle: 'italic', opacity: '0.95' }}>
-              No dia 20 de novembro de 2025, esses mil dias de amor se transformarão em para sempre.
-              Venha celebrar conosco o início de uma nova jornada!
+              No dia 20 de novembro de 2025, exatos 1000 dias após o primeiro "oi" no WhatsApp,
+              onde a arte encontra o amor e nossos mil dias se tornam eternidade.
+              Como sempre recebemos nossos amigos em casa, agora os recebemos no altar!
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button className="px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 transform hover:scale-105" style={{ background: 'var(--white-soft)', color: 'var(--primary-text)', fontFamily: 'var(--font-playfair)', boxShadow: '0 4px 15px var(--shadow-subtle)' }} onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 8px 25px var(--shadow-medium)' }} onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '0 4px 15px var(--shadow-subtle)' }}>
-                Confirmar Presença
+                Confirmar Presença nos 1000 Dias
               </button>
               <button className="px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 border border-white/30 hover:bg-white/10" style={{ background: 'transparent', color: 'var(--white-soft)', fontFamily: 'var(--font-playfair)' }}>
-                Ver Lista de Presentes
+                Ajudem a Construir Nosso Lar
               </button>
             </div>
           </motion.div>

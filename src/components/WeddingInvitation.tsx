@@ -15,17 +15,19 @@ const WeddingInvitation: React.FC = () => {
           Hel & Ylana
         </div>
 
-        {/* Texto do convite */}
+        {/* Texto do convite personalizado */}
         <div className="invitation-text wedding-body">
           <p>
-            Com muita alegria, convidamos você para compartilhar este<br />
-            momento especial conosco. Hel & Ylana
+            Depois de 1000 dias construindo nosso universo particular,<br />
+            com Linda, Cacao, Olivia e Oliver completando nossa família,<br />
+            em nossa casa própria que sempre foi nosso sonho,<br />
+            chegou a hora de celebrar que o que temos entre nós<br />
+            é muito maior do que qualquer um pode imaginar.
           </p>
 
           <p>
-            Unem-se em matrimônio em uma cerimônia civil, e<br />
-            ficaremos imensamente felizes em ter você para assistir e<br />
-            celebrar ao nosso lado.
+            Venham celebrar conosco no Constable Galerie,<br />
+            onde a arte encontra o amor
           </p>
         </div>
 
@@ -44,8 +46,8 @@ const WeddingInvitation: React.FC = () => {
               <strong>Rua:</strong> Coronel Francisco Flávio Carneiro 200<br />
               Luciano Cavalcante.<br />
               <br />
-              <strong>Local:</strong> Nosso Salão de Festas, onde celebraremos juntos este dia<br />
-              inesquecível.
+              <strong>Local:</strong> Constable Galerie<br />
+              Onde a arte encontra o amor e nossos mil dias se tornam eternidade.
             </p>
           </div>
         </div>

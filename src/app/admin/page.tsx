@@ -73,7 +73,7 @@ export default function AdminPage() {
     analytics: { rsvpCompletionRate: 0, averageGiftValue: 0, daysToWedding: 0, lastActivity: '' }
   })
 
-  const weddingDate = new Date('2025-11-11T00:00:00')
+  const weddingDate = new Date('2025-11-20T00:00:00')
   const today = new Date()
   const daysToWedding = Math.ceil((weddingDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
 
@@ -175,7 +175,7 @@ export default function AdminPage() {
           >
             <Heart className="h-16 w-16 text-blush-500" fill="currentColor" />
           </motion.div>
-          <p className="text-burgundy-700 font-medium">Carregando painel do casamento...</p>
+          <p className="text-burgundy-700 font-medium">Preparando nosso universo particular de gestão...</p>
         </div>
       </div>
     )
@@ -191,10 +191,10 @@ export default function AdminPage() {
               <Heart className="h-8 w-8 text-blush-500" fill="currentColor" />
               <div>
                 <span className="font-bold text-xl bg-gradient-to-r from-blush-600 to-burgundy-600 bg-clip-text text-transparent">
-                  Admin Wedding Center
+                  Bem-vindos ao gerenciamento dos nossos 1000 dias!
                 </span>
                 <div className="text-xs text-burgundy-600 font-medium">
-                  Mil Dias de Amor • {daysToWedding} dias restantes
+                  Hel & Ylana • Casa própria • 4 pets • {daysToWedding} dias para Constable Galerie
                 </div>
               </div>
             </Link>
@@ -214,7 +214,7 @@ export default function AdminPage() {
               animate={{ opacity: 1, y: 0 }}
               className="text-4xl md:text-5xl font-playfair font-bold text-burgundy-800 mb-4"
             >
-              Centro de Gestão do Casamento
+              Nosso Universo Particular • Gestão dos 1000 Dias
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -222,7 +222,7 @@ export default function AdminPage() {
               transition={{ delay: 0.1 }}
               className="text-xl text-burgundy-600"
             >
-              Painel profissional para gerenciar seu dia especial
+              "O que temos entre nós é muito maior" - Gerenciando nosso grande dia
             </motion.p>
           </div>
 
@@ -237,9 +237,9 @@ export default function AdminPage() {
             <Card className="glass p-6 text-center">
               <Calendar className="w-8 h-8 text-blush-500 mx-auto mb-3" />
               <h3 className="text-3xl font-bold text-burgundy-800">{daysToWedding}</h3>
-              <p className="text-burgundy-600">Dias para o Casamento</p>
+              <p className="text-burgundy-600">Dias para o Constable Galerie</p>
               <div className="mt-2 text-sm text-blush-600 font-medium">
-                20 de Novembro, 2025
+                Onde a arte encontra nosso amor
               </div>
             </Card>
 
@@ -247,9 +247,9 @@ export default function AdminPage() {
             <Card className="glass p-6 text-center">
               <Users className="w-8 h-8 text-sage-500 mx-auto mb-3" />
               <h3 className="text-3xl font-bold text-burgundy-800">{stats.analytics.rsvpCompletionRate}%</h3>
-              <p className="text-burgundy-600">Taxa de Confirmação</p>
+              <p className="text-burgundy-600">Amigos Confirmados</p>
               <div className="mt-2 text-sm text-sage-600 font-medium">
-                {stats.guests.confirmed} de {stats.guests.total} confirmados
+                {stats.guests.confirmed} corações unidos aos nossos
               </div>
             </Card>
 
@@ -257,9 +257,9 @@ export default function AdminPage() {
             <Card className="glass p-6 text-center">
               <Gift className="w-8 h-8 text-purple-500 mx-auto mb-3" />
               <h3 className="text-3xl font-bold text-burgundy-800">{Math.round((stats.gifts.purchased / stats.gifts.total) * 100)}%</h3>
-              <p className="text-burgundy-600">Presentes Comprados</p>
+              <p className="text-burgundy-600">Construindo Nosso Lar</p>
               <div className="mt-2 text-sm text-purple-600 font-medium">
-                {stats.gifts.purchased} de {stats.gifts.total} presentes
+                {stats.gifts.purchased} presentes para nossa casa própria
               </div>
             </Card>
 
@@ -269,9 +269,9 @@ export default function AdminPage() {
               <h3 className="text-3xl font-bold text-burgundy-800">
                 R$ {(stats.payments.totalAmount / 1000).toFixed(1)}k
               </h3>
-              <p className="text-burgundy-600">Valor Arrecadado</p>
+              <p className="text-burgundy-600">Amor Materializado</p>
               <div className="mt-2 text-sm text-green-600 font-medium">
-                {stats.payments.completed} pagamentos PIX
+                {stats.payments.completed} PIX de carinho recebidos
               </div>
             </Card>
           </motion.div>

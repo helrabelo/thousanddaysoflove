@@ -119,7 +119,7 @@ export default function RsvpPage() {
                 letterSpacing: '0.1em'
               }}
             >
-              RSVP
+              Confirme sua presença nos nossos 1000 dias
             </motion.h1>
 
             <motion.p
@@ -133,7 +133,7 @@ export default function RsvpPage() {
                 fontStyle: 'italic'
               }}
             >
-              Confirme sua presença em nosso dia especial
+              De mil dias de amor para toda a eternidade
             </motion.p>
 
             {/* Wedding Details Card */}
@@ -403,7 +403,7 @@ export default function RsvpPage() {
                         fontStyle: 'italic'
                       }}>
                         <p className="text-lg">
-                          <strong>{submittedGuest.name}</strong>, não vemos a hora de celebrar com você!
+                          <strong>{submittedGuest.name}</strong>, mal podemos esperar para celebrar com você no Constable Galerie!
                         </p>
                         {submittedGuest.plus_one && (
                           <p>
@@ -421,9 +421,9 @@ export default function RsvpPage() {
                           }}>Próximos passos:</h3>
                           <ul className="text-left space-y-2 text-sm">
                             <li>• Você receberá um e-mail de confirmação em breve</li>
-                            <li>• Fique atento para mais detalhes sobre o local</li>
-                            <li>• Explore nossa lista de presentes se desejar</li>
-                            <li>• Qualquer dúvida, entre em contato conosco</li>
+                            <li>• Constable Galerie te espera com toda arte e amor</li>
+                            <li>• Ajude a construir nosso lar visitando nossa lista de presentes</li>
+                            <li>• Linda, Cacao, Olivia e Oliver também agradecem sua presença! 🐾</li>
                           </ul>
                         </div>
                       </div>
@@ -434,10 +434,10 @@ export default function RsvpPage() {
                         fontStyle: 'italic'
                       }}>
                         <p className="text-lg">
-                          Entendemos, <strong>{submittedGuest.name}</strong>. Obrigado por nos informar.
+                          Entendemos, <strong>{submittedGuest.name}</strong>. Obrigado por nos informar com carinho.
                         </p>
                         <p>
-                          Mesmo não podendo estar presente, você estará em nossos corações! ❤️
+                          Mesmo não podendo estar presente, você fará parte dos nossos mil dias para sempre! ❤️
                         </p>
                         {submittedGuest.special_requests && (
                           <div className="rounded-xl p-4 my-6" style={{
@@ -502,7 +502,7 @@ export default function RsvpPage() {
             style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}
           >
             <p className="text-sm">
-              Feito com ❤️ para celebrar nossos mil dias de amor
+              Feito com ❤️ por Hel & Ylana - De um simples "oi" no WhatsApp até o altar do Constable Galerie
             </p>
           </motion.div>
         </div>

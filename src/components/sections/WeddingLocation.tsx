@@ -5,6 +5,7 @@ import { MapPin, Clock, Car, Bus, Phone, Info, Navigation, Share2 } from 'lucide
 import GoogleMap from '@/components/ui/GoogleMap'
 import { CONSTABLE_GALERIE } from '@/lib/utils/maps'
 import GoogleMapsService from '@/lib/utils/maps'
+import { venueStory } from '@/lib/utils/wedding'
 
 export default function WeddingLocation() {
   const handleDirections = () => {
@@ -58,7 +59,7 @@ export default function WeddingLocation() {
               color: 'var(--primary-text)'
             }}
           >
-            Onde Nosso Para Sempre Começa
+            {venueStory.title}
           </h2>
           <p
             className="text-xl max-w-3xl mx-auto"
@@ -69,7 +70,7 @@ export default function WeddingLocation() {
               lineHeight: '1.8'
             }}
           >
-            Constable Galerie, onde a arte encontra o amor e nossos mil dias se tornam eternidade
+            {venueStory.description}
           </p>
         </motion.div>
 
@@ -116,7 +117,7 @@ export default function WeddingLocation() {
                       fontStyle: 'italic'
                     }}
                   >
-                    Onde nossa história de amor ganha seu capítulo mais bonito
+                    {venueStory.subtitle}
                   </p>
                 </div>
               </div>
@@ -180,7 +181,7 @@ export default function WeddingLocation() {
                   }}
                 >
                   <Navigation className="w-5 h-5" />
-                  Siga seu coração até nós
+                  {venueStory.directions}
                 </button>
 
                 <button
@@ -205,7 +206,7 @@ export default function WeddingLocation() {
                   }}
                 >
                   <Share2 className="w-5 h-5" />
-                  Compartilhar o amor
+                  Compartilhar nossa localização 💕
                 </button>
               </div>
             </div>
@@ -213,17 +214,32 @@ export default function WeddingLocation() {
             {/* Transportation Info */}
             <div className="grid md:grid-cols-2 gap-6">
               {/* Public Transportation */}
-              <div className="bg-white/60 backdrop-blur-xl rounded-2xl p-6 border border-white/30 shadow-lg">
+              <div
+                className="rounded-2xl p-6"
+                style={{
+                  background: 'var(--white-soft)',
+                  border: '1px solid var(--border-subtle)',
+                  boxShadow: '0 8px 24px var(--shadow-medium)'
+                }}
+              >
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-2 rounded-full">
-                    <Bus className="w-5 h-5 text-white" />
+                  <div
+                    className="p-2 rounded-full"
+                    style={{ background: 'var(--primary-text)' }}
+                  >
+                    <Bus className="w-5 h-5" style={{ color: 'var(--white-soft)' }} />
                   </div>
-                  <h4 className="font-semibold text-gray-800">Transporte Público</h4>
+                  <h4
+                    className="font-semibold"
+                    style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-playfair)' }}
+                  >
+                    Como Chegar de Transporte Público
+                  </h4>
                 </div>
                 <ul className="space-y-2">
                   {transportInfo.map((info, index) => (
-                    <li key={index} className="text-sm text-gray-600 flex items-start gap-2">
-                      <div className="w-1 h-1 bg-blue-500 rounded-full mt-2" />
+                    <li key={index} className="text-sm flex items-start gap-2" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
+                      <div className="w-1 h-1 rounded-full mt-2" style={{ background: 'var(--decorative)' }} />
                       {info}
                     </li>
                   ))}
@@ -231,17 +247,32 @@ export default function WeddingLocation() {
               </div>
 
               {/* Nearby Landmarks */}
-              <div className="bg-white/60 backdrop-blur-xl rounded-2xl p-6 border border-white/30 shadow-lg">
+              <div
+                className="rounded-2xl p-6"
+                style={{
+                  background: 'var(--white-soft)',
+                  border: '1px solid var(--border-subtle)',
+                  boxShadow: '0 8px 24px var(--shadow-medium)'
+                }}
+              >
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="bg-gradient-to-br from-purple-500 to-pink-600 p-2 rounded-full">
-                    <MapPin className="w-5 h-5 text-white" />
+                  <div
+                    className="p-2 rounded-full"
+                    style={{ background: 'var(--decorative)' }}
+                  >
+                    <MapPin className="w-5 h-5" style={{ color: 'var(--white-soft)' }} />
                   </div>
-                  <h4 className="font-semibold text-gray-800">Pontos de Referência</h4>
+                  <h4
+                    className="font-semibold"
+                    style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-playfair)' }}
+                  >
+                    Pontos de Referência Especiais
+                  </h4>
                 </div>
                 <ul className="space-y-2">
                   {nearbyLandmarks.map((landmark, index) => (
-                    <li key={index} className="text-sm text-gray-600 flex items-start gap-2">
-                      <div className="w-1 h-1 bg-purple-500 rounded-full mt-2" />
+                    <li key={index} className="text-sm flex items-start gap-2" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
+                      <div className="w-1 h-1 rounded-full mt-2" style={{ background: 'var(--primary-text)' }} />
                       {landmark}
                     </li>
                   ))}
@@ -285,7 +316,7 @@ export default function WeddingLocation() {
                     fontFamily: 'var(--font-playfair)'
                   }}
                 >
-                  💕 Dica com Carinho
+                  💕 Com Todo Nosso Amor
                 </h4>
                 <p
                   className="text-sm"
@@ -295,8 +326,8 @@ export default function WeddingLocation() {
                     fontStyle: 'italic'
                   }}
                 >
-                  Chegue com tranquilidade, saia com alegria. O local fica na região nobre de Eng. Luciano Cavalcante.
-                  Recomendamos chegar 15-20 minutos antes para aproveitar cada momento de nossa celebração.
+                  {venueStory.arrival} O local fica na região nobre de Eng. Luciano Cavalcante.
+                  Como sempre recebemos nossos amigos em casa, cheguem 15-20 minutos antes para aproveitar cada momento de nossa celebração dos mil dias! ✨
                 </p>
               </div>
             </div>
@@ -305,47 +336,64 @@ export default function WeddingLocation() {
 
         {/* Additional Information */}
         <motion.div
-          className="mt-16 bg-white/60 backdrop-blur-xl rounded-3xl p-8 border border-white/30 shadow-xl"
+          className="mt-16 rounded-3xl p-8"
+          style={{
+            background: 'var(--white-soft)',
+            border: '1px solid var(--border-subtle)',
+            boxShadow: '0 8px 24px var(--shadow-medium)'
+          }}
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
           viewport={{ once: true }}
         >
-          <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-            Informações Adicionais
+          <h3
+            className="text-2xl font-bold mb-6 text-center"
+            style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-playfair)' }}
+          >
+            Tudo para Nosso Dia Perfeito
           </h3>
 
           <div className="grid md:grid-cols-3 gap-6">
             <div className="text-center">
-              <div className="bg-gradient-to-br from-rose-500 to-pink-600 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                <Clock className="w-8 h-8 text-white" />
+              <div
+                className="p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center"
+                style={{ background: 'var(--primary-text)' }}
+              >
+                <Clock className="w-8 h-8" style={{ color: 'var(--white-soft)' }} />
               </div>
-              <h4 className="font-semibold text-gray-800 mb-2">Horário da Cerimônia</h4>
-              <p className="text-gray-600 text-sm">
+              <h4 className="font-semibold mb-2" style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-playfair)' }}>Nosso Grande Momento</h4>
+              <p className="text-sm" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
                 Início às 10:30h da manhã<br />
-                Duração aproximada: 2-3 horas
+                Celebração dos mil dias: 2-3 horas de puro amor
               </p>
             </div>
 
             <div className="text-center">
-              <div className="bg-gradient-to-br from-purple-500 to-indigo-600 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                <Car className="w-8 h-8 text-white" />
+              <div
+                className="p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center"
+                style={{ background: 'var(--decorative)' }}
+              >
+                <Car className="w-8 h-8" style={{ color: 'var(--white-soft)' }} />
               </div>
-              <h4 className="font-semibold text-gray-800 mb-2">Estacionamento</h4>
-              <p className="text-gray-600 text-sm">
+              <h4 className="font-semibold mb-2" style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-playfair)' }}>Chegada Tranquila</h4>
+              <p className="text-sm" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
                 Vagas gratuitas disponíveis<br />
-                Manobrista no local
+                Manobrista cuidando de vocês 🚗✨
               </p>
             </div>
 
             <div className="text-center">
-              <div className="bg-gradient-to-br from-green-500 to-emerald-600 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                <Info className="w-8 h-8 text-white" />
+              <div
+                className="p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center"
+                style={{ background: 'var(--secondary-text)' }}
+              >
+                <Info className="w-8 h-8" style={{ color: 'var(--white-soft)' }} />
               </div>
-              <h4 className="font-semibold text-gray-800 mb-2">Traje</h4>
-              <p className="text-gray-600 text-sm">
-                Traje social<br />
-                Cores claras recomendadas
+              <h4 className="font-semibold mb-2" style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-playfair)' }}>Vista-se com Amor</h4>
+              <p className="text-sm" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
+                Traje social elegante<br />
+                Cores claras para combinar com nossa felicidade ✨
               </p>
             </div>
           </div>
