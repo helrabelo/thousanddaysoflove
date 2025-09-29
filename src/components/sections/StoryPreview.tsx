@@ -5,6 +5,7 @@ import { Heart, Calendar, Star } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { SectionDivider, CardAccent } from '@/components/ui/BotanicalDecorations'
+import Link from 'next/link'
 
 export default function StoryPreview() {
   return (
@@ -40,7 +41,7 @@ export default function StoryPreview() {
               fontStyle: 'italic'
             }}
           >
-            Toda grande história de amor é única, mas a nossa é medida em dias que levaram ao para sempre.
+            Caseiros e introvertidos por natureza, mas com corações que transbordam amor. Unidos por boa comida, vinhos especiais, viagens inesquecíveis e nossa família de 4 pets que completam nosso universo particular.
           </p>
           <SectionDivider className="mt-12" />
         </motion.div>
@@ -76,7 +77,7 @@ export default function StoryPreview() {
                     textTransform: 'uppercase'
                   }}
                 >
-                  Dia 1
+                  Do Tinder ao WhatsApp
                 </h3>
                 <p
                   style={{
@@ -87,7 +88,7 @@ export default function StoryPreview() {
                     fontStyle: 'italic'
                   }}
                 >
-                  O dia em que nossos corações se encontraram e soubemos que algo mágico estava começando.
+                  6 de janeiro de 2023 - Quem diria que um simples match se tornaria a mais linda história de amor? O primeiro "oi" que mudou nossas vidas para sempre.
                 </p>
               </CardContent>
             </Card>
@@ -123,7 +124,7 @@ export default function StoryPreview() {
                     textTransform: 'uppercase'
                   }}
                 >
-                  Dia 500
+                  O Gesto Decisivo
                 </h3>
                 <p
                   style={{
@@ -134,7 +135,7 @@ export default function StoryPreview() {
                     fontStyle: 'italic'
                   }}
                 >
-                  Na metade dos nossos mil dias, soubéramos que queríamos passar todos os dias juntos.
+                  Ylana levando remédio e chá quando Hel ficou doente. "Na hora eu já sabia: 'é ela'". Às vezes o amor se revela nos gestos mais simples.
                 </p>
               </CardContent>
             </Card>
@@ -170,7 +171,7 @@ export default function StoryPreview() {
                     textTransform: 'uppercase'
                   }}
                 >
-                  Dia 1000
+                  O Apartamento dos Sonhos
                 </h3>
                 <p
                   style={{
@@ -181,7 +182,7 @@ export default function StoryPreview() {
                     fontStyle: 'italic'
                   }}
                 >
-                  Nosso dia de casamento - quando mil dias de amor se tornam uma promessa para a vida toda.
+                  O apartamento que Hel passava de bicicleta na faculdade sonhando em morar. Anos de trabalho duro para realizar o sonho de uma casa própria para nossa família de 6.
                 </p>
               </CardContent>
             </Card>
@@ -195,8 +196,10 @@ export default function StoryPreview() {
           viewport={{ once: true }}
           className="text-center mt-20"
         >
-          <Button variant="wedding-outline" size="lg">
-            Leia Nossa História Completa
+          <Button variant="wedding-outline" size="lg" asChild>
+            <Link href="/historia">
+              Leia Nossa História Completa
+            </Link>
           </Button>
         </motion.div>
       </div>

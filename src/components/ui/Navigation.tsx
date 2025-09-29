@@ -6,7 +6,7 @@ import { Menu, X, Heart } from 'lucide-react'
 import Link from 'next/link'
 
 const navItems = [
-  { name: 'Nossa História', href: '#story', icon: '♥' },
+  { name: 'Nossa História', href: '/historia', icon: '♥' },
   { name: 'Galeria', href: '/galeria', icon: '📸' },
   { name: 'Confirmação', href: '/rsvp', icon: '💌' },
   { name: 'Lista de Presentes', href: '/presentes', icon: '🎁' },

@@ -74,8 +74,9 @@ export default function HeroSection() {
             fontStyle: 'italic'
           }}
         >
-          Depois de mil dias de amor, chegou o momento de<br />
-          celebrarmos nossa união para sempre
+          Do primeiro "oi" no WhatsApp até o altar no Constable Galerie<br />
+          <span style={{ fontSize: '1.1em', fontWeight: 500, color: 'var(--primary-text)' }}>1000 dias de puro amor</span><br />
+          <span style={{ fontSize: '0.9em', opacity: 0.8, marginTop: '0.5rem', display: 'block' }}>"O que temos entre nós é muito maior do que qualquer um pode imaginar"</span>
         </motion.p>
 
         {/* Countdown */}
@@ -135,7 +136,7 @@ export default function HeroSection() {
                 }}
               >
                 20 de Novembro de 2025<br />
-                <span style={{ color: 'var(--decorative)' }}>Quinta-feira</span>
+                <span style={{ color: 'var(--decorative)' }}>Exatamente 1000 dias desde 6 de janeiro de 2023</span>
               </p>
             </div>
 
@@ -161,8 +162,8 @@ export default function HeroSection() {
                   fontStyle: 'italic'
                 }}
               >
-                10h30<br />
-                <span style={{ color: 'var(--decorative)' }}>Cerimônia Civil</span>
+                10h30 da manhã<br />
+                <span style={{ color: 'var(--decorative)' }}>Cerimônia entre amigos e família</span>
               </p>
             </div>
 
@@ -189,7 +190,7 @@ export default function HeroSection() {
                 }}
               >
                 {CONSTABLE_GALERIE.name}<br />
-                <span style={{ color: 'var(--decorative)' }}>Luciano Cavalcante</span>
+                <span style={{ color: 'var(--decorative)' }}>Onde a arte encontra o amor</span>
               </p>
             </div>
           </div>
