@@ -46,7 +46,7 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
           <Heart className="h-8 w-8 text-blush-500 animate-heartbeat" />
         </div>
         <p className="text-sage-600 font-body">
-          11 de Novembro de 2025 - O dia mais especial das nossas vidas
+          20 de Novembro de 2025 - O dia mais especial das nossas vidas
         </p>
       </Card>
     )
@@ -117,7 +117,7 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
         </div>
 
         <p className="text-sage-600 font-body">
-          Até o nosso grande dia - 11 de Novembro de 2025
+          Até o nosso grande dia - 20 de Novembro de 2025
         </p>
       </Card>
     )

@@ -8,8 +8,8 @@ import Link from 'next/link'
 const navItems = [
   { name: 'Nossa História', href: '#story' },
   { name: 'Confirmação', href: '/rsvp' },
-  { name: 'Lista de Presentes', href: '#registry' },
-  { name: 'Detalhes', href: '#details' },
+  { name: 'Lista de Presentes', href: '/presentes' },
+  { name: 'Local', href: '/local' },
 ]
 
 export default function Navigation() {

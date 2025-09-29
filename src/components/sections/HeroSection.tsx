@@ -2,8 +2,9 @@
 
 import { motion } from 'framer-motion'
 import CountdownTimer from '@/components/ui/CountdownTimer'
-import { Heart, Calendar, MapPin } from 'lucide-react'
+import { Heart, Calendar, MapPin, Clock } from 'lucide-react'
 import Link from 'next/link'
+import { CONSTABLE_GALERIE } from '@/lib/utils/maps'
 
 export default function HeroSection() {
   return (
@@ -80,7 +81,7 @@ export default function HeroSection() {
         >
           <div className="flex items-center justify-center gap-2 text-xl md:text-2xl text-gray-600">
             <Calendar className="h-6 w-6" />
-            <span>11 de Novembro de 2025</span>
+            <span>20 de Novembro de 2025</span>
           </div>
         </motion.div>
 
@@ -122,23 +123,50 @@ export default function HeroSection() {
             Confirmar Presença
           </Link>
           <Link
-            href="#registry"
+            href="/presentes"
             className="bg-white/20 backdrop-blur-md border border-white/30 hover:bg-white/30 text-gray-700 font-semibold py-4 px-8 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-block"
           >
             Ver Lista de Presentes
           </Link>
         </motion.div>
 
-        {/* Venue Info */}
+        {/* Wedding Details */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.3, duration: 0.6 }}
           className="mt-12"
         >
-          <div className="flex items-center justify-center gap-2 text-gray-500">
-            <MapPin className="h-5 w-5" />
-            <span>Detalhes do local em breve</span>
+          <div className="max-w-2xl mx-auto">
+            <div className="bg-white/60 backdrop-blur-xl rounded-2xl p-6 border border-white/30 shadow-lg">
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="bg-gradient-to-br from-rose-500 to-pink-600 p-2 rounded-full">
+                    <Clock className="h-4 w-4 text-white" />
+                  </div>
+                  <div className="text-left">
+                    <p className="font-medium text-gray-800 text-sm">Horário</p>
+                    <p className="text-gray-600 text-sm">10:30h</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="bg-gradient-to-br from-purple-500 to-indigo-600 p-2 rounded-full">
+                    <MapPin className="h-4 w-4 text-white" />
+                  </div>
+                  <div className="text-left">
+                    <p className="font-medium text-gray-800 text-sm">Local</p>
+                    <p className="text-gray-600 text-sm">{CONSTABLE_GALERIE.name}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <p className="text-center text-xs text-gray-500">
+                  Eng. Luciano Cavalcante, Fortaleza - CE
+                </p>
+              </div>
+            </div>
           </div>
         </motion.div>
       </div>

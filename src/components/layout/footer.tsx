@@ -71,7 +71,7 @@ const Footer: React.FC<FooterProps> = ({
                 <p className="font-heading font-semibold text-burgundy-800">
                   Hel & Ylana
                 </p>
-                <p className="text-sm text-sage-600">11 de Novembro de 2025</p>
+                <p className="text-sm text-sage-600">20 de Novembro de 2025</p>
               </div>
             </div>
 
@@ -138,7 +138,7 @@ const Footer: React.FC<FooterProps> = ({
 
               <div className="text-center p-4 bg-gradient-to-r from-blush-100 to-cream-100 rounded-lg border border-blush-200">
                 <p className="text-lg font-heading font-semibold text-burgundy-800 mb-1">
-                  11 de Novembro de 2025
+                  20 de Novembro de 2025
                 </p>
                 <p className="text-sm text-sage-600">
                   São Paulo, SP

@@ -23,6 +23,7 @@
     "mailpit": "open http://127.0.0.1:54324"
   },
   "dependencies": {
+    "@googlemaps/js-api-loader": "^1.16.10",
     "@headlessui/react": "^2.2.9",
     "@sendgrid/mail": "^8.1.6",
     "@supabase/ssr": "^0.7.0",
@@ -40,6 +41,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/google.maps": "^3.58.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

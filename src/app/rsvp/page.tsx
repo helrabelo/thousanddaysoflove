@@ -120,7 +120,7 @@ export default function RsvpPage() {
                 <div className="flex flex-col items-center">
                   <Calendar className="w-8 h-8 text-blush-500 mb-2" />
                   <h3 className="font-semibold text-burgundy-800">Data</h3>
-                  <p className="text-burgundy-600">11 de Novembro de 2025</p>
+                  <p className="text-burgundy-600">20 de Novembro de 2025</p>
                 </div>
                 <div className="flex flex-col items-center">
                   <Clock className="w-8 h-8 text-blush-500 mb-2" />

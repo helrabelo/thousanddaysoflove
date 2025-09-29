@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { Gift, Users, MapPin, Calendar } from 'lucide-react'
 import Link from 'next/link'
+import { CONSTABLE_GALERIE } from '@/lib/utils/maps'
 
 const features = [
   {
@@ -19,7 +20,7 @@ const features = [
     description: 'Nos ajude a começar nosso novo capítulo juntos',
     color: 'from-purple-500 to-indigo-600',
     bgColor: 'from-purple-50 to-indigo-50',
-    href: '#registry'
+    href: '/presentes'
   },
   {
     icon: Calendar,
@@ -31,11 +32,11 @@ const features = [
   },
   {
     icon: MapPin,
-    title: 'Detalhes',
-    description: 'Local, acomodações e mais informações',
+    title: 'Local',
+    description: 'Constable Galerie - Fortaleza, CE',
     color: 'from-indigo-500 to-purple-600',
     bgColor: 'from-indigo-50 to-purple-50',
-    href: '#details'
+    href: '/local'
   }
 ]
 
@@ -87,7 +88,7 @@ export default function QuickPreview() {
 
                     <div className="mt-6 text-center">
                       <span className={`inline-block bg-gradient-to-r ${feature.color} bg-clip-text text-transparent font-semibold group-hover:underline`}>
-                        {feature.title === 'Confirmação' ? 'Confirmar Presença →' : 'Saiba Mais →'}
+                        {feature.title === 'Confirmação' ? 'Confirmar Presença →' : feature.title === 'Local' ? 'Ver Localização →' : 'Saiba Mais →'}
                       </span>
                     </div>
                   </div>
@@ -107,16 +108,20 @@ export default function QuickPreview() {
         >
           <div className="bg-white/40 backdrop-blur-md rounded-3xl p-8 border border-white/30 shadow-xl">
             <h3 className="text-2xl font-bold text-gray-800 mb-6">
-              Reserve a Data: 11 de Novembro de 2025
+              Reserve a Data: 20 de Novembro de 2025
             </h3>
-            <div className="grid md:grid-cols-3 gap-6 text-gray-600">
+            <div className="grid md:grid-cols-4 gap-6 text-gray-600">
               <div>
                 <div className="font-semibold text-gray-800">Cerimônia</div>
-                <div>16:00h</div>
+                <div>10:30h</div>
               </div>
               <div>
-                <div className="font-semibold text-gray-800">Recepção</div>
-                <div>18:00h</div>
+                <div className="font-semibold text-gray-800">Local</div>
+                <div>{CONSTABLE_GALERIE.name}</div>
+              </div>
+              <div>
+                <div className="font-semibold text-gray-800">Bairro</div>
+                <div>Eng. Luciano Cavalcante</div>
               </div>
               <div>
                 <div className="font-semibold text-gray-800">Dress Code</div>

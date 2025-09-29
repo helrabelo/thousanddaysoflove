@@ -310,6 +310,8 @@ export class PaymentService {
     paymentMethod: 'pix' | 'credit_card'
     payerEmail?: string
     description: string
+    giftName?: string
+    buyerName?: string
   }) {
     const accessToken = process.env.MERCADO_PAGO_ACCESS_TOKEN
 
@@ -319,13 +321,22 @@ export class PaymentService {
 
     const requestBody = {
       transaction_amount: paymentData.amount,
-      description: paymentData.description,
-      payment_method_id: paymentData.paymentMethod === 'pix' ? 'pix' : 'visa',
+      description: `${paymentData.description} - ${paymentData.giftName || 'Presente'}`,
+      payment_method_id: paymentData.paymentMethod,
       payer: {
-        email: paymentData.payerEmail || 'test@test.com'
+        email: paymentData.payerEmail || 'convidado@casamento.com',
+        first_name: paymentData.buyerName?.split(' ')[0] || 'Convidado',
+        last_name: paymentData.buyerName?.split(' ').slice(1).join(' ') || 'Casamento'
       },
       external_reference: paymentData.paymentId,
-      notification_url: `${process.env.NEXT_PUBLIC_SITE_URL}/api/webhooks/mercado-pago`
+      notification_url: `${process.env.NEXT_PUBLIC_SITE_URL}/api/webhooks/mercado-pago`,
+      metadata: {
+        payment_id: paymentData.paymentId,
+        gift_name: paymentData.giftName,
+        buyer_name: paymentData.buyerName,
+        wedding_couple: 'Hel & Ylana',
+        wedding_date: '2025-11-11'
+      }
     }
 
     try {
@@ -333,16 +344,20 @@ export class PaymentService {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'X-Idempotency-Key': `wedding-${paymentData.paymentId}-${Date.now()}`
         },
         body: JSON.stringify(requestBody)
       })
 
       if (!response.ok) {
-        throw new Error(`Mercado Pago API error: ${response.status}`)
+        const errorData = await response.json().catch(() => ({}))
+        console.error('Mercado Pago API error:', response.status, errorData)
+        throw new Error(`Mercado Pago API error: ${response.status} - ${JSON.stringify(errorData)}`)
       }
 
       const result = await response.json()
+      console.log('Mercado Pago payment created:', result.id, result.status)
       return result
     } catch (error) {
       console.error('Error processing Mercado Pago payment:', error)
@@ -350,13 +365,15 @@ export class PaymentService {
     }
   }
 
-  // Create PIX payment
+  // Create PIX payment with QR code
   static async createPixPayment(paymentData: {
     giftId: string
     guestId?: string
     amount: number
     message?: string
     payerEmail?: string
+    giftName?: string
+    buyerName?: string
   }) {
     try {
       // Create payment record
@@ -378,7 +395,9 @@ export class PaymentService {
         amount: paymentData.amount,
         paymentMethod: 'pix',
         payerEmail: paymentData.payerEmail,
-        description: `Presente de casamento - Hel & Ylana`
+        description: `Casamento Hel & Ylana`,
+        giftName: paymentData.giftName,
+        buyerName: paymentData.buyerName
       })
 
       // Update payment with Mercado Pago ID
@@ -388,10 +407,111 @@ export class PaymentService {
 
       return {
         payment,
-        mercadoPagoResult
+        mercadoPagoResult,
+        qrCode: mercadoPagoResult.point_of_interaction?.transaction_data?.qr_code,
+        qrCodeBase64: mercadoPagoResult.point_of_interaction?.transaction_data?.qr_code_base64,
+        pixCode: mercadoPagoResult.point_of_interaction?.transaction_data?.qr_code
       }
     } catch (error) {
       console.error('Error creating PIX payment:', error)
+      throw error
+    }
+  }
+
+  // Generate QR Code for PIX payment
+  static async generatePixQRCode(pixCode: string): Promise<string> {
+    try {
+      const QRCode = require('qrcode')
+      const qrCodeDataURL = await QRCode.toDataURL(pixCode, {
+        errorCorrectionLevel: 'M',
+        type: 'image/png',
+        quality: 0.92,
+        margin: 1,
+        color: {
+          dark: '#2D1B69',  // Wedding purple
+          light: '#FFFFFF'
+        },
+        width: 256
+      })
+      return qrCodeDataURL
+    } catch (error) {
+      console.error('Error generating QR code:', error)
+      throw new Error('Failed to generate QR code')
+    }
+  }
+
+  // Check payment status with Mercado Pago
+  static async checkPaymentStatus(mercadoPagoPaymentId: string) {
+    const accessToken = process.env.MERCADO_PAGO_ACCESS_TOKEN
+
+    if (!accessToken) {
+      throw new Error('Mercado Pago access token not configured')
+    }
+
+    try {
+      const response = await fetch(`https://api.mercadopago.com/v1/payments/${mercadoPagoPaymentId}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error(`Mercado Pago API error: ${response.status}`)
+      }
+
+      const result = await response.json()
+      return result
+    } catch (error) {
+      console.error('Error checking payment status:', error)
+      throw error
+    }
+  }
+
+  // Process webhook notification
+  static async processWebhookNotification(webhookData: any) {
+    try {
+      const { data, type } = webhookData
+
+      if (type === 'payment' && data?.id) {
+        const paymentStatus = await this.checkPaymentStatus(data.id)
+
+        // Find our payment record by external_reference
+        const paymentId = paymentStatus.external_reference
+
+        if (paymentId) {
+          let status: 'pending' | 'completed' | 'failed' | 'refunded' = 'pending'
+
+          switch (paymentStatus.status) {
+            case 'approved':
+              status = 'completed'
+              break
+            case 'rejected':
+            case 'cancelled':
+              status = 'failed'
+              break
+            case 'refunded':
+              status = 'refunded'
+              break
+            default:
+              status = 'pending'
+          }
+
+          // Update payment status
+          await this.updatePaymentStatus(paymentId, status, data.id.toString())
+
+          // Send email notification if payment is completed
+          if (status === 'completed') {
+            // TODO: Trigger email notification
+            console.log(`Payment completed for payment ID: ${paymentId}`)
+          }
+        }
+      }
+
+      return { success: true }
+    } catch (error) {
+      console.error('Error processing webhook:', error)
       throw error
     }
   }

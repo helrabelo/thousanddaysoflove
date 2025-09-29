@@ -302,7 +302,7 @@ src/types/supabase.ts    # Generated types (regenerate)
 
 Este sistema foi criado especialmente para celebrar os mil dias de amor de vocês! Que cada linha de código represente o carinho e dedicação para tornar seu dia especial ainda mais mágico.
 
-**Wedding Date**: 11 de Novembro de 2025
+**Wedding Date**: 20 de Novembro de 2025
 **Countdown**: A partir do dia 1.000 até o para sempre 💍
 
 ---
