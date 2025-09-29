@@ -1,15 +1,80 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Navigation from '@/components/ui/Navigation'
 import StoryTimeline from '@/components/gallery/StoryTimeline'
 import AboutUsSection from '@/components/sections/AboutUsSection'
-import { realTimelineEvents } from '@/data/realTimeline'
+import { createClient } from '@/lib/supabase/client'
+import { TimelineEvent } from '@/types/wedding'
 import { ArrowLeft, Heart } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
 export default function HistoriaPage() {
+  const [events, setEvents] = useState<TimelineEvent[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    loadEvents()
+  }, [])
+
+  const loadEvents = async () => {
+    try {
+      const supabase = createClient()
+      const { data: eventsData, error } = await supabase
+        .from('timeline_events')
+        .select('*')
+        .eq('is_visible', true)
+        .order('date')
+
+      if (error) throw error
+
+      // Load media for each event
+      const eventsWithMedia = await Promise.all(
+        (eventsData || []).map(async (event) => {
+          const { data: mediaData } = await supabase
+            .from('timeline_event_media')
+            .select('*')
+            .eq('event_id', event.id)
+            .order('display_order')
+
+          return {
+            id: event.id,
+            date: event.date,
+            title: event.title,
+            description: event.description,
+            media_type: event.media_type || 'photo',
+            media_url: event.image_url,
+            thumbnail_url: event.image_url,
+            location: event.location,
+            milestone_type: event.milestone_type,
+            is_major_milestone: true,
+            order_index: event.display_order,
+            created_at: event.created_at,
+            media: mediaData || []
+          }
+        })
+      )
+
+      setEvents(eventsWithMedia)
+    } catch (error) {
+      console.error('Error loading events:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--background)' }}>
+        <p style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-crimson)', fontSize: '1.25rem' }}>
+          Carregando nossa história...
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen" style={{ background: 'var(--background)' }}>
       <Navigation />
@@ -70,7 +135,7 @@ export default function HistoriaPage() {
 
       {/* Timeline Section */}
       <StoryTimeline
-        events={realTimelineEvents}
+        events={events}
         title="1000 Dias de Amor"
         description="Cada dia nos trouxe mais perto do para sempre"
       />

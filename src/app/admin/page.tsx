@@ -1,430 +1,105 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import {
-  Users,
-  Gift,
-  CreditCard,
-  BarChart3,
-  Settings,
-  Heart,
-  Calendar,
-  TrendingUp,
-  DollarSign,
-  Package,
-  CheckCircle,
-  Clock,
-  AlertCircle,
-  Star,
-  MessageSquare
-} from 'lucide-react'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { Heart, Users, Calendar, Image, User, Gift, CreditCard, BarChart3 } from 'lucide-react'
 import { Card } from '@/components/ui/card'
-
-// Import specialized components
-import { GuestManagementTab } from '@/components/admin/GuestManagementTab'
-import { GiftRegistryTab } from '@/components/admin/GiftRegistryTab'
-import { PaymentTrackingTab } from '@/components/admin/PaymentTrackingTab'
-import { WeddingAnalyticsTab } from '@/components/admin/WeddingAnalyticsTab'
-import { WeddingConfigTab } from '@/components/admin/WeddingConfigTab'
-
-type AdminTab = 'guests' | 'gifts' | 'payments' | 'analytics' | 'config'
-
-interface DashboardStats {
-  guests: {
-    total: number
-    confirmed: number
-    pending: number
-    declined: number
-    totalWithPlusOnes: number
-  }
-  gifts: {
-    total: number
-    purchased: number
-    remaining: number
-    totalValue: number
-    purchasedValue: number
-  }
-  payments: {
-    total: number
-    completed: number
-    pending: number
-    totalAmount: number
-    pixPayments: number
-  }
-  analytics: {
-    rsvpCompletionRate: number
-    averageGiftValue: number
-    daysToWedding: number
-    lastActivity: string
-  }
-}
+import { Button } from '@/components/ui/button'
 
 export default function AdminPage() {
-  const [activeTab, setActiveTab] = useState<AdminTab>('guests')
-  const [isLoading, setIsLoading] = useState(true)
-  const [stats, setStats] = useState<DashboardStats>({
-    guests: { total: 0, confirmed: 0, pending: 0, declined: 0, totalWithPlusOnes: 0 },
-    gifts: { total: 0, purchased: 0, remaining: 0, totalValue: 0, purchasedValue: 0 },
-    payments: { total: 0, completed: 0, pending: 0, totalAmount: 0, pixPayments: 0 },
-    analytics: { rsvpCompletionRate: 0, averageGiftValue: 0, daysToWedding: 0, lastActivity: '' }
-  })
-
   const weddingDate = new Date('2025-11-20T00:00:00')
   const today = new Date()
   const daysToWedding = Math.ceil((weddingDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
 
-  useEffect(() => {
-    loadDashboardData()
-  }, [])
-
-  const loadDashboardData = async () => {
-    setIsLoading(true)
-    try {
-      // TODO: Load real data from services
-      // This would integrate with existing GuestService, GiftService, PaymentService
-
-      // Simulated data for now - replace with actual API calls
-      const mockStats: DashboardStats = {
-        guests: {
-          total: 150,
-          confirmed: 85,
-          pending: 45,
-          declined: 20,
-          totalWithPlusOnes: 140
-        },
-        gifts: {
-          total: 45,
-          purchased: 28,
-          remaining: 17,
-          totalValue: 15500,
-          purchasedValue: 9200
-        },
-        payments: {
-          total: 32,
-          completed: 25,
-          pending: 7,
-          totalAmount: 9200,
-          pixPayments: 28
-        },
-        analytics: {
-          rsvpCompletionRate: 70,
-          averageGiftValue: 329,
-          daysToWedding,
-          lastActivity: '2 horas atrás'
-        }
-      }
-
-      setStats(mockStats)
-    } catch (error) {
-      console.error('Error loading dashboard data:', error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const tabs = [
+  const adminSections = [
     {
-      id: 'guests' as AdminTab,
-      label: 'Convidados',
+      href: '/admin/guests',
       icon: Users,
-      description: 'Gerenciar convidados e RSVPs',
-      count: stats.guests.total
+      title: 'Gerenciar Convidados',
+      description: 'Adicionar convidados e confirmar RSVPs',
+      color: 'blush'
     },
     {
-      id: 'gifts' as AdminTab,
-      label: 'Lista de Presentes',
+      href: '/admin/timeline',
+      icon: Calendar,
+      title: 'Gerenciar Nossa História',
+      description: 'Adicionar e editar eventos da timeline',
+      color: 'sage'
+    },
+    {
+      href: '/admin/about-us',
+      icon: User,
+      title: 'Gerenciar Sobre Nós',
+      description: 'Editar informações sobre o casal',
+      color: 'purple'
+    },
+    {
+      href: '/admin/galeria',
+      icon: Image,
+      title: 'Gerenciar Galeria',
+      description: 'Upload e organização de fotos',
+      color: 'blush'
+    },
+    {
+      href: '/admin/presentes',
       icon: Gift,
+      title: 'Lista de Presentes',
       description: 'Gerenciar presentes e registro',
-      count: stats.gifts.total
+      color: 'sage'
     },
     {
-      id: 'payments' as AdminTab,
-      label: 'Pagamentos',
+      href: '/admin/pagamentos',
       icon: CreditCard,
+      title: 'Pagamentos',
       description: 'Rastrear pagamentos PIX',
-      count: stats.payments.total
+      color: 'purple'
     },
     {
-      id: 'analytics' as AdminTab,
-      label: 'Analytics',
+      href: '/admin/analytics',
       icon: BarChart3,
+      title: 'Analytics',
       description: 'Estatísticas do casamento',
-      count: null
-    },
-    {
-      id: 'config' as AdminTab,
-      label: 'Configurações',
-      icon: Settings,
-      description: 'Configurações do casamento',
-      count: null
+      color: 'blush'
     }
   ]
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-hero-gradient flex items-center justify-center">
-        <div className="text-center">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            className="mx-auto mb-4"
-          >
-            <Heart className="h-16 w-16 text-blush-500" fill="currentColor" />
-          </motion.div>
-          <p className="text-burgundy-700 font-medium">Preparando nosso universo particular de gestão...</p>
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div className="min-h-screen bg-hero-gradient">
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/10 backdrop-blur-md border-b border-white/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link href="/" className="flex items-center space-x-3">
-              <Heart className="h-8 w-8 text-blush-500" fill="currentColor" />
-              <div>
-                <span className="font-bold text-xl bg-gradient-to-r from-blush-600 to-burgundy-600 bg-clip-text text-transparent">
-                  Bem-vindos ao gerenciamento dos nossos 1000 dias!
-                </span>
-                <div className="text-xs text-burgundy-600 font-medium">
-                  Hel & Ylana • Casa própria • 4 pets • {daysToWedding} dias para Constable Galerie
-                </div>
-              </div>
-            </Link>
-            <Link href="/" className="text-burgundy-700 hover:text-blush-600 transition-colors duration-300 font-medium">
-              ← Voltar ao site
-            </Link>
-          </div>
+    <div className="min-h-screen bg-hero-gradient py-16 px-4">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <Link href="/" className="text-burgundy-700 hover:text-blush-600 inline-block mb-6">
+            ← Voltar ao site
+          </Link>
+          <Heart className="h-16 w-16 text-blush-500 mx-auto mb-4" fill="currentColor" />
+          <h1 className="text-4xl md:text-5xl font-playfair font-bold text-burgundy-800 mb-4">
+            Admin - Mil Dias de Amor
+          </h1>
+          <p className="text-xl text-burgundy-600">
+            Hel & Ylana • Casa própria • 4 pets • {daysToWedding} dias para Constable Galerie
+          </p>
         </div>
-      </nav>
 
-      <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-4xl md:text-5xl font-playfair font-bold text-burgundy-800 mb-4"
-            >
-              Nosso Universo Particular • Gestão dos 1000 Dias
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-xl text-burgundy-600"
-            >
-              "O que temos entre nós é muito maior" - Gerenciando nosso grande dia
-            </motion.p>
-          </div>
-
-          {/* Quick Stats Overview */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
-          >
-            {/* Wedding Countdown */}
-            <Card className="glass p-6 text-center">
-              <Calendar className="w-8 h-8 text-blush-500 mx-auto mb-3" />
-              <h3 className="text-3xl font-bold text-burgundy-800">{daysToWedding}</h3>
-              <p className="text-burgundy-600">Dias para o Constable Galerie</p>
-              <div className="mt-2 text-sm text-blush-600 font-medium">
-                Onde a arte encontra nosso amor
-              </div>
-            </Card>
-
-            {/* RSVP Progress */}
-            <Card className="glass p-6 text-center">
-              <Users className="w-8 h-8 text-sage-500 mx-auto mb-3" />
-              <h3 className="text-3xl font-bold text-burgundy-800">{stats.analytics.rsvpCompletionRate}%</h3>
-              <p className="text-burgundy-600">Amigos Confirmados</p>
-              <div className="mt-2 text-sm text-sage-600 font-medium">
-                {stats.guests.confirmed} corações unidos aos nossos
-              </div>
-            </Card>
-
-            {/* Gift Registry Progress */}
-            <Card className="glass p-6 text-center">
-              <Gift className="w-8 h-8 text-purple-500 mx-auto mb-3" />
-              <h3 className="text-3xl font-bold text-burgundy-800">{Math.round((stats.gifts.purchased / stats.gifts.total) * 100)}%</h3>
-              <p className="text-burgundy-600">Construindo Nosso Lar</p>
-              <div className="mt-2 text-sm text-purple-600 font-medium">
-                {stats.gifts.purchased} presentes para nossa casa própria
-              </div>
-            </Card>
-
-            {/* Revenue Tracking */}
-            <Card className="glass p-6 text-center">
-              <DollarSign className="w-8 h-8 text-green-500 mx-auto mb-3" />
-              <h3 className="text-3xl font-bold text-burgundy-800">
-                R$ {(stats.payments.totalAmount / 1000).toFixed(1)}k
-              </h3>
-              <p className="text-burgundy-600">Amor Materializado</p>
-              <div className="mt-2 text-sm text-green-600 font-medium">
-                {stats.payments.completed} PIX de carinho recebidos
-              </div>
-            </Card>
-          </motion.div>
-
-          {/* Tab Navigation */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="glass rounded-2xl p-6 mb-8"
-          >
-            <div className="flex flex-wrap gap-2">
-              {tabs.map((tab) => {
-                const Icon = tab.icon
-                const isActive = activeTab === tab.id
-
-                return (
-                  <Button
-                    key={tab.id}
-                    variant={isActive ? 'primary' : 'outline'}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center gap-3 px-6 py-3 transition-all duration-300 ${
-                      isActive ? 'shadow-lg' : 'hover:shadow-md'
-                    }`}
-                  >
-                    <Icon className="w-5 h-5" />
-                    <div className="text-left">
-                      <div className="font-semibold flex items-center gap-2">
-                        {tab.label}
-                        {tab.count && (
-                          <Badge variant="secondary" className="text-xs">
-                            {tab.count}
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="text-xs opacity-75">{tab.description}</div>
-                    </div>
+        {/* Admin Cards */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {adminSections.map((section) => {
+            const Icon = section.icon
+            return (
+              <Link key={section.href} href={section.href}>
+                <Card className="glass p-8 text-center hover:shadow-xl transition-shadow cursor-pointer h-full">
+                  <Icon className={`w-16 h-16 text-${section.color}-500 mx-auto mb-4`} />
+                  <h2 className="text-xl font-bold text-burgundy-800 mb-3">
+                    {section.title}
+                  </h2>
+                  <p className="text-burgundy-600 mb-6">
+                    {section.description}
+                  </p>
+                  <Button className="w-full">
+                    Abrir
                   </Button>
-                )
-              })}
-            </div>
-          </motion.div>
-
-          {/* Tab Content */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="glass rounded-2xl min-h-[600px]"
-          >
-            <AnimatePresence mode="wait">
-              {activeTab === 'guests' && (
-                <motion.div
-                  key="guests"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <GuestManagementTab />
-                </motion.div>
-              )}
-
-              {activeTab === 'gifts' && (
-                <motion.div
-                  key="gifts"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <GiftRegistryTab />
-                </motion.div>
-              )}
-
-              {activeTab === 'payments' && (
-                <motion.div
-                  key="payments"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <PaymentTrackingTab />
-                </motion.div>
-              )}
-
-              {activeTab === 'analytics' && (
-                <motion.div
-                  key="analytics"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <WeddingAnalyticsTab />
-                </motion.div>
-              )}
-
-              {activeTab === 'config' && (
-                <motion.div
-                  key="config"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <WeddingConfigTab />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
-
-          {/* Quick Actions Footer */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6"
-          >
-            <Card className="glass p-6 text-center hover:shadow-lg transition-shadow">
-              <MessageSquare className="w-8 h-8 text-blush-500 mx-auto mb-3" />
-              <h3 className="font-semibold text-burgundy-800 mb-2">Enviar Lembretes</h3>
-              <p className="text-sm text-burgundy-600 mb-4">
-                Envie lembretes de RSVP para convidados pendentes
-              </p>
-              <Button variant="outline" size="sm">
-                Enviar Lembretes
-              </Button>
-            </Card>
-
-            <Card className="glass p-6 text-center hover:shadow-lg transition-shadow">
-              <TrendingUp className="w-8 h-8 text-sage-500 mx-auto mb-3" />
-              <h3 className="font-semibold text-burgundy-800 mb-2">Relatório Semanal</h3>
-              <p className="text-sm text-burgundy-600 mb-4">
-                Gere relatório de progresso dos últimos 7 dias
-              </p>
-              <Button variant="outline" size="sm">
-                Gerar Relatório
-              </Button>
-            </Card>
-
-            <Card className="glass p-6 text-center hover:shadow-lg transition-shadow">
-              <Star className="w-8 h-8 text-yellow-500 mx-auto mb-3" />
-              <h3 className="font-semibold text-burgundy-800 mb-2">Backup de Dados</h3>
-              <p className="text-sm text-burgundy-600 mb-4">
-                Faça backup de todos os dados do casamento
-              </p>
-              <Button variant="outline" size="sm">
-                Fazer Backup
-              </Button>
-            </Card>
-          </motion.div>
+                </Card>
+              </Link>
+            )
+          })}
         </div>
       </div>
     </div>

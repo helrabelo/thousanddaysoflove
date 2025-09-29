@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Calendar, MapPin, Heart, Play } from 'lucide-react'
 import { TimelineEvent } from '@/types/wedding'
+import AutoCarousel from '@/components/ui/AutoCarousel'
 
 interface StoryTimelineProps {
   events: TimelineEvent[]
@@ -171,13 +172,28 @@ export default function StoryTimeline({
                     whileHover={{ scale: 1.03 }}
                     transition={{ duration: 0.3 }}
                   >
-                    {event.media_type === 'photo' ? (
+                    {event.media && event.media.length > 0 ? (
+                      // Multiple media - use AutoCarousel
+                      <AutoCarousel
+                        media={event.media.map(m => ({
+                          media_type: m.media_type === 'image' ? 'image' : 'video',
+                          media_url: m.media_url,
+                          caption: m.caption
+                        }))}
+                        interval={5000}
+                        autoPlay={true}
+                        showControls={true}
+                        className="h-80"
+                      />
+                    ) : event.media_type === 'photo' ? (
+                      // Single photo - backward compatibility
                       <img
                         src={event.media_url}
                         alt={event.title}
                         className="w-full h-80 object-cover transition-transform duration-500 group-hover:scale-110"
                       />
                     ) : (
+                      // Single video - backward compatibility
                       <div className="relative">
                         <img
                           src={event.thumbnail_url || event.media_url}
@@ -192,8 +208,10 @@ export default function StoryTimeline({
                       </div>
                     )}
 
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: 'linear-gradient(to top, rgba(44, 44, 44, 0.6), transparent)' }} />
+                    {/* Gradient Overlay - only show if not using carousel */}
+                    {(!event.media || event.media.length === 0) && (
+                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: 'linear-gradient(to top, rgba(44, 44, 44, 0.6), transparent)' }} />
+                    )}
                   </motion.div>
                 </div>
               </motion.div>
@@ -256,7 +274,23 @@ export default function StoryTimeline({
                 </p>
               </div>
 
-              {selectedEvent.media_type === 'photo' ? (
+              {selectedEvent.media && selectedEvent.media.length > 0 ? (
+                // Multiple media - use AutoCarousel
+                <div className="mb-6">
+                  <AutoCarousel
+                    media={selectedEvent.media.map(m => ({
+                      media_type: m.media_type === 'image' ? 'image' : 'video',
+                      media_url: m.media_url,
+                      caption: m.caption
+                    }))}
+                    interval={5000}
+                    autoPlay={false}
+                    showControls={true}
+                    className="h-96"
+                  />
+                </div>
+              ) : selectedEvent.media_type === 'photo' ? (
+                // Single photo - backward compatibility
                 <img
                   src={selectedEvent.media_url}
                   alt={selectedEvent.title}
@@ -264,6 +298,7 @@ export default function StoryTimeline({
                   style={{ border: '1px solid var(--border-subtle)' }}
                 />
               ) : (
+                // Single video - backward compatibility
                 <video
                   src={selectedEvent.media_url}
                   controls

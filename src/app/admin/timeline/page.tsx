@@ -6,6 +6,16 @@ import { Plus, Edit2, Trash2, Save, X, Calendar, MapPin } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import MultiMediaManager from '@/components/admin/MultiMediaManager'
+
+interface TimelineEventMedia {
+  id?: string
+  media_type: 'image' | 'video'
+  media_url: string
+  caption?: string
+  display_order: number
+  is_primary: boolean
+}
 
 interface TimelineEvent {
   id: string
@@ -17,6 +27,7 @@ interface TimelineEvent {
   milestone_type: string
   display_order: number
   is_visible: boolean
+  media?: TimelineEventMedia[]
 }
 
 export default function AdminTimeline() {
@@ -43,14 +54,31 @@ export default function AdminTimeline() {
     setLoading(true)
     try {
       const supabase = createClient()
-      const { data, error } = await supabase
+      const { data: eventsData, error: eventsError } = await supabase
         .from('timeline_events')
         .select('*')
         .order('date')
         .order('display_order')
 
-      if (error) throw error
-      setEvents(data || [])
+      if (eventsError) throw eventsError
+
+      // Load media for each event
+      const eventsWithMedia = await Promise.all(
+        (eventsData || []).map(async (event) => {
+          const { data: mediaData } = await supabase
+            .from('timeline_event_media')
+            .select('*')
+            .eq('event_id', event.id)
+            .order('display_order')
+
+          return {
+            ...event,
+            media: mediaData || []
+          }
+        })
+      )
+
+      setEvents(eventsWithMedia)
     } catch (error) {
       console.error('Error loading events:', error)
       alert('Erro ao carregar eventos')
@@ -78,9 +106,10 @@ export default function AdminTimeline() {
 
     try {
       const supabase = createClient()
+      let eventId = editingId
 
       if (editingId) {
-        // Update existing
+        // Update existing event
         const { error } = await supabase
           .from('timeline_events')
           .update({
@@ -95,9 +124,15 @@ export default function AdminTimeline() {
           .eq('id', editingId)
 
         if (error) throw error
+
+        // Delete existing media
+        await supabase
+          .from('timeline_event_media')
+          .delete()
+          .eq('event_id', editingId)
       } else {
-        // Insert new
-        const { error } = await supabase
+        // Insert new event
+        const { data, error } = await supabase
           .from('timeline_events')
           .insert({
             title: editForm.title,
@@ -108,8 +143,38 @@ export default function AdminTimeline() {
             milestone_type: editForm.milestone_type || 'other',
             display_order: editForm.display_order || 0
           })
+          .select()
+          .single()
 
         if (error) throw error
+        eventId = data.id
+      }
+
+      // Insert media if exists
+      if (editForm.media && editForm.media.length > 0 && eventId) {
+        const mediaToInsert = editForm.media.map((media) => ({
+          event_id: eventId,
+          media_type: media.media_type,
+          media_url: media.media_url,
+          caption: media.caption,
+          display_order: media.display_order,
+          is_primary: media.is_primary
+        }))
+
+        const { error: mediaError } = await supabase
+          .from('timeline_event_media')
+          .insert(mediaToInsert)
+
+        if (mediaError) throw mediaError
+
+        // Update image_url with primary media for backward compatibility
+        const primaryMedia = editForm.media.find(m => m.is_primary) || editForm.media[0]
+        if (primaryMedia) {
+          await supabase
+            .from('timeline_events')
+            .update({ image_url: primaryMedia.media_url })
+            .eq('id', eventId)
+        }
       }
 
       await loadEvents()
@@ -214,13 +279,20 @@ export default function AdminTimeline() {
                 placeholder="Descrição"
                 rows={3}
               />
-              <input
-                type="url"
-                value={editForm.image_url || ''}
-                onChange={(e) => setEditForm({ ...editForm, image_url: e.target.value })}
-                className="w-full px-4 py-2 border border-burgundy-200 rounded-lg"
-                placeholder="URL da Foto"
-              />
+              <div>
+                <label className="block text-sm font-medium text-burgundy-700 mb-2">
+                  Mídias do Evento
+                  <span className="text-xs text-burgundy-500 ml-2">(múltiplas fotos e vídeos)</span>
+                </label>
+                <MultiMediaManager
+                  eventId={editingId || undefined}
+                  currentMedia={editForm.media || []}
+                  onMediaUpdated={(media) => setEditForm({ ...editForm, media })}
+                  maxMedia={10}
+                  folder="timeline"
+                  maxSizeMB={15}
+                />
+              </div>
               <div className="grid md:grid-cols-2 gap-4">
                 <select
                   value={editForm.milestone_type || 'other'}
@@ -254,17 +326,37 @@ export default function AdminTimeline() {
 
         {/* Timeline Events */}
         <div className="space-y-4">
-          {events.map((event) => (
-            <Card key={event.id} className="glass p-6">
-              <div className="flex gap-6">
-                {/* Image */}
-                {event.image_url && (
-                  <img
-                    src={event.image_url}
-                    alt={event.title}
-                    className="w-32 h-32 object-cover rounded-lg"
-                  />
-                )}
+          {events.map((event) => {
+            // Get primary media or first media, fallback to image_url
+            const primaryMedia = event.media?.find(m => m.is_primary) || event.media?.[0]
+            const displayUrl = primaryMedia?.media_url || event.image_url
+            const displayType = primaryMedia?.media_type || 'image'
+
+            return (
+              <Card key={event.id} className="glass p-6">
+                <div className="flex gap-6">
+                  {/* Media Preview */}
+                  {displayUrl && (
+                    <div className="relative">
+                      {displayType === 'image' ? (
+                        <img
+                          src={displayUrl}
+                          alt={event.title}
+                          className="w-32 h-32 object-cover rounded-lg"
+                        />
+                      ) : (
+                        <video
+                          src={displayUrl}
+                          className="w-32 h-32 object-cover rounded-lg"
+                        />
+                      )}
+                      {event.media && event.media.length > 1 && (
+                        <div className="absolute top-1 right-1 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                          +{event.media.length - 1}
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                 {/* Content */}
                 <div className="flex-1">
@@ -307,7 +399,8 @@ export default function AdminTimeline() {
                 </div>
               </div>
             </Card>
-          ))}
+            )
+          })}
         </div>
       </div>
     </div>

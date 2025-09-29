@@ -242,6 +242,15 @@ export interface MediaMetadata {
   color_profile?: string;
 }
 
+export interface TimelineEventMedia {
+  id?: string;
+  media_type: 'photo' | 'video';
+  media_url: string;
+  caption?: string;
+  display_order: number;
+  is_primary: boolean;
+}
+
 export interface TimelineEvent {
   id: string;
   date: string;
@@ -255,6 +264,7 @@ export interface TimelineEvent {
   is_major_milestone: boolean;
   order_index: number;
   created_at: string;
+  media?: TimelineEventMedia[]; // Multiple media support
 }
 
 export interface GalleryStats {
