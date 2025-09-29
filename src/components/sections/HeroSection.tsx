@@ -123,10 +123,16 @@ export default function HeroSection() {
             Confirmar Presença
           </Link>
           <Link
+            href="/galeria"
+            className="bg-white/20 backdrop-blur-md border border-white/30 hover:bg-white/30 text-gray-700 font-semibold py-4 px-8 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-block"
+          >
+            Ver Nossa Galeria
+          </Link>
+          <Link
             href="/presentes"
             className="bg-white/20 backdrop-blur-md border border-white/30 hover:bg-white/30 text-gray-700 font-semibold py-4 px-8 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-block"
           >
-            Ver Lista de Presentes
+            Lista de Presentes
           </Link>
         </motion.div>
 

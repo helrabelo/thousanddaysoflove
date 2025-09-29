@@ -240,3 +240,154 @@ html {
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
 }
+
+/* Gallery specific styles */
+.masonry-columns {
+  column-count: 1;
+  column-gap: 1.5rem;
+  column-fill: balance;
+}
+
+@media (min-width: 640px) {
+  .masonry-columns { column-count: 2; }
+}
+
+@media (min-width: 1024px) {
+  .masonry-columns { column-count: 3; }
+}
+
+@media (min-width: 1280px) {
+  .masonry-columns { column-count: 4; }
+}
+
+@media (min-width: 1536px) {
+  .masonry-columns { column-count: 5; }
+}
+
+.masonry-item {
+  break-inside: avoid;
+  margin-bottom: 1.5rem;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.masonry-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+/* Gallery lightbox styles */
+.lightbox-backdrop {
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(10px);
+}
+
+/* Video player styles */
+.video-overlay {
+  background: linear-gradient(45deg, rgba(236, 72, 153, 0.1) 0%, rgba(139, 69, 19, 0.1) 100%);
+}
+
+/* Hero video section styles */
+.hero-title {
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.section-header {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-family: 'Playfair Display', serif;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.story-text {
+  font-size: clamp(1.125rem, 2.5vw, 1.25rem);
+  font-family: 'Inter', sans-serif;
+  line-height: 1.7;
+  font-weight: 400;
+}
+
+.romantic-script {
+  font-family: 'Dancing Script', cursive;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  color: var(--blush-600);
+}
+
+.deep-romantic {
+  color: var(--burgundy-800);
+}
+
+.rose-primary {
+  color: var(--blush-600);
+}
+
+.rose-light {
+  background-color: var(--blush-50);
+}
+
+.rose-gold {
+  background-color: var(--gold-300);
+}
+
+.cream {
+  background-color: var(--cream-50);
+}
+
+/* Text truncation utilities */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+/* Focus styles for accessibility */
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--blush-500);
+  outline-offset: 2px;
+}
+
+/* Responsive typography */
+@media (max-width: 640px) {
+  .hero-title {
+    font-size: 3rem;
+  }
+
+  .section-header {
+    font-size: 2rem;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+  }
+}

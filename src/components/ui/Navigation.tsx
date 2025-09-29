@@ -7,6 +7,7 @@ import Link from 'next/link'
 
 const navItems = [
   { name: 'Nossa História', href: '#story' },
+  { name: 'Galeria', href: '/galeria' },
   { name: 'Confirmação', href: '/rsvp' },
   { name: 'Lista de Presentes', href: '/presentes' },
   { name: 'Local', href: '/local' },

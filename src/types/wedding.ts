@@ -191,3 +191,146 @@ export interface WhatsAppMessage {
   error_message?: string;
   created_at: string;
 }
+
+// Gallery System Types for Wedding Photos/Videos
+export interface MediaItem {
+  id: string;
+  title: string;
+  description?: string;
+  url: string;
+  thumbnail_url?: string;
+  media_type: 'photo' | 'video';
+  file_size?: number;
+  width?: number;
+  height?: number;
+  aspect_ratio: number;
+  category: MediaCategory;
+  tags: string[];
+  date_taken?: string;
+  location?: string;
+  is_featured: boolean;
+  is_public: boolean;
+  upload_date: string;
+  uploaded_by?: string;
+  metadata?: MediaMetadata;
+  created_at: string;
+  updated_at: string;
+}
+
+export type MediaCategory =
+  | 'engagement'
+  | 'travel'
+  | 'dates'
+  | 'family'
+  | 'friends'
+  | 'special_moments'
+  | 'proposal'
+  | 'wedding_prep'
+  | 'behind_scenes'
+  | 'professional';
+
+export interface MediaMetadata {
+  camera_make?: string;
+  camera_model?: string;
+  lens?: string;
+  iso?: number;
+  aperture?: string;
+  shutter_speed?: string;
+  focal_length?: string;
+  photographer?: string;
+  editing_software?: string;
+  color_profile?: string;
+}
+
+export interface TimelineEvent {
+  id: string;
+  date: string;
+  title: string;
+  description: string;
+  media_type: 'photo' | 'video';
+  media_url: string;
+  thumbnail_url?: string;
+  location?: string;
+  milestone_type: 'first_date' | 'anniversary' | 'travel' | 'engagement' | 'special' | 'family' | 'achievement';
+  is_major_milestone: boolean;
+  order_index: number;
+  created_at: string;
+}
+
+export interface GalleryStats {
+  total_photos: number;
+  total_videos: number;
+  total_size_mb: number;
+  categories_breakdown: Record<MediaCategory, number>;
+  featured_count: number;
+  latest_upload_date?: string;
+  most_popular_category: MediaCategory;
+  timeline_events_count: number;
+}
+
+export interface GalleryFilter {
+  categories: MediaCategory[];
+  media_types: ('photo' | 'video')[];
+  date_range?: {
+    start: string;
+    end: string;
+  };
+  tags: string[];
+  is_featured?: boolean;
+  search_query?: string;
+  sort_by: 'date_taken' | 'upload_date' | 'title' | 'category';
+  sort_order: 'asc' | 'desc';
+}
+
+export interface GallerySection {
+  id: string;
+  name: string;
+  description: string;
+  media_items: MediaItem[];
+  section_type: 'hero_video' | 'masonry' | 'timeline' | 'featured' | 'category_showcase';
+  background_type: 'solid' | 'gradient' | 'photo' | 'video';
+  background_url?: string;
+  layout_config: {
+    columns?: number;
+    aspect_ratio?: string;
+    spacing?: 'tight' | 'normal' | 'loose';
+    overlay_opacity?: number;
+  };
+  is_active: boolean;
+  order_index: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MediaUpload {
+  id: string;
+  file: File;
+  preview_url: string;
+  upload_progress: number;
+  status: 'pending' | 'uploading' | 'processing' | 'completed' | 'failed';
+  category: MediaCategory;
+  title: string;
+  description?: string;
+  tags: string[];
+  date_taken?: string;
+  location?: string;
+  is_featured: boolean;
+  error_message?: string;
+}
+
+export interface LightboxState {
+  isOpen: boolean;
+  currentIndex: number;
+  items: MediaItem[];
+  autoPlay: boolean;
+  showControls: boolean;
+  showThumbnails: boolean;
+}
+
+export interface SocialShare {
+  platform: 'whatsapp' | 'instagram' | 'facebook' | 'twitter' | 'telegram';
+  media_item_id: string;
+  share_url: string;
+  share_count?: number;
+  last_shared?: string;
+}
