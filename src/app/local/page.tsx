@@ -28,7 +28,7 @@ export const metadata: Metadata = {
 
 export default function LocalPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-rose-50 via-purple-50 to-pink-50">
+    <main className="min-h-screen" style={{ background: 'var(--background)' }}>
       <Navigation />
       <WeddingLocation />
     </main>

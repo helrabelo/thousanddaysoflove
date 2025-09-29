@@ -2,44 +2,95 @@
 
 import { motion } from 'framer-motion'
 import { Heart, Calendar, Star } from 'lucide-react'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { SectionDivider, CardAccent } from '@/components/ui/BotanicalDecorations'
 
 export default function StoryPreview() {
   return (
-    <section className="py-20 bg-white/50">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-32" style={{ background: 'var(--background)' }}>
+      <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16">
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-24"
         >
-          <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-rose-600 to-purple-600 bg-clip-text text-transparent mb-6">
+          <h2
+            className="mb-8"
+            style={{
+              fontFamily: 'var(--font-playfair)',
+              fontSize: 'clamp(2.5rem, 6vw, 4rem)',
+              fontWeight: '600',
+              color: 'var(--primary-text)',
+              letterSpacing: '0.05em',
+              lineHeight: '1.2'
+            }}
+          >
             Nossa História de Amor
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          <p
+            className="max-w-4xl mx-auto"
+            style={{
+              fontFamily: 'var(--font-crimson)',
+              fontSize: 'clamp(1.25rem, 3vw, 1.5rem)',
+              lineHeight: '1.8',
+              color: 'var(--secondary-text)',
+              fontStyle: 'italic'
+            }}
+          >
             Toda grande história de amor é única, mas a nossa é medida em dias que levaram ao para sempre.
           </p>
+          <SectionDivider className="mt-12" />
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-3 gap-16">
           {/* Day 1 */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
             viewport={{ once: true }}
-            className="text-center"
           >
-            <div className="bg-gradient-to-br from-rose-100 to-pink-100 rounded-3xl p-8 mb-6 hover:shadow-lg transition-all duration-300">
-              <div className="bg-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <Heart className="h-8 w-8 text-rose-500" fill="currentColor" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-800 mb-3">Dia 1</h3>
-              <p className="text-gray-600">
-                O dia em que nossos corações se encontraram e soubemos que algo mágico estava começando.
-              </p>
-            </div>
+            <Card variant="wedding" className="relative group">
+              <CardAccent variant="corner" />
+              <CardContent className="text-center">
+                <div
+                  className="w-16 h-16 flex items-center justify-center mx-auto mb-8 rounded-full"
+                  style={{
+                    background: 'var(--decorative)',
+                    opacity: 0.9
+                  }}
+                >
+                  <Heart className="h-6 w-6" style={{ color: 'var(--white-soft)', strokeWidth: 1.5 }} />
+                </div>
+                <h3
+                  className="mb-6"
+                  style={{
+                    fontFamily: 'var(--font-playfair)',
+                    fontSize: '1.5rem',
+                    fontWeight: '500',
+                    color: 'var(--primary-text)',
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase'
+                  }}
+                >
+                  Dia 1
+                </h3>
+                <p
+                  style={{
+                    fontFamily: 'var(--font-crimson)',
+                    fontSize: '1.125rem',
+                    lineHeight: '1.8',
+                    color: 'var(--secondary-text)',
+                    fontStyle: 'italic'
+                  }}
+                >
+                  O dia em que nossos corações se encontraram e soubemos que algo mágico estava começando.
+                </p>
+              </CardContent>
+            </Card>
           </motion.div>
 
           {/* Day 500 */}
@@ -48,17 +99,45 @@ export default function StoryPreview() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
-            className="text-center"
           >
-            <div className="bg-gradient-to-br from-purple-100 to-indigo-100 rounded-3xl p-8 mb-6 hover:shadow-lg transition-all duration-300">
-              <div className="bg-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <Star className="h-8 w-8 text-purple-500" fill="currentColor" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-800 mb-3">Dia 500</h3>
-              <p className="text-gray-600">
-                Na metade dos nossos mil dias, soubéramos que queríamos passar todos os dias juntos.
-              </p>
-            </div>
+            <Card variant="wedding" className="relative group">
+              <CardAccent variant="corner" />
+              <CardContent className="text-center">
+                <div
+                  className="w-16 h-16 flex items-center justify-center mx-auto mb-8 rounded-full"
+                  style={{
+                    background: 'var(--decorative)',
+                    opacity: 0.9
+                  }}
+                >
+                  <Star className="h-6 w-6" style={{ color: 'var(--white-soft)', strokeWidth: 1.5 }} />
+                </div>
+                <h3
+                  className="mb-6"
+                  style={{
+                    fontFamily: 'var(--font-playfair)',
+                    fontSize: '1.5rem',
+                    fontWeight: '500',
+                    color: 'var(--primary-text)',
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase'
+                  }}
+                >
+                  Dia 500
+                </h3>
+                <p
+                  style={{
+                    fontFamily: 'var(--font-crimson)',
+                    fontSize: '1.125rem',
+                    lineHeight: '1.8',
+                    color: 'var(--secondary-text)',
+                    fontStyle: 'italic'
+                  }}
+                >
+                  Na metade dos nossos mil dias, soubéramos que queríamos passar todos os dias juntos.
+                </p>
+              </CardContent>
+            </Card>
           </motion.div>
 
           {/* Day 1000 */}
@@ -67,17 +146,45 @@ export default function StoryPreview() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
             viewport={{ once: true }}
-            className="text-center"
           >
-            <div className="bg-gradient-to-br from-pink-100 to-rose-100 rounded-3xl p-8 mb-6 hover:shadow-lg transition-all duration-300">
-              <div className="bg-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <Calendar className="h-8 w-8 text-pink-500" fill="currentColor" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-800 mb-3">Dia 1000</h3>
-              <p className="text-gray-600">
-                Nosso dia de casamento - quando mil dias de amor se tornam uma promessa para a vida toda.
-              </p>
-            </div>
+            <Card variant="wedding" className="relative group">
+              <CardAccent variant="corner" />
+              <CardContent className="text-center">
+                <div
+                  className="w-16 h-16 flex items-center justify-center mx-auto mb-8 rounded-full"
+                  style={{
+                    background: 'var(--decorative)',
+                    opacity: 0.9
+                  }}
+                >
+                  <Calendar className="h-6 w-6" style={{ color: 'var(--white-soft)', strokeWidth: 1.5 }} />
+                </div>
+                <h3
+                  className="mb-6"
+                  style={{
+                    fontFamily: 'var(--font-playfair)',
+                    fontSize: '1.5rem',
+                    fontWeight: '500',
+                    color: 'var(--primary-text)',
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase'
+                  }}
+                >
+                  Dia 1000
+                </h3>
+                <p
+                  style={{
+                    fontFamily: 'var(--font-crimson)',
+                    fontSize: '1.125rem',
+                    lineHeight: '1.8',
+                    color: 'var(--secondary-text)',
+                    fontStyle: 'italic'
+                  }}
+                >
+                  Nosso dia de casamento - quando mil dias de amor se tornam uma promessa para a vida toda.
+                </p>
+              </CardContent>
+            </Card>
           </motion.div>
         </div>
 
@@ -86,11 +193,11 @@ export default function StoryPreview() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
           viewport={{ once: true }}
-          className="text-center mt-12"
+          className="text-center mt-20"
         >
-          <button className="bg-white/20 backdrop-blur-md border border-white/30 hover:bg-white/30 text-gray-700 font-semibold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+          <Button variant="wedding-outline" size="lg">
             Leia Nossa História Completa
-          </button>
+          </Button>
         </motion.div>
       </div>
     </section>

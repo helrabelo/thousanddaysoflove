@@ -111,7 +111,7 @@ export default function MasonryGallery({
   }, [])
 
   return (
-    <section className="py-20 bg-white">
+    <section className="py-20" style={{ background: 'var(--background)' }}>
       <div className="max-w-8xl mx-auto px-6">
         {/* Header */}
         <motion.div
@@ -121,12 +121,11 @@ export default function MasonryGallery({
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
         >
-          <h2 className="section-header text-deep-romantic mb-4">
-            <span className="bg-gradient-to-r from-rose-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
-              {title}
-            </span>
+          <h2 className="text-4xl md:text-5xl font-bold mb-6" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)', letterSpacing: '0.15em' }}>
+            {title}
           </h2>
-          <p className="story-text text-gray-600 max-w-2xl mx-auto">
+          <div className="w-24 h-px mx-auto mb-8" style={{ background: 'var(--decorative)' }} />
+          <p className="text-xl max-w-2xl mx-auto leading-relaxed" style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)', fontStyle: 'italic' }}>
             {description}
           </p>
         </motion.div>
@@ -142,13 +141,19 @@ export default function MasonryGallery({
           >
             {/* Search Bar */}
             <div className="relative max-w-md mx-auto mb-8">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5" style={{ color: 'var(--decorative)' }} />
               <input
                 type="text"
                 placeholder="Buscar fotos e vídeos..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all duration-300"
+                className="w-full pl-12 pr-4 py-3 rounded-2xl focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-300"
+                style={{
+                  background: 'var(--white-soft)',
+                  border: '1px solid var(--border-subtle)',
+                  color: 'var(--primary-text)',
+                  fontFamily: 'var(--font-crimson)'
+                }}
               />
             </div>
 
@@ -158,11 +163,14 @@ export default function MasonryGallery({
                 <motion.button
                   key={category}
                   onClick={() => setSelectedCategory(category)}
-                  className={`px-6 py-3 rounded-full text-sm font-semibold transition-all duration-300 flex items-center space-x-2 ${
-                    selectedCategory === category
-                      ? 'bg-gradient-to-r from-rose-500 to-pink-600 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
+                  className="px-6 py-3 rounded-full text-sm font-semibold transition-all duration-300 flex items-center space-x-2"
+                  style={{
+                    background: selectedCategory === category ? 'var(--decorative)' : 'var(--white-soft)',
+                    color: selectedCategory === category ? 'var(--white-soft)' : 'var(--primary-text)',
+                    border: '1px solid var(--border-subtle)',
+                    fontFamily: 'var(--font-crimson)',
+                    boxShadow: selectedCategory === category ? '0 2px 8px var(--shadow-subtle)' : 'none'
+                  }}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -179,7 +187,13 @@ export default function MasonryGallery({
             <div className="text-center">
               <button
                 onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-                className="text-rose-600 hover:text-rose-700 font-medium flex items-center space-x-2 mx-auto"
+                className="font-medium flex items-center space-x-2 mx-auto transition-all duration-300"
+                style={{
+                  color: 'var(--decorative)',
+                  fontFamily: 'var(--font-crimson)'
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--secondary-text)' }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--decorative)' }}
               >
                 <Filter className="w-4 h-4" />
                 <span>Filtros Avançados</span>
@@ -190,7 +204,8 @@ export default function MasonryGallery({
             <AnimatePresence>
               {showAdvancedFilters && (
                 <motion.div
-                  className="mt-6 p-6 bg-gray-50 rounded-2xl"
+                  className="mt-6 p-6 rounded-2xl"
+                  style={{ background: 'var(--accent)' }}
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
@@ -198,16 +213,18 @@ export default function MasonryGallery({
                 >
                   <div className="flex flex-wrap gap-4 justify-center">
                     <div className="flex items-center space-x-3">
-                      <span className="text-sm font-medium text-gray-700">Tipo:</span>
+                      <span className="text-sm font-medium" style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-crimson)' }}>Tipo:</span>
                       {['all', 'photo', 'video'].map(type => (
                         <button
                           key={type}
                           onClick={() => setMediaTypeFilter(type as any)}
-                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                            mediaTypeFilter === type
-                              ? 'bg-rose-500 text-white'
-                              : 'bg-white text-gray-600 hover:bg-gray-100'
-                          }`}
+                          className="px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                          style={{
+                            background: mediaTypeFilter === type ? 'var(--decorative)' : 'var(--white-soft)',
+                            color: mediaTypeFilter === type ? 'var(--white-soft)' : 'var(--primary-text)',
+                            border: '1px solid var(--border-subtle)',
+                            fontFamily: 'var(--font-crimson)'
+                          }}
                         >
                           {type === 'all' ? 'Todos' : type === 'photo' ? 'Fotos' : 'Vídeos'}
                         </button>
@@ -227,7 +244,7 @@ export default function MasonryGallery({
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <p className="text-gray-600">
+          <p style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
             Mostrando {filteredItems.length} de {items.length} {filteredItems.length === 1 ? 'memória' : 'memórias'}
           </p>
         </motion.div>
@@ -248,7 +265,7 @@ export default function MasonryGallery({
               transition={{ duration: 0.5, delay: index * 0.05 }}
               onClick={() => handleItemClick(item, index)}
             >
-              <div className="relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 bg-white">
+              <div className="relative overflow-hidden rounded-2xl transition-all duration-500" style={{ background: 'var(--white-soft)', boxShadow: '0 4px 20px var(--shadow-subtle)', border: '1px solid var(--border-subtle)' }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 30px var(--shadow-medium)' }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 20px var(--shadow-subtle)' }}>
                 {/* Media Content */}
                 <div className="relative overflow-hidden">
                   <img
@@ -262,15 +279,15 @@ export default function MasonryGallery({
                   {/* Video Play Overlay */}
                   {item.media_type === 'video' && (
                     <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                      <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center backdrop-blur-sm">
-                        <Play className="w-8 h-8 text-rose-600 ml-1" />
+                      <div className="w-16 h-16 rounded-full flex items-center justify-center backdrop-blur-sm" style={{ background: 'var(--white-soft)' }}>
+                        <Play className="w-8 h-8 ml-1" style={{ color: 'var(--decorative)' }} />
                       </div>
                     </div>
                   )}
 
                   {/* Featured Badge */}
                   {item.is_featured && (
-                    <div className="absolute top-3 left-3 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                    <div className="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-bold" style={{ background: 'var(--decorative)', color: 'var(--white-soft)', fontFamily: 'var(--font-crimson)', boxShadow: '0 2px 8px var(--shadow-subtle)' }}>
                       ⭐ Destaque
                     </div>
                   )}
@@ -282,11 +299,11 @@ export default function MasonryGallery({
                   <div className="absolute bottom-3 right-3 flex space-x-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
                     <button
                       onClick={(e) => toggleLike(item.id, e)}
-                      className={`p-2 rounded-full backdrop-blur-md border border-white/20 transition-all duration-300 ${
-                        likedItems.has(item.id)
-                          ? 'bg-rose-500 text-white'
-                          : 'bg-white/10 text-white hover:bg-white/20'
-                      }`}
+                      className="p-2 rounded-full backdrop-blur-md border border-white/20 transition-all duration-300"
+                      style={{
+                        background: likedItems.has(item.id) ? 'var(--decorative)' : 'rgba(255, 255, 255, 0.1)',
+                        color: 'white'
+                      }}
                     >
                       <Heart className={`w-4 h-4 ${likedItems.has(item.id) ? 'fill-current' : ''}`} />
                     </button>
@@ -302,12 +319,12 @@ export default function MasonryGallery({
 
                 {/* Content Info */}
                 <div className="p-4">
-                  <h3 className="font-semibold text-deep-romantic mb-2 line-clamp-2">
+                  <h3 className="font-semibold mb-2 line-clamp-2" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)' }}>
                     {item.title}
                   </h3>
 
                   {item.description && (
-                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                    <p className="text-sm mb-3 line-clamp-2" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
                       {item.description}
                     </p>
                   )}
@@ -318,13 +335,18 @@ export default function MasonryGallery({
                       {item.tags.slice(0, 3).map(tag => (
                         <span
                           key={tag}
-                          className="bg-rose-100 text-rose-700 px-2 py-1 rounded-full text-xs font-medium"
+                          className="px-2 py-1 rounded-full text-xs font-medium"
+                          style={{
+                            background: 'var(--accent)',
+                            color: 'var(--decorative)',
+                            fontFamily: 'var(--font-crimson)'
+                          }}
                         >
                           #{tag}
                         </span>
                       ))}
                       {item.tags.length > 3 && (
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)' }}>
                           +{item.tags.length - 3} mais
                         </span>
                       )}
@@ -332,7 +354,7 @@ export default function MasonryGallery({
                   )}
 
                   {/* Date and Location */}
-                  <div className="flex justify-between items-center text-xs text-gray-500">
+                  <div className="flex justify-between items-center text-xs" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)' }}>
                     {item.date_taken && (
                       <span>
                         {new Date(item.date_taken).toLocaleDateString('pt-BR')}
@@ -357,10 +379,10 @@ export default function MasonryGallery({
             transition={{ duration: 0.5 }}
           >
             <div className="text-6xl mb-4">📸</div>
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">
+            <h3 className="text-xl font-semibold mb-2" style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-playfair)' }}>
               Nenhuma memória encontrada
             </h3>
-            <p className="text-gray-500 mb-6">
+            <p className="mb-6" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
               Tente ajustar os filtros ou fazer uma nova busca
             </p>
             <button
@@ -369,7 +391,12 @@ export default function MasonryGallery({
                 setSearchQuery('')
                 setMediaTypeFilter('all')
               }}
-              className="bg-gradient-to-r from-rose-500 to-pink-600 text-white px-6 py-3 rounded-full font-semibold hover:from-rose-600 hover:to-pink-700 transition-all duration-300"
+              className="px-6 py-3 rounded-full font-semibold transition-all duration-300"
+              style={{
+                background: 'var(--decorative)',
+                color: 'var(--white-soft)',
+                fontFamily: 'var(--font-playfair)'
+              }}
             >
               Limpar Filtros
             </button>

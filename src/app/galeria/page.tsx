@@ -11,17 +11,17 @@ import MediaLightbox from '@/components/gallery/MediaLightbox'
 import { MediaItem, TimelineEvent } from '@/types/wedding'
 import { SupabaseGalleryService } from '@/lib/services/supabaseGalleryService'
 
-// Mock data for demonstration
-const mockTimelineEvents: TimelineEvent[] = [
+// Real timeline data for Hel & Ylana's 1000-day journey
+const realTimelineEvents: TimelineEvent[] = [
   {
     id: '1',
-    date: '2022-11-20',
-    title: 'Primeiro Encontro',
-    description: 'Nosso primeiro encontro no café da Rua Augusta. Foi amor à primeira vista! Conversamos por horas sobre sonhos, viagens e a vida.',
+    date: '2022-03-12',
+    title: 'Dia 1 - O Início',
+    description: 'Onde tudo começou... O primeiro encontro que mudaria nossas vidas para sempre. Um café simples que se tornou o marco zero da nossa história de amor. ✨',
     media_type: 'photo',
-    media_url: '/images/gallery/primeiro-encontro.jpg',
-    thumbnail_url: '/images/gallery/primeiro-encontro-thumb.jpg',
-    location: 'Café da Rua Augusta, São Paulo',
+    media_url: '/images/gallery/dia-1.jpg',
+    thumbnail_url: '/images/gallery/dia-1-thumb.jpg',
+    location: 'Primeiro encontro',
     milestone_type: 'first_date',
     is_major_milestone: true,
     order_index: 1,
@@ -29,13 +29,13 @@ const mockTimelineEvents: TimelineEvent[] = [
   },
   {
     id: '2',
-    date: '2023-02-14',
-    title: 'Nosso Primeiro Dia dos Namorados',
-    description: 'Uma noite mágica no restaurante com vista para a cidade. Foi quando soubemos que era para sempre.',
+    date: '2023-07-24',
+    title: 'Dia 500 - Meio Caminho',
+    description: '500 dias de amor construindo nosso futuro juntos. Neste marco especial, já sabíamos que éramos feitos um para o outro. Cada dia nos aproximando do nosso para sempre. 💕',
     media_type: 'photo',
-    media_url: '/images/gallery/dia-namorados.jpg',
-    thumbnail_url: '/images/gallery/dia-namorados-thumb.jpg',
-    location: 'Restaurante Panorâmico, São Paulo',
+    media_url: '/images/gallery/dia-500.jpg',
+    thumbnail_url: '/images/gallery/dia-500-thumb.jpg',
+    location: 'Celebrando nosso meio caminho',
     milestone_type: 'anniversary',
     is_major_milestone: true,
     order_index: 2,
@@ -43,44 +43,16 @@ const mockTimelineEvents: TimelineEvent[] = [
   },
   {
     id: '3',
-    date: '2023-07-15',
-    title: 'Viagem para o Rio',
-    description: 'Nossa primeira viagem juntos. Praia, sol, e momentos inesquecíveis. Foi quando percebemos que éramos uma equipe perfeita.',
-    media_type: 'video',
-    media_url: '/videos/gallery/rio-viagem.mp4',
-    thumbnail_url: '/images/gallery/rio-thumb.jpg',
-    location: 'Rio de Janeiro, RJ',
-    milestone_type: 'travel',
+    date: '2025-11-20',
+    title: 'Dia 1000 - Para Sempre',
+    description: '1000 dias se tornando eternidade. Hoje celebramos não apenas mil dias de amor, mas o começo da nossa jornada como marido e mulher. De mil dias para toda a eternidade. 💑',
+    media_type: 'photo',
+    media_url: '/images/gallery/dia-1000-casamento.jpg',
+    thumbnail_url: '/images/gallery/dia-1000-thumb.jpg',
+    location: 'Constable Galerie, Fortaleza',
+    milestone_type: 'engagement',
     is_major_milestone: true,
     order_index: 3,
-    created_at: '2024-01-01T00:00:00Z'
-  },
-  {
-    id: '4',
-    date: '2024-05-10',
-    title: 'O Pedido',
-    description: 'O momento mais especial de nossas vidas. No pôr do sol na praia, com o anel que eu escolhi pensando nela.',
-    media_type: 'video',
-    media_url: '/videos/gallery/pedido.mp4',
-    thumbnail_url: '/images/gallery/pedido-thumb.jpg',
-    location: 'Praia de Copacabana, Rio de Janeiro',
-    milestone_type: 'proposal',
-    is_major_milestone: true,
-    order_index: 4,
-    created_at: '2024-01-01T00:00:00Z'
-  },
-  {
-    id: '5',
-    date: '2024-08-22',
-    title: 'Conhecendo a Família',
-    description: 'O dia em que oficialmente nos tornamos uma família. Emoção, alegria e muito amor em cada abraço.',
-    media_type: 'photo',
-    media_url: '/images/gallery/familia.jpg',
-    thumbnail_url: '/images/gallery/familia-thumb.jpg',
-    location: 'Casa da Família, São Paulo',
-    milestone_type: 'family',
-    is_major_milestone: false,
-    order_index: 5,
     created_at: '2024-01-01T00:00:00Z'
   }
 ]
@@ -253,12 +225,12 @@ export default function GaleriaPage() {
         ])
 
         setMediaItems(items)
-        setTimelineEvents(events)
+        setTimelineEvents(events.length > 0 ? events : realTimelineEvents)
       } catch (error) {
         console.error('Error loading gallery data:', error)
         // Fall back to mock data if service fails
         setMediaItems(mockMediaItems)
-        setTimelineEvents(mockTimelineEvents)
+        setTimelineEvents(realTimelineEvents)
       } finally {
         setIsLoading(false)
       }
@@ -286,40 +258,50 @@ export default function GaleriaPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-rose-50 to-pink-50 flex items-center justify-center">
-        <motion.div
-          className="text-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="w-16 h-16 border-4 border-rose-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-deep-romantic mb-2">
-            Carregando Nossa História...
-          </h2>
-          <p className="text-gray-600">
-            Preparando momentos especiais para você
-          </p>
-        </motion.div>
+      <div className="min-h-screen" style={{ background: 'var(--background)' }}>
+        <div className="flex items-center justify-center min-h-screen">
+          <motion.div
+            className="text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="w-16 h-16 border-4 rounded-full animate-spin mx-auto mb-6" style={{ borderColor: 'var(--decorative)', borderTopColor: 'var(--primary-text)' }} />
+            <h2 className="text-3xl font-bold mb-4" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)', letterSpacing: '0.15em' }}>
+              Carregando memórias...
+            </h2>
+            <p style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)', fontStyle: 'italic', fontSize: '1.125rem' }}>
+              Preparando momentos especiais da nossa jornada de amor
+            </p>
+          </motion.div>
+        </div>
       </div>
     )
   }
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen" style={{ background: 'var(--background)' }}>
       <Navigation />
 
-      {/* Hero Video Section */}
-      <HeroVideoSection
-        videoUrl="/videos/hero-love-story.mp4"
-        posterUrl="/images/hero-poster.jpg"
-        title="1000"
-        subtitle="Mil dias de amor que se transformam em H♥Y. Uma jornada fotográfica através dos momentos mais especiais da nossa história de amor. Cada imagem conta uma parte da nossa jornada até o altar."
-        overlayOpacity={0.5}
-        textPosition="center"
-        autoPlay={true}
-        showControls={true}
-      />
+      {/* Hero Section - Wedding Invitation Style */}
+      <section className="relative pt-24 pb-20 px-6">
+        <div className="max-w-4xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <h1 className="text-5xl md:text-7xl font-bold mb-8" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)', letterSpacing: '0.15em', lineHeight: '1.1' }}>
+              Nossa Galeria
+            </h1>
+            <div className="w-24 h-px mx-auto mb-8" style={{ background: 'var(--decorative)' }} />
+            <p className="text-xl md:text-2xl max-w-2xl mx-auto leading-relaxed" style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)', fontStyle: 'italic' }}>
+              Mil dias de amor capturados em momentos eternos.
+              Cada foto conta uma parte da nossa jornada até o altar.
+            </p>
+          </motion.div>
+        </div>
+      </section>
 
       {/* Story Timeline */}
       <StoryTimeline
@@ -355,8 +337,8 @@ export default function GaleriaPage() {
       />
 
       {/* Featured Memories Section */}
-      <section className="py-20 bg-gradient-to-br from-rose-100 via-pink-50 to-purple-50">
-        <div className="max-w-7xl mx-auto px-6">
+      <section className="py-20" style={{ background: 'var(--accent)' }}>
+        <div className="max-w-6xl mx-auto px-6">
           <motion.div
             className="text-center mb-16"
             initial={{ opacity: 0, y: 30 }}
@@ -364,13 +346,12 @@ export default function GaleriaPage() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="section-header text-deep-romantic mb-6">
-              <span className="bg-gradient-to-r from-rose-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
-                Memórias Destacadas
-              </span>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)', letterSpacing: '0.15em' }}>
+              Memórias Destacadas
             </h2>
-            <p className="story-text text-gray-700 max-w-2xl mx-auto leading-relaxed">
-              Os momentos mais especiais da nossa jornada, escolhidos a dedo para contar nossa história de amor
+            <div className="w-24 h-px mx-auto mb-8" style={{ background: 'var(--decorative)' }} />
+            <p className="text-xl max-w-2xl mx-auto leading-relaxed" style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)', fontStyle: 'italic' }}>
+              Os momentos mais especiais da nossa jornada, escolhidos com carinho para contar nossa história de amor
             </p>
           </motion.div>
 
@@ -388,7 +369,7 @@ export default function GaleriaPage() {
                   viewport={{ once: true }}
                   onClick={() => openLightbox(item)}
                 >
-                  <div className="relative overflow-hidden rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 bg-white">
+                  <div className="relative overflow-hidden rounded-xl transition-all duration-500" style={{ background: 'var(--white-soft)', boxShadow: '0 4px 20px var(--shadow-subtle)', border: '1px solid var(--border-subtle)' }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 30px var(--shadow-medium)' }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 20px var(--shadow-subtle)' }}>
                     <div className="aspect-[4/3] overflow-hidden">
                       <img
                         src={item.thumbnail_url || item.url}
@@ -398,20 +379,20 @@ export default function GaleriaPage() {
                     </div>
 
                     {/* Featured Badge */}
-                    <div className="absolute top-4 right-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
-                      ⭐ Destaque
+                    <div className="absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-semibold" style={{ background: 'var(--decorative)', color: 'var(--white-soft)', fontFamily: 'var(--font-crimson)' }}>
+                      ✨ Destaque
                     </div>
 
                     {/* Content */}
                     <div className="p-6">
-                      <h3 className="text-xl font-bold text-deep-romantic mb-2">
+                      <h3 className="text-xl font-bold mb-2" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)' }}>
                         {item.title}
                       </h3>
-                      <p className="text-gray-600 mb-4 line-clamp-2">
+                      <p className="mb-4 line-clamp-2" style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)', fontStyle: 'italic' }}>
                         {item.description}
                       </p>
 
-                      <div className="flex items-center justify-between text-sm text-gray-500">
+                      <div className="flex items-center justify-between text-sm" style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-crimson)' }}>
                         {item.date_taken && (
                           <span>
                             {new Date(item.date_taken).toLocaleDateString('pt-BR')}
@@ -424,10 +405,10 @@ export default function GaleriaPage() {
                     </div>
 
                     {/* Hover Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 rounded-3xl">
-                      <div className="absolute bottom-6 left-6 right-6 text-white">
-                        <h4 className="font-bold text-lg mb-1">{item.title}</h4>
-                        <p className="text-sm opacity-90 line-clamp-2">
+                    <div className="absolute inset-0 bg-gradient-to-t opacity-0 group-hover:opacity-100 transition-all duration-300 rounded-xl" style={{ background: 'linear-gradient(to top, rgba(44, 44, 44, 0.8), transparent)' }}>
+                      <div className="absolute bottom-6 left-6 right-6" style={{ color: 'var(--white-soft)' }}>
+                        <h4 className="font-bold text-lg mb-1" style={{ fontFamily: 'var(--font-playfair)' }}>{item.title}</h4>
+                        <p className="text-sm opacity-90 line-clamp-2" style={{ fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
                           {item.description}
                         </p>
                       </div>
@@ -440,7 +421,7 @@ export default function GaleriaPage() {
       </section>
 
       {/* Call to Action */}
-      <section className="py-20 bg-gradient-to-r from-rose-500 via-pink-600 to-purple-600">
+      <section className="py-20" style={{ background: 'var(--decorative)' }}>
         <div className="max-w-4xl mx-auto text-center px-6">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -448,19 +429,20 @@ export default function GaleriaPage() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--white-soft)', letterSpacing: '0.15em' }}>
               Faça Parte da Nossa História
             </h2>
-            <p className="text-xl text-white/90 mb-8 leading-relaxed">
+            <div className="w-24 h-px mx-auto mb-8" style={{ background: 'var(--white-soft)', opacity: '0.6' }} />
+            <p className="text-xl mb-8 leading-relaxed" style={{ fontFamily: 'var(--font-crimson)', color: 'var(--white-soft)', fontStyle: 'italic', opacity: '0.95' }}>
               No dia 20 de novembro de 2025, esses mil dias de amor se transformarão em para sempre.
               Venha celebrar conosco o início de uma nova jornada!
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-white text-rose-600 px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+              <button className="px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 transform hover:scale-105" style={{ background: 'var(--white-soft)', color: 'var(--primary-text)', fontFamily: 'var(--font-playfair)', boxShadow: '0 4px 15px var(--shadow-subtle)' }} onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 8px 25px var(--shadow-medium)' }} onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '0 4px 15px var(--shadow-subtle)' }}>
                 Confirmar Presença
               </button>
-              <button className="bg-white/10 backdrop-blur-md text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-white/20 transition-all duration-300 border border-white/20">
+              <button className="px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 border border-white/30 hover:bg-white/10" style={{ background: 'transparent', color: 'var(--white-soft)', fontFamily: 'var(--font-playfair)' }}>
                 Ver Lista de Presentes
               </button>
             </div>

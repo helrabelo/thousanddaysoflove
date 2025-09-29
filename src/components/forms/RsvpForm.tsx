@@ -126,12 +126,12 @@ export function RsvpForm({ initialGuest, onSuccess, onError }: RsvpFormProps) {
     {
       value: 'true',
       label: '✨ Sim, estarei presente!',
-      description: 'Não vejo a hora de celebrar com vocês'
+      description: 'Mal posso esperar para celebrar os mil dias de amor de vocês!'
     },
     {
       value: 'false',
-      label: '😔 Infelizmente não poderei comparecer',
-      description: 'Estarei com vocês em pensamento'
+      label: '💔 Infelizmente não poderei comparecer',
+      description: 'Sentiremos muito sua falta, mas estaremos unidos pelo amor'
     }
   ]
 
@@ -144,9 +144,9 @@ export function RsvpForm({ initialGuest, onSuccess, onError }: RsvpFormProps) {
             Passo {currentStep} de 3
           </span>
           <span className="text-sm text-gray-600">
-            {currentStep === 1 && 'Suas informações'}
-            {currentStep === 2 && 'Confirmação'}
-            {currentStep === 3 && 'Detalhes adicionais'}
+            {currentStep === 1 && 'Encontrando você na nossa história de amor...'}
+            {currentStep === 2 && 'Confirmando sua presença em nosso grande dia'}
+            {currentStep === 3 && 'Cuidaremos de você com todo carinho'}
           </span>
         </div>
 
@@ -237,10 +237,10 @@ export function RsvpForm({ initialGuest, onSuccess, onError }: RsvpFormProps) {
             >
               <div className="text-center mb-8">
                 <h2 className="text-2xl font-playfair font-bold text-burgundy-800 mb-2">
-                  Você virá à nossa festa? 🎉
+                  Você virá celebrar nossos mil dias? 🎉
                 </h2>
                 <p className="text-gray-600">
-                  Sua presença é o melhor presente!
+                  Sua presença tornará nosso dia ainda mais especial!
                 </p>
               </div>
 
@@ -342,7 +342,7 @@ export function RsvpForm({ initialGuest, onSuccess, onError }: RsvpFormProps) {
                   isLoading={isSubmitting}
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? 'Enviando...' : 'Confirmar RSVP 💕'}
+                  {isSubmitting ? 'Enviando com amor...' : 'Confirmar presença nos mil dias 💕'}
                 </Button>
               </div>
             </motion.div>

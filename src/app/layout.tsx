@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { Inter, Playfair_Display, Crimson_Text, Cormorant } from "next/font/google";
 import "./globals.css";
+import "../styles/wedding-theme.css";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -12,6 +13,22 @@ const playfair = Playfair_Display({
   variable: "--font-playfair",
   subsets: ["latin"],
   display: 'swap',
+  weight: ['400', '500', '600', '700'],
+});
+
+const crimsonText = Crimson_Text({
+  variable: "--font-crimson",
+  subsets: ["latin"],
+  display: 'swap',
+  weight: ['400', '600'],
+  style: ['normal', 'italic'],
+});
+
+const cormorant = Cormorant({
+  variable: "--font-cormorant",
+  subsets: ["latin"],
+  display: 'swap',
+  weight: ['300', '400', '500', '600'],
 });
 
 export const metadata: Metadata = {
@@ -40,7 +57,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body
-        className={`${inter.variable} ${playfair.variable} font-sans antialiased`}
+        className={`${inter.variable} ${playfair.variable} ${crimsonText.variable} ${cormorant.variable} font-serif antialiased`}
       >
         {children}
       </body>

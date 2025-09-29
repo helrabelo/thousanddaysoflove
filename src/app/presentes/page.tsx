@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Search, Filter, Heart, Gift as GiftIcon, Sparkles } from 'lucide-react'
+import Navigation from '@/components/ui/Navigation'
 import GiftCard from '@/components/gifts/GiftCard'
 import { Gift } from '@/types/wedding'
 import { GiftService } from '@/lib/services/gifts'
@@ -111,11 +112,11 @@ export default function PresentsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-purple-50">
+      <div className="min-h-screen" style={{ background: 'var(--background)' }}>
         <div className="container mx-auto px-4 py-16">
           <div className="text-center mb-12">
-            <div className="w-12 h-12 border-4 border-purple-300 border-t-purple-600 rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-gray-600">Carregando lista de presentes...</p>
+            <div className="w-12 h-12 border-4 rounded-full animate-spin mx-auto mb-4" style={{ borderColor: 'var(--decorative)', borderTopColor: 'var(--primary-text)' }} />
+            <p style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)', fontStyle: 'italic' }}>Carregando lista de presentes...</p>
           </div>
         </div>
       </div>
@@ -123,8 +124,9 @@ export default function PresentsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-purple-50">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen" style={{ background: 'var(--background)' }}>
+      <Navigation />
+      <div className="container mx-auto px-4 py-8 pt-24">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -132,16 +134,16 @@ export default function PresentsPage() {
           className="text-center mb-12"
         >
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-rose-400 to-purple-600 rounded-full flex items-center justify-center">
-              <GiftIcon className="w-6 h-6 text-white" />
+            <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: 'var(--decorative)' }}>
+              <GiftIcon className="w-6 h-6" style={{ color: 'var(--white-soft)' }} />
             </div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-rose-600 to-purple-600 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)', letterSpacing: '0.15em' }}>
               Lista de Presentes
             </h1>
           </div>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Ajudem Hel & Ylana a comecar esta nova jornada juntos!
-            Cada presente e um simbolo do amor e carinho que voces tem por nos.
+          <p className="text-lg max-w-2xl mx-auto" style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)', fontStyle: 'italic', lineHeight: '1.8' }}>
+            Ajudem Hel & Ylana a começar esta nova jornada juntos!
+            Cada presente é um símbolo do amor e carinho que vocês têm por nós.
           </p>
         </motion.div>
 
@@ -149,23 +151,23 @@ export default function PresentsPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
+          className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8"
         >
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
-            <div className="text-2xl font-bold text-purple-600">{stats.total}</div>
-            <div className="text-sm text-gray-600">Presentes</div>
+          <div className="rounded-xl p-6 text-center" style={{ background: 'var(--white-soft)', border: '1px solid var(--border-subtle)', boxShadow: '0 2px 8px var(--shadow-subtle)' }}>
+            <div className="text-2xl font-bold mb-2" style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-playfair)' }}>{stats.total}</div>
+            <div className="text-sm" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>Presentes</div>
           </div>
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
-            <div className="text-2xl font-bold text-green-600">{stats.completed}</div>
-            <div className="text-sm text-gray-600">Completos</div>
+          <div className="rounded-xl p-6 text-center" style={{ background: 'var(--white-soft)', border: '1px solid var(--border-subtle)', boxShadow: '0 2px 8px var(--shadow-subtle)' }}>
+            <div className="text-2xl font-bold mb-2" style={{ color: 'var(--decorative)', fontFamily: 'var(--font-playfair)' }}>{stats.completed}</div>
+            <div className="text-sm" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>Completos</div>
           </div>
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
-            <div className="text-lg font-bold text-purple-600">{formatBRL(stats.totalValue)}</div>
-            <div className="text-sm text-gray-600">Valor Total</div>
+          <div className="rounded-xl p-6 text-center" style={{ background: 'var(--white-soft)', border: '1px solid var(--border-subtle)', boxShadow: '0 2px 8px var(--shadow-subtle)' }}>
+            <div className="text-lg font-bold mb-2" style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-playfair)' }}>{formatBRL(stats.totalValue)}</div>
+            <div className="text-sm" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>Valor Total</div>
           </div>
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
-            <div className="text-lg font-bold text-green-600">{formatBRL(stats.completedValue)}</div>
-            <div className="text-sm text-gray-600">Arrecadado</div>
+          <div className="rounded-xl p-6 text-center" style={{ background: 'var(--white-soft)', border: '1px solid var(--border-subtle)', boxShadow: '0 2px 8px var(--shadow-subtle)' }}>
+            <div className="text-lg font-bold mb-2" style={{ color: 'var(--decorative)', fontFamily: 'var(--font-playfair)' }}>{formatBRL(stats.completedValue)}</div>
+            <div className="text-sm" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>Arrecadado</div>
           </div>
         </motion.div>
 
@@ -174,23 +176,30 @@ export default function PresentsPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white/80 backdrop-blur-sm rounded-xl p-6 mb-8 border border-white/20"
+          className="rounded-xl p-8 mb-8"
+          style={{ background: 'var(--white-soft)', border: '1px solid var(--border-subtle)', boxShadow: '0 2px 8px var(--shadow-subtle)' }}
         >
-          <div className="flex items-center gap-2 mb-4">
-            <Filter className="w-5 h-5 text-purple-600" />
-            <h3 className="font-semibold text-gray-900">Filtros</h3>
+          <div className="flex items-center gap-2 mb-6">
+            <Filter className="w-5 h-5" style={{ color: 'var(--decorative)' }} />
+            <h3 className="font-semibold" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)', letterSpacing: '0.1em' }}>Filtros</h3>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Search */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4" style={{ color: 'var(--decorative)' }} />
               <input
                 type="text"
                 placeholder="Buscar presentes..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 transition-all duration-200"
+                style={{
+                  borderColor: 'var(--border-subtle)',
+                  background: 'var(--background)',
+                  color: 'var(--primary-text)',
+                  fontFamily: 'var(--font-crimson)'
+                }}
               />
             </div>
 
@@ -198,7 +207,13 @@ export default function PresentsPage() {
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-3 py-3 border rounded-lg focus:ring-2 transition-all duration-200"
+              style={{
+                borderColor: 'var(--border-subtle)',
+                background: 'var(--background)',
+                color: 'var(--primary-text)',
+                fontFamily: 'var(--font-crimson)'
+              }}
             >
               {categories.map(category => (
                 <option key={category} value={category}>
@@ -211,7 +226,13 @@ export default function PresentsPage() {
             <select
               value={selectedPriority}
               onChange={(e) => setSelectedPriority(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-3 py-3 border rounded-lg focus:ring-2 transition-all duration-200"
+              style={{
+                borderColor: 'var(--border-subtle)',
+                background: 'var(--background)',
+                color: 'var(--primary-text)',
+                fontFamily: 'var(--font-crimson)'
+              }}
             >
               {priorities.map(priority => (
                 <option key={priority.value} value={priority.value}>
@@ -227,9 +248,14 @@ export default function PresentsPage() {
                   type="checkbox"
                   checked={showCompleted}
                   onChange={(e) => setShowCompleted(e.target.checked)}
-                  className="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 rounded focus:ring-purple-500 focus:ring-2"
+                  className="w-4 h-4 rounded focus:ring-2"
+                  style={{
+                    accentColor: 'var(--decorative)',
+                    backgroundColor: 'var(--background)',
+                    borderColor: 'var(--border-subtle)'
+                  }}
                 />
-                <span className="text-sm text-gray-700">Mostrar completos</span>
+                <span className="text-sm" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)' }}>Mostrar completos</span>
               </label>
             </div>
           </div>
@@ -237,7 +263,7 @@ export default function PresentsPage() {
 
         {/* Results Count */}
         <div className="flex items-center justify-between mb-6">
-          <p className="text-gray-600">
+          <p style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
             {filteredGifts.length} {filteredGifts.length === 1 ? 'presente encontrado' : 'presentes encontrados'}
           </p>
           {filteredGifts.length !== gifts.length && (
@@ -248,7 +274,7 @@ export default function PresentsPage() {
                 setSelectedPriority('all')
                 setShowCompleted(true)
               }}
-              variant="outline"
+              variant="wedding-outline"
               size="sm"
             >
               Limpar Filtros
@@ -281,14 +307,14 @@ export default function PresentsPage() {
             animate={{ opacity: 1 }}
             className="text-center py-12"
           >
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Sparkles className="w-8 h-8 text-gray-400" />
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'var(--accent)' }}>
+              <Sparkles className="w-8 h-8" style={{ color: 'var(--decorative)' }} />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)' }}>
               Nenhum presente encontrado
             </h3>
-            <p className="text-gray-600 mb-4">
-              Tente ajustar os filtros para ver mais opcoes
+            <p className="mb-4" style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)', fontStyle: 'italic' }}>
+              Tente ajustar os filtros para ver mais opções
             </p>
             <Button
               onClick={() => {
@@ -297,7 +323,7 @@ export default function PresentsPage() {
                 setSelectedPriority('all')
                 setShowCompleted(true)
               }}
-              variant="outline"
+              variant="wedding-outline"
             >
               Limpar Filtros
             </Button>
@@ -309,28 +335,29 @@ export default function PresentsPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="text-center bg-gradient-to-br from-rose-500 to-purple-600 rounded-2xl p-8 text-white"
+          className="text-center rounded-2xl p-12"
+          style={{ background: 'var(--decorative)', color: 'var(--white-soft)' }}
         >
-          <Heart className="w-12 h-12 mx-auto mb-4" />
-          <h3 className="text-2xl font-bold mb-4">
+          <Heart className="w-12 h-12 mx-auto mb-6" style={{ color: 'var(--white-soft)' }} />
+          <h3 className="text-2xl font-bold mb-6" style={{ fontFamily: 'var(--font-playfair)', letterSpacing: '0.15em' }}>
             Obrigado por Celebrar Conosco!
           </h3>
-          <p className="text-rose-100 max-w-2xl mx-auto mb-6">
-            Cada presente e uma manifestacao do amor que voces tem por nos.
+          <p className="max-w-2xl mx-auto mb-8" style={{ fontFamily: 'var(--font-crimson)', fontStyle: 'italic', lineHeight: '1.8', color: 'var(--white-soft)', opacity: '0.9' }}>
+            Cada presente é uma manifestação do amor que vocês têm por nós.
             Estamos ansiosos para compartilhar nossa alegria no dia 20 de novembro de 2025!
           </p>
           <div className="flex items-center justify-center gap-4 text-sm">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-white rounded-full" />
-              <span>Pagamento seguro com PIX</span>
+              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--white-soft)' }} />
+              <span style={{ fontFamily: 'var(--font-crimson)', fontSize: '0.875rem' }}>Pagamento seguro com PIX</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-white rounded-full" />
-              <span>Confirmacao instantanea</span>
+              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--white-soft)' }} />
+              <span style={{ fontFamily: 'var(--font-crimson)', fontSize: '0.875rem' }}>Confirmação instantânea</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-white rounded-full" />
-              <span>Com amor, Hel & Ylana</span>
+              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--white-soft)' }} />
+              <span style={{ fontFamily: 'var(--font-crimson)', fontSize: '0.875rem' }}>Com amor, Hel & Ylana</span>
             </div>
           </div>
         </motion.div>

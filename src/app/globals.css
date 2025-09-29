@@ -1,82 +1,47 @@
 @import "tailwindcss";
 
 :root {
-  /* Romantic Wedding Color Palette */
-  --blush-50: #fdf2f8;
-  --blush-100: #fce7f3;
-  --blush-200: #fbcfe8;
-  --blush-300: #f9a8d4;
-  --blush-400: #f472b6;
-  --blush-500: #ec4899;
-  --blush-600: #db2777;
-  --blush-700: #be185d;
-  --blush-800: #9d174d;
-  --blush-900: #831843;
+  /* Wedding Invitation Monochromatic Palette */
+  --background: #F8F6F3; /* warm off-white/cream */
+  --primary-text: #2C2C2C; /* charcoal black */
+  --secondary-text: #4A4A4A; /* medium gray */
+  --decorative: #A8A8A8; /* silver-gray */
+  --decorative-light: #C5C5C5; /* light silver-gray */
+  --accent: #E8E6E3; /* subtle warm gray for hover */
 
-  --sage-50: #f0f9f0;
-  --sage-100: #dcf4dc;
-  --sage-200: #bae8ba;
-  --sage-300: #8dd68d;
-  --sage-400: #5abf5a;
-  --sage-500: #34a834;
-  --sage-600: #268826;
-  --sage-700: #1f6e1f;
-  --sage-800: #1c581c;
-  --sage-900: #18471b;
+  /* Additional supporting grays */
+  --text-muted: #6B6B6B;
+  --border-subtle: #E0DDD8;
+  --white-soft: #FEFEFE;
+  --shadow-subtle: rgba(44, 44, 44, 0.08);
+  --shadow-medium: rgba(44, 44, 44, 0.12);
 
-  --burgundy-50: #fdf2f2;
-  --burgundy-100: #fde8e8;
-  --burgundy-200: #fbd5d5;
-  --burgundy-300: #f8b4b4;
-  --burgundy-400: #f38686;
-  --burgundy-500: #ef4444;
-  --burgundy-600: #dc2626;
-  --burgundy-700: #b91c1c;
-  --burgundy-800: #991b1b;
-  --burgundy-900: #7f1d1d;
+  /* Legacy color mapping for gradual migration */
+  --blush-50: var(--background);
+  --blush-500: var(--decorative);
+  --sage-100: var(--accent);
+  --burgundy-900: var(--primary-text);
+  --cream-50: var(--background);
+  --gold-400: var(--decorative);
 
-  --cream-50: #fffef7;
-  --cream-100: #fffbeb;
-  --cream-200: #fef3c7;
-  --cream-300: #fde68a;
-  --cream-400: #fcd34d;
-  --cream-500: #fbbf24;
-  --cream-600: #f59e0b;
-  --cream-700: #d97706;
-  --cream-800: #b45309;
-  --cream-900: #92400e;
-
-  --gold-50: #fffbeb;
-  --gold-100: #fef3c7;
-  --gold-200: #fde68a;
-  --gold-300: #fcd34d;
-  --gold-400: #fbbf24;
-  --gold-500: #f59e0b;
-  --gold-600: #d97706;
-  --gold-700: #b45309;
-  --gold-800: #92400e;
-  --gold-900: #78350f;
-
-  /* Semantic Colors */
-  --background: var(--cream-50);
-  --foreground: var(--burgundy-900);
-  --muted: var(--sage-100);
-  --muted-foreground: var(--sage-700);
-  --card: var(--cream-50);
-  --card-foreground: var(--burgundy-800);
-  --popover: var(--cream-50);
-  --popover-foreground: var(--burgundy-900);
-  --border: var(--blush-200);
-  --input: var(--cream-100);
-  --primary: var(--blush-500);
-  --primary-foreground: white;
-  --secondary: var(--sage-500);
-  --secondary-foreground: white;
-  --accent: var(--gold-400);
-  --accent-foreground: var(--burgundy-900);
-  --destructive: var(--burgundy-500);
-  --destructive-foreground: white;
-  --ring: var(--blush-400);
+  /* Semantic Colors - Wedding Invitation Style */
+  --foreground: var(--primary-text);
+  --muted: var(--accent);
+  --muted-foreground: var(--secondary-text);
+  --card: var(--white-soft);
+  --card-foreground: var(--primary-text);
+  --popover: var(--white-soft);
+  --popover-foreground: var(--primary-text);
+  --border: var(--border-subtle);
+  --input: var(--background);
+  --primary: var(--primary-text);
+  --primary-foreground: var(--white-soft);
+  --secondary: var(--decorative);
+  --secondary-foreground: var(--white-soft);
+  --accent-foreground: var(--primary-text);
+  --destructive: var(--secondary-text);
+  --destructive-foreground: var(--white-soft);
+  --ring: var(--decorative);
   --radius: 12px;
 }
 
@@ -166,10 +131,11 @@
 }
 
 body {
-  background: linear-gradient(135deg, var(--cream-50) 0%, var(--blush-50) 100%);
-  color: var(--foreground);
-  font-family: var(--font-body);
-  line-height: 1.6;
+  background: var(--background);
+  color: var(--primary-text);
+  font-family: var(--font-crimson);
+  line-height: 1.8;
+  font-style: italic;
 }
 
 /* Smooth scrolling */
@@ -227,6 +193,21 @@ html {
   100% { background-position: 200% 0; }
 }
 
+@keyframes romantic-pulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+@keyframes gentle-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+@keyframes love-sparkle {
+  0%, 100% { opacity: 0; transform: scale(0.5) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1) rotate(180deg); }
+}
+
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }
@@ -239,6 +220,18 @@ html {
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
+}
+
+.animate-romantic-pulse {
+  animation: romantic-pulse 3s ease-in-out infinite;
+}
+
+.animate-gentle-bounce {
+  animation: gentle-bounce 2s ease-in-out infinite;
+}
+
+.animate-love-sparkle {
+  animation: love-sparkle 2s ease-in-out infinite;
 }
 
 /* Gallery specific styles */
@@ -360,34 +353,248 @@ html {
   -webkit-line-clamp: 3;
 }
 
-/* Focus styles for accessibility */
+/* Focus styles for accessibility - Wedding invitation style */
 button:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
-select:focus-visible {
-  outline: 2px solid var(--blush-500);
+select:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--decorative);
   outline-offset: 2px;
+  border-radius: 4px;
 }
 
-/* Responsive typography */
-@media (max-width: 640px) {
+/* Enhanced accessibility for interactive elements */
+@media (hover: hover) {
+  .group:hover .group-hover\:scale-105 {
+    transform: scale(1.05);
+  }
+
+  .group:hover .group-hover\:scale-110 {
+    transform: scale(1.1);
+  }
+
+  .group:hover .group-hover\:underline {
+    text-decoration: underline;
+  }
+}
+
+/* Touch target accessibility */
+@media (pointer: coarse) {
+  button,
+  a,
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Enhanced responsive typography for wedding invitation */
+@media (max-width: 768px) {
+  body {
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
   .hero-title {
-    font-size: 3rem;
+    font-size: clamp(3rem, 12vw, 5rem);
   }
 
   .section-header {
-    font-size: 2rem;
+    font-size: clamp(1.75rem, 8vw, 2.5rem);
+  }
+
+  /* Improve readability on mobile */
+  h1, h2, h3 {
+    line-height: 1.3;
+  }
+
+  p {
+    font-size: 16px;
+    line-height: 1.6;
   }
 }
 
-/* Print styles */
+@media (max-width: 480px) {
+  /* Adjust spacing for mobile */
+  section {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Ensure minimum font sizes */
+  .wedding-body {
+    font-size: 16px !important;
+  }
+}
+
+/* Wedding page background classes */
+.invitation-background {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 20% 80%, rgba(168, 168, 168, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(168, 168, 168, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 60% 60%, rgba(168, 168, 168, 0.02) 0%, transparent 40%),
+    var(--background);
+  background-attachment: fixed;
+}
+
+.rsvp-background {
+  min-height: 100vh;
+  background: linear-gradient(135deg,
+    var(--background) 0%,
+    rgba(232, 230, 227, 0.3) 30%,
+    var(--background) 60%,
+    rgba(232, 230, 227, 0.2) 100%);
+  background-attachment: fixed;
+}
+
+/* Mobile optimization for backgrounds */
+@media (max-width: 768px) {
+  .invitation-background,
+  .rsvp-background {
+    background-attachment: scroll;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .invitation-background,
+  .rsvp-background {
+    background-attachment: scroll;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .invitation-background {
+    background:
+      radial-gradient(circle at 20% 80%, rgba(0, 0, 0, 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(0, 0, 0, 0.05) 0%, transparent 50%),
+      var(--background);
+  }
+
+  .rsvp-background {
+    background: linear-gradient(135deg,
+      var(--background) 0%,
+      rgba(0, 0, 0, 0.1) 50%,
+      var(--background) 100%);
+  }
+}
+
+/* Enhanced print styles for wedding invitation */
 @media print {
-  .no-print {
+  .no-print,
+  nav,
+  button,
+  .hover\:scale-105,
+  .hover\:scale-110 {
     display: none !important;
   }
 
   body {
     background: white !important;
     color: black !important;
+    font-size: 12pt;
+    line-height: 1.5;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: black !important;
+    page-break-after: avoid;
+  }
+
+  /* Optimize wedding invitation for printing */
+  .wedding-invitation {
+    background: white !important;
+    box-shadow: none !important;
+    border: 2px solid black !important;
+    margin: 1in;
+    page-break-inside: avoid;
+  }
+
+  /* Hide decorative elements that don't print well */
+  .botanical-frame::before,
+  .botanical-frame::after {
+    display: none !important;
+  }
+
+  /* Clean backgrounds for print */
+  .invitation-background,
+  .rsvp-background {
+    background: white !important;
+  }
+}
+
+/* High contrast support for accessibility */
+@media (prefers-contrast: high) {
+  :root {
+    --primary-text: #000000;
+    --secondary-text: #333333;
+    --decorative: #666666;
+    --border-subtle: #999999;
+    --shadow-subtle: rgba(0, 0, 0, 0.2);
+    --shadow-medium: rgba(0, 0, 0, 0.3);
+  }
+
+  .botanical-frame::before,
+  .botanical-frame::after {
+    opacity: 0.8;
+  }
+}
+
+/* Subtle romantic interactions */
+.romantic-hover {
+  position: relative;
+  overflow: hidden;
+}
+
+.romantic-hover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, var(--decorative-light), transparent);
+  opacity: 0;
+  transition: all 0.6s ease;
+}
+
+.romantic-hover:hover::before {
+  left: 100%;
+  opacity: 0.3;
+}
+
+/* Heart cursor for special elements */
+.love-cursor {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="%23A8A8A8"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'), auto;
+}
+
+/* Reduced motion support for wedding animations */
+@media (prefers-reduced-motion: reduce) {
+  .animate-float,
+  .animate-heartbeat,
+  .animate-shimmer,
+  .animate-romantic-pulse,
+  .animate-gentle-bounce,
+  .animate-love-sparkle {
+    animation: none !important;
+  }
+
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+
+  /* Still allow subtle hover effects for usability */
+  .hover\:-translate-y-1:hover,
+  .hover\:-translate-y-0\.5:hover {
+    transform: none !important;
+  }
+
+  .romantic-hover::before {
+    display: none !important;
   }
 }

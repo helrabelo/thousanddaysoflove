@@ -1,0 +1,377 @@
+/* Wedding Theme - Baseado na identidade visual do convite Hel & Ylana */
+
+/* Wedding Invitation Typography System */
+/* Fonts are loaded via Next.js font optimization in layout.tsx */
+
+/* Wedding Invitation Monochromatic Design System */
+:root {
+  /* Colors - using global palette from globals.css */
+  --cream-background: var(--background);
+  --warm-cream: var(--accent);
+  --charcoal-text: var(--primary-text);
+  --soft-gray: var(--secondary-text);
+  --botanical-green: var(--decorative);
+  --sage-green: var(--decorative-light);
+  --dusty-rose: var(--decorative);
+  --gold-accent: var(--decorative);
+
+  /* Typography System - Wedding Invitation Fonts */
+  --monogram-font: var(--font-cormorant);
+  --names-font: var(--font-playfair);
+  --body-font: var(--font-crimson);
+  --details-font: var(--font-playfair);
+
+  /* Font Sizes - Wedding Invitation Hierarchy */
+  --monogram-size: clamp(3rem, 8vw, 5rem);
+  --names-size: clamp(2.5rem, 6vw, 4rem);
+  --body-size: clamp(1.125rem, 2.5vw, 1.375rem);
+  --details-size: clamp(0.875rem, 2vw, 1rem);
+
+  /* Spacing - Generous white space */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1.5rem;
+  --spacing-md: 2rem;
+  --spacing-lg: 3rem;
+  --spacing-xl: 4rem;
+  --spacing-2xl: 6rem;
+  --spacing-3xl: 8rem;
+}
+
+/* Wedding-specific Typography Classes */
+/* Wedding Invitation Typography Classes */
+.wedding-monogram {
+  font-family: var(--monogram-font);
+  font-size: var(--monogram-size);
+  font-weight: 300;
+  color: var(--primary-text);
+  letter-spacing: 0.15em;
+  text-align: center;
+  line-height: 1.1;
+}
+
+.wedding-names {
+  font-family: var(--names-font);
+  font-size: var(--names-size);
+  font-weight: 400;
+  color: var(--primary-text);
+  letter-spacing: 0.15em;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.wedding-body {
+  font-family: var(--body-font);
+  font-size: var(--body-size);
+  font-weight: 400;
+  line-height: 1.8;
+  color: var(--secondary-text);
+  text-align: center;
+  font-style: italic;
+}
+
+.wedding-details {
+  font-family: var(--details-font);
+  font-size: var(--details-size);
+  font-weight: 400;
+  color: var(--secondary-text);
+  letter-spacing: 0.05em;
+  line-height: 1.6;
+}
+
+/* Botanical Frame Component - Subtle Gray Botanical Elements */
+.botanical-frame {
+  position: relative;
+  padding: var(--spacing-3xl) var(--spacing-xl);
+  background: var(--background);
+}
+
+.botanical-frame::before,
+.botanical-frame::after {
+  content: '';
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%23A8A8A8' stroke-width='1' opacity='0.4'%3E%3Cpath d='M20,40 Q30,20 40,40 Q50,20 60,40'/%3E%3Cpath d='M25,55 Q40,65 55,55'/%3E%3Ccircle cx='40' cy='40' r='2' fill='%23A8A8A8' opacity='0.3'/%3E%3Cpath d='M35,25 L40,30 L45,25'/%3E%3Cpath d='M35,55 L40,50 L45,55'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+  opacity: 0.6;
+}
+
+.botanical-frame::before {
+  top: 60px;
+  left: 60px;
+}
+
+.botanical-frame::after {
+  bottom: 60px;
+  right: 60px;
+  transform: rotate(180deg);
+}
+
+/* Elegant Background Patterns for Wedding Pages */
+.invitation-background {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 20% 80%, rgba(168, 168, 168, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(168, 168, 168, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 60% 60%, rgba(168, 168, 168, 0.02) 0%, transparent 40%),
+    var(--background);
+  background-attachment: fixed;
+}
+
+.rsvp-background {
+  min-height: 100vh;
+  background: linear-gradient(135deg,
+    var(--background) 0%,
+    rgba(232, 230, 227, 0.3) 30%,
+    var(--background) 60%,
+    rgba(232, 230, 227, 0.2) 100%);
+  background-attachment: fixed;
+}
+
+.botanical-texture-background {
+  min-height: 100vh;
+  background:
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23A8A8A8' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='1.5'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
+    linear-gradient(135deg,
+      var(--background) 0%,
+      rgba(232, 230, 227, 0.15) 50%,
+      var(--background) 100%);
+  background-attachment: fixed;
+}
+
+.subtle-pattern-background {
+  min-height: 100vh;
+  background:
+    linear-gradient(45deg, transparent 49%, rgba(168, 168, 168, 0.015) 50%, transparent 51%),
+    linear-gradient(-45deg, transparent 49%, rgba(168, 168, 168, 0.015) 50%, transparent 51%),
+    var(--background);
+  background-size: 20px 20px;
+  background-attachment: fixed;
+}
+
+/* Wedding Invitation Section - Clean Monochromatic */
+.wedding-invitation-section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl);
+}
+
+.wedding-invitation {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--spacing-3xl) var(--spacing-2xl);
+  background: var(--white-soft);
+  text-align: center;
+  position: relative;
+  box-shadow: 0 4px 6px -1px var(--shadow-subtle), 0 2px 4px -1px var(--shadow-medium);
+}
+
+.monogram-section {
+  margin-bottom: var(--spacing-lg);
+}
+
+.names-section {
+  margin-bottom: var(--spacing-xl);
+}
+
+.invitation-text {
+  margin-bottom: var(--spacing-lg);
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.event-details {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-xl);
+  margin: var(--spacing-2xl) 0;
+  padding: var(--spacing-2xl);
+  background: var(--accent);
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.ceremony-details,
+.reception-details {
+  text-align: center;
+}
+
+.event-details h3 {
+  font-family: var(--names-font);
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--charcoal-text);
+  margin-bottom: var(--spacing-sm);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.event-details p {
+  font-family: var(--body-font);
+  font-size: 1.1rem;
+  color: var(--soft-gray);
+  line-height: 1.6;
+}
+
+.rsvp-section {
+  margin-top: var(--spacing-xl);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.rsvp-button {
+  display: inline-block;
+  padding: var(--spacing-md) var(--spacing-2xl);
+  background: var(--primary-text);
+  color: var(--white-soft);
+  font-family: var(--details-font);
+  font-size: 0.9rem;
+  font-weight: 400;
+  text-decoration: none;
+  border: 2px solid var(--primary-text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  box-shadow: 0 2px 4px -1px var(--shadow-subtle);
+}
+
+.rsvp-button:hover {
+  background: var(--white-soft);
+  color: var(--primary-text);
+  box-shadow: 0 4px 8px -2px var(--shadow-medium);
+}
+
+.rsvp-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(122, 132, 113, 0.3);
+}
+
+/* Heart Symbol Styling - Elegant and Subtle */
+.heart-symbol {
+  color: var(--decorative);
+  font-size: 1.1em;
+  display: inline-block;
+  font-weight: 300;
+}
+
+/* Mobile optimization for background patterns */
+@media (max-width: 768px) {
+  .invitation-background,
+  .rsvp-background,
+  .botanical-texture-background,
+  .subtle-pattern-background {
+    background-attachment: scroll; /* Better performance on mobile */
+  }
+}
+
+/* Enhanced accessibility support for background patterns */
+@media (prefers-reduced-motion: reduce) {
+  .invitation-background,
+  .rsvp-background,
+  .botanical-texture-background,
+  .subtle-pattern-background {
+    background-attachment: scroll;
+    animation: none;
+  }
+}
+
+/* High contrast mode adjustments */
+@media (prefers-contrast: high) {
+  .invitation-background {
+    background:
+      radial-gradient(circle at 20% 80%, rgba(0, 0, 0, 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(0, 0, 0, 0.05) 0%, transparent 50%),
+      var(--background);
+  }
+
+  .rsvp-background {
+    background: linear-gradient(135deg,
+      var(--background) 0%,
+      rgba(0, 0, 0, 0.1) 50%,
+      var(--background) 100%);
+  }
+
+  .botanical-texture-background,
+  .subtle-pattern-background {
+    background: var(--background);
+  }
+}
+
+/* Responsive Design - Mobile-first approach */
+@media (max-width: 768px) {
+  .botanical-frame {
+    padding: var(--spacing-2xl) var(--spacing-lg);
+  }
+
+  .botanical-frame::before,
+  .botanical-frame::after {
+    width: 70px;
+    height: 70px;
+  }
+
+  .wedding-invitation {
+    padding: var(--spacing-2xl) var(--spacing-lg);
+    margin: var(--spacing-lg);
+  }
+
+  .event-details {
+    padding: var(--spacing-lg);
+    gap: var(--spacing-lg);
+  }
+
+  .rsvp-button {
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .botanical-frame::before,
+  .botanical-frame::after {
+    width: 60px;
+    height: 60px;
+  }
+
+  .wedding-invitation {
+    border-radius: 0.5rem;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .rsvp-button {
+    transition: none;
+  }
+
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .wedding-invitation-section,
+  .invitation-background,
+  .rsvp-background,
+  .botanical-texture-background,
+  .subtle-pattern-background {
+    background: white !important;
+  }
+
+  .botanical-frame::before,
+  .botanical-frame::after {
+    display: none;
+  }
+
+  .rsvp-button {
+    background: var(--charcoal-text) !important;
+    color: white !important;
+  }
+}

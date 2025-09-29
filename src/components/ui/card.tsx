@@ -4,20 +4,23 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: "default" | "glass" | "romantic" | "elegant" | "floating"
+  variant?: "wedding" | "elegant" | "subtle" | "invitation" | "bordered"
   children: React.ReactNode
 }
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, variant = "default", children, ...props }, ref) => {
-    const baseStyles = "rounded-2xl transition-all duration-300"
+  ({ className, variant = "wedding", children, ...props }, ref) => {
+    const baseStyles = "transition-all duration-300 rounded-lg"
 
     const variants = {
-      default: "bg-white/90 backdrop-blur-sm border border-blush-200 shadow-md hover:shadow-lg",
-      glass: "bg-white/20 backdrop-blur-md border border-white/30 shadow-xl hover:shadow-2xl hover:bg-white/25",
-      romantic: "bg-gradient-to-br from-blush-50/90 to-cream-50/90 backdrop-blur-sm border border-blush-200/50 shadow-lg hover:shadow-xl hover:scale-105",
-      elegant: "bg-white/95 backdrop-blur-sm border border-sage-200 shadow-lg hover:shadow-xl hover:-translate-y-1",
-      floating: "bg-white/90 backdrop-blur-sm border border-blush-200 shadow-2xl hover:shadow-3xl transform hover:-translate-y-2 hover:scale-105"
+      wedding: "bg-[var(--card)] border border-[var(--border-subtle)] shadow-[0_2px_8px_var(--shadow-subtle)]" +
+               " hover:shadow-[0_4px_16px_var(--shadow-medium)] hover:-translate-y-1 p-8",
+      elegant: "bg-[var(--card)] border border-[var(--border-subtle)] shadow-[0_2px_8px_var(--shadow-subtle)]" +
+               " hover:shadow-[0_4px_16px_var(--shadow-medium)] hover:-translate-y-0.5 p-6",
+      invitation: "bg-[var(--white-soft)] border-2 border-[var(--border-subtle)] shadow-[0_4px_12px_var(--shadow-subtle)]" +
+                  " hover:shadow-[0_8px_24px_var(--shadow-medium)] p-12 text-center",
+      subtle: "bg-[var(--accent)] border-0 hover:bg-[var(--background)] p-6",
+      bordered: "bg-[var(--card)] border-2 border-[var(--decorative)] hover:border-[var(--primary-text)] p-6"
     }
 
     return (
@@ -38,7 +41,7 @@ const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn("flex flex-col space-y-1.5 p-6 pb-4", className)}
+      className={cn("flex flex-col space-y-1.5 p-0 pb-4", className)}
       {...props}
     />
   )
@@ -49,7 +52,12 @@ const CardTitle = React.forwardRef<HTMLHeadingElement, React.HTMLAttributes<HTML
   ({ className, ...props }, ref) => (
     <h3
       ref={ref}
-      className={cn("font-heading text-2xl font-semibold leading-none tracking-tight text-burgundy-800", className)}
+      className={cn("text-2xl font-medium leading-tight", className)}
+      style={{
+        fontFamily: 'var(--font-playfair)',
+        color: 'var(--primary-text)',
+        letterSpacing: '0.05em'
+      }}
       {...props}
     />
   )
@@ -60,7 +68,13 @@ const CardDescription = React.forwardRef<HTMLParagraphElement, React.HTMLAttribu
   ({ className, ...props }, ref) => (
     <p
       ref={ref}
-      className={cn("text-sm text-sage-600 font-body", className)}
+      className={cn("text-base leading-relaxed", className)}
+      style={{
+        fontFamily: 'var(--font-crimson)',
+        color: 'var(--secondary-text)',
+        fontStyle: 'italic',
+        lineHeight: '1.8'
+      }}
       {...props}
     />
   )
@@ -71,7 +85,8 @@ const CardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDi
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn("p-6 pt-0 font-body", className)}
+      className={cn("p-0 pt-0", className)}
+      style={{ fontFamily: 'var(--font-crimson)' }}
       {...props}
     />
   )
@@ -82,7 +97,7 @@ const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn("flex items-center p-6 pt-0", className)}
+      className={cn("flex items-center justify-center p-0 pt-6", className)}
       {...props}
     />
   )

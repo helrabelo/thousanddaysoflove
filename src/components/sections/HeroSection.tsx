@@ -5,175 +5,223 @@ import CountdownTimer from '@/components/ui/CountdownTimer'
 import { Heart, Calendar, MapPin, Clock } from 'lucide-react'
 import Link from 'next/link'
 import { CONSTABLE_GALERIE } from '@/lib/utils/maps'
+import { CornerFlourish, SectionDivider } from '@/components/ui/BotanicalDecorations'
+import { Button } from '@/components/ui/button'
 
 export default function HeroSection() {
   return (
     <section className="min-h-screen flex items-center justify-center relative overflow-hidden pt-20">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-rose-50 via-purple-50 to-pink-50" />
-      
-      {/* Floating elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-2 h-2 bg-rose-300/30 rounded-full"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [-20, 20, -20],
-              opacity: [0.3, 0.7, 0.3],
-            }}
-            transition={
-{
-              duration: 3 + Math.random() * 2,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
-        ))}
-      </div>
+      {/* Fundo com cor do convite */}
+      <div
+        className="absolute inset-0"
+        style={{ background: 'var(--background)' }}
+      />
 
-      <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
-        {/* Main Title */}
+      {/* Elegant botanical corner flourishes */}
+      <CornerFlourish position="top-right" size="lg" className="top-16 right-16" />
+      <CornerFlourish position="bottom-left" size="lg" className="bottom-16 left-16" />
+
+      <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+        {/* Monograma H ♥ Y */}
         <motion.div
-          initial={{ opacity: 0, y: -50 }}
+          initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: "easeOut" }}
-          className="mb-8"
+          className="wedding-monogram mb-8"
+          style={{
+            fontFamily: 'var(--font-cormorant)',
+            fontSize: 'clamp(4rem, 10vw, 7rem)',
+            fontWeight: '300',
+            color: 'var(--primary-text)',
+            letterSpacing: '0.15em',
+            lineHeight: '1.1'
+          }}
         >
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight">
-            <span className="block bg-gradient-to-r from-rose-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Mil
-            </span>
-            <span className="block bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 bg-clip-text text-transparent">
-              Dias de Amor
-            </span>
-          </h1>
+          H <span className="heart-symbol text-[var(--decorative)]" style={{ fontSize: '0.9em' }}>♥</span> Y
         </motion.div>
 
-        {/* Names */}
+        {/* Nomes dos noivos */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
+          className="mb-8"
+          style={{
+            fontFamily: 'var(--font-playfair)',
+            fontSize: 'clamp(3rem, 8vw, 5rem)',
+            fontWeight: '400',
+            color: 'var(--primary-text)',
+            letterSpacing: '0.15em',
+            lineHeight: '1.2',
+            textTransform: 'uppercase'
+          }}
+        >
+          Hel & Ylana
+        </motion.div>
+
+        {/* Texto elegante */}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.4 }}
+          className="mb-12 max-w-2xl mx-auto text-center"
+          style={{
+            fontFamily: 'var(--font-crimson)',
+            fontSize: 'clamp(1.25rem, 3vw, 1.5rem)',
+            fontWeight: '400',
+            lineHeight: '1.8',
+            color: 'var(--secondary-text)',
+            fontStyle: 'italic'
+          }}
+        >
+          Depois de mil dias de amor, chegou o momento de<br />
+          celebrarmos nossa união para sempre
+        </motion.p>
+
+        {/* Countdown */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3, duration: 0.8 }}
-          className="mb-6"
-        >
-          <div className="flex items-center justify-center gap-4 text-3xl md:text-5xl font-light text-gray-700">
-            <span className="bg-gradient-to-r from-rose-600 to-purple-600 bg-clip-text text-transparent font-medium">
-              Hel
-            </span>
-            <Heart className="h-8 w-8 md:h-12 md:w-12 text-rose-500" fill="currentColor" />
-            <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent font-medium">
-              Ylana
-            </span>
-          </div>
-        </motion.div>
-
-        {/* Wedding Date */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.6 }}
-          className="mb-8"
-        >
-          <div className="flex items-center justify-center gap-2 text-xl md:text-2xl text-gray-600">
-            <Calendar className="h-6 w-6" />
-            <span>20 de Novembro de 2025</span>
-          </div>
-        </motion.div>
-
-        {/* Tagline */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.7, duration: 0.6 }}
-          className="mb-12"
-        >
-          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Após 1.000 dias lindos juntos, estamos prontos para começar o para sempre.
-            <br className="hidden md:block" />
-            Junte-se a nós para celebrar nossa história de amor e o início do nosso novo capítulo.
-          </p>
-        </motion.div>
-
-        {/* Countdown Timer */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9, duration: 0.8 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
           className="mb-12"
         >
           <CountdownTimer />
         </motion.div>
 
-        {/* CTA Buttons */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.1, duration: 0.6 }}
-          className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-        >
-          <Link
-            href="/rsvp"
-            className="bg-gradient-to-r from-rose-500 to-purple-600 hover:from-rose-600 hover:to-purple-700 text-white font-semibold py-4 px-8 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-block"
-          >
-            Confirmar Presença
-          </Link>
-          <Link
-            href="/galeria"
-            className="bg-white/20 backdrop-blur-md border border-white/30 hover:bg-white/30 text-gray-700 font-semibold py-4 px-8 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-block"
-          >
-            Ver Nossa Galeria
-          </Link>
-          <Link
-            href="/presentes"
-            className="bg-white/20 backdrop-blur-md border border-white/30 hover:bg-white/30 text-gray-700 font-semibold py-4 px-8 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 inline-block"
-          >
-            Lista de Presentes
-          </Link>
-        </motion.div>
-
-        {/* Wedding Details */}
+        {/* Divisor botânico */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.3, duration: 0.6 }}
-          className="mt-12"
+          transition={{ duration: 0.8, delay: 0.7 }}
         >
-          <div className="max-w-2xl mx-auto">
-            <div className="bg-white/60 backdrop-blur-xl rounded-2xl p-6 border border-white/30 shadow-lg">
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="bg-gradient-to-br from-rose-500 to-pink-600 p-2 rounded-full">
-                    <Clock className="h-4 w-4 text-white" />
-                  </div>
-                  <div className="text-left">
-                    <p className="font-medium text-gray-800 text-sm">Horário</p>
-                    <p className="text-gray-600 text-sm">10:30h</p>
-                  </div>
-                </div>
+          <SectionDivider />
+        </motion.div>
 
-                <div className="flex items-center gap-3">
-                  <div className="bg-gradient-to-br from-purple-500 to-indigo-600 p-2 rounded-full">
-                    <MapPin className="h-4 w-4 text-white" />
-                  </div>
-                  <div className="text-left">
-                    <p className="font-medium text-gray-800 text-sm">Local</p>
-                    <p className="text-gray-600 text-sm">{CONSTABLE_GALERIE.name}</p>
-                  </div>
-                </div>
-              </div>
+        {/* Informações do evento */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.8 }}
+          className="mb-16 max-w-4xl mx-auto"
+        >
+          <div
+            className="grid md:grid-cols-3 gap-12 text-center p-12 rounded-lg"
+            style={{
+              background: 'var(--white-soft)',
+              border: '1px solid var(--border-subtle)',
+              boxShadow: '0 2px 8px var(--shadow-subtle)'
+            }}
+          >
+            <div className="ceremony-details">
+              <Calendar className="w-6 h-6 mx-auto mb-6" style={{ color: 'var(--decorative)', strokeWidth: 1.5 }} />
+              <h3
+                className="font-medium mb-4 uppercase"
+                style={{
+                  fontFamily: 'var(--font-playfair)',
+                  color: 'var(--primary-text)',
+                  letterSpacing: '0.1em',
+                  fontSize: '1.125rem'
+                }}
+              >
+                Data
+              </h3>
+              <p
+                style={{
+                  fontFamily: 'var(--font-crimson)',
+                  fontSize: '1.125rem',
+                  lineHeight: '1.6',
+                  color: 'var(--secondary-text)',
+                  fontStyle: 'italic'
+                }}
+              >
+                20 de Novembro de 2025<br />
+                <span style={{ color: 'var(--decorative)' }}>Quinta-feira</span>
+              </p>
+            </div>
 
-              <div className="mt-4 pt-4 border-t border-gray-200">
-                <p className="text-center text-xs text-gray-500">
-                  Eng. Luciano Cavalcante, Fortaleza - CE
-                </p>
-              </div>
+            <div className="ceremony-details">
+              <Clock className="w-6 h-6 mx-auto mb-6" style={{ color: 'var(--decorative)', strokeWidth: 1.5 }} />
+              <h3
+                className="font-medium mb-4 uppercase"
+                style={{
+                  fontFamily: 'var(--font-playfair)',
+                  color: 'var(--primary-text)',
+                  letterSpacing: '0.1em',
+                  fontSize: '1.125rem'
+                }}
+              >
+                Horário
+              </h3>
+              <p
+                style={{
+                  fontFamily: 'var(--font-crimson)',
+                  fontSize: '1.125rem',
+                  lineHeight: '1.6',
+                  color: 'var(--secondary-text)',
+                  fontStyle: 'italic'
+                }}
+              >
+                10h30<br />
+                <span style={{ color: 'var(--decorative)' }}>Cerimônia Civil</span>
+              </p>
+            </div>
+
+            <div className="ceremony-details">
+              <MapPin className="w-6 h-6 mx-auto mb-6" style={{ color: 'var(--decorative)', strokeWidth: 1.5 }} />
+              <h3
+                className="font-medium mb-4 uppercase"
+                style={{
+                  fontFamily: 'var(--font-playfair)',
+                  color: 'var(--primary-text)',
+                  letterSpacing: '0.1em',
+                  fontSize: '1.125rem'
+                }}
+              >
+                Local
+              </h3>
+              <p
+                style={{
+                  fontFamily: 'var(--font-crimson)',
+                  fontSize: '1.125rem',
+                  lineHeight: '1.6',
+                  color: 'var(--secondary-text)',
+                  fontStyle: 'italic'
+                }}
+              >
+                {CONSTABLE_GALERIE.name}<br />
+                <span style={{ color: 'var(--decorative)' }}>Luciano Cavalcante</span>
+              </p>
             </div>
           </div>
+        </motion.div>
+
+        {/* Botões de ação */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 1 }}
+          className="flex flex-col sm:flex-row gap-8 justify-center items-center"
+        >
+          <Button
+            variant="wedding"
+            size="lg"
+            asChild
+          >
+            <Link href="/rsvp" className="flex items-center">
+              <Heart className="inline-block w-5 h-5 mr-3" style={{ strokeWidth: 1.5 }} />
+              Confirmar Presença
+            </Link>
+          </Button>
+
+          <Button
+            variant="wedding-outline"
+            size="lg"
+            asChild
+          >
+            <Link href="/presentes" className="flex items-center">
+              Lista de Presentes
+            </Link>
+          </Button>
         </motion.div>
       </div>
     </section>

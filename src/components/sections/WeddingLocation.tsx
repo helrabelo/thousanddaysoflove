@@ -21,11 +21,25 @@ export default function WeddingLocation() {
   const transportInfo = GoogleMapsService.getPublicTransportInfo()
 
   return (
-    <section className="py-20 px-4 bg-gradient-to-br from-rose-50 via-purple-50 to-pink-50 relative overflow-hidden">
-      {/* Background decorations */}
-      <div className="absolute inset-0">
-        <div className="absolute top-20 left-20 w-64 h-64 bg-rose-200/30 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-20 w-80 h-80 bg-purple-200/30 rounded-full blur-3xl" />
+    <section
+      className="py-20 px-4 relative overflow-hidden"
+      style={{ background: 'var(--background)' }}
+    >
+      {/* Subtle botanical decorations */}
+      <div className="absolute inset-0 opacity-30">
+        <svg
+          className="absolute top-20 left-20 w-64 h-64"
+          viewBox="0 0 200 200"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <g stroke="var(--decorative)" strokeWidth="1" fill="none">
+            <circle cx="100" cy="100" r="60" />
+            <circle cx="100" cy="100" r="20" fill="var(--decorative)" opacity="0.1" />
+            <path d="M40 100 Q70 70 100 100 Q130 130 160 100" strokeLinecap="round" />
+            <path d="M100 40 Q70 70 100 100 Q130 70 100 40" strokeLinecap="round" opacity="0.5" />
+          </g>
+        </svg>
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10">
@@ -37,11 +51,25 @@ export default function WeddingLocation() {
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
         >
-          <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-rose-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
-            Local da Cerimônia
+          <h2
+            className="text-4xl md:text-5xl font-bold mb-6"
+            style={{
+              fontFamily: 'var(--font-playfair)',
+              color: 'var(--primary-text)'
+            }}
+          >
+            Onde Nosso Para Sempre Começa
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Será uma alegria imensa celebrar nosso amor com você neste local especial em Fortaleza
+          <p
+            className="text-xl max-w-3xl mx-auto"
+            style={{
+              color: 'var(--secondary-text)',
+              fontFamily: 'var(--font-crimson)',
+              fontStyle: 'italic',
+              lineHeight: '1.8'
+            }}
+          >
+            Constable Galerie, onde a arte encontra o amor e nossos mil dias se tornam eternidade
           </p>
         </motion.div>
 
@@ -55,17 +83,40 @@ export default function WeddingLocation() {
             viewport={{ once: true }}
           >
             {/* Venue Details Card */}
-            <div className="bg-white/60 backdrop-blur-xl rounded-3xl p-8 border border-white/30 shadow-xl">
+            <div
+              className="rounded-3xl p-8"
+              style={{
+                background: 'var(--white-soft)',
+                border: '1px solid var(--border-subtle)',
+                boxShadow: '0 8px 24px var(--shadow-medium)'
+              }}
+            >
               <div className="flex items-start gap-4 mb-6">
-                <div className="bg-gradient-to-br from-rose-500 to-pink-600 p-3 rounded-full">
-                  <MapPin className="w-6 h-6 text-white" />
+                <div
+                  className="p-3 rounded-full"
+                  style={{ background: 'var(--primary-text)' }}
+                >
+                  <MapPin className="w-6 h-6" style={{ color: 'var(--white-soft)' }} />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-2xl font-bold text-gray-800 mb-2">
+                  <h3
+                    className="text-2xl font-bold mb-2"
+                    style={{
+                      fontFamily: 'var(--font-playfair)',
+                      color: 'var(--primary-text)'
+                    }}
+                  >
                     {CONSTABLE_GALERIE.name}
                   </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    {CONSTABLE_GALERIE.description}
+                  <p
+                    className="leading-relaxed"
+                    style={{
+                      color: 'var(--secondary-text)',
+                      fontFamily: 'var(--font-crimson)',
+                      fontStyle: 'italic'
+                    }}
+                  >
+                    Onde nossa história de amor ganha seu capítulo mais bonito
                   </p>
                 </div>
               </div>
@@ -112,18 +163,49 @@ export default function WeddingLocation() {
               <div className="flex flex-col sm:flex-row gap-3 mt-8">
                 <button
                   onClick={handleDirections}
-                  className="flex-1 bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white px-6 py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
+                  className="flex-1 px-6 py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 font-medium love-cursor"
+                  style={{
+                    background: 'var(--primary-text)',
+                    color: 'var(--white-soft)',
+                    fontFamily: 'var(--font-playfair)',
+                    boxShadow: '0 4px 12px var(--shadow-subtle)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.boxShadow = '0 8px 24px var(--shadow-medium)'
+                    e.currentTarget.style.transform = 'translateY(-2px)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = '0 4px 12px var(--shadow-subtle)'
+                    e.currentTarget.style.transform = 'translateY(0)'
+                  }}
                 >
                   <Navigation className="w-5 h-5" />
-                  Como Chegar
+                  Siga seu coração até nós
                 </button>
 
                 <button
                   onClick={handleWhatsAppShare}
-                  className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
+                  className="flex-1 px-6 py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 font-medium love-cursor"
+                  style={{
+                    background: 'var(--accent)',
+                    color: 'var(--primary-text)',
+                    fontFamily: 'var(--font-playfair)',
+                    border: '1px solid var(--border-subtle)',
+                    boxShadow: '0 4px 12px var(--shadow-subtle)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.boxShadow = '0 8px 24px var(--shadow-medium)'
+                    e.currentTarget.style.transform = 'translateY(-2px)'
+                    e.currentTarget.style.background = 'var(--decorative-light)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = '0 4px 12px var(--shadow-subtle)'
+                    e.currentTarget.style.transform = 'translateY(0)'
+                    e.currentTarget.style.background = 'var(--accent)'
+                  }}
                 >
                   <Share2 className="w-5 h-5" />
-                  Compartilhar
+                  Compartilhar o amor
                 </button>
               </div>
             </div>
@@ -189,11 +271,32 @@ export default function WeddingLocation() {
                 showDirections={true}
               />
 
-              <div className="mt-6 p-4 bg-gradient-to-r from-rose-100 to-pink-100 rounded-xl border border-rose-200">
-                <h4 className="font-medium text-gray-800 mb-2">💡 Dica Importante</h4>
-                <p className="text-sm text-gray-600">
-                  O local fica na região nobre de Eng. Luciano Cavalcante, próximo aos principais shoppings de Fortaleza.
-                  Recomendamos chegar com 15-20 minutos de antecedência.
+              <div
+                className="mt-6 p-4 rounded-xl"
+                style={{
+                  background: 'var(--accent)',
+                  border: '1px solid var(--border-subtle)'
+                }}
+              >
+                <h4
+                  className="font-medium mb-2"
+                  style={{
+                    color: 'var(--primary-text)',
+                    fontFamily: 'var(--font-playfair)'
+                  }}
+                >
+                  💕 Dica com Carinho
+                </h4>
+                <p
+                  className="text-sm"
+                  style={{
+                    color: 'var(--secondary-text)',
+                    fontFamily: 'var(--font-crimson)',
+                    fontStyle: 'italic'
+                  }}
+                >
+                  Chegue com tranquilidade, saia com alegria. O local fica na região nobre de Eng. Luciano Cavalcante.
+                  Recomendamos chegar 15-20 minutos antes para aproveitar cada momento de nossa celebração.
                 </p>
               </div>
             </div>

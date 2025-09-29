@@ -18,6 +18,18 @@ export function getCountdown() {
   };
 }
 
+// Special milestone messages for countdown romance
+export function getCountdownMessage(days: number): string {
+  if (days === 0) return "Hoje é o grande dia! ✨"
+  if (days === 1) return "Amanhã nos casamos! 💕"
+  if (days <= 7) return "Uma semana de amor pela frente!"
+  if (days <= 30) return "O mês mais especial das nossas vidas!"
+  if (days === 365) return "Exatamente um ano para o sim!"
+  if (days === 1000) return "Mil dias até o para sempre!"
+  if (days >= 500 && days <= 600) return "Quinhentos dias de preparação para a eternidade"
+  return "Contando os dias até o para sempre..."
+}
+
 export function formatPhoneNumber(phone: string): string {
   const cleaned = phone.replace(/\D/g, '');
   if (cleaned.startsWith('55')) {

@@ -33,29 +33,45 @@ export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
   const progress = getProgressPercentage()
 
   const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high':
-        return 'bg-red-100 text-red-800 border-red-200'
-      case 'medium':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200'
-      case 'low':
-        return 'bg-green-100 text-green-800 border-green-200'
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-200'
-    }
+    // Using monochromatic wedding invitation colors only
+    return 'px-2 py-1 rounded-full text-xs font-medium'
   }
+
+  const getPriorityStyle = (priority: string) => ({
+    background: 'var(--accent)',
+    color: 'var(--decorative)',
+    fontFamily: 'var(--font-crimson)',
+    border: '1px solid var(--border-subtle)'
+  })
 
   const getPriorityLabel = (priority: string) => {
     switch (priority) {
       case 'high':
-        return 'Prioridade Alta'
+        return 'Sonho dos Noivos ✨'
       case 'medium':
-        return 'Prioridade Media'
+        return 'Desejo Especial 💕'
       case 'low':
-        return 'Prioridade Baixa'
+        return 'Presente Querido 💝'
       default:
         return priority
     }
+  }
+
+  // Generate romantic context for gift categories
+  const getRomanticContext = (category: string, name: string) => {
+    const contexts = {
+      'Casa': 'Para construir nosso lar com amor',
+      'Cozinha': 'Para temperar nosso amor com sabores especiais',
+      'Quarto': 'Para sonhar juntos todos os dias',
+      'Banheiro': 'Para cuidar um do outro com carinho',
+      'Sala': 'Para receber amigos e família com alegria',
+      'Experiências': 'Para criar memórias que durarão para sempre',
+      'Eletrônicos': 'Para conectar nossos corações à tecnologia',
+      'Decoração': 'Para encher nosso lar de beleza e amor',
+      'Jardim': 'Para cultivar nosso amor como uma flor',
+      default: 'Escolhido com amor para nossos mil dias juntos'
+    }
+    return contexts[category as keyof typeof contexts] || contexts.default
   }
 
   const handlePaymentSuccess = (paymentId: string) => {
@@ -71,9 +87,20 @@ export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         whileHover={{ y: -4 }}
-        className={`bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border ${
-          isCompleted ? 'border-green-200' : 'border-gray-100'
-        }`}
+        className="rounded-2xl transition-all duration-300 overflow-hidden"
+        style={{
+          background: 'var(--white-soft)',
+          boxShadow: '0 4px 20px var(--shadow-subtle)',
+          border: `1px solid ${isCompleted ? 'var(--decorative)' : 'var(--border-subtle)'}`
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'translateY(-2px)'
+          e.currentTarget.style.boxShadow = '0 8px 30px var(--shadow-medium)'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'translateY(0)'
+          e.currentTarget.style.boxShadow = '0 4px 20px var(--shadow-subtle)'
+        }}
       >
         {/* Gift Image */}
         <div className="relative h-48 overflow-hidden">
@@ -85,35 +112,35 @@ export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
               className="object-cover transition-transform duration-300 hover:scale-105"
             />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-rose-100 to-purple-100 flex items-center justify-center">
-              <Heart className="w-16 h-16 text-rose-300" />
+            <div className="w-full h-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, var(--accent), var(--background))' }}>
+              <Heart className="w-16 h-16" style={{ color: 'var(--decorative)' }} />
             </div>
           )}
 
           {/* Priority Badge */}
           {gift.priority !== 'low' && (
             <div className="absolute top-3 left-3">
-              <Badge className={`${getPriorityColor(gift.priority)} text-xs font-medium`}>
+              <span className={getPriorityColor(gift.priority)} style={getPriorityStyle(gift.priority)}>
                 {getPriorityLabel(gift.priority)}
-              </Badge>
+              </span>
             </div>
           )}
 
           {/* Completion Badge */}
           {isCompleted && (
             <div className="absolute top-3 right-3">
-              <div className="bg-green-500 text-white px-2 py-1 rounded-full flex items-center gap-1 text-xs font-medium">
+              <div className="px-2 py-1 rounded-full flex items-center gap-1 text-xs font-medium" style={{ background: 'var(--decorative)', color: 'var(--white-soft)', fontFamily: 'var(--font-crimson)' }}>
                 <CheckCircle className="w-3 h-3" />
-                Completo
+                Completo com amor
               </div>
             </div>
           )}
 
           {/* Category */}
           <div className="absolute bottom-3 left-3">
-            <Badge variant="secondary" className="bg-white/90 text-gray-700 text-xs">
+            <span className="px-2 py-1 rounded-full text-xs font-medium" style={{ background: 'var(--white-soft)', color: 'var(--primary-text)', fontFamily: 'var(--font-crimson)', opacity: '0.95', border: '1px solid var(--border-subtle)' }}>
               {gift.category}
-            </Badge>
+            </span>
           </div>
         </div>
 
@@ -121,14 +148,14 @@ export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
         <div className="p-6">
           {/* Gift Info */}
           <div className="mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+            <h3 className="text-lg font-semibold mb-2 line-clamp-2" style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-playfair)' }}>
               {gift.name}
             </h3>
-            <p className="text-sm text-gray-600 line-clamp-3 mb-3">
+            <p className="text-sm line-clamp-3 mb-3" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
               {gift.description}
             </p>
             <div className="flex items-center justify-between">
-              <span className="text-xl font-bold text-purple-600">
+              <span className="text-xl font-bold" style={{ color: 'var(--decorative)', fontFamily: 'var(--font-playfair)' }}>
                 {formatBRL(gift.price)}
               </span>
               {gift.registry_url && (
@@ -136,7 +163,10 @@ export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
                   href={gift.registry_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-purple-600 hover:text-purple-700 underline"
+                  className="text-sm underline transition-colors duration-200"
+                  style={{ color: 'var(--decorative)', fontFamily: 'var(--font-crimson)' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--secondary-text)' }}
+                  onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--decorative)' }}
                 >
                   Ver na loja
                 </a>
@@ -146,7 +176,7 @@ export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
 
           {/* Progress */}
           <div className="mb-4">
-            <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+            <div className="flex items-center justify-between text-sm mb-2" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)' }}>
               <div className="flex items-center gap-1">
                 <Users className="w-4 h-4" />
                 <span>
@@ -157,16 +187,15 @@ export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
             </div>
 
             {/* Progress Bar */}
-            <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+            <div className="w-full rounded-full h-2 overflow-hidden" style={{ background: 'var(--accent)' }}>
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${progress}%` }}
                 transition={{ duration: 1, ease: "easeOut" }}
-                className={`h-full transition-colors duration-300 ${
-                  isCompleted
-                    ? 'bg-gradient-to-r from-green-400 to-green-600'
-                    : 'bg-gradient-to-r from-rose-400 to-purple-600'
-                }`}
+                className="h-full transition-colors duration-300"
+                style={{
+                  background: isCompleted ? 'var(--decorative)' : 'linear-gradient(90deg, var(--decorative), var(--secondary-text))'
+                }}
               />
             </div>
           </div>
@@ -175,45 +204,66 @@ export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
           <div className="space-y-2">
             {isCompleted ? (
               <div className="text-center py-3">
-                <div className="flex items-center justify-center gap-2 text-green-600 mb-1">
+                <div className="flex items-center justify-center gap-2 mb-1" style={{ color: 'var(--decorative)' }}>
                   <CheckCircle className="w-5 h-5" />
-                  <span className="font-medium">Presente Completo</span>
+                  <span className="font-medium" style={{ fontFamily: 'var(--font-playfair)' }}>Presente Realizado com Amor</span>
                 </div>
-                <p className="text-sm text-gray-600">
-                  Obrigado a todos que contribuiram!
+                <p className="text-sm" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
+                  Obrigado a todos que contribuíram!
                 </p>
               </div>
             ) : (
-              <Button
+              <button
                 onClick={() => setShowPaymentModal(true)}
-                className="w-full bg-gradient-to-r from-rose-500 to-purple-600 hover:from-rose-600 hover:to-purple-700 text-white py-3 rounded-xl font-medium transition-all duration-300 flex items-center justify-center gap-2"
+                className="w-full py-3 rounded-xl font-medium transition-all duration-300 flex items-center justify-center gap-2"
+                style={{
+                  background: 'var(--primary-text)',
+                  color: 'var(--white-soft)',
+                  fontFamily: 'var(--font-playfair)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'var(--secondary-text)'
+                  e.currentTarget.style.transform = 'translateY(-1px)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'var(--primary-text)'
+                  e.currentTarget.style.transform = 'translateY(0)'
+                }}
               >
                 <QrCode className="w-4 h-4" />
-                Comprar com PIX
-              </Button>
+                Presentear com Amor via PIX
+              </button>
             )}
 
             {/* Quick Actions */}
             {!isCompleted && (
               <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex-1 text-xs"
+                <button
+                  className="flex-1 text-xs py-2 px-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-1"
+                  style={{
+                    background: 'var(--accent)',
+                    color: 'var(--primary-text)',
+                    border: '1px solid var(--border-subtle)',
+                    fontFamily: 'var(--font-crimson)'
+                  }}
                   onClick={() => setShowPaymentModal(true)}
                 >
-                  <ShoppingCart className="w-3 h-3 mr-1" />
+                  <ShoppingCart className="w-3 h-3" />
                   Comprar
-                </Button>
+                </button>
                 {gift.registry_url && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex-1 text-xs"
+                  <button
+                    className="flex-1 text-xs py-2 px-3 rounded-lg transition-all duration-200"
+                    style={{
+                      background: 'var(--accent)',
+                      color: 'var(--primary-text)',
+                      border: '1px solid var(--border-subtle)',
+                      fontFamily: 'var(--font-crimson)'
+                    }}
                     onClick={() => window.open(gift.registry_url, '_blank')}
                   >
                     Ver Loja
-                  </Button>
+                  </button>
                 )}
               </div>
             )}

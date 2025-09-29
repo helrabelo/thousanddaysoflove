@@ -4,59 +4,73 @@ import { motion } from 'framer-motion'
 import { Gift, Users, MapPin, Calendar } from 'lucide-react'
 import Link from 'next/link'
 import { CONSTABLE_GALERIE } from '@/lib/utils/maps'
+import { Card, CardContent } from '@/components/ui/card'
+import { SectionDivider, CardAccent } from '@/components/ui/BotanicalDecorations'
 
 const features = [
   {
     icon: Users,
     title: 'Confirmação',
     description: 'Junte-se a nós para celebrar nosso dia especial',
-    color: 'from-rose-500 to-pink-600',
-    bgColor: 'from-rose-50 to-pink-50',
     href: '/rsvp'
   },
   {
     icon: Gift,
     title: 'Lista de Presentes',
     description: 'Nos ajude a começar nosso novo capítulo juntos',
-    color: 'from-purple-500 to-indigo-600',
-    bgColor: 'from-purple-50 to-indigo-50',
     href: '/presentes'
   },
   {
     icon: Calendar,
     title: 'Cronograma',
     description: 'Datas importantes e eventos',
-    color: 'from-pink-500 to-rose-600',
-    bgColor: 'from-pink-50 to-rose-50',
     href: '#timeline'
   },
   {
     icon: MapPin,
     title: 'Local',
     description: 'Constable Galerie - Fortaleza, CE',
-    color: 'from-indigo-500 to-purple-600',
-    bgColor: 'from-indigo-50 to-purple-50',
     href: '/local'
   }
 ]
 
 export default function QuickPreview() {
   return (
-    <section className="py-20 bg-gradient-to-br from-white via-rose-25 to-purple-25">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-32" style={{ background: 'var(--accent)' }}>
+      <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16">
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-24"
         >
-          <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-rose-600 to-purple-600 bg-clip-text text-transparent mb-6">
+          <h2
+            className="mb-8"
+            style={{
+              fontFamily: 'var(--font-playfair)',
+              fontSize: 'clamp(2.5rem, 6vw, 4rem)',
+              fontWeight: '600',
+              color: 'var(--primary-text)',
+              letterSpacing: '0.05em',
+              lineHeight: '1.2'
+            }}
+          >
             Tudo Que Você Precisa
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          <p
+            className="max-w-4xl mx-auto"
+            style={{
+              fontFamily: 'var(--font-crimson)',
+              fontSize: 'clamp(1.25rem, 3vw, 1.5rem)',
+              lineHeight: '1.8',
+              color: 'var(--secondary-text)',
+              fontStyle: 'italic'
+            }}
+          >
             Da confirmação à lista de presentes, facilitamos para você fazer parte da nossa celebração.
           </p>
+          <SectionDivider className="mt-12" />
         </motion.div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -65,33 +79,67 @@ export default function QuickPreview() {
             return (
               <motion.div
                 key={feature.title}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                whileHover={{ y: -10, scale: 1.02 }}
-                className="group"
+                whileHover={{ y: -4 }}
               >
                 <Link href={feature.href} className="block h-full">
-                  <div className={`bg-gradient-to-br ${feature.bgColor} rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-white/50 h-full cursor-pointer`}>
-                    <div className={`bg-gradient-to-r ${feature.color} rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                      <Icon className="h-8 w-8 text-white" />
-                    </div>
+                  <Card variant="elegant" className="h-full relative group cursor-pointer">
+                    <CardAccent variant="top" className="opacity-30" />
+                    <CardContent className="text-center h-full flex flex-col">
+                      <div
+                        className="w-14 h-14 flex items-center justify-center mx-auto mb-6 rounded-full transition-all duration-300 group-hover:scale-110"
+                        style={{
+                          background: 'var(--decorative)',
+                          opacity: 0.9
+                        }}
+                      >
+                        <Icon className="h-6 w-6" style={{ color: 'var(--white-soft)', strokeWidth: 1.5 }} />
+                      </div>
 
-                    <h3 className="text-xl font-bold text-gray-800 mb-3 text-center">
-                      {feature.title}
-                    </h3>
+                      <h3
+                        className="mb-4"
+                        style={{
+                          fontFamily: 'var(--font-playfair)',
+                          fontSize: '1.25rem',
+                          fontWeight: '500',
+                          color: 'var(--primary-text)',
+                          letterSpacing: '0.05em'
+                        }}
+                      >
+                        {feature.title}
+                      </h3>
 
-                    <p className="text-gray-600 text-center leading-relaxed">
-                      {feature.description}
-                    </p>
+                      <p
+                        className="mb-6 flex-1"
+                        style={{
+                          fontFamily: 'var(--font-crimson)',
+                          fontSize: '1rem',
+                          lineHeight: '1.6',
+                          color: 'var(--secondary-text)',
+                          fontStyle: 'italic'
+                        }}
+                      >
+                        {feature.description}
+                      </p>
 
-                    <div className="mt-6 text-center">
-                      <span className={`inline-block bg-gradient-to-r ${feature.color} bg-clip-text text-transparent font-semibold group-hover:underline`}>
-                        {feature.title === 'Confirmação' ? 'Confirmar Presença →' : feature.title === 'Local' ? 'Ver Localização →' : 'Saiba Mais →'}
-                      </span>
-                    </div>
-                  </div>
+                      <div
+                        className="group-hover:underline transition-all duration-200"
+                        style={{
+                          fontFamily: 'var(--font-playfair)',
+                          color: 'var(--decorative)',
+                          fontSize: '0.9rem',
+                          letterSpacing: '0.05em',
+                          textTransform: 'uppercase',
+                          fontWeight: '500'
+                        }}
+                      >
+                        {feature.title === 'Confirmação' ? 'Confirmar Presença' : feature.title === 'Local' ? 'Ver Localização' : 'Saiba Mais'}
+                      </div>
+                    </CardContent>
+                  </Card>
                 </Link>
               </motion.div>
             )
@@ -100,35 +148,137 @@ export default function QuickPreview() {
 
         {/* Wedding Highlights */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
           viewport={{ once: true }}
-          className="mt-20 text-center"
+          className="mt-24 text-center"
         >
-          <div className="bg-white/40 backdrop-blur-md rounded-3xl p-8 border border-white/30 shadow-xl">
-            <h3 className="text-2xl font-bold text-gray-800 mb-6">
-              Reserve a Data: 20 de Novembro de 2025
-            </h3>
-            <div className="grid md:grid-cols-4 gap-6 text-gray-600">
-              <div>
-                <div className="font-semibold text-gray-800">Cerimônia</div>
-                <div>10:30h</div>
+          <Card variant="invitation" className="relative">
+            <CardAccent variant="corner" className="opacity-20" />
+            <CardContent>
+              <h3
+                className="mb-12"
+                style={{
+                  fontFamily: 'var(--font-playfair)',
+                  fontSize: '1.5rem',
+                  fontWeight: '600',
+                  color: 'var(--primary-text)',
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase'
+                }}
+              >
+                Reserve a Data: 20 de Novembro de 2025
+              </h3>
+              <SectionDivider className="mb-12" />
+              <div className="grid md:grid-cols-4 gap-12">
+                <div className="text-center">
+                  <div
+                    className="mb-3"
+                    style={{
+                      fontFamily: 'var(--font-playfair)',
+                      color: 'var(--primary-text)',
+                      fontSize: '1rem',
+                      letterSpacing: '0.1em',
+                      textTransform: 'uppercase',
+                      fontWeight: '500'
+                    }}
+                  >
+                    Cerimônia
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-crimson)',
+                      fontSize: '1.125rem',
+                      color: 'var(--secondary-text)',
+                      fontStyle: 'italic',
+                      lineHeight: '1.6'
+                    }}
+                  >
+                    10:30h
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div
+                    className="mb-3"
+                    style={{
+                      fontFamily: 'var(--font-playfair)',
+                      color: 'var(--primary-text)',
+                      fontSize: '1rem',
+                      letterSpacing: '0.1em',
+                      textTransform: 'uppercase',
+                      fontWeight: '500'
+                    }}
+                  >
+                    Local
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-crimson)',
+                      fontSize: '1.125rem',
+                      color: 'var(--secondary-text)',
+                      fontStyle: 'italic',
+                      lineHeight: '1.6'
+                    }}
+                  >
+                    {CONSTABLE_GALERIE.name}
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div
+                    className="mb-3"
+                    style={{
+                      fontFamily: 'var(--font-playfair)',
+                      color: 'var(--primary-text)',
+                      fontSize: '1rem',
+                      letterSpacing: '0.1em',
+                      textTransform: 'uppercase',
+                      fontWeight: '500'
+                    }}
+                  >
+                    Bairro
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-crimson)',
+                      fontSize: '1.125rem',
+                      color: 'var(--secondary-text)',
+                      fontStyle: 'italic',
+                      lineHeight: '1.6'
+                    }}
+                  >
+                    Eng. Luciano Cavalcante
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div
+                    className="mb-3"
+                    style={{
+                      fontFamily: 'var(--font-playfair)',
+                      color: 'var(--primary-text)',
+                      fontSize: '1rem',
+                      letterSpacing: '0.1em',
+                      textTransform: 'uppercase',
+                      fontWeight: '500'
+                    }}
+                  >
+                    Dress Code
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-crimson)',
+                      fontSize: '1.125rem',
+                      color: 'var(--secondary-text)',
+                      fontStyle: 'italic',
+                      lineHeight: '1.6'
+                    }}
+                  >
+                    Traje Social
+                  </div>
+                </div>
               </div>
-              <div>
-                <div className="font-semibold text-gray-800">Local</div>
-                <div>{CONSTABLE_GALERIE.name}</div>
-              </div>
-              <div>
-                <div className="font-semibold text-gray-800">Bairro</div>
-                <div>Eng. Luciano Cavalcante</div>
-              </div>
-              <div>
-                <div className="font-semibold text-gray-800">Dress Code</div>
-                <div>Traje Social</div>
-              </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </motion.div>
       </div>
     </section>

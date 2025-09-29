@@ -60,18 +60,31 @@ export default function RsvpPage() {
   }
 
   return (
-    <div className="min-h-screen bg-hero-gradient">
+    <div className="rsvp-background">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/10 backdrop-blur-md border-b border-white/20">
+      <nav className="fixed top-0 left-0 right-0 z-50" style={{
+        background: 'rgba(254, 254, 254, 0.25)',
+        backdropFilter: 'blur(10px)',
+        borderBottom: '1px solid var(--border-subtle)'
+      }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link href="/" className="flex items-center space-x-2">
-              <Heart className="h-8 w-8 text-blush-500" fill="currentColor" />
-              <span className="font-bold text-xl bg-gradient-to-r from-blush-600 to-burgundy-600 bg-clip-text text-transparent">
+              <Heart className="h-8 w-8" style={{ color: 'var(--decorative)' }} fill="currentColor" />
+              <span className="font-bold text-xl" style={{
+                fontFamily: 'var(--font-playfair)',
+                color: 'var(--primary-text)',
+                letterSpacing: '0.1em'
+              }}>
                 H & Y
               </span>
             </Link>
-            <Link href="/" className="text-burgundy-700 hover:text-blush-600 transition-colors duration-300 font-medium">
+            <Link href="/" className="font-medium transition-colors duration-300" style={{
+              color: 'var(--secondary-text)',
+              fontFamily: 'var(--font-crimson)',
+              fontSize: '0.9rem'
+            }} onMouseEnter={(e) => e.target.style.color = 'var(--decorative)'}
+               onMouseLeave={(e) => e.target.style.color = 'var(--secondary-text)'}>
               ← Voltar ao início
             </Link>
           </div>
@@ -86,16 +99,25 @@ export default function RsvpPage() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blush-400 to-blush-600 rounded-full mb-6"
+              className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-6"
+              style={{
+                background: 'var(--decorative)',
+                boxShadow: '0 4px 6px -1px var(--shadow-subtle)'
+              }}
             >
-              <Heart className="w-8 h-8 text-white" fill="currentColor" />
+              <Heart className="w-8 h-8" style={{ color: 'var(--white-soft)' }} fill="currentColor" />
             </motion.div>
 
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-4xl md:text-5xl font-playfair font-bold text-burgundy-800 mb-4"
+              className="text-4xl md:text-5xl font-bold mb-4"
+              style={{
+                fontFamily: 'var(--font-playfair)',
+                color: 'var(--primary-text)',
+                letterSpacing: '0.1em'
+              }}
             >
               RSVP
             </motion.h1>
@@ -104,7 +126,12 @@ export default function RsvpPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-xl text-burgundy-600 mb-8"
+              className="text-xl mb-8"
+              style={{
+                fontFamily: 'var(--font-crimson)',
+                color: 'var(--secondary-text)',
+                fontStyle: 'italic'
+              }}
             >
               Confirme sua presença em nosso dia especial
             </motion.p>
@@ -114,23 +141,55 @@ export default function RsvpPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="glass rounded-2xl p-6 max-w-2xl mx-auto mb-12"
+              className="rounded-2xl p-6 max-w-2xl mx-auto mb-12"
+              style={{
+                background: 'var(--white-soft)',
+                border: '1px solid var(--border-subtle)',
+                boxShadow: '0 4px 6px -1px var(--shadow-subtle), 0 2px 4px -1px var(--shadow-medium)'
+              }}
             >
               <div className="grid md:grid-cols-3 gap-6 text-center">
                 <div className="flex flex-col items-center">
-                  <Calendar className="w-8 h-8 text-blush-500 mb-2" />
-                  <h3 className="font-semibold text-burgundy-800">Data</h3>
-                  <p className="text-burgundy-600">20 de Novembro de 2025</p>
+                  <Calendar className="w-8 h-8 mb-2" style={{ color: 'var(--decorative)' }} />
+                  <h3 className="font-semibold mb-2" style={{
+                    fontFamily: 'var(--font-playfair)',
+                    color: 'var(--primary-text)',
+                    fontSize: '1.1rem',
+                    letterSpacing: '0.05em'
+                  }}>Data</h3>
+                  <p style={{
+                    fontFamily: 'var(--font-crimson)',
+                    color: 'var(--secondary-text)',
+                    fontStyle: 'italic'
+                  }}>20 de Novembro de 2025</p>
                 </div>
                 <div className="flex flex-col items-center">
-                  <Clock className="w-8 h-8 text-blush-500 mb-2" />
-                  <h3 className="font-semibold text-burgundy-800">Horário</h3>
-                  <p className="text-burgundy-600">16:00h</p>
+                  <Clock className="w-8 h-8 mb-2" style={{ color: 'var(--decorative)' }} />
+                  <h3 className="font-semibold mb-2" style={{
+                    fontFamily: 'var(--font-playfair)',
+                    color: 'var(--primary-text)',
+                    fontSize: '1.1rem',
+                    letterSpacing: '0.05em'
+                  }}>Horário</h3>
+                  <p style={{
+                    fontFamily: 'var(--font-crimson)',
+                    color: 'var(--secondary-text)',
+                    fontStyle: 'italic'
+                  }}>10:30h</p>
                 </div>
                 <div className="flex flex-col items-center">
-                  <MapPin className="w-8 h-8 text-blush-500 mb-2" />
-                  <h3 className="font-semibold text-burgundy-800">Local</h3>
-                  <p className="text-burgundy-600">Em breve</p>
+                  <MapPin className="w-8 h-8 mb-2" style={{ color: 'var(--decorative)' }} />
+                  <h3 className="font-semibold mb-2" style={{
+                    fontFamily: 'var(--font-playfair)',
+                    color: 'var(--primary-text)',
+                    fontSize: '1.1rem',
+                    letterSpacing: '0.05em'
+                  }}>Local</h3>
+                  <p style={{
+                    fontFamily: 'var(--font-crimson)',
+                    color: 'var(--secondary-text)',
+                    fontStyle: 'italic'
+                  }}>Luciano Cavalcante</p>
                 </div>
               </div>
             </motion.div>
@@ -146,20 +205,38 @@ export default function RsvpPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
-                  className="glass rounded-2xl p-8"
+                  className="rounded-2xl p-8"
+                  style={{
+                    background: 'var(--white-soft)',
+                    border: '1px solid var(--border-subtle)',
+                    boxShadow: '0 4px 6px -1px var(--shadow-subtle), 0 2px 4px -1px var(--shadow-medium)'
+                  }}
                 >
                   <div className="text-center mb-8">
-                    <h2 className="text-2xl font-playfair font-bold text-burgundy-800 mb-4">
+                    <h2 className="text-2xl font-bold mb-4" style={{
+                      fontFamily: 'var(--font-playfair)',
+                      color: 'var(--primary-text)',
+                      letterSpacing: '0.05em'
+                    }}>
                       Tem um código de convite? ✨
                     </h2>
-                    <p className="text-burgundy-600">
+                    <p style={{
+                      fontFamily: 'var(--font-crimson)',
+                      color: 'var(--secondary-text)',
+                      fontStyle: 'italic',
+                      fontSize: '1.1rem'
+                    }}>
                       Digite seu código para uma experiência personalizada, ou prossiga sem código.
                     </p>
                   </div>
 
                   <div className="max-w-md mx-auto space-y-6">
                     <div>
-                      <label htmlFor="invitation-code" className="block text-sm font-medium text-burgundy-700 mb-2">
+                      <label htmlFor="invitation-code" className="block text-sm font-medium mb-2" style={{
+                        fontFamily: 'var(--font-playfair)',
+                        color: 'var(--primary-text)',
+                        letterSpacing: '0.05em'
+                      }}>
                         Código do convite
                       </label>
                       <input
@@ -172,12 +249,31 @@ export default function RsvpPage() {
                         }}
                         onKeyDown={(e) => e.key === 'Enter' && handleLookup()}
                         placeholder="Ex: ABC12345"
-                        className="w-full px-4 py-3 border rounded-xl transition-all duration-200 bg-white/50 backdrop-blur-sm border-blush-200 focus:border-blush-400 focus:ring-2 focus:ring-blush-400/20 placeholder:text-gray-400 text-center font-mono uppercase"
+                        className="w-full px-4 py-3 border rounded-xl transition-all duration-200 text-center font-mono uppercase"
+                        style={{
+                          background: 'rgba(254, 254, 254, 0.8)',
+                          borderColor: 'var(--border-subtle)',
+                          color: 'var(--primary-text)'
+                        }}
+                        onFocus={(e) => {
+                          e.target.style.borderColor = 'var(--decorative)'
+                          e.target.style.boxShadow = '0 0 0 2px rgba(168, 168, 168, 0.2)'
+                        }}
+                        onBlur={(e) => {
+                          e.target.style.borderColor = 'var(--border-subtle)'
+                          e.target.style.boxShadow = 'none'
+                        }}
                         maxLength={8}
                       />
                       {lookupError && (
-                        <p className="mt-2 text-sm text-red-600 flex items-center justify-center">
-                          <svg className="w-4 h-4 mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <p className="mt-2 text-sm flex items-center justify-center" style={{
+                          color: 'var(--secondary-text)',
+                          fontFamily: 'var(--font-crimson)',
+                          fontStyle: 'italic'
+                        }}>
+                          <svg className="w-4 h-4 mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" style={{
+                            color: 'var(--decorative)'
+                          }}>
                             <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                           </svg>
                           {lookupError}
@@ -207,7 +303,11 @@ export default function RsvpPage() {
                       </Button>
                     </div>
 
-                    <p className="text-sm text-center text-gray-500">
+                    <p className="text-sm text-center" style={{
+                      color: 'var(--text-muted)',
+                      fontFamily: 'var(--font-crimson)',
+                      fontStyle: 'italic'
+                    }}>
                       O código está no seu convite físico ou digital
                     </p>
                   </div>
@@ -221,13 +321,24 @@ export default function RsvpPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
-                  className="glass rounded-2xl p-8"
+                  className="rounded-2xl p-8"
+                  style={{
+                    background: 'var(--white-soft)',
+                    border: '1px solid var(--border-subtle)',
+                    boxShadow: '0 4px 6px -1px var(--shadow-subtle), 0 2px 4px -1px var(--shadow-medium)'
+                  }}
                 >
                   {foundGuest && (
-                    <div className="mb-8 p-4 bg-sage-50 border border-sage-200 rounded-xl">
-                      <div className="flex items-center text-sage-700">
-                        <CheckCircle className="w-5 h-5 mr-2 text-sage-600" />
-                        <span className="font-medium">Convite encontrado para {foundGuest.name}!</span>
+                    <div className="mb-8 p-4 rounded-xl" style={{
+                      background: 'var(--accent)',
+                      border: '1px solid var(--border-subtle)'
+                    }}>
+                      <div className="flex items-center" style={{ color: 'var(--primary-text)' }}>
+                        <CheckCircle className="w-5 h-5 mr-2" style={{ color: 'var(--decorative)' }} />
+                        <span className="font-medium" style={{
+                          fontFamily: 'var(--font-playfair)',
+                          letterSpacing: '0.05em'
+                        }}>Convite encontrado para {foundGuest.name}!</span>
                       </div>
                     </div>
                   )}
@@ -238,7 +349,7 @@ export default function RsvpPage() {
                     onError={handleRsvpError}
                   />
 
-                  <div className="mt-8 pt-6 border-t border-blush-200">
+                  <div className="mt-8 pt-6" style={{ borderTop: '1px solid var(--border-subtle)' }}>
                     <Button
                       onClick={() => setCurrentView('lookup')}
                       variant="ghost"
@@ -259,22 +370,38 @@ export default function RsvpPage() {
                   exit={{ opacity: 0, scale: 0.9 }}
                   className="text-center"
                 >
-                  <div className="glass rounded-2xl p-8 max-w-2xl mx-auto">
+                  <div className="rounded-2xl p-8 max-w-2xl mx-auto" style={{
+                    background: 'var(--white-soft)',
+                    border: '1px solid var(--border-subtle)',
+                    boxShadow: '0 4px 6px -1px var(--shadow-subtle), 0 2px 4px -1px var(--shadow-medium)'
+                  }}>
                     <motion.div
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ delay: 0.2, type: "spring" }}
-                      className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-sage-400 to-sage-600 rounded-full mb-6"
+                      className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-6"
+                      style={{
+                        background: 'var(--decorative)',
+                        boxShadow: '0 4px 6px -1px var(--shadow-subtle)'
+                      }}
                     >
-                      <CheckCircle className="w-10 h-10 text-white" />
+                      <CheckCircle className="w-10 h-10" style={{ color: 'var(--white-soft)' }} />
                     </motion.div>
 
-                    <h2 className="text-3xl font-playfair font-bold text-burgundy-800 mb-4">
+                    <h2 className="text-3xl font-bold mb-4" style={{
+                      fontFamily: 'var(--font-playfair)',
+                      color: 'var(--primary-text)',
+                      letterSpacing: '0.05em'
+                    }}>
                       {submittedGuest.attending ? '🎉 RSVP Confirmado!' : '💙 Obrigado pela resposta'}
                     </h2>
 
                     {submittedGuest.attending ? (
-                      <div className="space-y-4 text-burgundy-600">
+                      <div className="space-y-4" style={{
+                        color: 'var(--secondary-text)',
+                        fontFamily: 'var(--font-crimson)',
+                        fontStyle: 'italic'
+                      }}>
                         <p className="text-lg">
                           <strong>{submittedGuest.name}</strong>, não vemos a hora de celebrar com você!
                         </p>
@@ -283,8 +410,15 @@ export default function RsvpPage() {
                             E também estamos ansiosos para conhecer <strong>{submittedGuest.plus_one_name}</strong>!
                           </p>
                         )}
-                        <div className="bg-blush-50 border border-blush-200 rounded-xl p-6 my-6">
-                          <h3 className="font-semibold text-burgundy-800 mb-3">Próximos passos:</h3>
+                        <div className="rounded-xl p-6 my-6" style={{
+                          background: 'var(--accent)',
+                          border: '1px solid var(--border-subtle)'
+                        }}>
+                          <h3 className="font-semibold mb-3" style={{
+                            fontFamily: 'var(--font-playfair)',
+                            color: 'var(--primary-text)',
+                            letterSpacing: '0.05em'
+                          }}>Próximos passos:</h3>
                           <ul className="text-left space-y-2 text-sm">
                             <li>• Você receberá um e-mail de confirmação em breve</li>
                             <li>• Fique atento para mais detalhes sobre o local</li>
@@ -294,7 +428,11 @@ export default function RsvpPage() {
                         </div>
                       </div>
                     ) : (
-                      <div className="space-y-4 text-burgundy-600">
+                      <div className="space-y-4" style={{
+                        color: 'var(--secondary-text)',
+                        fontFamily: 'var(--font-crimson)',
+                        fontStyle: 'italic'
+                      }}>
                         <p className="text-lg">
                           Entendemos, <strong>{submittedGuest.name}</strong>. Obrigado por nos informar.
                         </p>
@@ -302,8 +440,14 @@ export default function RsvpPage() {
                           Mesmo não podendo estar presente, você estará em nossos corações! ❤️
                         </p>
                         {submittedGuest.special_requests && (
-                          <div className="bg-cream-50 border border-cream-200 rounded-xl p-4 my-6">
-                            <p className="text-sm italic">&ldquo;{submittedGuest.special_requests}&rdquo;</p>
+                          <div className="rounded-xl p-4 my-6" style={{
+                            background: 'var(--accent)',
+                            border: '1px solid var(--border-subtle)'
+                          }}>
+                            <p className="text-sm italic" style={{
+                              fontFamily: 'var(--font-crimson)',
+                              color: 'var(--secondary-text)'
+                            }}>&ldquo;{submittedGuest.special_requests}&rdquo;</p>
                           </div>
                         )}
                       </div>
@@ -312,7 +456,7 @@ export default function RsvpPage() {
                     <div className="flex flex-col sm:flex-row gap-4 mt-8">
                       <Button
                         onClick={() => window.location.href = '/'}
-                        variant="romantic"
+                        variant="wedding"
                         size="lg"
                         className="flex-1"
                       >
@@ -320,8 +464,8 @@ export default function RsvpPage() {
                       </Button>
                       {submittedGuest.attending && (
                         <Button
-                          onClick={() => window.location.href = '/registry'}
-                          variant="outline"
+                          onClick={() => window.location.href = '/presentes'}
+                          variant="wedding-outline"
                           size="lg"
                           className="flex-1"
                         >
@@ -331,7 +475,7 @@ export default function RsvpPage() {
                     </div>
 
                     {/* Change RSVP Option */}
-                    <div className="mt-8 pt-6 border-t border-blush-200">
+                    <div className="mt-8 pt-6" style={{ borderTop: '1px solid var(--border-subtle)' }}>
                       <Button
                         onClick={() => {
                           setCurrentView('form')
@@ -354,7 +498,8 @@ export default function RsvpPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="text-center mt-16 text-burgundy-600"
+            className="text-center mt-16"
+            style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}
           >
             <p className="text-sm">
               Feito com ❤️ para celebrar nossos mil dias de amor
