@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Play, Pause, Volume2, VolumeX } from 'lucide-react'
+import AnimatedTitle from './AnimatedTitle'
 
 interface HeroVideoSectionProps {
   videoUrl: string
@@ -151,9 +152,16 @@ export default function HeroVideoSection({
           transition={{ duration: 1, delay: 0.5 }}
         >
           <h1 className="hero-title text-white mb-6 leading-none">
-            <span className="bg-gradient-to-r from-rose-200 via-pink-200 to-purple-200 bg-clip-text text-transparent">
-              {title}
-            </span>
+            {title === '1000' ? (
+              <AnimatedTitle
+                className="bg-gradient-to-r from-rose-200 via-pink-200 to-purple-200 bg-clip-text text-transparent"
+                delay={1.5}
+              />
+            ) : (
+              <span className="bg-gradient-to-r from-rose-200 via-pink-200 to-purple-200 bg-clip-text text-transparent">
+                {title}
+              </span>
+            )}
           </h1>
 
           {subtitle && (

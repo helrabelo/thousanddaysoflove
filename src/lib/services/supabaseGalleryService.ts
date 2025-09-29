@@ -3,10 +3,31 @@ import { MediaItem, TimelineEvent, GalleryStats, GalleryFilter } from '@/types/w
 
 // Supabase-based Gallery service for real storage and persistence
 export class SupabaseGalleryService {
-  private static supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
+  private static _supabase: any = null
+  private static _supabaseAdmin: any = null
+
+  // Lazy-load regular client
+  private static get supabase() {
+    if (!this._supabase) {
+      this._supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      )
+    }
+    return this._supabase
+  }
+
+  // Lazy-load service role client for admin operations
+  private static get supabaseAdmin() {
+    if (!this._supabaseAdmin) {
+      this._supabaseAdmin = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+      )
+    }
+    return this._supabaseAdmin
+  }
+
   private static readonly BUCKET_NAME = 'wedding-media'
 
   // Media Items Management with Supabase Storage
@@ -165,14 +186,15 @@ export class SupabaseGalleryService {
     }
   }
 
-  // File Upload to Supabase Storage
+  // File Upload to Supabase Storage (using admin client for permissions)
   static async uploadFile(file: File, category: string = 'special_moments'): Promise<string> {
     try {
       const fileExt = file.name.split('.').pop()
       const fileName = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`
       const filePath = `${category}/${fileName}`
 
-      const { data, error } = await this.supabase.storage
+      // Use admin client for file uploads to bypass RLS
+      const { data, error } = await this.supabaseAdmin.storage
         .from(this.BUCKET_NAME)
         .upload(filePath, file, {
           cacheControl: '3600',
@@ -406,15 +428,17 @@ export class SupabaseGalleryService {
     }
   }
 
-  // Utility method to ensure storage bucket exists
+  // Utility method to ensure storage bucket exists (using admin client)
   static async ensureBucketExists(): Promise<void> {
     try {
-      const { data, error } = await this.supabase.storage.getBucket(this.BUCKET_NAME)
+      const { data, error } = await this.supabaseAdmin.storage.getBucket(this.BUCKET_NAME)
 
       if (error && error.message.includes('not found')) {
         // Create bucket if it doesn't exist
-        const { error: createError } = await this.supabase.storage.createBucket(this.BUCKET_NAME, {
-          public: true
+        const { error: createError } = await this.supabaseAdmin.storage.createBucket(this.BUCKET_NAME, {
+          public: true,
+          allowedMimeTypes: ['image/*', 'video/*'],
+          fileSizeLimit: 50 * 1024 * 1024 // 50MB
         })
 
         if (createError) {

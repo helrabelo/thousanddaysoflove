@@ -313,8 +313,8 @@ export default function GaleriaPage() {
       <HeroVideoSection
         videoUrl="/videos/hero-love-story.mp4"
         posterUrl="/images/hero-poster.jpg"
-        title="Mil Dias de Amor"
-        subtitle="Uma jornada fotográfica através dos momentos mais especiais da nossa história de amor. Cada imagem conta uma parte da nossa jornada até o altar."
+        title="1000"
+        subtitle="Mil dias de amor que se transformam em H♥Y. Uma jornada fotográfica através dos momentos mais especiais da nossa história de amor. Cada imagem conta uma parte da nossa jornada até o altar."
         overlayOpacity={0.5}
         textPosition="center"
         autoPlay={true}

@@ -178,14 +178,30 @@ export default function MediaUploader({
     setUploadProgress(0)
 
     try {
-      // Convert MediaUpload to File array for Supabase service
-      const files = uploads.map(upload => upload.file)
+      // Upload files via API route (more secure than direct client upload)
+      const uploadedItems = []
 
-      // Update progress during upload
-      setUploadProgress(30)
+      for (let i = 0; i < uploads.length; i++) {
+        const upload = uploads[i]
+        setUploadProgress((i / uploads.length) * 80)
 
-      // Upload files to Supabase Storage and create database entries
-      const uploadedItems = await SupabaseGalleryService.uploadFiles(files)
+        const formData = new FormData()
+        formData.append('file', upload.file)
+        formData.append('category', upload.category)
+
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData
+        })
+
+        if (!response.ok) {
+          const error = await response.json()
+          throw new Error(error.error || 'Upload failed')
+        }
+
+        const result = await response.json()
+        uploadedItems.push(result.data)
+      }
 
       setUploadProgress(80)
 
