@@ -1,0 +1,643 @@
+/**
+ * Mobile Enhancements for Thousand Days of Love Wedding Website
+ * Elegant mobile-first refinements for sophisticated monochromatic design
+ *
+ * Applied after globals.css and wedding-theme.css
+ * Optimized for Brazilian mobile users (iOS Safari + Android Chrome)
+ */
+
+/* ==========================================================================
+   iOS Safari Optimizations
+   ========================================================================== */
+
+@supports (-webkit-touch-callout: none) {
+  /* Fix iOS viewport height issue (notch, home indicator) */
+  .min-h-screen {
+    min-height: -webkit-fill-available;
+  }
+
+  /* Use dynamic viewport height when supported */
+  @supports (height: 100dvh) {
+    .min-h-screen {
+      min-height: 100dvh;
+    }
+  }
+
+  /* Prevent iOS zoom on input focus */
+  input,
+  select,
+  textarea {
+    font-size: 16px !important; /* Critical - prevents zoom */
+  }
+
+  /* Smooth momentum scrolling */
+  body {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain; /* Prevent pull-to-refresh during scroll */
+  }
+}
+
+/* ==========================================================================
+   Remove Platform Tap Highlights
+   ========================================================================== */
+
+* {
+  /* iOS Safari tap highlight */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+
+  /* Android Chrome tap highlight */
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+/* Prevent text inflation on Android */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* ==========================================================================
+   Mobile Typography Refinements
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  /* Reduce line-height for less scrolling */
+  .wedding-body,
+  p[style*="font-family: var(--font-crimson)"] {
+    line-height: 1.6 !important; /* From 1.8 */
+  }
+
+  /* Tighter letter-spacing on mobile */
+  h1,
+  h2,
+  h3,
+  .wedding-monogram,
+  .wedding-names,
+  [style*="letter-spacing: 0.15em"] {
+    letter-spacing: 0.08em !important; /* From 0.15em */
+  }
+
+  /* Hero monogram size optimization */
+  .wedding-monogram {
+    font-size: clamp(2.5rem, 10vw, 4rem) !important; /* 40-64px instead of 48-112px */
+  }
+
+  /* Names optimization */
+  .wedding-names {
+    font-size: clamp(2rem, 8vw, 3rem) !important; /* 32-48px */
+  }
+
+  /* Body text optimization */
+  .wedding-body {
+    font-size: clamp(1rem, 3vw, 1.25rem) !important; /* 16-20px */
+  }
+
+  /* Countdown numbers - smaller on mobile */
+  [class*="text-5xl"],
+  [class*="text-7xl"] {
+    font-size: clamp(2.5rem, 10vw, 4rem) !important; /* 40-64px instead of 72px */
+  }
+
+  /* Countdown labels - readable but compact */
+  .countdown-label,
+  [class*="countdown"] [class*="text-sm"],
+  [class*="countdown"] [class*="text-lg"] {
+    font-size: clamp(0.75rem, 2vw, 0.875rem) !important; /* 12-14px */
+  }
+
+  /* Reduce padding on cards */
+  [class*="rounded"][class*="p-10"],
+  [class*="rounded"][class*="p-12"],
+  [class*="rounded"][class*="p-16"] {
+    padding: 1.5rem !important; /* From 40-64px to 24px */
+  }
+
+  /* Progressive button padding */
+  button[class*="px-12"],
+  button[class*="px-16"],
+  button[class*="px-20"] {
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+  }
+
+  /* Tighter heading line-height */
+  h1,
+  h2,
+  h3 {
+    line-height: 1.25 !important;
+  }
+
+  /* Paragraph spacing */
+  p {
+    margin-bottom: 1.25rem;
+  }
+}
+
+/* Small phones (iPhone SE, Galaxy S8, etc.) */
+@media (max-width: 375px) {
+  /* Extra tight spacing */
+  section {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  /* Smaller buttons */
+  button {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+    font-size: 0.875rem !important;
+  }
+
+  /* Single column grids */
+  .grid[class*="grid-cols-2"],
+  .grid[class*="grid-cols-3"],
+  .grid[class*="grid-cols-4"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Smaller hero elements */
+  .wedding-monogram {
+    font-size: 2.5rem !important;
+    margin-bottom: 1rem !important;
+  }
+}
+
+/* ==========================================================================
+   Touch Target Accessibility (WCAG 2.5.5)
+   ========================================================================== */
+
+@media (pointer: coarse) {
+  /* Minimum 44x44px touch targets */
+  button,
+  a,
+  [role="button"],
+  input[type="checkbox"],
+  input[type="radio"],
+  select {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Touch-friendly active states */
+  button:active,
+  a:active,
+  [role="button"]:active {
+    transform: scale(0.97);
+    opacity: 0.9;
+    transition: all 0.1s ease;
+  }
+
+  /* Navigation menu links */
+  nav a {
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Countdown easter egg click area */
+  [class*="countdown"] [class*="cursor-pointer"] {
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* ==========================================================================
+   Landscape Mobile Optimization
+   ========================================================================== */
+
+@media (max-width: 768px) and (orientation: landscape) {
+  /* Reduce vertical spacing in landscape */
+  .min-h-screen {
+    min-height: auto;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+
+  /* Smaller hero elements for limited height */
+  .wedding-monogram {
+    font-size: 2rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .wedding-names {
+    font-size: 1.75rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  /* Horizontal countdown layout */
+  [class*="countdown"] [class*="flex-col"] {
+    flex-direction: row !important;
+    gap: 1rem !important;
+  }
+
+  /* Reduce card padding */
+  [class*="p-6"],
+  [class*="p-8"],
+  [class*="p-10"] {
+    padding: 1rem !important;
+  }
+}
+
+/* ==========================================================================
+   High Contrast Mobile (Sunlight Readability)
+   ========================================================================== */
+
+@media (max-width: 768px) and (prefers-contrast: high) {
+  :root {
+    /* Darker colors for outdoor mobile use */
+    --primary-text: #1A1A1A;
+    --secondary-text: #2C2C2C;
+    --border-subtle: #8A8A8A;
+  }
+
+  /* Stronger shadows for depth perception */
+  [style*="box-shadow"] {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
+  }
+
+  /* Thicker borders */
+  [style*="border: 1px"] {
+    border-width: 2px !important;
+  }
+}
+
+/* ==========================================================================
+   Reduced Motion / Battery Saver
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  /* Disable all animations */
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  /* Keep essential transitions for usability */
+  button,
+  a,
+  input,
+  select {
+    transition: opacity 0.2s ease !important;
+  }
+
+  /* Remove floating animations */
+  .animate-float,
+  .animate-heartbeat,
+  .animate-shimmer,
+  .animate-romantic-pulse,
+  .animate-gentle-bounce,
+  .animate-love-sparkle {
+    animation: none !important;
+  }
+
+  /* Static background patterns */
+  .invitation-background,
+  .rsvp-background,
+  .botanical-texture-background,
+  .subtle-pattern-background {
+    background-attachment: scroll !important;
+  }
+}
+
+/* ==========================================================================
+   Mobile Performance Optimizations
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  /* Reduce animation complexity */
+  .animate-float {
+    animation-duration: 4s; /* Slower from 3s */
+  }
+
+  .animate-heartbeat {
+    animation-iteration-count: 3; /* Limit from infinite */
+  }
+
+  /* Disable resource-heavy animations */
+  .animate-shimmer {
+    animation: none;
+    opacity: 0.9; /* Static slight highlight */
+  }
+
+  .animate-love-sparkle {
+    animation-duration: 3s; /* Slower from 2s */
+  }
+
+  /* Faster transitions */
+  .romantic-hover::before {
+    transition-duration: 0.4s; /* Faster from 0.6s */
+  }
+
+  /* Scroll performance */
+  .invitation-background,
+  .rsvp-background,
+  .botanical-texture-background,
+  .subtle-pattern-background {
+    background-attachment: scroll; /* Better performance than fixed */
+  }
+}
+
+/* ==========================================================================
+   Form Input Optimizations
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  /* Prevent zoom on focus (iOS/Android) */
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="search"],
+  select,
+  textarea {
+    font-size: 16px !important;
+    line-height: 1.5;
+  }
+
+  /* Touch-friendly input padding */
+  input,
+  select,
+  textarea {
+    padding: 0.875rem !important; /* 14px */
+    min-height: 48px;
+  }
+
+  /* Larger tap targets for checkboxes/radios */
+  input[type="checkbox"],
+  input[type="radio"] {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    min-height: 24px;
+  }
+}
+
+/* ==========================================================================
+   Mobile Modal/Dialog Enhancements
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  /* Full-screen modals on mobile */
+  [class*="fixed"][class*="inset-0"] > div {
+    margin: 1rem;
+    max-height: calc(100vh - 2rem);
+    max-height: calc(100dvh - 2rem);
+    overflow-y: auto;
+  }
+
+  /* Easter egg modal mobile margins */
+  [class*="easter-egg"] {
+    margin: 1rem !important;
+  }
+
+  /* Modal padding */
+  [class*="modal"] [class*="p-8"],
+  [class*="modal"] [class*="p-10"] {
+    padding: 1.5rem !important;
+  }
+}
+
+/* ==========================================================================
+   Grid Responsive Enhancements
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  /* Stats grid - 2 columns on mobile */
+  .grid.grid-cols-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1rem !important;
+  }
+
+  /* Filter grid - stack on mobile */
+  [class*="grid-cols-4"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Progressive grid scaling */
+  .grid[class*="md:grid-cols"] {
+    gap: 1rem !important;
+  }
+}
+
+/* ==========================================================================
+   Print Optimization for Mobile
+   ========================================================================== */
+
+@media print {
+  /* Hide navigation and interactive elements */
+  nav,
+  button,
+  .no-print,
+  [class*="animate"],
+  [class*="hover"],
+  [class*="easter-egg"] {
+    display: none !important;
+  }
+
+  /* Optimize spacing */
+  * {
+    page-break-inside: avoid;
+  }
+
+  section {
+    page-break-inside: avoid;
+    margin-bottom: 1rem !important;
+  }
+
+  /* Black text on white */
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  h1,
+  h2,
+  h3,
+  p {
+    color: black !important;
+  }
+
+  /* Wedding invitation print optimization */
+  .wedding-invitation {
+    background: white !important;
+    border: 2px solid black !important;
+    box-shadow: none !important;
+    margin: 1in;
+    page-break-inside: avoid;
+  }
+}
+
+/* ==========================================================================
+   Brazilian Mobile Context (WhatsApp, Instagram)
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  /* Optimize for WhatsApp in-app browser */
+  @supports (-webkit-overflow-scrolling: touch) {
+    body {
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+
+  /* Share button optimization */
+  [class*="share-button"] {
+    min-height: 48px;
+    padding: 0.875rem 1.5rem;
+  }
+
+  /* WhatsApp green accent (optional) */
+  .whatsapp-button {
+    background-color: #25D366;
+    color: white;
+  }
+
+  .whatsapp-button:hover {
+    background-color: #1DA851;
+  }
+}
+
+/* ==========================================================================
+   Accessibility Enhancements
+   ========================================================================== */
+
+/* Skip to content link for screen readers */
+.skip-to-content {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--primary-text);
+  color: var(--white-soft);
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  border-radius: 0 0 4px 0;
+  z-index: 100;
+}
+
+.skip-to-content:focus {
+  top: 0;
+}
+
+/* Focus indicators for keyboard navigation */
+@media (max-width: 768px) {
+  *:focus-visible {
+    outline: 3px solid var(--decorative); /* Thicker on mobile */
+    outline-offset: 3px;
+  }
+}
+
+/* Screen reader only text */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ==========================================================================
+   Loading States Mobile
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  /* Loading spinner sizing */
+  .loading-spinner {
+    width: 48px !important;
+    height: 48px !important;
+  }
+
+  /* Loading text */
+  .loading-text {
+    font-size: 1rem !important;
+    margin-top: 1rem !important;
+  }
+}
+
+/* ==========================================================================
+   Utility Classes
+   ========================================================================== */
+
+/* Hide on mobile */
+@media (max-width: 768px) {
+  .mobile-hidden {
+    display: none !important;
+  }
+}
+
+/* Show only on mobile */
+@media (min-width: 769px) {
+  .mobile-only {
+    display: none !important;
+  }
+}
+
+/* Touch-friendly spacing */
+.touch-spacing {
+  margin: 0.5rem 0;
+}
+
+@media (max-width: 768px) {
+  .touch-spacing {
+    margin: 0.75rem 0;
+  }
+}
+
+/* Safe area padding (iPhone X+) */
+.safe-area-padding {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+.safe-area-padding-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-padding-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ==========================================================================
+   Mobile-Specific Romantic Enhancements
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  /* Tap-to-reveal tooltips */
+  [data-mobile-tooltip] {
+    position: relative;
+  }
+
+  [data-mobile-tooltip]:active::after {
+    content: attr(data-mobile-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--white-soft);
+    color: var(--primary-text);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px var(--shadow-medium);
+    z-index: 100;
+  }
+
+  /* Mobile heart cursor alternative */
+  .love-cursor {
+    cursor: pointer;
+  }
+
+  .love-cursor:active {
+    transform: scale(0.95);
+  }
+}
+
+/* ==========================================================================
+   End Mobile Enhancements
+   ========================================================================== */

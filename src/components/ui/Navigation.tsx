@@ -50,10 +50,10 @@ export default function Navigation() {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50" style={{ background: 'var(--white-soft)', borderBottom: '1px solid var(--border-subtle)' }}>
-      <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Elegant Logo */}
-          <Link href="/" className="flex items-center">
+          <Link href="/" className="flex items-center min-w-[44px] min-h-[44px] -ml-2 pl-2">
             <span className="text-2xl" style={{ fontFamily: 'var(--monogram-font)', color: 'var(--primary-text)', fontWeight: '300', letterSpacing: '0.15em' }}>
               H <span className="heart-symbol">♥</span> Y
             </span>
@@ -65,7 +65,7 @@ export default function Navigation() {
               <motion.div key={item.name} className="relative group">
                 <Link
                   href={item.href}
-                  className="flex items-center gap-2 transition-all duration-300 relative"
+                  className="flex items-center gap-2 transition-all duration-300 relative min-h-[44px] px-2"
                   style={{
                     fontFamily: 'var(--font-playfair)',
                     color: 'var(--secondary-text)',
@@ -116,18 +116,20 @@ export default function Navigation() {
             ))}
           </div>
 
-          {/* Mobile menu button */}
+          {/* Mobile menu button - Increased touch target */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 transition-colors"
+            className="md:hidden p-3 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center -mr-2"
             style={{ color: 'var(--primary-text)' }}
+            aria-label={isOpen ? 'Fechar menu' : 'Abrir menu'}
+            aria-expanded={isOpen}
           >
-            {isOpen ? <X className="h-5 w-5" strokeWidth={1.5} /> : <Menu className="h-5 w-5" strokeWidth={1.5} />}
+            {isOpen ? <X className="h-6 w-6" strokeWidth={1.5} /> : <Menu className="h-6 w-6" strokeWidth={1.5} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Navigation */}
+      {/* Mobile Navigation - Improved */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -138,25 +140,25 @@ export default function Navigation() {
             className="md:hidden"
             style={{ background: 'var(--white-soft)', borderTop: '1px solid var(--border-subtle)' }}
           >
-            <div className="px-6 py-6 space-y-6">
+            <div className="px-4 py-6 space-y-4">
               {navItems.map((item) => (
                 <Link
                   key={item.name}
                   href={item.href}
                   onClick={() => setIsOpen(false)}
-                  className="flex items-center justify-center gap-2 transition-all duration-200 text-center py-2"
+                  className="flex items-center gap-3 transition-all duration-200 py-3 px-4 rounded-lg min-h-[44px]"
                   style={{
                     fontFamily: 'var(--font-playfair)',
                     color: 'var(--secondary-text)',
                     fontWeight: '400',
-                    fontSize: '0.9rem',
-                    letterSpacing: '0.1em'
+                    fontSize: '1rem',
+                    letterSpacing: '0.05em',
+                    touchAction: 'manipulation'
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.color = 'var(--primary-text)'
                     e.currentTarget.style.background = 'var(--accent)'
-                    e.currentTarget.style.borderRadius = '8px'
-                    e.currentTarget.style.transform = 'scale(1.05)'
+                    e.currentTarget.style.transform = 'scale(1.02)'
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.color = 'var(--secondary-text)'
@@ -164,10 +166,12 @@ export default function Navigation() {
                     e.currentTarget.style.transform = 'scale(1)'
                   }}
                 >
-                  <span className="text-sm animate-gentle-bounce">{item.icon}</span>
-                  {item.name}
-                  <div className="text-xs opacity-60 mt-1" style={{ fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
-                    {item.easterEgg}
+                  <span className="text-xl">{item.icon}</span>
+                  <div className="flex-1">
+                    <div className="font-semibold">{item.name}</div>
+                    <div className="text-xs mt-1 opacity-70" style={{ fontFamily: 'var(--font-crimson)', fontStyle: 'italic', letterSpacing: 'normal' }}>
+                      {item.easterEgg}
+                    </div>
                   </div>
                 </Link>
               ))}

@@ -1,5 +1,6 @@
 import React from 'react'
 import WeddingInvitation from '@/components/WeddingInvitation'
+import Navigation from '@/components/ui/Navigation'
 
 export const metadata = {
   title: 'Convite de Casamento | Hel & Ylana',
@@ -8,8 +9,11 @@ export const metadata = {
 
 export default function ConvitePage() {
   return (
-    <div className="invitation-background">
-      <WeddingInvitation />
-    </div>
+    <>
+      <Navigation />
+      <div className="invitation-background">
+        <WeddingInvitation />
+      </div>
+    </>
   )
 }
