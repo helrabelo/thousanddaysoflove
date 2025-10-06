@@ -137,15 +137,13 @@ body {
   font-family: var(--font-crimson);
   line-height: 1.8;
   font-style: italic;
-  /* Prevent horizontal scroll on mobile */
   overflow-x: hidden;
   max-width: 100vw;
+  padding-top: 80px; /* Offset for fixed navbar (h-20 = 80px) */
 }
 
-/* Smooth scrolling */
 html {
   scroll-behavior: smooth;
-  /* Prevent horizontal scroll */
   overflow-x: hidden;
   max-width: 100vw;
 }
@@ -184,7 +182,9 @@ html {
   background: linear-gradient(135deg, var(--blush-50) 0%, var(--cream-50) 25%, var(--sage-50) 50%, var(--blush-50) 75%, var(--cream-50) 100%);
 }
 
-/* Animations */
+/* ===== WHIMSY & DELIGHT ANIMATIONS ===== */
+
+/* Core romantic animations */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-10px); }
@@ -215,31 +215,132 @@ html {
   50% { opacity: 1; transform: scale(1) rotate(180deg); }
 }
 
-.animate-float {
-  animation: float 3s ease-in-out infinite;
+/* Pet-specific animations */
+@keyframes pet-bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-8px); }
+  60% { transform: translateY(-4px); }
 }
 
-.animate-heartbeat {
-  animation: heartbeat 2s ease-in-out infinite;
+@keyframes pet-wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+  75% { transform: rotate(-3deg); }
 }
 
-.animate-shimmer {
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  background-size: 200% 100%;
-  animation: shimmer 2s infinite;
+/* Celebration animations */
+@keyframes milestone-celebration {
+  0% { transform: scale(1) rotate(0deg); opacity: 1; }
+  25% { transform: scale(1.2) rotate(-5deg); opacity: 0.9; }
+  50% { transform: scale(1.1) rotate(5deg); opacity: 0.8; }
+  75% { transform: scale(1.15) rotate(-2deg); opacity: 0.9; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
 }
 
-.animate-romantic-pulse {
-  animation: romantic-pulse 3s ease-in-out infinite;
+@keyframes confetti-fall {
+  0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(360deg); opacity: 0.3; }
 }
 
-.animate-gentle-bounce {
-  animation: gentle-bounce 2s ease-in-out infinite;
+/* Easter egg animations */
+@keyframes easter-egg-reveal {
+  0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+  50% { transform: scale(1.2) rotate(-90deg); opacity: 0.8; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
 }
 
-.animate-love-sparkle {
-  animation: love-sparkle 2s ease-in-out infinite;
+@keyframes tooltip-romantic {
+  0% { transform: translateY(10px) scale(0.8); opacity: 0; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
 }
+
+/* Button delight animations */
+@keyframes button-press {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(0.95); }
+}
+
+@keyframes button-success {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.1); }
+  50% { transform: scale(0.95); }
+  75% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Heart trail animation */
+@keyframes heart-float {
+  0% { transform: translateY(0) scale(1); opacity: 0; }
+  20% { opacity: 0.6; }
+  100% { transform: translateY(-100px) scale(0.5); opacity: 0; }
+}
+
+/* Sparkle burst */
+@keyframes sparkle-burst {
+  0% { transform: scale(0) rotate(0deg); opacity: 1; }
+  50% { transform: scale(1.5) rotate(180deg); opacity: 0.8; }
+  100% { transform: scale(0) rotate(360deg); opacity: 0; }
+}
+
+/* Gift card delight */
+@keyframes gift-shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes gift-pulse {
+  0%, 100% { box-shadow: 0 4px 12px var(--shadow-subtle); }
+  50% { box-shadow: 0 8px 24px var(--shadow-medium); }
+}
+
+/* Loading animation with personality */
+@keyframes loader-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes loader-pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+/* Hover effects */
+@keyframes hover-lift {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-4px); }
+}
+
+/* Progress bar animations */
+@keyframes progress-shimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Animation classes */
+.animate-float { animation: float 3s ease-in-out infinite; }
+.animate-heartbeat { animation: heartbeat 2s ease-in-out infinite; }
+.animate-shimmer { animation: shimmer 2s infinite; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent); background-size: 200% 100%; }
+.animate-romantic-pulse { animation: romantic-pulse 3s ease-in-out infinite; }
+.animate-gentle-bounce { animation: gentle-bounce 2s ease-in-out infinite; }
+.animate-love-sparkle { animation: love-sparkle 2s ease-in-out infinite; }
+.animate-pet-bounce { animation: pet-bounce 1.5s ease-in-out infinite; }
+.animate-pet-wiggle { animation: pet-wiggle 2s ease-in-out infinite; }
+.animate-milestone { animation: milestone-celebration 2s ease-in-out; }
+.animate-confetti { animation: confetti-fall 3s linear; }
+.animate-easter-egg { animation: easter-egg-reveal 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+.animate-tooltip { animation: tooltip-romantic 0.3s ease-out; }
+.animate-button-press { animation: button-press 0.3s ease; }
+.animate-button-success { animation: button-success 0.6s ease; }
+.animate-heart-float { animation: heart-float 2s ease-out forwards; }
+.animate-sparkle-burst { animation: sparkle-burst 1s ease-out; }
+.animate-gift-shimmer { animation: gift-shimmer 3s linear infinite; background: linear-gradient(90deg, transparent 0%, var(--decorative-light) 50%, transparent 100%); background-size: 200% 100%; }
+.animate-gift-pulse { animation: gift-pulse 2s ease-in-out infinite; }
+.animate-loader-spin { animation: loader-spin 1s linear infinite; }
+.animate-loader-pulse { animation: loader-pulse 1.5s ease-in-out infinite; }
+.animate-hover-lift { animation: hover-lift 0.3s ease forwards; }
+.animate-progress { animation: progress-shimmer 2s ease infinite; background: linear-gradient(270deg, var(--decorative), var(--decorative-light), var(--decorative)); background-size: 200% 100%; }
 
 /* Gallery specific styles */
 .masonry-columns {
@@ -248,21 +349,10 @@ html {
   column-fill: balance;
 }
 
-@media (min-width: 640px) {
-  .masonry-columns { column-count: 2; }
-}
-
-@media (min-width: 1024px) {
-  .masonry-columns { column-count: 3; }
-}
-
-@media (min-width: 1280px) {
-  .masonry-columns { column-count: 4; }
-}
-
-@media (min-width: 1536px) {
-  .masonry-columns { column-count: 5; }
-}
+@media (min-width: 640px) { .masonry-columns { column-count: 2; } }
+@media (min-width: 1024px) { .masonry-columns { column-count: 3; } }
+@media (min-width: 1280px) { .masonry-columns { column-count: 4; } }
+@media (min-width: 1536px) { .masonry-columns { column-count: 5; } }
 
 .masonry-item {
   break-inside: avoid;
@@ -360,7 +450,7 @@ html {
   -webkit-line-clamp: 3;
 }
 
-/* Focus styles for accessibility - Wedding invitation style */
+/* Focus styles for accessibility */
 button:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
@@ -373,51 +463,32 @@ a:focus-visible {
 
 /* Enhanced accessibility for interactive elements */
 @media (hover: hover) {
-  .group:hover .group-hover\:scale-105 {
-    transform: scale(1.05);
-  }
-
-  .group:hover .group-hover\:scale-110 {
-    transform: scale(1.1);
-  }
-
-  .group:hover .group-hover\:underline {
-    text-decoration: underline;
-  }
+  .group:hover .group-hover\:scale-105 { transform: scale(1.05); }
+  .group:hover .group-hover\:scale-110 { transform: scale(1.1); }
+  .group:hover .group-hover\:underline { text-decoration: underline; }
 }
 
-/* Touch target accessibility - ENHANCED FOR MOBILE */
+/* Touch target accessibility */
 @media (pointer: coarse) {
-  button,
-  a,
-  [role="button"],
-  input[type="button"],
-  input[type="submit"],
-  .touch-target {
+  button, a, [role="button"], input[type="button"], input[type="submit"], .touch-target {
     min-height: 44px;
     min-width: 44px;
     padding: 12px;
   }
 
-  /* Ensure inputs are touch-friendly */
-  input[type="text"],
-  input[type="email"],
-  input[type="tel"],
-  input[type="search"],
-  select,
-  textarea {
+  input[type="text"], input[type="email"], input[type="tel"], input[type="search"], select, textarea {
     min-height: 48px;
-    font-size: 16px; /* Prevents iOS zoom on focus */
+    font-size: 16px;
     padding: 12px 16px;
   }
 }
 
-/* Enhanced responsive typography for wedding invitation - MOBILE OPTIMIZED */
+/* Enhanced responsive typography */
 @media (max-width: 768px) {
   body {
-    font-size: 16px; /* Minimum 16px to prevent zoom on iOS */
+    font-size: 16px;
     line-height: 1.6;
-    padding: 0 16px; /* Consistent side padding */
+    padding: 0 16px;
   }
 
   .hero-title {
@@ -432,7 +503,6 @@ a:focus-visible {
     margin-bottom: 0.75rem;
   }
 
-  /* Improve readability on mobile */
   h1, h2, h3 {
     line-height: 1.3;
     word-wrap: break-word;
@@ -445,10 +515,7 @@ a:focus-visible {
     margin-bottom: 1rem;
   }
 
-  /* Ensure buttons are properly sized on mobile */
-  button,
-  .button,
-  [role="button"] {
+  button, .button, [role="button"] {
     min-height: 48px;
     padding: 12px 24px;
     font-size: 16px;
@@ -456,73 +523,31 @@ a:focus-visible {
     max-width: 100%;
   }
 
-  /* Mobile-friendly form elements */
-  input,
-  select,
-  textarea {
-    font-size: 16px !important; /* Prevents iOS zoom */
+  input, select, textarea {
+    font-size: 16px !important;
     width: 100%;
     max-width: 100%;
   }
 
-  /* Improve card spacing on mobile */
-  .glass,
-  [class*="card"] {
+  .glass, [class*="card"] {
     padding: 1.5rem 1rem;
     margin-bottom: 1rem;
   }
 }
 
 @media (max-width: 480px) {
-  /* Adjust spacing for small mobile screens */
-  body {
-    padding: 0 12px;
-  }
-
-  section {
-    padding-left: 1rem;
-    padding-right: 1rem;
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-  }
-
-  /* Ensure minimum font sizes */
-  .wedding-body {
-    font-size: 16px !important;
-    line-height: 1.6;
-  }
-
-  /* Reduce excessive spacing */
-  h1 {
-    margin-bottom: 0.75rem;
-  }
-
-  h2 {
-    margin-bottom: 0.5rem;
-  }
-
-  /* Stack elements vertically on small screens */
-  .flex {
-    flex-direction: column;
-  }
-
-  /* Ensure grid columns stack properly */
-  [class*="grid-cols-"] {
-    grid-template-columns: 1fr !important;
-  }
-
-  /* Improve navigation on small screens */
-  nav {
-    padding: 0 12px;
-  }
-
-  /* Better button spacing */
-  button + button {
-    margin-top: 0.5rem;
-  }
+  body { padding: 0 12px; }
+  section { padding: 2rem 1rem; }
+  .wedding-body { font-size: 16px !important; line-height: 1.6; }
+  h1 { margin-bottom: 0.75rem; }
+  h2 { margin-bottom: 0.5rem; }
+  .flex { flex-direction: column; }
+  [class*="grid-cols-"] { grid-template-columns: 1fr !important; }
+  nav { padding: 0 12px; }
+  button + button { margin-top: 0.5rem; }
 }
 
-/* Wedding page background classes */
+/* Wedding page backgrounds */
 .invitation-background {
   min-height: 100vh;
   background:
@@ -533,7 +558,6 @@ a:focus-visible {
   background-attachment: fixed;
 }
 
-/* Enhanced backgrounds for specific sections */
 .botanical-texture-background {
   min-height: 100vh;
   background:
@@ -564,20 +588,13 @@ a:focus-visible {
   background-attachment: fixed;
 }
 
-/* Mobile optimization for backgrounds - IMPROVED PERFORMANCE */
+/* Mobile optimization for backgrounds */
 @media (max-width: 768px) {
-  .invitation-background,
-  .rsvp-background,
-  .botanical-texture-background,
-  .subtle-pattern-background {
-    background-attachment: scroll; /* Better performance on mobile */
+  .invitation-background, .rsvp-background, .botanical-texture-background, .subtle-pattern-background {
+    background-attachment: scroll;
   }
 
-  /* Simplify backgrounds on mobile for better performance */
-  .invitation-background {
-    background: var(--background);
-  }
-
+  .invitation-background { background: var(--background); }
   .rsvp-background {
     background: linear-gradient(135deg,
       var(--background) 0%,
@@ -588,12 +605,26 @@ a:focus-visible {
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
-  .invitation-background,
-  .rsvp-background,
-  .botanical-texture-background,
-  .subtle-pattern-background {
+  .invitation-background, .rsvp-background, .botanical-texture-background, .subtle-pattern-background {
     background-attachment: scroll;
   }
+  .animate-float, .animate-heartbeat, .animate-shimmer, .animate-romantic-pulse,
+  .animate-gentle-bounce, .animate-love-sparkle, .animate-pet-bounce, .animate-pet-wiggle,
+  .animate-milestone, .animate-confetti, .animate-easter-egg, .animate-tooltip,
+  .animate-button-press, .animate-button-success, .animate-heart-float,
+  .animate-sparkle-burst, .animate-gift-shimmer, .animate-gift-pulse,
+  .animate-loader-pulse, .animate-hover-lift, .animate-progress {
+    animation: none !important;
+  }
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+  .hover\:-translate-y-1:hover, .hover\:-translate-y-0\.5:hover {
+    transform: none !important;
+  }
+  .romantic-hover::before { display: none !important; }
 }
 
 /* High contrast mode */
@@ -604,66 +635,12 @@ a:focus-visible {
       radial-gradient(circle at 80% 20%, rgba(0, 0, 0, 0.05) 0%, transparent 50%),
       var(--background);
   }
-
   .rsvp-background {
     background: linear-gradient(135deg,
       var(--background) 0%,
       rgba(0, 0, 0, 0.1) 50%,
       var(--background) 100%);
   }
-}
-
-/* Enhanced print styles for wedding invitation */
-@media print {
-  .no-print,
-  nav,
-  button,
-  .hover\:scale-105,
-  .hover\:scale-110,
-  .easter-egg-reveal,
-  .tooltip-romantic,
-  .romantic-glow {
-    display: none !important;
-  }
-
-  body {
-    background: white !important;
-    color: black !important;
-    font-size: 12pt;
-    line-height: 1.5;
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    color: black !important;
-    page-break-after: avoid;
-  }
-
-  /* Optimize wedding invitation for printing */
-  .wedding-invitation {
-    background: white !important;
-    box-shadow: none !important;
-    border: 2px solid black !important;
-    margin: 1in;
-    page-break-inside: avoid;
-  }
-
-  /* Hide decorative elements that don't print well */
-  .botanical-frame::before,
-  .botanical-frame::after {
-    display: none !important;
-  }
-
-  /* Clean backgrounds for print */
-  .invitation-background,
-  .rsvp-background,
-  .botanical-texture-background,
-  .subtle-pattern-background {
-    background: white !important;
-  }
-}
-
-/* High contrast support for accessibility */
-@media (prefers-contrast: high) {
   :root {
     --primary-text: #000000;
     --secondary-text: #333333;
@@ -672,14 +649,38 @@ a:focus-visible {
     --shadow-subtle: rgba(0, 0, 0, 0.2);
     --shadow-medium: rgba(0, 0, 0, 0.3);
   }
+}
 
-  .botanical-frame::before,
-  .botanical-frame::after {
-    opacity: 0.8;
+/* Print styles */
+@media print {
+  .no-print, nav, button, .hover\:scale-105, .hover\:scale-110,
+  .easter-egg-reveal, .tooltip-romantic, .romantic-glow {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 12pt;
+    line-height: 1.5;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    color: black !important;
+    page-break-after: avoid;
+  }
+  .wedding-invitation {
+    background: white !important;
+    box-shadow: none !important;
+    border: 2px solid black !important;
+    margin: 1in;
+    page-break-inside: avoid;
+  }
+  .botanical-frame::before, .botanical-frame::after { display: none !important; }
+  .invitation-background, .rsvp-background, .botanical-texture-background, .subtle-pattern-background {
+    background: white !important;
   }
 }
 
-/* Subtle romantic interactions */
+/* Romantic interactions */
 .romantic-hover {
   position: relative;
   overflow: hidden;
@@ -707,111 +708,7 @@ a:focus-visible {
   cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="%23A8A8A8"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'), auto;
 }
 
-/* Special hover effects for romantic elements */
-.romantic-glow {
-  position: relative;
-  overflow: hidden;
-}
-
-.romantic-glow::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, var(--decorative-light), transparent);
-  transition: left 0.6s ease;
-  opacity: 0;
-}
-
-.romantic-glow:hover::after {
-  left: 100%;
-  opacity: 0.3;
-}
-
-/* Pet interaction animations */
-.pet-bounce {
-  animation: pet-bounce 1.5s ease-in-out infinite;
-}
-
-@keyframes pet-bounce {
-  0%, 20%, 50%, 80%, 100% {
-    transform: translateY(0);
-  }
-  40% {
-    transform: translateY(-8px);
-  }
-  60% {
-    transform: translateY(-4px);
-  }
-}
-
-/* Milestone celebration effects */
-.milestone-celebration {
-  animation: milestone-celebration 2s ease-in-out;
-}
-
-@keyframes milestone-celebration {
-  0% {
-    transform: scale(1) rotate(0deg);
-    opacity: 1;
-  }
-  25% {
-    transform: scale(1.2) rotate(-5deg);
-    opacity: 0.9;
-  }
-  50% {
-    transform: scale(1.1) rotate(5deg);
-    opacity: 0.8;
-  }
-  75% {
-    transform: scale(1.15) rotate(-2deg);
-    opacity: 0.9;
-  }
-  100% {
-    transform: scale(1) rotate(0deg);
-    opacity: 1;
-  }
-}
-
-/* Easter egg reveal animation */
-.easter-egg-reveal {
-  animation: easter-egg-reveal 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-@keyframes easter-egg-reveal {
-  0% {
-    transform: scale(0) rotate(-180deg);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.2) rotate(-90deg);
-    opacity: 0.8;
-  }
-  100% {
-    transform: scale(1) rotate(0deg);
-    opacity: 1;
-  }
-}
-
-/* Tooltip romantic animations */
-.tooltip-romantic {
-  animation: tooltip-romantic 0.3s ease-out;
-}
-
-@keyframes tooltip-romantic {
-  0% {
-    transform: translateY(10px) scale(0.8);
-    opacity: 0;
-  }
-  100% {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
-}
-
-/* Gift card romantic hover effect */
+/* Gift card romantic hover */
 .gift-romantic-hover {
   transition: all 0.3s ease;
 }
@@ -832,67 +729,22 @@ a:focus-visible {
   transition: all 0.3s ease 0.1s;
 }
 
-/* Reduced motion support for wedding animations */
-@media (prefers-reduced-motion: reduce) {
-  .animate-float,
-  .animate-heartbeat,
-  .animate-shimmer,
-  .animate-romantic-pulse,
-  .animate-gentle-bounce,
-  .animate-love-sparkle {
-    animation: none !important;
-  }
-
-  * {
-    transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-  }
-
-  /* Still allow subtle hover effects for usability */
-  .hover\:-translate-y-1:hover,
-  .hover\:-translate-y-0\.5:hover {
-    transform: none !important;
-  }
-
-  .romantic-hover::before {
-    display: none !important;
-  }
-}
-
-/* MOBILE-SPECIFIC TOUCH OPTIMIZATIONS */
+/* Mobile touch optimizations */
 @media (max-width: 768px) {
-  /* Improve touch feedback */
-  button:active,
-  a:active,
-  [role="button"]:active {
+  button:active, a:active, [role="button"]:active {
     transform: scale(0.98);
     opacity: 0.8;
   }
-
-  /* Prevent text selection on tap */
-  button,
-  a[role="button"],
-  .no-select {
+  button, a[role="button"], .no-select {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
   }
-
-  /* Enable smooth scrolling with momentum */
-  * {
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* Improve image rendering on mobile */
+  * { -webkit-overflow-scrolling: touch; }
   img {
     max-width: 100%;
     height: auto;
     display: block;
   }
-
-  /* Prevent layout shifts */
-  * {
-    box-sizing: border-box;
-  }
+  * { box-sizing: border-box; }
 }
