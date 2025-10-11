@@ -92,7 +92,7 @@ export const culturalMessages = {
 
 export const microCopyTexts = {
   weddingDate: "20 de Novembro de 2025 - Exatos 1000 dias após o primeiro 'oi'",
-  venue: "Casa HY - Onde a arte encontra o amor",
+  venue: "Casa HY - Constable Galerie",
   address: "Rua Coronel Francisco Flávio Carneiro 200, Luciano Cavalcante",
   time: "10H30 - Para começarmos nosso para sempre",
   dressCode: "Traje Social - Elegância para nosso dia especial",
