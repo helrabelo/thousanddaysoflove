@@ -3,6 +3,7 @@ import VideoHeroSection from '@/components/sections/VideoHeroSection'
 import StoryPreview from '@/components/sections/StoryPreview'
 import AboutUsSection from '@/components/sections/AboutUsSection'
 import OurFamilySection from '@/components/sections/OurFamilySection'
+import EventDetailsSection from '@/components/sections/EventDetailsSection'
 import QuickPreview from '@/components/sections/QuickPreview'
 import WeddingLocation from '@/components/sections/WeddingLocation'
 
@@ -11,6 +12,7 @@ export default function Home() {
     <main className="min-h-screen">
       <Navigation />
       <VideoHeroSection />
+      <EventDetailsSection />
       <StoryPreview />
       <AboutUsSection />
       <OurFamilySection />
