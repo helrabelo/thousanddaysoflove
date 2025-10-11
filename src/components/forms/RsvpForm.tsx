@@ -237,7 +237,7 @@ export function RsvpForm({ initialGuest, onSuccess, onError }: RsvpFormProps) {
             >
               <div className="text-center mb-8">
                 <h2 className="text-2xl mb-2" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)', fontWeight: '600' }}>
-                  Você estará conosco no Constable Galerie? 🎉
+                  Você estará conosco na Casa HY? 🎉
                 </h2>
                 <p style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
                   Onde a arte encontra o amor e nossos 1000 dias viram para sempre!
@@ -342,7 +342,7 @@ export function RsvpForm({ initialGuest, onSuccess, onError }: RsvpFormProps) {
                   isLoading={isSubmitting}
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? 'Enviando com amor para o Constable Galerie...' : personalizedRSVPMessages.finalButton}
+                  {isSubmitting ? 'Enviando com amor para a Casa HY...' : personalizedRSVPMessages.finalButton}
                 </Button>
               </div>
             </motion.div>

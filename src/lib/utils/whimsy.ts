@@ -101,7 +101,7 @@ export function getRandomLoadingMessage(category: keyof typeof loadingMessages):
 // Success messages with emotion
 export const successMessages = {
   rsvpConfirmed: [
-    "Yay! Mal podemos esperar para ver você no Constable Galerie! 🎉",
+    "Yay! Mal podemos esperar para ver você na Casa HY! 🎉",
     "Linda, Cacao, Olivia e Oliver também ficaram felizes! 🐾💕",
     "Nosso universo particular vai ficar ainda mais especial com você! ✨",
     "Que alegria! Já estamos contando os dias até te ver! 💒"
@@ -194,7 +194,7 @@ export const milestoneTooltips = {
   "cacao-chegada": "Nosso chocolatinho de companhia! 🍫",
   "gemeos": "Olivia e Oliver expandindo o amor! 🌸⚡",
   "mangue-azul": "Se não tivesse fechado... mas o destino sabia! 🎭",
-  "constable": "Onde a arte encontra o amor! 🎨💒"
+  "casa-hy": "Onde a arte encontra o amor! 🎨💒"
 }
 
 // Scroll progress messages
@@ -249,14 +249,14 @@ export const hoverEffects = {
     galeria: { emoji: "📸", tooltip: "Do Tinder ao altar em imagens" },
     rsvp: { emoji: "💌", tooltip: "Confirme sua presença" },
     presentes: { emoji: "🎁", tooltip: "Ajude nosso sonho" },
-    local: { emoji: "📍", tooltip: "Constable Galerie nos espera" }
+    local: { emoji: "📍", tooltip: "Casa HY nos espera" }
   }
 }
 
 // Page-specific delights
 export const pageDelights = {
   home: {
-    heroSubtitle: "Do primeiro 'oi' no WhatsApp até o altar no Constable Galerie",
+    heroSubtitle: "Do primeiro 'oi' no WhatsApp até o altar na Casa HY",
     scrollHint: "Role para descobrir nossa história de 1000 dias ↓"
   },
   rsvp: {
@@ -299,7 +299,7 @@ export function generateShareMessage(context: 'rsvp' | 'gift' | 'general'): stri
   const messages = {
     rsvp: "Acabei de confirmar presença no casamento do Hel & Ylana! 1000 dias de amor virando eternidade! 💒✨",
     gift: "Contribuí para o lar dos sonhos do Hel & Ylana! Linda, Cacao, Olivia e Oliver agradecem! 🏠🐾💕",
-    general: "Hel & Ylana: 1000 dias de amor se preparando para o altar! Do Tinder ao Constable Galerie 💒✨"
+    general: "Hel & Ylana: 1000 dias de amor se preparando para o altar! Do Tinder à Casa HY 💒✨"
   }
   return messages[context]
 }

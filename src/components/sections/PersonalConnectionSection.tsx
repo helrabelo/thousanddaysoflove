@@ -32,7 +32,7 @@ const personaCards: PersonaCard[] = [
     icon: <Users className="w-6 h-6" />,
     title: 'Para Nossa Família Querida',
     description: 'Vocês nos viram crescer, apoiaram nossos sonhos e agora celebram conosco o maior deles: construir uma família juntos.',
-    connectionPoint: 'Da nossa casa com Linda, Cacao, Olivia e Oliver, para a cerimônia no Constable Galerie - vocês sempre foram nossa base de amor e apoio.',
+    connectionPoint: 'Da nossa casa com Linda, Cacao, Olivia e Oliver, para a cerimônia na Casa HY - vocês sempre foram nossa base de amor e apoio.',
     callToAction: 'Detalhes do Evento',
     href: '/detalhes'
   },
@@ -296,7 +296,7 @@ export default function PersonalConnectionSection() {
                     letterSpacing: '0.05em'
                   }}
                 >
-                  20 de Novembro • 10h30 • Constable Galerie
+                  20 de Novembro • 10h30 • Casa HY
                 </span>
               </div>
             </div>

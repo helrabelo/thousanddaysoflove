@@ -22,7 +22,7 @@ export function getCountdown() {
 export function getCountdownMessage(days: number): string {
   // Mensagens específicas para os momentos mais importantes
   if (days === 0) return "Hoje nossos 1000 dias viram para sempre! 💒"
-  if (days === 1) return "Amanhã é o grande dia no Constable Galerie! ✨"
+  if (days === 1) return "Amanhã é o grande dia na Casa HY! ✨"
   if (days <= 7) return "Uma semana para nosso sonho no altar! 🤍"
   if (days <= 14) return "Duas semanas para celebrar nossos mil dias de amor!"
   if (days <= 30) return "O mês mais especial desde Guaramiranga 💕"
@@ -47,7 +47,7 @@ export function getCountdownMessage(days: number): string {
 export function getCountdownEasterEgg(): string {
   const messages = [
     "Desde aquele primeiro 'oi' no WhatsApp... 📱",
-    "Do Tinder ao altar Constable Galerie 💕",
+    "Do Tinder ao altar Casa HY 💕",
     "Caseiros e introvertidos que se completam 🏠",
     "Remédio e chá: momento que mudou tudo 🍵",
     "'Na hora já sabia que era ela' ✨",
@@ -320,7 +320,7 @@ export function getSpecialMoments() {
 // Mensagens personalizadas para o RSVP baseadas na história
 export const personalizedRSVPMessages = {
   welcome: "Encontrando você na nossa história de 1000 dias...",
-  confirmation: "Confirme sua presença em nosso grande dia no Constable Galerie",
+  confirmation: "Confirme sua presença em nosso grande dia na Casa HY",
   dietaryNeeds: "Cuidaremos de você com todo carinho (como sempre fizemos em casa)",
   plusOne: "Mais amor é sempre bem-vindo em nossa celebração! 💕",
   success: "Mal podemos esperar para celebrar nossos 1000 dias com você! ✨",
@@ -347,9 +347,9 @@ export const giftStories = {
 
 // Local romântico específico do casamento
 export const venueStory = {
-  title: "Constable Galerie - Onde a Arte Encontra o Amor",
+  title: "Casa HY - Onde a Arte Encontra o Amor",
   subtitle: "Nosso plano B que virou plano perfeito",
-  description: "Se o Mangue Azul não tivesse fechado, nosso casamento seria lá. Mas o destino nos levou ao Constable Galerie, onde celebraremos nossos 1000 dias rodeados de arte, assim como nossa história é uma obra de arte única.",
+  description: "Se o Mangue Azul não tivesse fechado, nosso casamento seria lá. Mas o destino nos levou à Casa HY, onde celebraremos nossos 1000 dias rodeados de arte, assim como nossa história é uma obra de arte única.",
   directions: "Siga seu coração até nós - será fácil encontrar o lugar onde dois introvertidos se tornaram uma família 💕",
   arrival: "Chegue com tranquilidade, saia com alegria"
 };

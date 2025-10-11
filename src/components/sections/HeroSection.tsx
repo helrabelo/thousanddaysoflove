@@ -74,7 +74,7 @@ export default function HeroSection() {
             fontStyle: 'italic'
           }}
         >
-          Do primeiro "oi" no WhatsApp até o altar no Constable Galerie<br />
+          Do primeiro "oi" no WhatsApp até o altar na Casa HY<br />
           <span style={{ fontSize: '1.1em', fontWeight: 500, color: 'var(--primary-text)' }}>1000 dias de puro amor</span><br />
           <span style={{ fontSize: '0.9em', opacity: 0.8, marginTop: '0.5rem', display: 'block' }}>"O que temos entre nós é muito maior do que qualquer um pode imaginar"</span>
         </motion.p>

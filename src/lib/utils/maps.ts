@@ -14,7 +14,7 @@ export interface WeddingLocation {
 }
 
 export const CONSTABLE_GALERIE: WeddingLocation = {
-  name: 'Constable Galerie',
+  name: 'Casa HY',
   address: 'Rua Coronel Francisco Flávio Carneiro, 200 - Eng. Luciano Cavalcante, Fortaleza - CE, 60813-690',
   coordinates: {
     lat: -3.779415667711433,

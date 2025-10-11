@@ -4,7 +4,7 @@
  */
 
 export const successMessages = {
-  rsvp: "Confirmado! Mal podemos esperar para celebrar com você no Constable Galerie! 💕",
+  rsvp: "Confirmado! Mal podemos esperar para celebrar com você na Casa HY! 💕",
   rsvpWithPlusOne: "Confirmado para você e seu acompanhante! Nosso universo particular ficará ainda mais especial! 💕",
   gift: "Obrigado por ajudar a construir nosso lar! Linda 👑, Cacao 🍫, Olivia 🌸 e Oliver ⚡ também agradecem! 🐾",
   contact: "Sua mensagem chegou até nós! Respondemos assim que voltarmos de uma de nossas corridas matinais 🏃‍♀️🏃‍♂️",
@@ -28,7 +28,7 @@ export const loadingMessages = {
   gift: "Processando seu presente com carinho... 🎁",
   payment: "Conectando com o PIX... Como quando conectamos no primeiro 'oi' do WhatsApp! 💝",
   gallery: "Preparando nossos 1000 dias em fotografias... 📸",
-  location: "Carregando o caminho para o Constable Galerie... 🗺️",
+  location: "Carregando o caminho para a Casa HY... 🗺️",
   admin: "Preparando nosso universo particular de gestão... 👑"
 }
 
@@ -48,7 +48,7 @@ export const buttonLabels = {
   backToHome: "Voltar aos nossos 1000 dias",
   viewGifts: "Ajudar a construir nosso lar 🏠",
   gallery: "Ver nossa jornada em fotos 📸",
-  location: "Como chegar ao Constable Galerie 📍",
+  location: "Como chegar à Casa HY 📍",
   whatsapp: "Falar conosco no WhatsApp 💬",
   share: "Compartilhar nosso amor 💕"
 }
@@ -77,22 +77,22 @@ export const navigationMessages = {
   homeTooltip: "Nosso início - de mil dias para a eternidade 💕",
   historyTooltip: "Do Tinder ao altar - nossa jornada real 📖",
   galleryTooltip: "Casa Fontana, Guaramiranga, nossa casa própria... 📸",
-  rsvpTooltip: "Confirme sua presença no Constable Galerie 💌",
+  rsvpTooltip: "Confirme sua presença na Casa HY 💌",
   giftsTooltip: "Ajudem a construir nosso lar com Linda, Cacao, Olivia e Oliver 🎁",
-  locationTooltip: "Siga seu coração até o Constable Galerie 📍"
+  locationTooltip: "Siga seu coração até a Casa HY 📍"
 }
 
 export const culturalMessages = {
   pixExplanation: "PIX é nosso jeito brasileiro de presentear com agilidade e carinho! 🇧🇷",
   casaPropria: "Nossa casa própria - o sonho da faculdade que virou realidade! 🏠",
   familyPets: "Linda (a rainha 👑), Cacao (o companheiro 🍫), Olivia (a princesa 🌸) e Oliver (o príncipe ⚡)",
-  fortalezaContext: "Em Fortaleza, no Constable Galerie, onde a arte encontra o amor cearense! ☀️",
+  fortalezaContext: "Em Fortaleza, na Casa HY, onde a arte encontra o amor cearense! ☀️",
   introvertedCouple: "Caseiros e introvertidos que encontraram um no outro seu universo particular 🏡"
 }
 
 export const microCopyTexts = {
   weddingDate: "20 de Novembro de 2025 - Exatos 1000 dias após o primeiro 'oi'",
-  venue: "Constable Galerie - Onde a arte encontra o amor",
+  venue: "Casa HY - Onde a arte encontra o amor",
   address: "Rua Coronel Francisco Flávio Carneiro 200, Luciano Cavalcante",
   time: "10H30 - Para começarmos nosso para sempre",
   dressCode: "Traje Social - Elegância para nosso dia especial",

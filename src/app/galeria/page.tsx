@@ -45,11 +45,11 @@ const realTimelineEvents: TimelineEvent[] = [
     id: '3',
     date: '2025-11-20',
     title: 'Dia 1000 - Para Sempre',
-    description: 'Constable Galerie, 10h30. Exatos 1000 dias após aquele primeiro "oi" no WhatsApp. Caseiros e introvertidos celebrando com quem mais amamos. Mil dias virando eternidade. 💑',
+    description: 'Casa HY, 10h30. Exatos 1000 dias após aquele primeiro "oi" no WhatsApp. Caseiros e introvertidos celebrando com quem mais amamos. Mil dias virando eternidade. 💑',
     media_type: 'photo',
     media_url: '/images/gallery/dia-1000-casamento.jpg',
     thumbnail_url: '/images/gallery/dia-1000-thumb.jpg',
-    location: 'Constable Galerie, Fortaleza',
+    location: 'Casa HY, Fortaleza',
     milestone_type: 'engagement',
     is_major_milestone: true,
     order_index: 3,
@@ -271,7 +271,7 @@ export default function GaleriaPage() {
               Preparando nossos 1000 dias...
             </h2>
             <p style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)', fontStyle: 'italic', fontSize: '1.125rem' }}>
-              Do primeiro "oi" no WhatsApp até o Constable Galerie...
+              Do primeiro "oi" no WhatsApp até a Casa HY...
             </p>
           </motion.div>
         </div>
@@ -430,7 +430,7 @@ export default function GaleriaPage() {
             viewport={{ once: true }}
           >
             <h2 className="text-4xl md:text-5xl font-bold mb-6" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--white-soft)', letterSpacing: '0.15em' }}>
-              Venham para o Constable Galerie
+              Venham para a Casa HY
             </h2>
             <div className="w-24 h-px mx-auto mb-8" style={{ background: 'var(--white-soft)', opacity: '0.6' }} />
             <p className="text-xl mb-8 leading-relaxed" style={{ fontFamily: 'var(--font-crimson)', color: 'var(--white-soft)', fontStyle: 'italic', opacity: '0.95' }}>

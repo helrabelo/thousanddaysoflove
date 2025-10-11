@@ -30,7 +30,7 @@ const FAQ_ITEMS: FAQItem[] = [
   },
   {
     question: 'Haverá estacionamento no local?',
-    answer: 'Sim! O Constable Galerie oferece estacionamento gratuito para todos os convidados.',
+    answer: 'Sim! A Casa HY oferece estacionamento gratuito para todos os convidados.',
   },
   {
     question: 'É permitido tirar fotos durante a cerimônia?',
@@ -94,7 +94,7 @@ export default function InformacoesPage() {
   return (
     <>
       <Navigation />
-      <div className="min-h-screen" style={{ background: 'var(--background)' }}>
+      <div className="min-h-screen pt-20" style={{ background: 'var(--background)' }}>
         {/* Header */}
         <div className="text-center py-16" style={{
           background: 'var(--primary-text)',
@@ -135,7 +135,7 @@ export default function InformacoesPage() {
 
           <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-gray-100">
             <h3 className="text-2xl font-semibold mb-4" style={{ color: 'var(--primary-text)' }}>
-              Constable Galerie
+              Casa HY
             </h3>
             <p className="mb-6" style={{ color: 'var(--secondary-text)' }}>
               Av. Historiador Raimundo Girão, 564 - Meireles, Fortaleza - CE, 60165-050
@@ -155,7 +155,7 @@ export default function InformacoesPage() {
             </div>
 
             <a
-              href="https://www.google.com/maps/place/Constable+Galerie/@-3.7262,-38.5009,17z/data=!3m1!4b1!4m6!3m5!1s0x7c748f1cf1a8d0f:0x5c4a8b2e6d8f0a9e!8m2!3d-3.7262!4d-38.5009!16s%2Fg%2F11c1y1y1y1"
+              href="https://www.google.com/maps/place/Casa+HY/@-3.7262,-38.5009,17z/data=!3m1!4b1!4m6!3m5!1s0x7c748f1cf1a8d0f:0x5c4a8b2e6d8f0a9e!8m2!3d-3.7262!4d-38.5009!16s%2Fg%2F11c1y1y1y1"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all"
@@ -311,7 +311,7 @@ export default function InformacoesPage() {
 
           <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-gray-100">
             <p className="mb-4" style={{ color: 'var(--secondary-text)' }}>
-              O Constable Galerie oferece estacionamento gratuito e seguro para todos os convidados.
+              A Casa HY oferece estacionamento gratuito e seguro para todos os convidados.
             </p>
             <ul className="space-y-2" style={{ color: 'var(--secondary-text)' }}>
               <li className="flex items-start gap-2">
@@ -357,7 +357,7 @@ export default function InformacoesPage() {
           </div>
 
           <p className="mb-6" style={{ color: 'var(--secondary-text)' }}>
-            Recomendações de hotéis próximos ao Constable Galerie para nossos convidados de outras cidades:
+            Recomendações de hotéis próximos à Casa HY para nossos convidados de outras cidades:
           </p>
 
           <div className="grid md:grid-cols-3 gap-6">

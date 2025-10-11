@@ -90,7 +90,7 @@ VALUES
 
   -- Event 15: Mil Dias Viram Para Sempre
   ('2025-11-20', 'Mil Dias Viram Para Sempre',
-   'Constable Galerie, 10h30. Exatamente 1000 dias após aquele primeiro ''oi'' no WhatsApp. Caseiros e introvertidos, mas hoje celebramos nosso amor com quem mais amamos. O dia em que mil dias se tornam toda uma vida.',
-   'Constable Galerie, Fortaleza', 'photo', '/images/timeline/casamento.jpg', '/images/timeline/thumbs/casamento.jpg',
+   'Casa HY, 10h30. Exatamente 1000 dias após aquele primeiro ''oi'' no WhatsApp. Caseiros e introvertidos, mas hoje celebramos nosso amor com quem mais amamos. O dia em que mil dias se tornam toda uma vida.',
+   'Casa HY, Fortaleza', 'photo', '/images/timeline/casamento.jpg', '/images/timeline/thumbs/casamento.jpg',
    'other', 15, 15, true)
 ON CONFLICT DO NOTHING;

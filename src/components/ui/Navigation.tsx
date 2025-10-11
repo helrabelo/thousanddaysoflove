@@ -119,7 +119,7 @@ export default function Navigation() {
           {/* Mobile menu button - Increased touch target */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden transition-colors lg:min-w-[44px] lg:min-h-[44px] lg:max-w-full flex flex-row items-end lg:items-center justify-center lg:flex-shrink-0"
+            className="md:hidden transition-colors lg:min-w-[44px] lg:min-h-[44px] lg:max-w-full flex flex-row items-end lg:items-center justify-end lg:justify-center lg:flex-shrink-0"
             style={{ color: 'var(--primary-text)' }}
             aria-label={isOpen ? 'Fechar menu' : 'Abrir menu'}
             aria-expanded={isOpen}

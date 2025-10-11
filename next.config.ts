@@ -7,6 +7,16 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  devIndicators: {
+    appIsrStatus: false,
+    buildActivity: false,
+  },
+  experimental: {
+    turbo: {
+      // Disable devtools to avoid RSC bundler issues
+      devtools: false,
+    },
+  },
 };
 
 export default nextConfig;

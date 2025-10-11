@@ -29,7 +29,7 @@ const features = [
   {
     icon: MapPin,
     title: 'Local',
-    description: 'Constable Galerie - Fortaleza, CE',
+    description: 'Casa HY - Fortaleza, CE',
     href: '/local'
   }
 ]

@@ -7,7 +7,7 @@ import WeddingLocation from '@/components/sections/WeddingLocation'
 
 export default function Home() {
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen pt-20">
       <Navigation />
       <HeroSection />
       <StoryPreview />

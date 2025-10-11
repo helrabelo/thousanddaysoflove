@@ -138,10 +138,10 @@ export default function AdminAnalytics() {
             {analytics.timeline.daysToWedding}
           </h2>
           <p className="text-xl text-burgundy-600">
-            Dias para o Constable Galerie
+            Dias para a Casa HY
           </p>
           <p className="text-sm text-burgundy-500 mt-2">
-            20 de Novembro de 2025 - Onde a arte encontra o amor
+            20 de Novembro de 2025 - Casa HY
           </p>
         </Card>
 

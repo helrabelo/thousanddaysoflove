@@ -26,7 +26,7 @@ const WeddingInvitation: React.FC = () => {
           </p>
 
           <p>
-            Venham celebrar conosco no Constable Galerie,<br />
+            Venham celebrar conosco na Casa HY,<br />
             onde a arte encontra o amor
           </p>
         </div>
@@ -46,7 +46,7 @@ const WeddingInvitation: React.FC = () => {
               <strong>Rua:</strong> Coronel Francisco Flávio Carneiro 200<br />
               Luciano Cavalcante.<br />
               <br />
-              <strong>Local:</strong> Constable Galerie<br />
+              <strong>Local:</strong> Casa HY<br />
               Onde a arte encontra o amor e nossos mil dias se tornam eternidade.
             </p>
           </div>

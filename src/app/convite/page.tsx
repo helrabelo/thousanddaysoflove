@@ -11,7 +11,7 @@ export default function ConvitePage() {
   return (
     <>
       <Navigation />
-      <div className="invitation-background">
+      <div className="invitation-background pt-20">
         <WeddingInvitation />
       </div>
     </>

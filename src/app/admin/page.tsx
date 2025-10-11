@@ -75,7 +75,7 @@ export default function AdminPage() {
             Admin - Mil Dias de Amor
           </h1>
           <p className="text-xl text-burgundy-600">
-            Hel & Ylana • Casa própria • 4 pets • {daysToWedding} dias para Constable Galerie
+            Hel & Ylana • Casa própria • 4 pets • {daysToWedding} dias para Casa HY
           </p>
         </div>
 

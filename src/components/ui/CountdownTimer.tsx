@@ -76,7 +76,7 @@ export default function CountdownTimer({ className = '' }: CountdownTimerProps) 
             letterSpacing: '0.05em'
           }}
         >
-          Hoje é o Grande Dia no Constable Galerie!
+          Hoje é o Grande Dia na Casa HY!
         </div>
         <p
           style={{

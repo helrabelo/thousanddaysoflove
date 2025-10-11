@@ -344,7 +344,7 @@ export default function PresentsPage() {
           </h3>
           <p className="max-w-2xl mx-auto mb-8" style={{ fontFamily: 'var(--font-crimson)', fontStyle: 'italic', lineHeight: '1.8', color: 'var(--white-soft)', opacity: '0.9' }}>
             Cada presente nos ajuda a transformar nossa casa própria em um lar ainda mais especial.
-            Linda, Cacao, Olivia e Oliver também agradecem! Nos vemos no Constable Galerie em 20 de novembro de 2025!
+            Linda, Cacao, Olivia e Oliver também agradecem! Nos vemos na Casa HY em 20 de novembro de 2025!
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm">
             <div className="flex flex-row items-center gap-2">
