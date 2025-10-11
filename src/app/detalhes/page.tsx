@@ -53,13 +53,13 @@ const FAQ_ITEMS: FAQItem[] = [
 ];
 
 const TIMELINE = [
-  { time: '17:30', event: 'Chegada dos Convidados', icon: Users },
-  { time: '18:00', event: 'Cerimônia de Casamento', icon: Heart },
-  { time: '19:00', event: 'Coquetel de Recepção', icon: Users },
-  { time: '20:00', event: 'Jantar', icon: Users },
-  { time: '21:30', event: 'Abertura da Pista de Dança', icon: Users },
-  { time: '22:00', event: 'Corte do Bolo', icon: Heart },
-  { time: '23:00', event: 'Encerramento', icon: Users },
+  { time: '10:00', event: 'Chegada dos Convidados', icon: Users },
+  { time: '10:30', event: 'Cerimônia de Casamento', icon: Heart },
+  { time: '11:30', event: 'Coquetel de Recepção', icon: Users },
+  { time: '12:30', event: 'Brunch', icon: Users },
+  { time: '14:00', event: 'Abertura da Pista de Dança', icon: Users },
+  { time: '15:00', event: 'Corte do Bolo', icon: Heart },
+  { time: '16:00', event: 'Encerramento', icon: Users },
 ];
 
 const HOTELS = [
@@ -145,7 +145,7 @@ export default function DetalhesPage() {
                 20 de Novembro de 2025
               </p>
               <p className="text-sm mt-1" style={{ color: 'var(--secondary-text)' }}>
-                Início às 17h30
+                Início às 10h00
               </p>
             </div>
 

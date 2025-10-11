@@ -203,7 +203,7 @@ export class EmailAutomationService {
             </div>
             <div class="detail-item">
               <span class="detail-icon">⏰</span>
-              <strong>Horário:</strong> Cerimônia às 16:00h | Recepção às 18:00h
+              <strong>Horário:</strong> Cerimônia às 10:30h | Recepção às 11:30h
             </div>
             <div class="detail-item">
               <span class="detail-icon">📍</span>
@@ -253,7 +253,7 @@ Você está convidado(a) para o casamento de Hel & Ylana!
 
 DETALHES DO CASAMENTO:
 📅 Data: 20 de Novembro de 2025
-⏰ Horário: 16:00h (Cerimônia) | 18:00h (Recepção)
+⏰ Horário: 10:30h (Cerimônia) | 11:30h (Recepção)
 📍 Local: Em breve
 👗 Traje: Social
 
@@ -404,7 +404,7 @@ Hel & Ylana 💕
               <ul>
                 <li>✉️ Você receberá mais detalhes sobre o local nas próximas semanas</li>
                 <li>📍 O endereço completo será enviado até 1º de Novembro</li>
-                <li>📱 Salve a data: <strong>20 de Novembro de 2025, às 16:00h</strong></li>
+                <li>📱 Salve a data: <strong>20 de Novembro de 2025, às 10:30h</strong></li>
                 <li>👗 Lembre-se: o traje é social</li>
                 <li>🎁 Se desejar, confira nossa lista de presentes</li>
               </ul>
@@ -456,7 +456,7 @@ ${guest.attending ? '🎉 RSVP CONFIRMADO!' : '💙 OBRIGADO PELA RESPOSTA'}
 ${guest.attending ? `
 Que alegria, ${guest.name}!
 
-Sua presença está confirmada para nosso casamento em 20 de Novembro de 2025, às 16:00h.
+Sua presença está confirmada para nosso casamento em 20 de Novembro de 2025, às 10:30h.
 
 ${guest.plus_one ? `Acompanhante: ${guest.plus_one_name}` : ''}
 ${guest.dietary_restrictions ? `Restrições alimentares: ${guest.dietary_restrictions}` : ''}
@@ -616,7 +616,7 @@ Hel & Ylana 💕
           <p><strong>Detalhes do nosso casamento:</strong></p>
           <ul>
             <li>📅 <strong>Data:</strong> 20 de Novembro de 2025</li>
-            <li>⏰ <strong>Horário:</strong> 16:00h (Cerimônia)</li>
+            <li>⏰ <strong>Horário:</strong> 10:30h (Cerimônia)</li>
             <li>📍 <strong>Local:</strong> Será enviado após confirmação</li>
             <li>👗 <strong>Traje:</strong> Social</li>
           </ul>
@@ -657,7 +657,7 @@ Ainda não recebemos sua confirmação de presença para nosso casamento.
 
 DETALHES:
 📅 Data: 20 de Novembro de 2025
-⏰ Horário: 16:00h
+⏰ Horário: 10:30h
 📍 Local: Será enviado após confirmação
 👗 Traje: Social
 

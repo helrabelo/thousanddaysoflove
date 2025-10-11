@@ -17,6 +17,9 @@ interface Guest {
   attending: boolean | null
   plus_ones: number
   confirmed_by: string | null
+  dietary_restrictions: string | null
+  song_requests: string | null
+  special_message: string | null
 }
 
 export default function SimpleRSVP() {
@@ -26,6 +29,13 @@ export default function SimpleRSVP() {
   const [saving, setSaving] = useState<string | null>(null)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [confirmedGuest, setConfirmedGuest] = useState<{ name: string; attending: boolean } | null>(null)
+
+  // Enhanced RSVP fields
+  const [selectedGuestId, setSelectedGuestId] = useState<string | null>(null)
+  const [dietaryRestrictions, setDietaryRestrictions] = useState('')
+  const [songRequests, setSongRequests] = useState('')
+  const [specialMessage, setSpecialMessage] = useState('')
+  const [showEnhancedForm, setShowEnhancedForm] = useState(false)
 
   const searchGuests = async () => {
     if (!searchTerm.trim()) return
@@ -49,14 +59,15 @@ export default function SimpleRSVP() {
     }
   }
 
+  const openEnhancedForm = (guestId: string, guest: Guest) => {
+    setSelectedGuestId(guestId)
+    setDietaryRestrictions(guest.dietary_restrictions || '')
+    setSongRequests(guest.song_requests || '')
+    setSpecialMessage(guest.special_message || '')
+    setShowEnhancedForm(true)
+  }
+
   const confirmRSVP = async (guestId: string, guestName: string, attending: boolean, plusOnes: number) => {
-    // Confirmation dialog
-    const message = attending
-      ? `Confirmar presença de ${guestName}?`
-      : `Confirmar que ${guestName} não poderá comparecer?`
-
-    if (!window.confirm(message)) return
-
     setSaving(guestId)
     try {
       const supabase = createClient()
@@ -65,8 +76,11 @@ export default function SimpleRSVP() {
         .update({
           attending,
           plus_ones: plusOnes,
+          dietary_restrictions: dietaryRestrictions || null,
+          song_requests: songRequests || null,
+          special_message: specialMessage || null,
           confirmed_at: new Date().toISOString(),
-          confirmed_by: 'self' // or pass the name of who's confirming
+          confirmed_by: 'self'
         })
         .eq('id', guestId)
 
@@ -74,6 +88,9 @@ export default function SimpleRSVP() {
 
       // Refresh the list
       await searchGuests()
+
+      // Close enhanced form
+      setShowEnhancedForm(false)
 
       // Show success modal with guidance
       setConfirmedGuest({ name: guestName, attending })
@@ -83,6 +100,20 @@ export default function SimpleRSVP() {
       alert('Erro ao salvar RSVP')
     } finally {
       setSaving(null)
+    }
+  }
+
+  const quickConfirm = async (guestId: string, guestName: string, attending: boolean) => {
+    // For quick "No" responses, skip the enhanced form
+    if (!attending) {
+      await confirmRSVP(guestId, guestName, false, 0)
+      return
+    }
+
+    // For "Yes", find the guest and open enhanced form
+    const guest = guests.find(g => g.id === guestId)
+    if (guest) {
+      openEnhancedForm(guestId, guest)
     }
   }
 
@@ -169,7 +200,7 @@ export default function SimpleRSVP() {
                         <div className="space-y-3">
                           <div className="flex flex-col sm:flex-row gap-3">
                             <Button
-                              onClick={() => confirmRSVP(guest.id, guest.name, true, 0)}
+                              onClick={() => quickConfirm(guest.id, guest.name, true)}
                               disabled={saving === guest.id}
                               variant="wedding"
                               className="flex items-center gap-2 min-h-[48px] flex-1 sm:flex-initial"
@@ -178,7 +209,7 @@ export default function SimpleRSVP() {
                               Sim, vou!
                             </Button>
                             <Button
-                              onClick={() => confirmRSVP(guest.id, guest.name, false, 0)}
+                              onClick={() => quickConfirm(guest.id, guest.name, false)}
                               disabled={saving === guest.id}
                               variant="wedding-outline"
                               className="flex items-center gap-2 min-h-[48px] flex-1 sm:flex-initial"
@@ -186,39 +217,6 @@ export default function SimpleRSVP() {
                               <X className="w-4 h-4" />
                               Não posso
                             </Button>
-                          </div>
-
-                          {/* Plus ones */}
-                          <div className="space-y-2">
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                              <label className="text-sm" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)' }}>
-                                <Users className="w-4 h-4 inline mr-1" />
-                                Quantos acompanhantes?
-                              </label>
-                              <select
-                                className="px-3 py-2 border rounded-lg text-sm min-h-[48px] w-full sm:w-auto"
-                                style={{
-                                  borderColor: 'var(--border-subtle)',
-                                  background: 'var(--background)',
-                                  color: 'var(--primary-text)',
-                                  fontFamily: 'var(--font-crimson)',
-                                  fontSize: '16px'
-                                }}
-                                onChange={(e) => {
-                                  const plusOnes = parseInt(e.target.value)
-                                  confirmRSVP(guest.id, guest.name, true, plusOnes)
-                                }}
-                                defaultValue={guest.plus_ones || 0}
-                                disabled={saving === guest.id}
-                              >
-                                {[0, 1, 2, 3, 4].map((n) => (
-                                  <option key={n} value={n}>{n}</option>
-                                ))}
-                              </select>
-                            </div>
-                            <p className="text-xs" style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
-                              * Só adicione acompanhantes que NÃO estão na nossa lista
-                            </p>
                           </div>
                         </div>
                       )}
@@ -247,6 +245,178 @@ export default function SimpleRSVP() {
           )}
         </div>
       </div>
+
+      {/* Enhanced RSVP Form Modal */}
+      <AnimatePresence>
+        {showEnhancedForm && selectedGuestId && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}
+            onClick={() => setShowEnhancedForm(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ type: 'spring', duration: 0.5 }}
+              className="max-w-2xl w-full max-h-[90vh] overflow-y-auto rounded-2xl p-8"
+              style={{ background: 'var(--background)', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2
+                className="text-3xl font-bold mb-2 text-center"
+                style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)' }}
+              >
+                Confirme sua Presença
+              </h2>
+              <p
+                className="text-center mb-8"
+                style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)', fontStyle: 'italic' }}
+              >
+                Queremos deixar tudo perfeito para você!
+              </p>
+
+              <div className="space-y-6">
+                {/* Plus Ones */}
+                <div>
+                  <label
+                    className="block text-sm font-medium mb-2"
+                    style={{ fontFamily: 'var(--font-crimson)', color: 'var(--primary-text)' }}
+                  >
+                    <Users className="w-4 h-4 inline mr-2" />
+                    Quantos acompanhantes?
+                  </label>
+                  <select
+                    className="w-full px-4 py-3 border rounded-lg min-h-[48px]"
+                    style={{
+                      borderColor: 'var(--border-subtle)',
+                      background: 'var(--background)',
+                      color: 'var(--primary-text)',
+                      fontFamily: 'var(--font-crimson)',
+                      fontSize: '16px'
+                    }}
+                    value={guests.find(g => g.id === selectedGuestId)?.plus_ones || 0}
+                    onChange={(e) => {
+                      const updatedGuests = guests.map(g =>
+                        g.id === selectedGuestId ? { ...g, plus_ones: parseInt(e.target.value) } : g
+                      )
+                      setGuests(updatedGuests)
+                    }}
+                  >
+                    {[0, 1, 2, 3, 4].map((n) => (
+                      <option key={n} value={n}>{n}</option>
+                    ))}
+                  </select>
+                  <p className="text-xs mt-1" style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
+                    * Só adicione acompanhantes que NÃO estão na nossa lista
+                  </p>
+                </div>
+
+                {/* Dietary Restrictions */}
+                <div>
+                  <label
+                    className="block text-sm font-medium mb-2"
+                    style={{ fontFamily: 'var(--font-crimson)', color: 'var(--primary-text)' }}
+                  >
+                    🍽️ Restrições Alimentares
+                  </label>
+                  <textarea
+                    className="w-full px-4 py-3 border rounded-lg resize-none"
+                    style={{
+                      borderColor: 'var(--border-subtle)',
+                      background: 'var(--background)',
+                      color: 'var(--primary-text)',
+                      fontFamily: 'var(--font-crimson)',
+                      fontSize: '16px',
+                      minHeight: '80px'
+                    }}
+                    placeholder="Vegetariano, vegano, alergias, etc..."
+                    value={dietaryRestrictions}
+                    onChange={(e) => setDietaryRestrictions(e.target.value)}
+                    maxLength={500}
+                  />
+                </div>
+
+                {/* Song Requests */}
+                <div>
+                  <label
+                    className="block text-sm font-medium mb-2"
+                    style={{ fontFamily: 'var(--font-crimson)', color: 'var(--primary-text)' }}
+                  >
+                    🎵 Sugestões de Músicas
+                  </label>
+                  <textarea
+                    className="w-full px-4 py-3 border rounded-lg resize-none"
+                    style={{
+                      borderColor: 'var(--border-subtle)',
+                      background: 'var(--background)',
+                      color: 'var(--primary-text)',
+                      fontFamily: 'var(--font-crimson)',
+                      fontSize: '16px',
+                      minHeight: '80px'
+                    }}
+                    placeholder="Músicas que você gostaria de ouvir na festa..."
+                    value={songRequests}
+                    onChange={(e) => setSongRequests(e.target.value)}
+                    maxLength={500}
+                  />
+                </div>
+
+                {/* Special Message */}
+                <div>
+                  <label
+                    className="block text-sm font-medium mb-2"
+                    style={{ fontFamily: 'var(--font-crimson)', color: 'var(--primary-text)' }}
+                  >
+                    💌 Mensagem para os Noivos
+                  </label>
+                  <textarea
+                    className="w-full px-4 py-3 border rounded-lg resize-none"
+                    style={{
+                      borderColor: 'var(--border-subtle)',
+                      background: 'var(--background)',
+                      color: 'var(--primary-text)',
+                      fontFamily: 'var(--font-crimson)',
+                      fontSize: '16px',
+                      minHeight: '100px'
+                    }}
+                    placeholder="Deixe uma mensagem carinhosa para Hel & Ylana..."
+                    value={specialMessage}
+                    onChange={(e) => setSpecialMessage(e.target.value)}
+                    maxLength={1000}
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3 mt-8">
+                <Button
+                  onClick={() => setShowEnhancedForm(false)}
+                  variant="wedding-outline"
+                  className="flex-1 min-h-[48px]"
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  onClick={() => {
+                    const guest = guests.find(g => g.id === selectedGuestId)
+                    if (guest) {
+                      confirmRSVP(selectedGuestId, guest.name, true, guest.plus_ones || 0)
+                    }
+                  }}
+                  variant="wedding"
+                  className="flex-1 min-h-[48px]"
+                  disabled={saving === selectedGuestId}
+                >
+                  {saving === selectedGuestId ? 'Confirmando...' : 'Confirmar Presença'}
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Post-RSVP Success Modal with Guidance */}
       <AnimatePresence>
@@ -438,6 +608,42 @@ export default function SimpleRSVP() {
                       </div>
                     </Card>
                   </div>
+
+                  {/* WhatsApp Share */}
+                  <Card className="p-6 text-center mb-8" style={{ background: 'linear-gradient(135deg, #E8F5E9 0%, #F3E5F5 100%)', border: '1px solid var(--border-subtle)' }}>
+                    <h3
+                      className="font-semibold mb-2"
+                      style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)' }}
+                    >
+                      📱 Compartilhe com seus amigos!
+                    </h3>
+                    <p
+                      className="text-sm mb-4"
+                      style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)' }}
+                    >
+                      Convide outras pessoas especiais para celebrar conosco
+                    </p>
+                    <Button
+                      onClick={() => {
+                        const message = encodeURIComponent(
+                          `🎉 Confirme sua presença no casamento de Hel & Ylana!\n\n` +
+                          `📅 20 de Novembro de 2025, às 10h30\n` +
+                          `📍 Casa HY, Fortaleza\n\n` +
+                          `Confirme pelo site: ${window.location.origin}/rsvp\n\n` +
+                          `Mil dias de amor viram para sempre! 💕`
+                        )
+                        window.open(`https://wa.me/?text=${message}`, '_blank')
+                      }}
+                      variant="wedding-outline"
+                      size="sm"
+                      className="bg-green-50 hover:bg-green-100"
+                    >
+                      <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.890-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                      </svg>
+                      Compartilhar via WhatsApp
+                    </Button>
+                  </Card>
 
                   <div className="text-center">
                     <Button

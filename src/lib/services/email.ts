@@ -31,8 +31,8 @@ export class EmailService {
           attending_text: data.attending ? 'Confirmada' : 'Não Confirmada',
           invitation_code: data.invitationCode,
           wedding_date: '20 de Novembro de 2025',
-          wedding_time: '16:00h',
-          venue_name: 'Local do Casamento',
+          wedding_time: '10:30h',
+          venue_name: 'Casa HY, Fortaleza',
           couple_names: 'Hel & Ylana',
           website_url: process.env.NEXT_PUBLIC_SITE_URL || 'https://thousanddaysoflove.com'
         }
@@ -245,10 +245,10 @@ export class EmailService {
                 <strong>Data:</strong> 20 de Novembro de 2025
               </p>
               <p style="color: #374151; margin: 5px 0; font-size: 14px;">
-                <strong>Horário da Cerimônia:</strong> 16:00h
+                <strong>Horário da Cerimônia:</strong> 10:30h
               </p>
               <p style="color: #374151; margin: 5px 0; font-size: 14px;">
-                <strong>Horário da Recepção:</strong> 18:00h
+                <strong>Horário da Recepção:</strong> 11:30h
               </p>
             </div>
 
