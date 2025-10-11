@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Navigation from '@/components/ui/Navigation'
 import StoryTimeline from '@/components/gallery/StoryTimeline'
-import AboutUsSection from '@/components/sections/AboutUsSection'
 import { createClient } from '@/lib/supabase/client'
 import { TimelineEvent } from '@/types/wedding'
 import { ArrowLeft, Heart } from 'lucide-react'
@@ -138,9 +137,6 @@ export default function HistoriaPage() {
         title="1000 Dias: A Linha do Tempo"
         description="Muita coisa aconteceu nesses 1000 dias"
       />
-
-      {/* About Us Section */}
-      <AboutUsSection />
 
       {/* Navigation Back */}
       <section className="py-20">

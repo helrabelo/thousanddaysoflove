@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import Navigation from '@/components/ui/Navigation';
+import WeddingLocation from '@/components/sections/WeddingLocation';
+import { Metadata } from 'next';
 
 interface FAQItem {
   question: string;
@@ -84,7 +86,7 @@ const HOTELS = [
   },
 ];
 
-export default function InformacoesPage() {
+export default function DetalhesPage() {
   const [expandedFAQ, setExpandedFAQ] = useState<number | null>(null);
 
   const toggleFAQ = (index: number) => {
@@ -107,7 +109,7 @@ export default function InformacoesPage() {
             transition={{ duration: 0.6 }}
           >
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-light text-center mb-4" style={{ fontFamily: 'var(--font-playfair)' }}>
-              Informações Importantes
+              Detalhes do Casamento
             </h1>
             <p className="text-center opacity-90 text-lg max-w-2xl mx-auto" style={{ fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
               Tudo que você precisa saber sobre o grande dia
@@ -116,60 +118,10 @@ export default function InformacoesPage() {
         </div>
       </div>
 
+      {/* Wedding Location Section */}
+      <WeddingLocation />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Local Section */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-16"
-        >
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: 'var(--decorative)' }}>
-              <MapPin className="w-6 h-6" style={{ color: 'var(--white-soft)' }} />
-            </div>
-            <h2 className="text-3xl font-light" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)' }}>
-              Local da Celebração
-            </h2>
-          </div>
-
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-gray-100">
-            <h3 className="text-2xl font-semibold mb-4" style={{ color: 'var(--primary-text)' }}>
-              Casa HY
-            </h3>
-            <p className="mb-6" style={{ color: 'var(--secondary-text)' }}>
-              Av. Historiador Raimundo Girão, 564 - Meireles, Fortaleza - CE, 60165-050
-            </p>
-
-            {/* Google Maps Embed */}
-            <div className="aspect-video rounded-xl overflow-hidden mb-6">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3981.3838!2d-38.5009!3d-3.7262!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7c748f1cf1a8d0f%3A0x5c4a8b2e6d8f0a9e!2sConstable%20Galerie!5e0!3m2!1spt-BR!2sbr!4v1634567890123!5m2!1spt-BR!2sbr"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
-            </div>
-
-            <a
-              href="https://www.google.com/maps/place/Casa+HY/@-3.7262,-38.5009,17z/data=!3m1!4b1!4m6!3m5!1s0x7c748f1cf1a8d0f:0x5c4a8b2e6d8f0a9e!8m2!3d-3.7262!4d-38.5009!16s%2Fg%2F11c1y1y1y1"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all"
-              style={{
-                background: 'var(--primary-text)',
-                color: 'var(--white-soft)'
-              }}
-            >
-              <NavigationIcon className="w-5 h-5" />
-              Abrir no Google Maps
-            </a>
-          </div>
-        </motion.section>
-
         {/* Timeline Section */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}

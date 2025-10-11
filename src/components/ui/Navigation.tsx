@@ -35,11 +35,11 @@ const navItems = [
     easterEgg: 'bancar nossa lua de mel de pobre premium+Max pro'
   },
   {
-    name: 'Local',
-    href: '/local',
+    name: 'Detalhes',
+    href: '/detalhes',
     icon: '📍',
-    hoverMessage: 'Nossa Cazinha ❤️',
-    easterEgg: 'se o Colosso não tivesse reservado...'
+    hoverMessage: 'Tudo sobre o grande dia',
+    easterEgg: 'horários, traje, estacionamento e mais'
   },
 ]
 

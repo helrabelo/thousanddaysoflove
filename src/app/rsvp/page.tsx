@@ -2,11 +2,12 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Search, Check, X, Users } from 'lucide-react'
+import { Search, Check, X, Users, Heart, Gift, MapPin, Calendar } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import Navigation from '@/components/ui/Navigation'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface Guest {
   id: string
@@ -23,6 +24,8 @@ export default function SimpleRSVP() {
   const [guests, setGuests] = useState<Guest[]>([])
   const [searching, setSearching] = useState(false)
   const [saving, setSaving] = useState<string | null>(null)
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [confirmedGuest, setConfirmedGuest] = useState<{ name: string; attending: boolean } | null>(null)
 
   const searchGuests = async () => {
     if (!searchTerm.trim()) return
@@ -71,7 +74,10 @@ export default function SimpleRSVP() {
 
       // Refresh the list
       await searchGuests()
-      alert('RSVP confirmado!')
+
+      // Show success modal with guidance
+      setConfirmedGuest({ name: guestName, attending })
+      setShowSuccessModal(true)
     } catch (error) {
       console.error('Error saving RSVP:', error)
       alert('Erro ao salvar RSVP')
@@ -241,6 +247,310 @@ export default function SimpleRSVP() {
           )}
         </div>
       </div>
+
+      {/* Post-RSVP Success Modal with Guidance */}
+      <AnimatePresence>
+        {showSuccessModal && confirmedGuest && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}
+            onClick={() => setShowSuccessModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ type: 'spring', duration: 0.5 }}
+              className="max-w-2xl w-full max-h-[90vh] overflow-y-auto rounded-2xl p-8"
+              style={{ background: 'var(--background)', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {confirmedGuest.attending ? (
+                // Success - Attending
+                <>
+                  <div className="text-center mb-8">
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+                      className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-6"
+                      style={{ background: '#22c55e' }}
+                    >
+                      <Heart className="w-10 h-10 text-white" fill="white" />
+                    </motion.div>
+
+                    <h2
+                      className="text-3xl md:text-4xl mb-4"
+                      style={{
+                        fontFamily: 'var(--font-playfair)',
+                        color: 'var(--primary-text)',
+                        fontWeight: '600'
+                      }}
+                    >
+                      Confirmado! ✨
+                    </h2>
+
+                    <p
+                      className="text-lg mb-2"
+                      style={{
+                        fontFamily: 'var(--font-crimson)',
+                        color: 'var(--secondary-text)',
+                        fontStyle: 'italic'
+                      }}
+                    >
+                      {confirmedGuest.name}, mal podemos esperar para celebrar com você!
+                    </p>
+
+                    <p
+                      className="text-sm"
+                      style={{
+                        fontFamily: 'var(--font-crimson)',
+                        color: 'var(--text-muted)'
+                      }}
+                    >
+                      Seu RSVP foi confirmado com sucesso. Veja o que vem a seguir:
+                    </p>
+                  </div>
+
+                  {/* Next Steps Cards */}
+                  <div className="space-y-4 mb-8">
+                    <Card className="p-6" style={{ background: 'var(--white-soft)', border: '1px solid var(--border-subtle)' }}>
+                      <div className="flex items-start gap-4">
+                        <div className="flex-shrink-0">
+                          <Calendar className="w-6 h-6" style={{ color: 'var(--decorative)' }} />
+                        </div>
+                        <div className="flex-1">
+                          <h3
+                            className="font-semibold mb-2"
+                            style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)' }}
+                          >
+                            1. Marque seu calendário
+                          </h3>
+                          <p
+                            className="text-sm mb-2"
+                            style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)' }}
+                          >
+                            20 de Novembro de 2025, 10h30 • Casa HY, Fortaleza
+                          </p>
+                          <p
+                            className="text-xs"
+                            style={{ fontFamily: 'var(--font-crimson)', color: 'var(--text-muted)', fontStyle: 'italic' }}
+                          >
+                            Exatos 1000 dias após aquele primeiro "oi" no WhatsApp
+                          </p>
+                        </div>
+                      </div>
+                    </Card>
+
+                    <Card className="p-6" style={{ background: 'var(--white-soft)', border: '1px solid var(--border-subtle)' }}>
+                      <div className="flex items-start gap-4">
+                        <div className="flex-shrink-0">
+                          <MapPin className="w-6 h-6" style={{ color: 'var(--decorative)' }} />
+                        </div>
+                        <div className="flex-1">
+                          <h3
+                            className="font-semibold mb-2"
+                            style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)' }}
+                          >
+                            2. Veja os detalhes do evento
+                          </h3>
+                          <p
+                            className="text-sm mb-3"
+                            style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)' }}
+                          >
+                            Horários, traje, estacionamento, hotéis próximos e mais
+                          </p>
+                          <Link href="/detalhes">
+                            <Button
+                              variant="wedding-outline"
+                              size="sm"
+                              className="text-sm"
+                            >
+                              Ver Detalhes
+                            </Button>
+                          </Link>
+                        </div>
+                      </div>
+                    </Card>
+
+                    <Card className="p-6" style={{ background: 'var(--white-soft)', border: '1px solid var(--border-subtle)' }}>
+                      <div className="flex items-start gap-4">
+                        <div className="flex-shrink-0">
+                          <Gift className="w-6 h-6" style={{ color: 'var(--decorative)' }} />
+                        </div>
+                        <div className="flex-1">
+                          <h3
+                            className="font-semibold mb-2"
+                            style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)' }}
+                          >
+                            3. Ajude a construir nosso lar
+                          </h3>
+                          <p
+                            className="text-sm mb-3"
+                            style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)' }}
+                          >
+                            Nossa lista de presentes está pronta! Sua presença já é o maior presente, mas se quiser contribuir...
+                          </p>
+                          <Link href="/presentes">
+                            <Button
+                              variant="wedding-outline"
+                              size="sm"
+                              className="text-sm"
+                            >
+                              Ver Lista de Presentes
+                            </Button>
+                          </Link>
+                        </div>
+                      </div>
+                    </Card>
+
+                    <Card className="p-6" style={{ background: 'var(--white-soft)', border: '1px solid var(--border-subtle)' }}>
+                      <div className="flex items-start gap-4">
+                        <div className="flex-shrink-0">
+                          <Heart className="w-6 h-6" style={{ color: 'var(--decorative)' }} />
+                        </div>
+                        <div className="flex-1">
+                          <h3
+                            className="font-semibold mb-2"
+                            style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)' }}
+                          >
+                            4. Conheça nossa história
+                          </h3>
+                          <p
+                            className="text-sm mb-3"
+                            style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)' }}
+                          >
+                            Do primeiro "oi" no WhatsApp até os 1000 dias que nos trouxeram até aqui
+                          </p>
+                          <Link href="/historia">
+                            <Button
+                              variant="wedding-outline"
+                              size="sm"
+                              className="text-sm"
+                            >
+                              Nossa História
+                            </Button>
+                          </Link>
+                        </div>
+                      </div>
+                    </Card>
+                  </div>
+
+                  <div className="text-center">
+                    <Button
+                      onClick={() => setShowSuccessModal(false)}
+                      variant="wedding"
+                      size="lg"
+                    >
+                      Perfeito, entendi!
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                // Success - Not Attending
+                <>
+                  <div className="text-center mb-8">
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+                      className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-6"
+                      style={{ background: 'var(--decorative)' }}
+                    >
+                      <Heart className="w-10 h-10 text-white" />
+                    </motion.div>
+
+                    <h2
+                      className="text-3xl md:text-4xl mb-4"
+                      style={{
+                        fontFamily: 'var(--font-playfair)',
+                        color: 'var(--primary-text)',
+                        fontWeight: '600'
+                      }}
+                    >
+                      Entendemos 💕
+                    </h2>
+
+                    <p
+                      className="text-lg mb-2"
+                      style={{
+                        fontFamily: 'var(--font-crimson)',
+                        color: 'var(--secondary-text)',
+                        fontStyle: 'italic'
+                      }}
+                    >
+                      {confirmedGuest.name}, sentiremos muito sua falta!
+                    </p>
+
+                    <p
+                      className="text-sm mb-8"
+                      style={{
+                        fontFamily: 'var(--font-crimson)',
+                        color: 'var(--text-muted)'
+                      }}
+                    >
+                      Mas nosso amor nos conecta mesmo à distância. Você ainda pode:
+                    </p>
+
+                    <div className="space-y-4 mb-8">
+                      <Card className="p-6 text-left" style={{ background: 'var(--white-soft)', border: '1px solid var(--border-subtle)' }}>
+                        <h3
+                          className="font-semibold mb-2"
+                          style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)' }}
+                        >
+                          Acompanhe nossa história
+                        </h3>
+                        <p
+                          className="text-sm mb-3"
+                          style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)' }}
+                        >
+                          Veja como chegamos até aqui - 1000 dias de amor
+                        </p>
+                        <Link href="/historia">
+                          <Button variant="wedding-outline" size="sm">
+                            Ver Nossa História
+                          </Button>
+                        </Link>
+                      </Card>
+
+                      <Card className="p-6 text-left" style={{ background: 'var(--white-soft)', border: '1px solid var(--border-subtle)' }}>
+                        <h3
+                          className="font-semibold mb-2"
+                          style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)' }}
+                        >
+                          Envie um presente
+                        </h3>
+                        <p
+                          className="text-sm mb-3"
+                          style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)' }}
+                        >
+                          Mesmo de longe, você pode nos ajudar a construir nosso lar
+                        </p>
+                        <Link href="/presentes">
+                          <Button variant="wedding-outline" size="sm">
+                            Ver Lista de Presentes
+                          </Button>
+                        </Link>
+                      </Card>
+                    </div>
+
+                    <Button
+                      onClick={() => setShowSuccessModal(false)}
+                      variant="wedding"
+                      size="lg"
+                    >
+                      Fechar
+                    </Button>
+                  </div>
+                </>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

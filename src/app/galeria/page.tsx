@@ -4,58 +4,11 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Navigation from '@/components/ui/Navigation'
 import HeroVideoSection from '@/components/gallery/HeroVideoSection'
-import StoryTimeline from '@/components/gallery/StoryTimeline'
 import MasonryGallery from '@/components/gallery/MasonryGallery'
 import VideoGallery from '@/components/gallery/VideoGallery'
 import MediaLightbox from '@/components/gallery/MediaLightbox'
-import { MediaItem, TimelineEvent } from '@/types/wedding'
+import { MediaItem } from '@/types/wedding'
 import { SupabaseGalleryService } from '@/lib/services/supabaseGalleryService'
-
-// Real timeline data for Hel & Ylana's 1000-day journey
-const realTimelineEvents: TimelineEvent[] = [
-  {
-    id: '1',
-    date: '2023-01-06',
-    title: 'Dia 1 - O Primeiro "Oi"',
-    description: 'Do Tinder ao WhatsApp: aquele primeiro "oi" que mudou tudo. Quem diria que um match se tornaria a mais linda história de 1000 dias? ✨',
-    media_type: 'photo',
-    media_url: '/images/gallery/dia-1.jpg',
-    thumbnail_url: '/images/gallery/dia-1-thumb.jpg',
-    location: 'WhatsApp - Primeiro Contato',
-    milestone_type: 'first_date',
-    is_major_milestone: true,
-    order_index: 1,
-    created_at: '2024-01-01T00:00:00Z'
-  },
-  {
-    id: '2',
-    date: '2024-03-15',
-    title: 'Dia 434 - Nossa Casa Própria',
-    description: 'O apartamento dos sonhos! Hel passava de bicicleta na faculdade sonhando em morar aqui. Anos de trabalho duro para nossa casa própria com 4 pets. 🏠💕',
-    media_type: 'photo',
-    media_url: '/images/gallery/dia-500.jpg',
-    thumbnail_url: '/images/gallery/dia-500-thumb.jpg',
-    location: 'Nosso Apartamento dos Sonhos',
-    milestone_type: 'anniversary',
-    is_major_milestone: true,
-    order_index: 2,
-    created_at: '2024-01-01T00:00:00Z'
-  },
-  {
-    id: '3',
-    date: '2025-11-20',
-    title: 'Dia 1000 - Para Sempre',
-    description: 'Casa HY, 10h30. Exatos 1000 dias após aquele primeiro "oi" no WhatsApp. Caseiros e introvertidos celebrando com quem mais amamos. Mil dias virando eternidade. 💑',
-    media_type: 'photo',
-    media_url: '/images/gallery/dia-1000-casamento.jpg',
-    thumbnail_url: '/images/gallery/dia-1000-thumb.jpg',
-    location: 'Casa HY, Fortaleza',
-    milestone_type: 'engagement',
-    is_major_milestone: true,
-    order_index: 3,
-    created_at: '2024-01-01T00:00:00Z'
-  }
-]
 
 const mockMediaItems: MediaItem[] = [
   {
@@ -213,24 +166,17 @@ export default function GaleriaPage() {
 
   const [isLoading, setIsLoading] = useState(true)
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([])
-  const [timelineEvents, setTimelineEvents] = useState<TimelineEvent[]>([])
 
   useEffect(() => {
     const loadData = async () => {
       try {
         // Load data from SupabaseGalleryService
-        const [items, events] = await Promise.all([
-          SupabaseGalleryService.getMediaItems(),
-          SupabaseGalleryService.getTimelineEvents()
-        ])
-
+        const items = await SupabaseGalleryService.getMediaItems()
         setMediaItems(items)
-        setTimelineEvents(events.length > 0 ? events : realTimelineEvents)
       } catch (error) {
         console.error('Error loading gallery data:', error)
         // Fall back to mock data if service fails
         setMediaItems(mockMediaItems)
-        setTimelineEvents(realTimelineEvents)
       } finally {
         setIsLoading(false)
       }
@@ -302,13 +248,6 @@ export default function GaleriaPage() {
           </motion.div>
         </div>
       </section>
-
-      {/* Story Timeline */}
-      <StoryTimeline
-        events={timelineEvents}
-        title="Nossa Linha do Tempo"
-        description="Os marcos mais importantes da nossa jornada de amor"
-      />
 
       {/* Photo Gallery */}
       <MasonryGallery
