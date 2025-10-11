@@ -133,8 +133,8 @@ export default function PresentsPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: 'var(--decorative)' }}>
+          <div className="flex flex-row items-center justify-center gap-3 mb-4">
+            <div className="w-12 h-12 rounded-full flex flex-row items-center justify-center" style={{ background: 'var(--decorative)' }}>
               <GiftIcon className="w-6 h-6" style={{ color: 'var(--white-soft)' }} />
             </div>
             <h1 className="text-4xl font-bold" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)', letterSpacing: '0.15em' }}>
@@ -179,7 +179,7 @@ export default function PresentsPage() {
           className="rounded-xl p-8 mb-8"
           style={{ background: 'var(--white-soft)', border: '1px solid var(--border-subtle)', boxShadow: '0 2px 8px var(--shadow-subtle)' }}
         >
-          <div className="flex items-center gap-2 mb-6">
+          <div className="flex flex-row items-center gap-2 mb-6">
             <Filter className="w-5 h-5" style={{ color: 'var(--decorative)' }} />
             <h3 className="font-semibold" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)', letterSpacing: '0.1em' }}>Filtros</h3>
           </div>
@@ -242,8 +242,8 @@ export default function PresentsPage() {
             </select>
 
             {/* Show Completed Toggle */}
-            <div className="flex items-center justify-center">
-              <label className="flex items-center gap-2 cursor-pointer">
+            <div className="flex flex-row items-center justify-center">
+              <label className="flex flex-row items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={showCompleted}
@@ -262,7 +262,7 @@ export default function PresentsPage() {
         </motion.div>
 
         {/* Results Count */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-row items-center justify-between mb-6">
           <p style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
             {filteredGifts.length} {filteredGifts.length === 1 ? 'presente encontrado' : 'presentes encontrados'}
           </p>
@@ -307,7 +307,7 @@ export default function PresentsPage() {
             animate={{ opacity: 1 }}
             className="text-center py-12"
           >
-            <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'var(--accent)' }}>
+            <div className="w-16 h-16 rounded-full flex flex-row items-center justify-center mx-auto mb-4" style={{ background: 'var(--accent)' }}>
               <Sparkles className="w-8 h-8" style={{ color: 'var(--decorative)' }} />
             </div>
             <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)' }}>
@@ -346,16 +346,16 @@ export default function PresentsPage() {
             Cada presente nos ajuda a transformar nossa casa própria em um lar ainda mais especial.
             Linda, Cacao, Olivia e Oliver também agradecem! Nos vemos no Constable Galerie em 20 de novembro de 2025!
           </p>
-          <div className="flex items-center justify-center gap-4 text-sm">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm">
+            <div className="flex flex-row items-center gap-2">
               <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--white-soft)' }} />
               <span style={{ fontFamily: 'var(--font-crimson)', fontSize: '0.875rem' }}>PIX brasileiro, rápido e seguro</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-row items-center gap-2">
               <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--white-soft)' }} />
               <span style={{ fontFamily: 'var(--font-crimson)', fontSize: '0.875rem' }}>Confirmação na hora do carinho</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-row items-center gap-2">
               <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--white-soft)' }} />
               <span style={{ fontFamily: 'var(--font-crimson)', fontSize: '0.875rem' }}>"O que temos entre nós é muito maior" - Hel & Ylana</span>
             </div>

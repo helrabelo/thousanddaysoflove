@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 
 export default function HeroSection() {
   return (
-    <section className="min-h-screen flex items-center justify-center relative overflow-hidden pt-20">
+    <section className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
       {/* Fundo com cor do convite */}
       <div
         className="absolute inset-0"
@@ -208,7 +208,7 @@ export default function HeroSection() {
             size="lg"
             asChild
           >
-            <Link href="/rsvp" className="flex items-center">
+            <Link href="/rsvp" className="flex flex-row items-center">
               <Heart className="inline-block w-5 h-5 mr-3" style={{ strokeWidth: 1.5 }} />
               Confirmar Presença
             </Link>
@@ -219,7 +219,7 @@ export default function HeroSection() {
             size="lg"
             asChild
           >
-            <Link href="/presentes" className="flex items-center">
+            <Link href="/presentes" className="flex flex-row items-center">
               Lista de Presentes
             </Link>
           </Button>

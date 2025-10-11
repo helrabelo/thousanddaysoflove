@@ -536,15 +536,12 @@ a:focus-visible {
 }
 
 @media (max-width: 480px) {
-  body { padding: 0 12px; }
-  section { padding: 2rem 1rem; }
-  .wedding-body { font-size: 16px !important; line-height: 1.6; }
-  h1 { margin-bottom: 0.75rem; }
-  h2 { margin-bottom: 0.5rem; }
-  .flex { flex-direction: column; }
-  [class*="grid-cols-"] { grid-template-columns: 1fr !important; }
-  nav { padding: 0 12px; }
-  button + button { margin-top: 0.5rem; }
+  /* Removed global overrides - use explicit Tailwind utilities in components instead */
+  /* Keep only safe-area support for notched devices */
+  nav {
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+  }
 }
 
 /* Wedding page backgrounds */
