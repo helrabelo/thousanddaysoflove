@@ -1,59 +1,105 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { Heart } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
 
 interface Pet {
+  id: string
   name: string
-  emoji: string
-  title: string
-  personality: string
-  fact: string
-  image: string
-  color: string
+  nickname?: string | null
+  species: 'dog' | 'cat' | 'other'
+  breed?: string | null
+  description?: string | null
+  personality?: string | null
+  image_url: string
+  thumbnail_url?: string | null
+  date_joined?: string | null
+  is_visible: boolean
+  display_order: number
+  emoji?: string // derived from personality
+  title?: string // derived from personality
+  fact?: string // alias for description
+  color?: string // default color
 }
 
-const pets: Pet[] = [
-  {
-    name: 'Linda',
-    emoji: '👑',
-    title: 'A Matriarca',
-    personality: 'Autista perfeita, elegante e independente',
-    fact: 'Mãe de Olivia e Oliver, dona da casa desde o primeiro dia',
-    image: '/images/pets/linda.jpg',
-    color: '#D4AF37' // Gold
-  },
-  {
-    name: 'Cacao',
-    emoji: '🍫',
-    title: 'O Companheiro',
-    personality: 'Doce, leal e sempre ao nosso lado',
-    fact: 'Chegou para fazer companhia à Linda e conquistou nossos corações',
-    image: '/images/pets/cacao.jpg',
-    color: '#8B4513' // Brown
-  },
-  {
-    name: 'Olivia',
-    emoji: '🌸',
-    title: 'A Doce',
-    personality: 'Delicada, carinhosa e cheia de amor',
-    fact: 'Filhote da Linda que ficou com a gente, puro amor em forma de pet',
-    image: '/images/pets/olivia.jpg',
-    color: '#FFB6C1' // Pink
-  },
-  {
-    name: 'Oliver',
-    emoji: '⚡',
-    title: 'O Energético',
-    personality: 'Brincalhão, curioso e cheio de energia',
-    fact: 'Irmão da Olivia, transforma a casa em parque de diversões',
-    image: '/images/pets/oliver.jpg',
-    color: '#4169E1' // Blue
+// Default emoji based on species
+const getDefaultEmoji = (species: string) => {
+  switch (species) {
+    case 'cat': return '🐱'
+    case 'dog': return '🐶'
+    default: return '🐾'
   }
-]
+}
+
+// Extract emoji from personality if it exists
+const extractEmoji = (personality?: string | null, species?: string) => {
+  if (!personality) return getDefaultEmoji(species || 'other')
+  const emojiMatch = personality.match(/([\u{1F300}-\u{1F9FF}])/u)
+  return emojiMatch ? emojiMatch[0] : getDefaultEmoji(species || 'other')
+}
 
 export default function OurFamilySection() {
+  const [pets, setPets] = useState<Pet[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const loadPets = async () => {
+      try {
+        const supabase = createClient()
+        const { data, error } = await supabase
+          .from('pets')
+          .select('*')
+          .eq('is_visible', true)
+          .order('display_order')
+
+        if (error) throw error
+
+        // Transform data to match component expectations
+        const transformedPets = (data || []).map((pet, index) => ({
+          ...pet,
+          emoji: extractEmoji(pet.personality, pet.species),
+          title: pet.personality?.replace(/[\u{1F300}-\u{1F9FF}]/ug, '').trim() || pet.nickname || '',
+          fact: pet.description || '',
+          image: pet.image_url,
+          color: getColorForPet(index)
+        }))
+
+        setPets(transformedPets)
+      } catch (error) {
+        console.error('Error loading pets:', error)
+        // Fallback to empty array if Supabase fails
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadPets()
+  }, [])
+
+  // Helper to assign colors
+  const getColorForPet = (index: number) => {
+    const colors = ['#D4AF37', '#8B4513', '#FFB6C1', '#4169E1', '#9370DB', '#20B2AA']
+    return colors[index % colors.length]
+  }
+
+  if (loading) {
+    return (
+      <section className="py-24 px-6" style={{ background: 'var(--accent)' }}>
+        <div className="max-w-7xl mx-auto text-center">
+          <p style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)' }}>
+            Carregando nossa família...
+          </p>
+        </div>
+      </section>
+    )
+  }
+
+  if (pets.length === 0) {
+    return null // Don't show section if no pets
+  }
   return (
     <section className="py-24 px-6" style={{ background: 'var(--accent)' }}>
       <div className="max-w-7xl mx-auto">
@@ -139,7 +185,7 @@ export default function OurFamilySection() {
                 {/* Pet Image */}
                 <div className="relative aspect-square overflow-hidden">
                   <Image
-                    src={pet.image}
+                    src={pet.image_url}
                     alt={`${pet.name} ${pet.emoji}`}
                     fill
                     className="object-cover group-hover:scale-110 transition-transform duration-700"

@@ -6,11 +6,42 @@ import { Heart, ChevronDown } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
+import { createClient } from '@/lib/supabase/client'
 
 export default function VideoHeroSection() {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [isVideoLoaded, setIsVideoLoaded] = useState(false)
   const shouldReduceMotion = useReducedMotion()
+  const [heroPosterUrl, setHeroPosterUrl] = useState('/images/hero-poster.jpg')
+  const [heroCoupleUrl, setHeroCoupleUrl] = useState('/images/hero-couple.jpg')
+
+  useEffect(() => {
+    // Load hero images from Supabase
+    const loadHeroImages = async () => {
+      try {
+        const supabase = createClient()
+        const { data, error } = await supabase
+          .from('site_settings')
+          .select('setting_key, setting_value')
+          .in('setting_key', ['hero_poster_url', 'hero_couple_url'])
+
+        if (error) throw error
+
+        data?.forEach(setting => {
+          if (setting.setting_key === 'hero_poster_url' && setting.setting_value) {
+            setHeroPosterUrl(setting.setting_value)
+          } else if (setting.setting_key === 'hero_couple_url' && setting.setting_value) {
+            setHeroCoupleUrl(setting.setting_value)
+          }
+        })
+      } catch (error) {
+        console.error('Error loading hero images:', error)
+        // Fallback to default images if Supabase fails
+      }
+    }
+
+    loadHeroImages()
+  }, [])
 
   useEffect(() => {
     if (videoRef.current && !shouldReduceMotion) {
@@ -27,7 +58,7 @@ export default function VideoHeroSection() {
         // Static image for reduced motion preference
         <div className="absolute inset-0">
           <Image
-            src="/images/hero-couple.jpg"
+            src={heroCoupleUrl}
             alt="Hel e Ylana"
             fill
             className="object-cover"
@@ -43,7 +74,7 @@ export default function VideoHeroSection() {
             loop
             muted
             playsInline
-            poster="/images/hero-poster.jpg"
+            poster={heroPosterUrl}
             onLoadedData={() => setIsVideoLoaded(true)}
             className="w-full h-full object-cover"
           >

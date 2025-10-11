@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Heart, Users, Calendar, Image, User, Gift, CreditCard, BarChart3 } from 'lucide-react'
+import { Heart, Users, Calendar, Image, User, Gift, CreditCard, BarChart3, ImageIcon, PawPrint } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 
@@ -26,39 +26,53 @@ export default function AdminPage() {
       color: 'sage'
     },
     {
+      href: '/admin/hero-images',
+      icon: ImageIcon,
+      title: 'Imagens Hero',
+      description: 'Gerenciar imagens do banner principal',
+      color: 'purple'
+    },
+    {
+      href: '/admin/pets',
+      icon: PawPrint,
+      title: 'Nossa Família Peluda',
+      description: 'Gerenciar Linda, Cacao, Olivia e Oliver',
+      color: 'blush'
+    },
+    {
       href: '/admin/about-us',
       icon: User,
       title: 'Gerenciar Sobre Nós',
       description: 'Editar informações sobre o casal',
-      color: 'purple'
+      color: 'sage'
     },
     {
       href: '/admin/galeria',
       icon: Image,
       title: 'Gerenciar Galeria',
       description: 'Upload e organização de fotos',
-      color: 'blush'
+      color: 'purple'
     },
     {
       href: '/admin/presentes',
       icon: Gift,
       title: 'Lista de Presentes',
       description: 'Gerenciar presentes e registro',
-      color: 'sage'
+      color: 'blush'
     },
     {
       href: '/admin/pagamentos',
       icon: CreditCard,
       title: 'Pagamentos',
       description: 'Rastrear pagamentos PIX',
-      color: 'purple'
+      color: 'sage'
     },
     {
       href: '/admin/analytics',
       icon: BarChart3,
       title: 'Analytics',
       description: 'Estatísticas do casamento',
-      color: 'blush'
+      color: 'purple'
     }
   ]
 
