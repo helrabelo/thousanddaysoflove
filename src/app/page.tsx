@@ -1,5 +1,5 @@
 import Navigation from '@/components/ui/Navigation'
-import HeroSection from '@/components/sections/HeroSection'
+import VideoHeroSection from '@/components/sections/VideoHeroSection'
 import StoryPreview from '@/components/sections/StoryPreview'
 import AboutUsSection from '@/components/sections/AboutUsSection'
 import QuickPreview from '@/components/sections/QuickPreview'
@@ -7,9 +7,9 @@ import WeddingLocation from '@/components/sections/WeddingLocation'
 
 export default function Home() {
   return (
-    <main className="min-h-screen pt-20">
+    <main className="min-h-screen">
       <Navigation />
-      <HeroSection />
+      <VideoHeroSection />
       <StoryPreview />
       <AboutUsSection />
       <QuickPreview />
