@@ -40,8 +40,8 @@ export default function AboutUsSection() {
               fontStyle: 'italic'
             }}
           >
-            "Tem o que as pessoas sabem de nós, tem o que elas veem de nós, e tem o que nós temos entre nós.<br />
-            E o que nós temos entre nós é muito maior do que qualquer um pode imaginar."
+            "Tem o que as pessoas sabem. Tem o que elas veem. E tem o que a gente tem entre a gente.<br />
+            E isso é muito maior do que qualquer um imagina."
           </p>
           <SectionDivider />
         </motion.div>
@@ -77,7 +77,7 @@ export default function AboutUsSection() {
                     letterSpacing: '0.1em'
                   }}
                 >
-                  Caseiros & Introvertidos por Natureza
+                  Caseiros & Introvertidos de Verdade
                 </h3>
                 <p
                   style={{
@@ -88,7 +88,7 @@ export default function AboutUsSection() {
                     fontStyle: 'italic'
                   }}
                 >
-                  Nosso universo particular é onde o amor floresce. Adoramos receber amigos em casa, criar memórias íntimas e curtir a companhia um do outro. Para nós, lar é onde está o coração.
+                  A gente é daqueles que realmente prefere ficar em casa. Receber amigos aqui (grupos pequenos, por favor - introvertidos, lembra?), fazer aquela comida boa, conversar até tarde. Nosso programa perfeito tá aqui dentro, não lá fora.
                 </p>
               </CardContent>
             </Card>
@@ -123,7 +123,7 @@ export default function AboutUsSection() {
                     letterSpacing: '0.1em'
                   }}
                 >
-                  Paixões que Nos Unem
+                  O Que A Gente Curte
                 </h3>
                 <p
                   style={{
@@ -134,7 +134,7 @@ export default function AboutUsSection() {
                     fontStyle: 'italic'
                   }}
                 >
-                  Boa comida (especialmente no nosso querido Mangue Azul), vinhos que acompanham nossas conversas, viagens que expandem nossos horizontes, e fitness que fortalece nossos corpos e nossa parceria.
+                  Boa comida (Mangue Azul era praticamente nossa segunda casa). Vinho bom que acompanha conversa boa. Viagens quando dá. Academia juntos (porque alguém tem que puxar o outro pra não desistir).
                 </p>
               </CardContent>
             </Card>
@@ -333,7 +333,7 @@ export default function AboutUsSection() {
                   letterSpacing: '0.1em'
                 }}
               >
-                Nossa Família Completa: 4 Pets
+                Nossa Família: Agora Somos 6
               </h3>
               <p
                 className="mb-8"
@@ -345,7 +345,7 @@ export default function AboutUsSection() {
                   fontStyle: 'italic'
                 }}
               >
-                Linda chegou primeiro, autista e perfeita. Cacao se juntou após o namoro. Olivia e Oliver nasceram da Linda - de 2 para 4 pets! Nossa casa nunca foi tão cheia de amor e travessuras.
+                Começou com Linda. Depois Cacao (a Ylana não deu muita escolha pro Hel). Aí a Linda resolveu ter 4 filhotes - ficamos com Olivia e Oliver. De 2 pra 4. A casa não tem mais silêncio, mas tem muito mais vida.
               </p>
 
               {/* Grid dos Pets */}
@@ -379,7 +379,7 @@ export default function AboutUsSection() {
                       fontStyle: 'italic'
                     }}
                   >
-                    A primeira, autista, mongol, perfeita
+                    Veio primeiro. Autista, síndrome de Down, rainha absoluta desta casa.
                   </p>
                 </div>
 
@@ -412,7 +412,7 @@ export default function AboutUsSection() {
                       fontStyle: 'italic'
                     }}
                   >
-                    Chegou março 2023, companhia da Linda
+                    1 libra de Spitz Alemão. Volume no máximo 24/7. Hel paga o aluguel dela. Hel limpa a m*rda dela. Casamento, né?
                   </p>
                 </div>
 
@@ -445,7 +445,7 @@ export default function AboutUsSection() {
                       fontStyle: 'italic'
                     }}
                   >
-                    Filha da Linda, nossa princesinha
+                    Filha da Linda. A calma da família (alguém tinha que ser).
                   </p>
                 </div>
 
@@ -478,7 +478,7 @@ export default function AboutUsSection() {
                       fontStyle: 'italic'
                     }}
                   >
-                    Filho da Linda, pura energia
+                    Filho da Linda. Energia pura. Cacao versão 2.0 no quesito barulho.
                   </p>
                 </div>
               </div>

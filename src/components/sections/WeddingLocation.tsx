@@ -327,7 +327,7 @@ export default function WeddingLocation() {
                   }}
                 >
                   {venueStory.arrival} O local fica na região nobre de Eng. Luciano Cavalcante.
-                  Como sempre recebemos nossos amigos em casa, cheguem 15-20 minutos antes para aproveitar cada momento de nossa celebração dos mil dias! ✨
+                  Cheguem 15-20 minutos antes. A gente gosta de receber como se fosse em casa - casual, tranquilo, sem correria.
                 </p>
               </div>
             </div>
@@ -362,10 +362,10 @@ export default function WeddingLocation() {
               >
                 <Clock className="w-8 h-8" style={{ color: 'var(--white-soft)' }} />
               </div>
-              <h4 className="font-semibold mb-2" style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-playfair)' }}>Nosso Grande Momento</h4>
+              <h4 className="font-semibold mb-2" style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-playfair)' }}>Horário da Cerimônia</h4>
               <p className="text-sm" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
-                Início às 10:30h da manhã<br />
-                Celebração dos mil dias: 2-3 horas de puro amor
+                Começa às 10:30h da manhã<br />
+                2-3 horas de celebração (com comida boa)
               </p>
             </div>
 
@@ -376,10 +376,10 @@ export default function WeddingLocation() {
               >
                 <Car className="w-8 h-8" style={{ color: 'var(--white-soft)' }} />
               </div>
-              <h4 className="font-semibold mb-2" style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-playfair)' }}>Chegada Tranquila</h4>
+              <h4 className="font-semibold mb-2" style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-playfair)' }}>Estacionamento</h4>
               <p className="text-sm" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
-                Vagas gratuitas disponíveis<br />
-                Manobrista cuidando de vocês 🚗✨
+                Vagas gratuitas + manobrista<br />
+                (Sim, de verdade. É de graça.)
               </p>
             </div>
 
@@ -390,10 +390,10 @@ export default function WeddingLocation() {
               >
                 <Info className="w-8 h-8" style={{ color: 'var(--white-soft)' }} />
               </div>
-              <h4 className="font-semibold mb-2" style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-playfair)' }}>Vista-se com Amor</h4>
+              <h4 className="font-semibold mb-2" style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-playfair)' }}>Dress Code</h4>
               <p className="text-sm" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
-                Traje social elegante<br />
-                Cores claras para combinar com nossa felicidade ✨
+                Traje social<br />
+                Cores claras são bem-vindas (é cerimônia de manhã no Ceará)
               </p>
             </div>
           </div>

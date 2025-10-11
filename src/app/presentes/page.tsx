@@ -116,7 +116,7 @@ export default function PresentsPage() {
         <div className="container mx-auto px-4 py-16">
           <div className="text-center mb-12">
             <div className="w-12 h-12 border-4 rounded-full animate-spin mx-auto mb-4" style={{ borderColor: 'var(--decorative)', borderTopColor: 'var(--primary-text)' }} />
-            <p style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)', fontStyle: 'italic' }}>Preparando ideias para construir nosso lar...</p>
+            <p style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)', fontStyle: 'italic' }}>Carregando as ideias pro nosso lar...</p>
           </div>
         </div>
       </div>
@@ -142,8 +142,7 @@ export default function PresentsPage() {
             </h1>
           </div>
           <p className="text-lg max-w-2xl mx-auto" style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)', fontStyle: 'italic', lineHeight: '1.8' }}>
-            Para nossa casa própria e nossa família de 4 patinhas!
-            Linda 👑, Cacao 🍫, Olivia 🌸 e Oliver ⚡ também agradecem cada gesto de carinho.
+            Esse apartamento que o Hel passava de bicicleta sonhando? Agora é nosso. Casa própria depois de anos de trabalho. Família de 6 (contando Linda 👑, Cacao 🍫, Olivia 🌸 e Oliver ⚡). Se quiser ajudar a fazer dela um lar de verdade, a gente agradece demais.
           </p>
         </motion.div>
 
@@ -343,8 +342,7 @@ export default function PresentsPage() {
             Obrigado por Ajudar a Construir Nosso Lar!
           </h3>
           <p className="max-w-2xl mx-auto mb-8" style={{ fontFamily: 'var(--font-crimson)', fontStyle: 'italic', lineHeight: '1.8', color: 'var(--white-soft)', opacity: '0.9' }}>
-            Cada presente nos ajuda a transformar nossa casa própria em um lar ainda mais especial.
-            Linda, Cacao, Olivia e Oliver também agradecem! Nos vemos na Casa HY em 20 de novembro de 2025!
+            Cada presente ajuda a transformar esse apartamento (que o Hel sonhava desde a faculdade) em nosso lar de verdade. Os 4 cachorros barulhentos também agradecem. Te esperamos na Casa HY dia 20 de novembro!
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm">
             <div className="flex flex-row items-center gap-2">

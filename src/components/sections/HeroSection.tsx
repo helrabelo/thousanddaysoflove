@@ -74,9 +74,9 @@ export default function HeroSection() {
             fontStyle: 'italic'
           }}
         >
-          Do primeiro "oi" no WhatsApp até o altar na Casa HY<br />
-          <span style={{ fontSize: '1.1em', fontWeight: 500, color: 'var(--primary-text)' }}>1000 dias de puro amor</span><br />
-          <span style={{ fontSize: '0.9em', opacity: 0.8, marginTop: '0.5rem', display: 'block' }}>"O que temos entre nós é muito maior do que qualquer um pode imaginar"</span>
+          Daquele primeiro "oi" no WhatsApp até a Casa HY<br />
+          <span style={{ fontSize: '1.1em', fontWeight: 500, color: 'var(--primary-text)' }}>1000 dias. Sim, a gente fez a conta.</span><br />
+          <span style={{ fontSize: '0.9em', opacity: 0.8, marginTop: '0.5rem', display: 'block' }}>"O que a gente tem entre a gente é muito maior do que qualquer um imagina"</span>
         </motion.p>
 
         {/* Countdown */}
@@ -136,7 +136,7 @@ export default function HeroSection() {
                 }}
               >
                 20 de Novembro de 2025<br />
-                <span style={{ color: 'var(--decorative)' }}>Exatamente 1000 dias desde 6 de janeiro de 2023</span>
+                <span style={{ color: 'var(--decorative)' }}>Exatamente 1000 dias desde aquele 6 de janeiro de 2023</span>
               </p>
             </div>
 
@@ -163,7 +163,7 @@ export default function HeroSection() {
                 }}
               >
                 10h30 da manhã<br />
-                <span style={{ color: 'var(--decorative)' }}>Cerimônia entre amigos e família</span>
+                <span style={{ color: 'var(--decorative)' }}>60 pessoas. Pra quem é introvertido, isso é muita gente.</span>
               </p>
             </div>
 
@@ -190,7 +190,7 @@ export default function HeroSection() {
                 }}
               >
                 {CONSTABLE_GALERIE.name}<br />
-                <span style={{ color: 'var(--decorative)' }}>Onde a arte encontra o amor</span>
+                <span style={{ color: 'var(--decorative)' }}>Uma galeria de arte em Fortaleza</span>
               </p>
             </div>
           </div>

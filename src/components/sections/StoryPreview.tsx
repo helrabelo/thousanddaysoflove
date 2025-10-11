@@ -41,7 +41,7 @@ export default function StoryPreview() {
               fontStyle: 'italic'
             }}
           >
-            Caseiros e introvertidos por natureza, mas com corações que transbordam amor. Unidos por boa comida, vinhos especiais, viagens inesquecíveis e nossa família de 4 pets que completam nosso universo particular.
+            Caseiros e introvertidos de verdade. A gente é daqueles que realmente prefere ficar em casa. Unidos por boa comida (especialmente no Mangue Azul), vinhos que acompanham conversas longas, viagens quando dá, e 4 cachorros que fazem barulho demais mas a gente ama.
           </p>
           <SectionDivider className="mt-12" />
         </motion.div>
@@ -88,7 +88,7 @@ export default function StoryPreview() {
                     fontStyle: 'italic'
                   }}
                 >
-                  6 de janeiro de 2023 - Quem diria que um simples match se tornaria a mais linda história de amor? O primeiro "oi" que mudou nossas vidas para sempre.
+                  6 de janeiro de 2023. Aquele primeiro "oi" meio sem graça no WhatsApp. A gente quase nem respondeu. Três anos depois, casamento. Vai entender.
                 </p>
               </CardContent>
             </Card>
@@ -124,7 +124,7 @@ export default function StoryPreview() {
                     textTransform: 'uppercase'
                   }}
                 >
-                  O Gesto Decisivo
+                  O Momento
                 </h3>
                 <p
                   style={{
@@ -135,7 +135,7 @@ export default function StoryPreview() {
                     fontStyle: 'italic'
                   }}
                 >
-                  Ylana levando remédio e chá quando Hel ficou doente. "Na hora eu já sabia: 'é ela'". Às vezes o amor se revela nos gestos mais simples.
+                  Hel ficou doente. Ylana apareceu com remédio e chá. "Na hora eu já sabia: 'é ela'". Simples assim.
                 </p>
               </CardContent>
             </Card>
@@ -171,7 +171,7 @@ export default function StoryPreview() {
                     textTransform: 'uppercase'
                   }}
                 >
-                  O Apartamento dos Sonhos
+                  A Casa
                 </h3>
                 <p
                   style={{
@@ -182,7 +182,7 @@ export default function StoryPreview() {
                     fontStyle: 'italic'
                   }}
                 >
-                  O apartamento que Hel passava de bicicleta na faculdade sonhando em morar. Anos de trabalho duro para realizar o sonho de uma casa própria para nossa família de 6.
+                  Esse apartamento? Hel passava de bicicleta aqui indo pra faculdade. Sonhava morar aqui um dia. Anos de trabalho. Literalmente anos. Agora é nosso. Casa própria. Família de 6. Primeira vez na vida que ele não quer chegar no próximo nível.
                 </p>
               </CardContent>
             </Card>

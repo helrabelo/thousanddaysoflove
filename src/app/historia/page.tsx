@@ -121,8 +121,7 @@ export default function HistoriaPage() {
                 fontStyle: 'italic'
               }}
             >
-              De um simples "oi" no WhatsApp até o altar - a jornada de 1000 dias que nos trouxe até aqui.
-              Cada momento, cada marco, cada descoberta que construiu nosso amor.
+              Daquele "oi" no WhatsApp até o casamento. 1000 dias, muitas histórias, e a gente aqui.
             </p>
 
             <div
@@ -136,8 +135,8 @@ export default function HistoriaPage() {
       {/* Timeline Section */}
       <StoryTimeline
         events={events}
-        title="1000 Dias de Amor"
-        description="Cada dia nos trouxe mais perto do para sempre"
+        title="1000 Dias: A Linha do Tempo"
+        description="Muita coisa aconteceu nesses 1000 dias"
       />
 
       {/* About Us Section */}
