@@ -428,7 +428,7 @@ export default function DetalhesPage() {
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <a
-                href="tel:+5585999999999"
+                href="tel:+5585994198099"
                 className="flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all"
                 style={{
                   background: 'var(--white-soft)',
@@ -436,7 +436,7 @@ export default function DetalhesPage() {
                 }}
               >
                 <Phone className="w-5 h-5" />
-                (85) 99999-9999
+                (85) 99419-8099
               </a>
 
               <a

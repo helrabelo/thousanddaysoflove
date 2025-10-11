@@ -281,10 +281,9 @@ export class GoogleMapsService {
   static getNearbyLandmarks(): string[] {
     return [
       'Shopping Iguatemi Fortaleza (5 min)',
-      'North Shopping Fortaleza (10 min)',
-      'Aeroporto Internacional de Fortaleza (25 min)',
-      'Praia do Futuro (20 min)',
-      'Centro de Fortaleza (25 min)'
+      'Reserva Open Mall (2 mins',
+      'Shopping Via Sul (7 min)',
+      'Baixa da Égua (aí depende do trânsito)',
     ];
   }
 

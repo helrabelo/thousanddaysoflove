@@ -347,10 +347,10 @@ export const giftStories = {
 
 // Local romântico específico do casamento
 export const venueStory = {
-  title: "Casa HY - Onde a Arte Encontra o Amor",
+  title: "Casa HY - Constable Galerie",
   subtitle: "Nosso plano B que virou plano perfeito",
   description: "Se o Mangue Azul não tivesse fechado, nosso casamento seria lá. Mas o destino nos levou à Casa HY, onde celebraremos nossos 1000 dias rodeados de arte, assim como nossa história é uma obra de arte única.",
-  directions: "Siga seu coração até nós - será fácil encontrar o lugar onde dois introvertidos se tornaram uma família 💕",
+  directions: "Como chegar aqui daí",
   arrival: "Chegue com tranquilidade, saia com alegria"
 };
 

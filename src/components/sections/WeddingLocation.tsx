@@ -206,46 +206,13 @@ export default function WeddingLocation() {
                   }}
                 >
                   <Share2 className="w-5 h-5" />
-                  Compartilhar nossa localização 💕
+                  Mandar no TIZAP
                 </button>
               </div>
             </div>
 
             {/* Transportation Info */}
-            <div className="grid md:grid-cols-2 gap-6">
-              {/* Public Transportation */}
-              <div
-                className="rounded-2xl p-6"
-                style={{
-                  background: 'var(--white-soft)',
-                  border: '1px solid var(--border-subtle)',
-                  boxShadow: '0 8px 24px var(--shadow-medium)'
-                }}
-              >
-                <div className="flex items-center gap-3 mb-4">
-                  <div
-                    className="p-2 rounded-full"
-                    style={{ background: 'var(--primary-text)' }}
-                  >
-                    <Bus className="w-5 h-5" style={{ color: 'var(--white-soft)' }} />
-                  </div>
-                  <h4
-                    className="font-semibold"
-                    style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-playfair)' }}
-                  >
-                    Como Chegar de Transporte Público
-                  </h4>
-                </div>
-                <ul className="space-y-2">
-                  {transportInfo.map((info, index) => (
-                    <li key={index} className="text-sm flex items-start gap-2" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
-                      <div className="w-1 h-1 rounded-full mt-2" style={{ background: 'var(--decorative)' }} />
-                      {info}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
+            <div className="grid md:grid-cols-1">
               {/* Nearby Landmarks */}
               <div
                 className="rounded-2xl p-6"
