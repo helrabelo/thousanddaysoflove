@@ -6,42 +6,57 @@ import { Heart, ChevronDown } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
-import { createClient } from '@/lib/supabase/client'
 
-export default function VideoHeroSection() {
+interface VideoHeroProps {
+  data?: {
+    monogram?: string
+    tagline?: string
+    dateBadge?: string
+    primaryCta?: {
+      label: string
+      href: string
+    }
+    secondaryCta?: {
+      label: string
+      href: string
+    }
+    scrollText?: string
+    backgroundVideo?: {
+      asset?: {
+        url: string
+      }
+    }
+    backgroundImage?: {
+      asset?: {
+        url: string
+      }
+      alt?: string
+    }
+    posterImage?: {
+      asset?: {
+        url: string
+      }
+      alt?: string
+    }
+  }
+}
+
+export default function VideoHeroSection({ data }: VideoHeroProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [isVideoLoaded, setIsVideoLoaded] = useState(false)
   const shouldReduceMotion = useReducedMotion()
-  const [heroPosterUrl, setHeroPosterUrl] = useState('/images/hero-poster.jpg')
-  const [heroCoupleUrl, setHeroCoupleUrl] = useState('/images/hero-couple.jpg')
 
-  useEffect(() => {
-    // Load hero images from Supabase
-    const loadHeroImages = async () => {
-      try {
-        const supabase = createClient()
-        const { data, error } = await supabase
-          .from('site_settings')
-          .select('setting_key, setting_value')
-          .in('setting_key', ['hero_poster_url', 'hero_couple_url'])
+  // Fallback values
+  const monogram = data?.monogram || 'H ♥ Y'
+  const tagline = data?.tagline || '1000 dias. Sim, a gente fez a conta.'
+  const dateBadge = data?.dateBadge || '20.11.2025'
+  const primaryCta = data?.primaryCta || { label: 'Confirmar Presença', href: '/rsvp' }
+  const secondaryCta = data?.secondaryCta || { label: 'Nossa História', href: '/historia' }
+  const scrollText = data?.scrollText || 'Explorar'
 
-        if (error) throw error
-
-        data?.forEach(setting => {
-          if (setting.setting_key === 'hero_poster_url' && setting.setting_value) {
-            setHeroPosterUrl(setting.setting_value)
-          } else if (setting.setting_key === 'hero_couple_url' && setting.setting_value) {
-            setHeroCoupleUrl(setting.setting_value)
-          }
-        })
-      } catch (error) {
-        console.error('Error loading hero images:', error)
-        // Fallback to default images if Supabase fails
-      }
-    }
-
-    loadHeroImages()
-  }, [])
+  // Use backgroundImage as poster if no posterImage provided
+  const posterUrl = data?.posterImage?.asset?.url || data?.backgroundImage?.asset?.url || '/images/hero-poster.jpg'
+  const videoUrl = data?.backgroundVideo?.asset?.url || '/videos/hero-couple.mp4'
 
   useEffect(() => {
     if (videoRef.current && !shouldReduceMotion) {
@@ -58,7 +73,7 @@ export default function VideoHeroSection() {
         // Static image for reduced motion preference
         <div className="absolute inset-0">
           <Image
-            src={heroCoupleUrl}
+            src={posterUrl}
             alt="Hel e Ylana"
             fill
             className="object-cover"
@@ -74,11 +89,11 @@ export default function VideoHeroSection() {
             loop
             muted
             playsInline
-            poster={heroPosterUrl}
+            poster={posterUrl}
             onLoadedData={() => setIsVideoLoaded(true)}
             className="w-full h-full object-cover"
           >
-            <source src="/videos/hero-couple.mp4" type="video/mp4" />
+            <source src={videoUrl} type="video/mp4" />
           </video>
         </div>
       )}
@@ -106,10 +121,10 @@ export default function VideoHeroSection() {
               textShadow: '0 2px 20px rgba(0,0,0,0.5)'
             }}
           >
-            H <span className="text-white/90">♥</span> Y
+            {monogram}
           </div>
 
-          {/* Names */}
+          {/* Names - hardcoded as they're the couple's actual names */}
           <h1
             className="mb-6"
             style={{
@@ -139,7 +154,7 @@ export default function VideoHeroSection() {
               textShadow: '0 1px 15px rgba(0,0,0,0.5)'
             }}
           >
-            1000 dias. Sim, a gente fez a conta.
+            {tagline}
           </p>
 
           {/* Date Badge */}
@@ -155,7 +170,7 @@ export default function VideoHeroSection() {
               textShadow: '0 1px 10px rgba(0,0,0,0.3)'
             }}
           >
-            20.11.2025
+            {dateBadge}
           </div>
 
           {/* CTAs */}
@@ -166,9 +181,9 @@ export default function VideoHeroSection() {
               asChild
               className="backdrop-blur-sm bg-white/95 hover:bg-white text-[var(--primary-text)] shadow-2xl"
             >
-              <Link href="/rsvp" className="flex items-center">
+              <Link href={primaryCta.href} className="flex items-center">
                 <Heart className="w-5 h-5 mr-3" />
-                Confirmar Presença
+                {primaryCta.label}
               </Link>
             </Button>
 
@@ -178,8 +193,8 @@ export default function VideoHeroSection() {
               asChild
               className="backdrop-blur-sm border-2 border-white/90 text-white hover:bg-white/20"
             >
-              <Link href="/historia">
-                Nossa História
+              <Link href={secondaryCta.href}>
+                {secondaryCta.label}
               </Link>
             </Button>
           </div>
@@ -208,7 +223,7 @@ export default function VideoHeroSection() {
             className="text-white/80 text-sm tracking-widest uppercase"
             style={{ fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}
           >
-            Explorar
+            {scrollText}
           </span>
           <ChevronDown className="w-6 h-6 text-white/80" strokeWidth={1.5} />
         </motion.div>

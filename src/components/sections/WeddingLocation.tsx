@@ -1,25 +1,83 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { MapPin, Clock, Car, Bus, Phone, Info, Navigation, Share2 } from 'lucide-react'
+import { MapPin, Clock, Car, Info, Navigation, Share2 } from 'lucide-react'
 import GoogleMap from '@/components/ui/GoogleMap'
-import { CONSTABLE_GALERIE } from '@/lib/utils/maps'
 import GoogleMapsService from '@/lib/utils/maps'
-import { venueStory } from '@/lib/utils/wedding'
 
-export default function WeddingLocation() {
+interface VenueLocation {
+  lat: number
+  lng: number
+  placeId?: string
+}
+
+interface WeddingSettings {
+  venueName: string
+  venueAddress: string
+  venueCity: string
+  venueState: string
+  venueZip: string
+  venueLocation: VenueLocation
+}
+
+interface WeddingLocationData {
+  sectionTitle?: string
+  sectionDescription?: string
+  weddingSettings?: WeddingSettings
+  mapStyle?: string
+  showDirections?: boolean
+}
+
+interface WeddingLocationProps {
+  data?: WeddingLocationData
+}
+
+export default function WeddingLocation({ data }: WeddingLocationProps) {
+  // Extract values with fallbacks
+  const sectionTitle = data?.sectionTitle || 'Onde Vamos Nos Casar'
+  const sectionDescription = data?.sectionDescription || 'Um lugar especial para celebrar nosso amor'
+  const showDirections = data?.showDirections !== false // default true
+
+  // Wedding settings with fallbacks
+  const venueName = data?.weddingSettings?.venueName || 'Constable Galerie'
+  const venueAddress = data?.weddingSettings?.venueAddress || 'Rua Osvaldo Cruz, 2001'
+  const venueCity = data?.weddingSettings?.venueCity || 'Fortaleza'
+  const venueState = data?.weddingSettings?.venueState || 'CE'
+  const venueZip = data?.weddingSettings?.venueZip || '60125-151'
+  const venueLocation = data?.weddingSettings?.venueLocation || {
+    lat: -3.7480656,
+    lng: -38.5099456
+  }
+
+  // Build full address
+  const fullAddress = `${venueAddress}, ${venueCity} - ${venueState}, ${venueZip}`
+
+  // Create location object for GoogleMap component
+  const locationData = {
+    name: venueName,
+    address: fullAddress,
+    lat: venueLocation.lat,
+    lng: venueLocation.lng,
+    placeId: venueLocation.placeId,
+    parkingInfo: 'Estacionamento gratuito com manobrista',
+    accessibilityInfo: 'Local com acessibilidade completa'
+  }
+
   const handleDirections = () => {
-    const directionsUrl = GoogleMapsService.generateDirectionsUrl(CONSTABLE_GALERIE.address)
+    const directionsUrl = GoogleMapsService.generateDirectionsUrl(fullAddress)
     window.open(directionsUrl, '_blank')
   }
 
   const handleWhatsAppShare = () => {
-    const whatsappUrl = GoogleMapsService.generateWhatsAppLocationMessage(CONSTABLE_GALERIE)
+    const whatsappUrl = GoogleMapsService.generateWhatsAppLocationMessage(locationData)
     window.open(whatsappUrl, '_blank')
   }
 
-  const nearbyLandmarks = GoogleMapsService.getNearbyLandmarks()
-  const transportInfo = GoogleMapsService.getPublicTransportInfo()
+  const nearbyLandmarks = [
+    '📍 Próximo ao Shopping Iguatemi',
+    '📍 Região nobre de Eng. Luciano Cavalcante',
+    '📍 Fácil acesso pela Washington Soares'
+  ]
 
   return (
     <section
@@ -59,7 +117,7 @@ export default function WeddingLocation() {
               color: 'var(--primary-text)'
             }}
           >
-            {venueStory.title}
+            {sectionTitle}
           </h2>
           <p
             className="text-xl max-w-3xl mx-auto"
@@ -70,7 +128,7 @@ export default function WeddingLocation() {
               lineHeight: '1.8'
             }}
           >
-            {venueStory.description}
+            {sectionDescription}
           </p>
         </motion.div>
 
@@ -107,7 +165,7 @@ export default function WeddingLocation() {
                       color: 'var(--primary-text)'
                     }}
                   >
-                    {CONSTABLE_GALERIE.name}
+                    {venueName}
                   </h3>
                   <p
                     className="leading-relaxed"
@@ -117,7 +175,7 @@ export default function WeddingLocation() {
                       fontStyle: 'italic'
                     }}
                   >
-                    {venueStory.subtitle}
+                    Um espaço elegante e acolhedor para nosso dia especial
                   </p>
                 </div>
               </div>
@@ -127,7 +185,7 @@ export default function WeddingLocation() {
                   <MapPin className="w-5 h-5 text-rose-500 mt-0.5" />
                   <div>
                     <p className="font-medium text-gray-800">Endereço</p>
-                    <p className="text-gray-600 text-sm">{CONSTABLE_GALERIE.address}</p>
+                    <p className="text-gray-600 text-sm">{fullAddress}</p>
                   </div>
                 </div>
 
@@ -139,112 +197,107 @@ export default function WeddingLocation() {
                   </div>
                 </div>
 
-                {CONSTABLE_GALERIE.parkingInfo && (
-                  <div className="flex items-start gap-3">
-                    <Car className="w-5 h-5 text-blue-500 mt-0.5" />
-                    <div>
-                      <p className="font-medium text-gray-800">Estacionamento</p>
-                      <p className="text-gray-600 text-sm">{CONSTABLE_GALERIE.parkingInfo}</p>
-                    </div>
+                <div className="flex items-start gap-3">
+                  <Car className="w-5 h-5 text-blue-500 mt-0.5" />
+                  <div>
+                    <p className="font-medium text-gray-800">Estacionamento</p>
+                    <p className="text-gray-600 text-sm">{locationData.parkingInfo}</p>
                   </div>
-                )}
+                </div>
 
-                {CONSTABLE_GALERIE.accessibilityInfo && (
-                  <div className="flex items-start gap-3">
-                    <Info className="w-5 h-5 text-green-500 mt-0.5" />
-                    <div>
-                      <p className="font-medium text-gray-800">Acessibilidade</p>
-                      <p className="text-gray-600 text-sm">{CONSTABLE_GALERIE.accessibilityInfo}</p>
-                    </div>
+                <div className="flex items-start gap-3">
+                  <Info className="w-5 h-5 text-green-500 mt-0.5" />
+                  <div>
+                    <p className="font-medium text-gray-800">Acessibilidade</p>
+                    <p className="text-gray-600 text-sm">{locationData.accessibilityInfo}</p>
                   </div>
-                )}
+                </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3 mt-8">
-                <button
-                  onClick={handleDirections}
-                  className="flex-1 px-6 py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 font-medium love-cursor"
-                  style={{
-                    background: 'var(--primary-text)',
-                    color: 'var(--white-soft)',
-                    fontFamily: 'var(--font-playfair)',
-                    boxShadow: '0 4px 12px var(--shadow-subtle)'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = '0 8px 24px var(--shadow-medium)'
-                    e.currentTarget.style.transform = 'translateY(-2px)'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = '0 4px 12px var(--shadow-subtle)'
-                    e.currentTarget.style.transform = 'translateY(0)'
-                  }}
-                >
-                  <Navigation className="w-5 h-5" />
-                  {venueStory.directions}
-                </button>
+              {showDirections && (
+                <div className="flex flex-col sm:flex-row gap-3 mt-8">
+                  <button
+                    onClick={handleDirections}
+                    className="flex-1 px-6 py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 font-medium love-cursor"
+                    style={{
+                      background: 'var(--primary-text)',
+                      color: 'var(--white-soft)',
+                      fontFamily: 'var(--font-playfair)',
+                      boxShadow: '0 4px 12px var(--shadow-subtle)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.boxShadow = '0 8px 24px var(--shadow-medium)'
+                      e.currentTarget.style.transform = 'translateY(-2px)'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.boxShadow = '0 4px 12px var(--shadow-subtle)'
+                      e.currentTarget.style.transform = 'translateY(0)'
+                    }}
+                  >
+                    <Navigation className="w-5 h-5" />
+                    Como Chegar
+                  </button>
 
-                <button
-                  onClick={handleWhatsAppShare}
-                  className="flex-1 px-6 py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 font-medium love-cursor"
-                  style={{
-                    background: 'var(--accent)',
-                    color: 'var(--primary-text)',
-                    fontFamily: 'var(--font-playfair)',
-                    border: '1px solid var(--border-subtle)',
-                    boxShadow: '0 4px 12px var(--shadow-subtle)'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = '0 8px 24px var(--shadow-medium)'
-                    e.currentTarget.style.transform = 'translateY(-2px)'
-                    e.currentTarget.style.background = 'var(--decorative-light)'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = '0 4px 12px var(--shadow-subtle)'
-                    e.currentTarget.style.transform = 'translateY(0)'
-                    e.currentTarget.style.background = 'var(--accent)'
-                  }}
-                >
-                  <Share2 className="w-5 h-5" />
-                  Mandar no TIZAP
-                </button>
-              </div>
+                  <button
+                    onClick={handleWhatsAppShare}
+                    className="flex-1 px-6 py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 font-medium love-cursor"
+                    style={{
+                      background: 'var(--accent)',
+                      color: 'var(--primary-text)',
+                      fontFamily: 'var(--font-playfair)',
+                      border: '1px solid var(--border-subtle)',
+                      boxShadow: '0 4px 12px var(--shadow-subtle)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.boxShadow = '0 8px 24px var(--shadow-medium)'
+                      e.currentTarget.style.transform = 'translateY(-2px)'
+                      e.currentTarget.style.background = 'var(--decorative-light)'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.boxShadow = '0 4px 12px var(--shadow-subtle)'
+                      e.currentTarget.style.transform = 'translateY(0)'
+                      e.currentTarget.style.background = 'var(--accent)'
+                    }}
+                  >
+                    <Share2 className="w-5 h-5" />
+                    Mandar no TIZAP
+                  </button>
+                </div>
+              )}
             </div>
 
-            {/* Transportation Info */}
-            <div className="grid md:grid-cols-1">
-              {/* Nearby Landmarks */}
-              <div
-                className="rounded-2xl p-6"
-                style={{
-                  background: 'var(--white-soft)',
-                  border: '1px solid var(--border-subtle)',
-                  boxShadow: '0 8px 24px var(--shadow-medium)'
-                }}
-              >
-                <div className="flex items-center gap-3 mb-4">
-                  <div
-                    className="p-2 rounded-full"
-                    style={{ background: 'var(--decorative)' }}
-                  >
-                    <MapPin className="w-5 h-5" style={{ color: 'var(--white-soft)' }} />
-                  </div>
-                  <h4
-                    className="font-semibold"
-                    style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-playfair)' }}
-                  >
-                    Pontos de Referência Especiais
-                  </h4>
+            {/* Nearby Landmarks */}
+            <div
+              className="rounded-2xl p-6"
+              style={{
+                background: 'var(--white-soft)',
+                border: '1px solid var(--border-subtle)',
+                boxShadow: '0 8px 24px var(--shadow-medium)'
+              }}
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div
+                  className="p-2 rounded-full"
+                  style={{ background: 'var(--decorative)' }}
+                >
+                  <MapPin className="w-5 h-5" style={{ color: 'var(--white-soft)' }} />
                 </div>
-                <ul className="space-y-2">
-                  {nearbyLandmarks.map((landmark, index) => (
-                    <li key={index} className="text-sm flex items-start gap-2" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
-                      <div className="w-1 h-1 rounded-full mt-2" style={{ background: 'var(--primary-text)' }} />
-                      {landmark}
-                    </li>
-                  ))}
-                </ul>
+                <h4
+                  className="font-semibold"
+                  style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-playfair)' }}
+                >
+                  Pontos de Referência Especiais
+                </h4>
               </div>
+              <ul className="space-y-2">
+                {nearbyLandmarks.map((landmark, index) => (
+                  <li key={index} className="text-sm flex items-start gap-2" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
+                    <div className="w-1 h-1 rounded-full mt-2" style={{ background: 'var(--primary-text)' }} />
+                    {landmark}
+                  </li>
+                ))}
+              </ul>
             </div>
           </motion.div>
 
@@ -262,11 +315,11 @@ export default function WeddingLocation() {
               </h3>
 
               <GoogleMap
-                location={CONSTABLE_GALERIE}
+                location={locationData}
                 height="500px"
                 className="rounded-2xl overflow-hidden"
                 showControls={true}
-                showDirections={true}
+                showDirections={showDirections}
               />
 
               <div
@@ -293,7 +346,7 @@ export default function WeddingLocation() {
                     fontStyle: 'italic'
                   }}
                 >
-                  {venueStory.arrival} O local fica na região nobre de Eng. Luciano Cavalcante.
+                  O local fica na região nobre de Eng. Luciano Cavalcante.
                   Cheguem 15-20 minutos antes. A gente gosta de receber como se fosse em casa - casual, tranquilo, sem correria.
                 </p>
               </div>

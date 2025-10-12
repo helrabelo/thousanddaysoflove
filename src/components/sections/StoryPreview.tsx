@@ -7,7 +7,44 @@ import { SectionDivider } from '@/components/ui/BotanicalDecorations'
 import Link from 'next/link'
 import Image from 'next/image'
 
-export default function StoryPreview() {
+interface StoryCard {
+  _id: string
+  title: string
+  description: string
+  dayNumber?: number
+  displayOrder: number
+  image?: {
+    asset: {
+      url: string
+    }
+    alt?: string
+  }
+}
+
+interface StoryPreviewProps {
+  data?: {
+    sectionTitle?: string
+    sectionDescription?: string
+    storyCards?: StoryCard[]
+    ctaButton?: {
+      label?: string
+      href?: string
+    }
+  }
+}
+
+export default function StoryPreview({ data }: StoryPreviewProps) {
+  // Extract values with fallbacks
+  const sectionTitle = data?.sectionTitle || 'Nossa História'
+  const sectionDescription = data?.sectionDescription || 'Uma jornada de amor e companheirismo'
+  const cards = data?.storyCards || []
+  const ctaText = data?.ctaButton?.label || 'Conheça Nossa História Completa'
+  const ctaLink = data?.ctaButton?.href || '/nossa-historia'
+
+  // Show placeholder photo if no story cards have images
+  const hasPhotoInCards = cards.some(card => card.image?.asset?.url)
+  const placeholderPhoto = !hasPhotoInCards
+
   return (
     <section className="py-32" style={{ background: 'var(--accent)' }}>
       <div className="max-w-7xl mx-auto px-8 sm:px-12 lg:px-16">
@@ -22,34 +59,44 @@ export default function StoryPreview() {
             className="lg:sticky lg:top-32 relative"
           >
             <div className="relative aspect-[4/5] rounded-lg overflow-hidden shadow-2xl">
-              {/* Placeholder for proposal photo */}
-              <div
-                className="absolute inset-0 flex items-center justify-center"
-                style={{
-                  background: 'linear-gradient(135deg, var(--decorative) 0%, var(--accent) 100%)',
-                }}
-              >
-                <div className="text-center p-8">
-                  <Heart
-                    className="w-16 h-16 mx-auto mb-4"
-                    style={{
-                      color: 'var(--white-soft)',
-                      strokeWidth: 1,
-                    }}
-                  />
-                  <p
-                    style={{
-                      fontFamily: 'var(--font-crimson)',
-                      fontSize: '1.125rem',
-                      color: 'var(--white-soft)',
-                      fontStyle: 'italic',
-                      opacity: 0.9,
-                    }}
-                  >
-                    [Foto do Pedido]
-                  </p>
+              {!placeholderPhoto && cards[0]?.image?.asset?.url ? (
+                <Image
+                  src={cards[0].image.asset.url}
+                  alt={cards[0].image.alt || 'Story photo'}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                />
+              ) : (
+                // Placeholder for story photo
+                <div
+                  className="absolute inset-0 flex items-center justify-center"
+                  style={{
+                    background: 'linear-gradient(135deg, var(--decorative) 0%, var(--accent) 100%)',
+                  }}
+                >
+                  <div className="text-center p-8">
+                    <Heart
+                      className="w-16 h-16 mx-auto mb-4"
+                      style={{
+                        color: 'var(--white-soft)',
+                        strokeWidth: 1,
+                      }}
+                    />
+                    <p
+                      style={{
+                        fontFamily: 'var(--font-crimson)',
+                        fontSize: '1.125rem',
+                        color: 'var(--white-soft)',
+                        fontStyle: 'italic',
+                        opacity: 0.9,
+                      }}
+                    >
+                      [Foto da História]
+                    </p>
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Decorative border overlay */}
               <div
@@ -62,25 +109,27 @@ export default function StoryPreview() {
             </div>
 
             {/* Caption below image */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              viewport={{ once: true }}
-              className="mt-6 text-center"
-            >
-              <p
-                style={{
-                  fontFamily: 'var(--font-crimson)',
-                  fontSize: '1rem',
-                  color: 'var(--secondary-text)',
-                  fontStyle: 'italic',
-                  lineHeight: '1.6',
-                }}
+            {cards[0]?.image?.alt && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                viewport={{ once: true }}
+                className="mt-6 text-center"
               >
-                Uma jornada de mil dias começa com um simples "oi"
-              </p>
-            </motion.div>
+                <p
+                  style={{
+                    fontFamily: 'var(--font-crimson)',
+                    fontSize: '1rem',
+                    color: 'var(--secondary-text)',
+                    fontStyle: 'italic',
+                    lineHeight: '1.6',
+                  }}
+                >
+                  {cards[0].image.alt}
+                </p>
+              </motion.div>
+            )}
           </motion.div>
 
           {/* Right Column - Story Content */}
@@ -103,7 +152,7 @@ export default function StoryPreview() {
                   lineHeight: '1.2',
                 }}
               >
-                Nossa História
+                {sectionTitle}
               </h2>
               <p
                 className="mb-8"
@@ -115,133 +164,64 @@ export default function StoryPreview() {
                   fontStyle: 'italic',
                 }}
               >
-                Caseiros e introvertidos de verdade. A gente é daqueles que realmente prefere ficar em casa. Unidos por boa comida (especialmente no Mangue Azul), vinhos que acompanham conversas longas, viagens quando dá, e 4 cachorros que fazem barulho demais mas a gente ama.
+                {sectionDescription}
               </p>
               <SectionDivider className="my-8" />
             </motion.div>
 
             {/* Story Moments */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              viewport={{ once: true }}
-              className="space-y-10"
-            >
-              {/* Day 1 */}
-              <div className="relative pl-8 border-l-2" style={{ borderColor: 'var(--decorative)' }}>
-                <div
-                  className="absolute -left-3 top-0 w-6 h-6 rounded-full flex items-center justify-center"
-                  style={{
-                    background: 'var(--decorative)',
-                  }}
-                >
+            {cards.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                viewport={{ once: true }}
+                className="space-y-10"
+              >
+                {cards.map((card, index) => (
                   <div
-                    className="w-2 h-2 rounded-full"
-                    style={{ background: 'var(--white-soft)' }}
-                  />
-                </div>
-                <h3
-                  className="mb-3"
-                  style={{
-                    fontFamily: 'var(--font-playfair)',
-                    fontSize: '1.5rem',
-                    fontWeight: '500',
-                    color: 'var(--primary-text)',
-                    letterSpacing: '0.05em',
-                  }}
-                >
-                  Do Tinder ao WhatsApp
-                </h3>
-                <p
-                  style={{
-                    fontFamily: 'var(--font-crimson)',
-                    fontSize: '1.125rem',
-                    lineHeight: '1.8',
-                    color: 'var(--secondary-text)',
-                    fontStyle: 'italic',
-                  }}
-                >
-                  6 de janeiro de 2023. Aquele primeiro "oi" meio sem graça no WhatsApp. A gente quase nem respondeu. Três anos depois, casamento. Vai entender.
-                </p>
-              </div>
-
-              {/* Day 500 */}
-              <div className="relative pl-8 border-l-2" style={{ borderColor: 'var(--decorative)' }}>
-                <div
-                  className="absolute -left-3 top-0 w-6 h-6 rounded-full flex items-center justify-center"
-                  style={{
-                    background: 'var(--decorative)',
-                  }}
-                >
-                  <div
-                    className="w-2 h-2 rounded-full"
-                    style={{ background: 'var(--white-soft)' }}
-                  />
-                </div>
-                <h3
-                  className="mb-3"
-                  style={{
-                    fontFamily: 'var(--font-playfair)',
-                    fontSize: '1.5rem',
-                    fontWeight: '500',
-                    color: 'var(--primary-text)',
-                    letterSpacing: '0.05em',
-                  }}
-                >
-                  O Momento
-                </h3>
-                <p
-                  style={{
-                    fontFamily: 'var(--font-crimson)',
-                    fontSize: '1.125rem',
-                    lineHeight: '1.8',
-                    color: 'var(--secondary-text)',
-                    fontStyle: 'italic',
-                  }}
-                >
-                  Hel ficou doente. Ylana apareceu com remédio e chá. "Na hora eu já sabia: 'é ela'". Simples assim.
-                </p>
-              </div>
-
-              {/* Day 1000 */}
-              <div className="relative pl-8 border-l-2" style={{ borderColor: 'var(--decorative)' }}>
-                <div
-                  className="absolute -left-3 top-0 w-6 h-6 rounded-full flex items-center justify-center"
-                  style={{
-                    background: 'var(--decorative)',
-                  }}
-                >
-                  <div
-                    className="w-2 h-2 rounded-full"
-                    style={{ background: 'var(--white-soft)' }}
-                  />
-                </div>
-                <h3
-                  className="mb-3"
-                  style={{
-                    fontFamily: 'var(--font-playfair)',
-                    fontSize: '1.5rem',
-                    fontWeight: '500',
-                    color: 'var(--primary-text)',
-                    letterSpacing: '0.05em',
-                  }}
-                >
-                  A Casa
-                </h3>
-                <p
-                  style={{
-                    fontFamily: 'var(--font-crimson)',
-                    fontSize: '1.125rem',
-                    lineHeight: '1.8',
-                    color: 'var(--secondary-text)',
-                    fontStyle: 'italic',
-                  }}
-                >
-                  Esse apartamento? Hel passava de bicicleta aqui indo pra faculdade. Sonhava morar aqui um dia. Anos de trabalho. Literalmente anos. Agora é nosso. Casa própria. Família de 6. Primeira vez na vida que ele não quer chegar no próximo nível.
-                </p>
-              </div>
-            </motion.div>
+                    key={card._id}
+                    className="relative pl-8 border-l-2"
+                    style={{ borderColor: 'var(--decorative)' }}
+                  >
+                    <div
+                      className="absolute -left-3 top-0 w-6 h-6 rounded-full flex items-center justify-center"
+                      style={{
+                        background: 'var(--decorative)',
+                      }}
+                    >
+                      <div
+                        className="w-2 h-2 rounded-full"
+                        style={{ background: 'var(--white-soft)' }}
+                      />
+                    </div>
+                    <h3
+                      className="mb-3"
+                      style={{
+                        fontFamily: 'var(--font-playfair)',
+                        fontSize: '1.5rem',
+                        fontWeight: '500',
+                        color: 'var(--primary-text)',
+                        letterSpacing: '0.05em',
+                      }}
+                    >
+                      {card.title}
+                    </h3>
+                    <p
+                      style={{
+                        fontFamily: 'var(--font-crimson)',
+                        fontSize: '1.125rem',
+                        lineHeight: '1.8',
+                        color: 'var(--secondary-text)',
+                        fontStyle: 'italic',
+                      }}
+                    >
+                      {card.description}
+                    </p>
+                  </div>
+                ))}
+              </motion.div>
+            )}
 
             {/* CTA Button */}
             <motion.div
@@ -252,8 +232,8 @@ export default function StoryPreview() {
               className="pt-8"
             >
               <Button variant="wedding" size="lg" asChild className="group">
-                <Link href="/historia" className="flex items-center gap-2">
-                  Ver História Completa
+                <Link href={ctaLink} className="flex items-center gap-2">
+                  {ctaText}
                   <ArrowRight
                     className="h-5 w-5 transition-transform group-hover:translate-x-1"
                     style={{ strokeWidth: 2 }}

@@ -1,11 +1,33 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Heart, Home, Camera, Dumbbell, Wine, Plane, Coffee, PawPrint } from 'lucide-react'
+import { Heart, Home, Camera, Dumbbell, Plane, PawPrint } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { SectionDivider, CardAccent } from '@/components/ui/BotanicalDecorations'
+import type { PortableTextBlock } from '@portabletext/types'
 
-export default function AboutUsSection() {
+interface AboutUsData {
+  sectionTitle?: string
+  content?: PortableTextBlock[]
+  couplePhoto?: {
+    asset: { url: string }
+    alt?: string
+  }
+}
+
+interface AboutUsSectionProps {
+  data?: AboutUsData
+}
+
+export default function AboutUsSection({ data }: AboutUsSectionProps) {
+  // Extract values with fallbacks
+  const sectionTitle = data?.sectionTitle || 'Sobre Nós'
+
+  // Extract text from Portable Text blocks
+  // For now, we're using the hardcoded content since the AboutUs section
+  // is highly customized with specific personality descriptions
+  // In the future, you could use @portabletext/react to render the content field
+
   return (
     <section className="py-32" style={{ background: 'var(--background)' }}>
       <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16">
@@ -28,7 +50,7 @@ export default function AboutUsSection() {
               lineHeight: '1.2'
             }}
           >
-            Sobre Nós
+            {sectionTitle}
           </h2>
           <p
             className="max-w-4xl mx-auto mb-12"
