@@ -65,8 +65,8 @@ export default function OurFamilySection({ data }: OurFamilySectionProps) {
   }
 
   return (
-    <section className="py-24 px-6" style={{ background: 'var(--accent)' }}>
-      <div className="max-w-7xl mx-auto">
+    <section className="min-h-screen md:h-screen flex items-center py-16 md:py-0 px-6" style={{ background: 'var(--accent)' }}>
+      <div className="max-w-7xl mx-auto w-full">
         {/* Header */}
         <motion.div
           className="text-center mb-20"

@@ -138,10 +138,9 @@ export default function EventDetailsSection({ data }: EventDetailsSectionProps) 
 
   return (
     <section
-      className="relative overflow-hidden"
+      className="relative overflow-hidden min-h-screen md:h-screen"
       style={{
         background: 'var(--background)',
-        minHeight: 'calc(100vh - 80px)'
       }}
     >
       {/* Botanical Corner Decorations */}
@@ -162,6 +161,7 @@ export default function EventDetailsSection({ data }: EventDetailsSectionProps) 
           style={{
             filter: 'brightness(0) saturate(100%)',
             color: 'var(--decorative)',
+            opacity: 0.2,
           }}
         />
       </motion.div>
@@ -174,7 +174,7 @@ export default function EventDetailsSection({ data }: EventDetailsSectionProps) 
         className="absolute bottom-0 left-0 w-24 sm:w-32 md:w-40 lg:w-48 pointer-events-none z-0"
         style={{ opacity: 0.2 }}
       >
-        <div style={{ transform: 'rotate(180deg) scaleX(-1)' }}>
+        <div style={{ transform: 'rotate(180deg)' }}>
           <Image
             src="/corner-plant.svg"
             alt=""
@@ -184,6 +184,7 @@ export default function EventDetailsSection({ data }: EventDetailsSectionProps) 
             style={{
               filter: 'brightness(0) saturate(100%)',
               color: 'var(--decorative)',
+              opacity: 0.2,
             }}
           />
         </div>
@@ -442,7 +443,7 @@ export default function EventDetailsSection({ data }: EventDetailsSectionProps) 
       </div>
 
       {/* Desktop Layout - Side by Side */}
-      <div className="hidden md:flex items-center justify-center min-h-screen px-8 lg:px-16 relative z-10">
+      <div className="hidden md:flex items-center justify-center h-screen px-8 lg:px-16 relative z-10">
         <div className="max-w-7xl w-full grid md:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Left Column - Countdown Timer */}
           {showCountdown && (

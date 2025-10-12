@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
-import { Heart, ChevronDown, Volume2, VolumeX } from 'lucide-react'
+import { Heart, Volume2, VolumeX } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
@@ -20,7 +20,6 @@ interface VideoHeroProps {
       label: string
       href: string
     }
-    scrollText?: string
     backgroundVideo?: {
       asset?: {
         url: string
@@ -45,6 +44,8 @@ export default function VideoHeroSection({ data }: VideoHeroProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [isVideoLoaded, setIsVideoLoaded] = useState(false)
   const [isMuted, setIsMuted] = useState(true)
+  const [contentVisibility, setContentVisibility] = useState<'initial' | 'audioOn' | 'idle'>('initial')
+  const idleTimerRef = useRef<NodeJS.Timeout>()
   const shouldReduceMotion = useReducedMotion()
 
   // Fallback values
@@ -53,29 +54,190 @@ export default function VideoHeroSection({ data }: VideoHeroProps) {
   const dateBadge = data?.dateBadge || '20.11.2025'
   const primaryCta = data?.primaryCta || { label: 'Confirmar Presença', href: '/rsvp' }
   const secondaryCta = data?.secondaryCta || { label: 'Nossa História', href: '/historia' }
-  const scrollText = data?.scrollText || 'Explorar'
 
   // Use backgroundImage as poster if no posterImage provided
   const posterUrl = data?.posterImage?.asset?.url || data?.backgroundImage?.asset?.url || '/images/hero-poster.jpg'
   const videoUrl = data?.backgroundVideo?.asset?.url || '/videos/hero-couple.mp4'
 
   useEffect(() => {
-    if (videoRef.current && !shouldReduceMotion) {
+    // If reduced motion, show content immediately (static image, no video loading needed)
+    if (shouldReduceMotion) {
+      setIsVideoLoaded(true)
+      return
+    }
+
+    // Try to play video
+    if (videoRef.current) {
       videoRef.current.play().catch(err => {
         console.log('Video autoplay prevented:', err)
       })
     }
+
+    // Fallback: Show content after 1.5 seconds regardless of video load state
+    // This ensures content always appears even if video fails to load or loads slowly
+    const fallbackTimer = setTimeout(() => {
+      setIsVideoLoaded(true)
+    }, 1500)
+
+    return () => clearTimeout(fallbackTimer)
   }, [shouldReduceMotion])
+
+  // Idle timer for persistent accessibility
+  const startIdleTimer = () => {
+    clearTimeout(idleTimerRef.current)
+    idleTimerRef.current = setTimeout(() => {
+      setContentVisibility('idle')
+    }, 10000) // 10 seconds of inactivity
+  }
+
+  // Reset timer on user interaction
+  useEffect(() => {
+    const resetTimer = () => {
+      if (contentVisibility === 'audioOn') {
+        startIdleTimer()
+      }
+    }
+
+    window.addEventListener('mousemove', resetTimer)
+    window.addEventListener('touchstart', resetTimer)
+
+    return () => {
+      window.removeEventListener('mousemove', resetTimer)
+      window.removeEventListener('touchstart', resetTimer)
+      clearTimeout(idleTimerRef.current)
+    }
+  }, [contentVisibility])
+
+  // Keyboard shortcuts for immersive mode
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && contentVisibility === 'audioOn') {
+        setContentVisibility('idle') // Restore visibility
+      }
+      if (e.key === 'h' && !isMuted) {
+        setContentVisibility(prev =>
+          prev === 'audioOn' ? 'idle' : 'audioOn'
+        ) // Toggle hide/show with 'h' key
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyPress)
+    return () => window.removeEventListener('keydown', handleKeyPress)
+  }, [contentVisibility, isMuted])
 
   const toggleAudio = () => {
     if (videoRef.current) {
-      setIsMuted(!isMuted)
-      videoRef.current.muted = !isMuted
+      const newMutedState = !isMuted
+      setIsMuted(newMutedState)
+      videoRef.current.muted = newMutedState
+
+      // Audio ON → Immersive mode
+      if (!newMutedState) {
+        setContentVisibility('audioOn')
+        startIdleTimer()
+      } else {
+        setContentVisibility('idle')
+        clearTimeout(idleTimerRef.current)
+      }
     }
   }
 
+  // Audio Toggle Button Component (reusable)
+  const AudioToggleButton = () => (
+    <motion.button
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay: 1, duration: 0.5 }}
+      onClick={toggleAudio}
+      className="group"
+      aria-label={isMuted ? 'Ativar áudio' : 'Desativar áudio'}
+    >
+      <motion.div
+        className="relative flex items-center justify-center w-12 h-12 rounded-full backdrop-blur-md border-2 border-white/60 cursor-pointer"
+        style={{
+          background: 'rgba(255,255,255,0.2)',
+          boxShadow: '0 0 30px rgba(255,255,255,0.4), 0 0 60px rgba(255,255,255,0.2), 0 4px 20px rgba(0,0,0,0.3)'
+        }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.95 }}
+        animate={{
+          boxShadow: isMuted
+            ? '0 0 30px rgba(255,255,255,0.4), 0 0 60px rgba(255,255,255,0.2), 0 4px 20px rgba(0,0,0,0.3)'
+            : ['0 0 40px rgba(255,255,255,0.6), 0 0 80px rgba(255,255,255,0.3), 0 0 0 0 rgba(255,255,255,0.8)',
+               '0 0 40px rgba(255,255,255,0.6), 0 0 80px rgba(255,255,255,0.3), 0 0 0 25px rgba(255,255,255,0)']
+        }}
+        transition={{
+          boxShadow: {
+            duration: 1.5,
+            repeat: isMuted ? 0 : Infinity,
+            ease: 'easeOut'
+          }
+        }}
+      >
+        <motion.div
+          animate={{ rotate: isMuted ? 0 : 360 }}
+          transition={{ duration: 0.3 }}
+        >
+          {isMuted ? (
+            <VolumeX className="w-5 h-5 text-white" strokeWidth={1.5} />
+          ) : (
+            <Volume2 className="w-5 h-5 text-white" strokeWidth={1.5} />
+          )}
+        </motion.div>
+
+        {/* Animated sound waves when audio is on */}
+        {!isMuted && (
+          <motion.div
+            className="absolute -right-1"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            {[0, 1, 2].map((i) => (
+              <motion.div
+                key={i}
+                className="absolute w-1 bg-white rounded-full"
+                style={{
+                  height: '6px',
+                  right: `${-4 - i * 3}px`,
+                  top: '50%',
+                  transform: 'translateY(-50%)'
+                }}
+                animate={{
+                  scaleY: [1, 1.5, 1],
+                  opacity: [0.3, 0.7, 0.3]
+                }}
+                transition={{
+                  duration: 0.8,
+                  repeat: Infinity,
+                  delay: i * 0.15,
+                  ease: 'easeInOut'
+                }}
+              />
+            ))}
+          </motion.div>
+        )}
+      </motion.div>
+
+      {/* Subtle tooltip in Portuguese */}
+      <motion.div
+        className="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-md text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
+        style={{
+          background: 'rgba(255,255,255,0.9)',
+          color: 'var(--secondary-text)',
+          fontFamily: 'var(--font-crimson)',
+          fontStyle: 'italic',
+          fontSize: '0.7rem',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+        }}
+      >
+        Assista ao pedido!
+      </motion.div>
+    </motion.button>
+  )
+
   return (
-    <section className="relative h-screen overflow-hidden -mt-20">
+    <section className="relative h-screen overflow-hidden -mt-20 w-screen" style={{ marginLeft: 'calc(-50vw + 50%)' }}>
       {/* Background Video or Image */}
       {shouldReduceMotion ? (
         // Static image for reduced motion preference
@@ -114,107 +276,27 @@ export default function VideoHeroSection({ data }: VideoHeroProps) {
         </div>
       )}
 
-      {/* Gradient Overlay - Dark at bottom for text readability */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+      {/* Gradient Overlay - Dynamic based on visibility state */}
+      <motion.div
+        className="absolute inset-0 bg-gradient-to-t"
+        animate={{
+          backgroundImage: contentVisibility === 'initial'
+            ? 'linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0.3), transparent)'
+            : contentVisibility === 'audioOn'
+            ? 'linear-gradient(to top, rgba(0,0,0,0.2), transparent, transparent)'
+            : 'linear-gradient(to top, rgba(0,0,0,0.3), transparent, transparent)'
+        }}
+        transition={{ duration: 1, ease: 'easeInOut' }}
+      />
 
-      {/* Audio Toggle Button - Only show when video is loaded and not in reduced motion */}
-      {!shouldReduceMotion && isVideoLoaded && (
-        <motion.button
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 1, duration: 0.5 }}
-          onClick={toggleAudio}
-          className="absolute bottom-24 right-8 z-20 group"
-          aria-label={isMuted ? 'Ativar áudio' : 'Desativar áudio'}
-        >
-          <motion.div
-            className="relative flex items-center justify-center w-16 h-16 rounded-full backdrop-blur-md border-2 border-white/40 cursor-pointer shadow-xl"
-            style={{
-              background: 'rgba(255,255,255,0.15)'
-            }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            animate={{
-              boxShadow: isMuted
-                ? '0 0 0 0 rgba(255,255,255,0)'
-                : ['0 0 0 0 rgba(255,255,255,0.7)', '0 0 0 20px rgba(255,255,255,0)']
-            }}
-            transition={{
-              boxShadow: {
-                duration: 1.5,
-                repeat: isMuted ? 0 : Infinity,
-                ease: 'easeOut'
-              }
-            }}
-          >
-            <motion.div
-              animate={{ rotate: isMuted ? 0 : 360 }}
-              transition={{ duration: 0.3 }}
-            >
-              {isMuted ? (
-                <VolumeX className="w-6 h-6 text-white" strokeWidth={1.5} />
-              ) : (
-                <Volume2 className="w-6 h-6 text-white" strokeWidth={1.5} />
-              )}
-            </motion.div>
-
-            {/* Animated sound waves when audio is on */}
-            {!isMuted && (
-              <motion.div
-                className="absolute -right-1"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                {[0, 1, 2].map((i) => (
-                  <motion.div
-                    key={i}
-                    className="absolute w-1 bg-white rounded-full"
-                    style={{
-                      height: '6px',
-                      right: `${-4 - i * 3}px`,
-                      top: '50%',
-                      transform: 'translateY(-50%)'
-                    }}
-                    animate={{
-                      scaleY: [1, 1.5, 1],
-                      opacity: [0.3, 0.7, 0.3]
-                    }}
-                    transition={{
-                      duration: 0.8,
-                      repeat: Infinity,
-                      delay: i * 0.15,
-                      ease: 'easeInOut'
-                    }}
-                  />
-                ))}
-              </motion.div>
-            )}
-          </motion.div>
-
-          {/* Tooltip */}
-          <motion.div
-            className="absolute top-full mt-3 right-0 px-3 py-2 rounded-lg text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-            style={{
-              background: 'rgba(255,255,255,0.95)',
-              color: 'var(--primary-text)',
-              fontFamily: 'var(--font-crimson)',
-              fontStyle: 'italic',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
-            }}
-          >
-            {isMuted ? 'Ativar som' : 'Desativar som'}
-          </motion.div>
-        </motion.button>
-      )}
 
       {/* Content Overlay */}
-      <div className="relative z-10 h-full flex items-end pb-20 px-8 md:px-16 lg:px-20">
+      <div className="relative z-10 h-full w-full flex-grow flex items-end pb-20 px-8 md:px-16 lg:px-20">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: isVideoLoaded ? 1 : 0, y: isVideoLoaded ? 0 : 40 }}
           transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
-          className="max-w-4xl"
+          className="w-full"
         >
           {/* Logo Monogram */}
           {showMonogram && (
@@ -235,7 +317,7 @@ export default function VideoHeroSection({ data }: VideoHeroProps) {
           )}
 
           {/* Names - hardcoded as they're the couple's actual names */}
-          <h1
+          <motion.h1
             className="mb-6"
             style={{
               fontFamily: 'var(--font-playfair)',
@@ -247,12 +329,18 @@ export default function VideoHeroSection({ data }: VideoHeroProps) {
               textShadow: '0 2px 30px rgba(0,0,0,0.7)',
               textTransform: 'uppercase'
             }}
+            animate={{
+              opacity: contentVisibility === 'initial' ? 1 :
+                       contentVisibility === 'audioOn' ? 0 : 0.4,
+              y: contentVisibility === 'audioOn' ? -20 : 0
+            }}
+            transition={{ duration: 0.8, ease: 'easeInOut' }}
           >
             Hel & Ylana
-          </h1>
+          </motion.h1>
 
           {/* Tagline */}
-          <p
+          <motion.p
             className="mb-8 max-w-2xl"
             style={{
               fontFamily: 'var(--font-crimson)',
@@ -263,94 +351,107 @@ export default function VideoHeroSection({ data }: VideoHeroProps) {
               fontStyle: 'italic',
               textShadow: '0 1px 15px rgba(0,0,0,0.5)'
             }}
+            animate={{
+              opacity: contentVisibility === 'initial' ? 0.9 :
+                       contentVisibility === 'audioOn' ? 0 : 0,
+              y: contentVisibility === 'audioOn' ? -15 : 0
+            }}
+            transition={{ duration: 0.8, ease: 'easeInOut' }}
           >
             {tagline}
-          </p>
+          </motion.p>
 
-          {/* Date Badge */}
-          <div
-            className="inline-block mb-10 px-8 py-4 rounded-full backdrop-blur-md"
-            style={{
-              background: 'rgba(255,255,255,0.15)',
-              border: '1px solid rgba(255,255,255,0.3)',
-              fontFamily: 'var(--font-playfair)',
-              fontSize: '1.25rem',
-              color: 'white',
-              letterSpacing: '0.15em',
-              textShadow: '0 1px 10px rgba(0,0,0,0.3)'
-            }}
-          >
-            {dateBadge}
+          {/* Date Badge + Audio Toggle (Mobile only - space-between) */}
+          <div className="flex items-center justify-between mb-10 md:justify-start md:mb-10">
+            <motion.div
+              className="inline-block px-8 py-4 rounded-full backdrop-blur-md"
+              style={{
+                background: 'rgba(255,255,255,0.15)',
+                border: '1px solid rgba(255,255,255,0.3)',
+                fontFamily: 'var(--font-playfair)',
+                fontSize: '1.25rem',
+                color: 'white',
+                letterSpacing: '0.15em',
+                textShadow: '0 1px 10px rgba(0,0,0,0.3)'
+              }}
+              animate={{
+                opacity: contentVisibility === 'initial' ? 1 :
+                         contentVisibility === 'audioOn' ? 0.3 : 0.6,
+                scale: contentVisibility === 'audioOn' ? 0.75 : 1
+              }}
+              transition={{ duration: 0.6, ease: 'easeInOut' }}
+            >
+              {dateBadge}
+            </motion.div>
+
+            {/* Mobile Audio Toggle (hidden on desktop) */}
+            {!shouldReduceMotion && isVideoLoaded && (
+              <div className="md:hidden">
+                <AudioToggleButton />
+              </div>
+            )}
           </div>
 
-          {/* CTAs */}
-          <div className="flex flex-col sm:flex-row gap-6">
-            <Button
-              variant="wedding"
-              size="lg"
-              asChild
-              className="backdrop-blur-sm shadow-2xl"
-              style={{
-                background: 'rgba(255, 255, 255, 0.98)',
-                color: '#2C2C2C',
-                borderColor: 'rgba(255, 255, 255, 0.98)',
-                fontWeight: '600'
+          {/* CTAs + Audio Toggle (Desktop - space-between) */}
+          <div className="flex items-center justify-between w-full">
+            {/* CTAs Container */}
+            <motion.div
+              className="flex flex-col sm:flex-row gap-6 flex-grow"
+              animate={{
+                opacity: contentVisibility === 'initial' ? 1 :
+                         contentVisibility === 'audioOn' ? 0.4 : 0.7,
+                y: contentVisibility === 'audioOn' ? 8 : 0,
+                scale: contentVisibility === 'audioOn' ? 0.9 : 1
               }}
+              transition={{ duration: 0.6, ease: 'easeInOut' }}
+              style={{ pointerEvents: 'auto' }}
             >
-              <Link href={primaryCta.href} className="flex items-center hover:bg-white transition-colors duration-200">
-                <Heart className="w-5 h-5 mr-3" />
-                {primaryCta.label}
-              </Link>
-            </Button>
+              <Button
+                variant="wedding"
+                size="lg"
+                asChild
+                className="backdrop-blur-sm shadow-2xl"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.98)',
+                  color: '#2C2C2C',
+                  borderColor: 'rgba(255, 255, 255, 0.98)',
+                  fontWeight: '600'
+                }}
+              >
+                <Link href={primaryCta.href} className="flex items-center hover:bg-white transition-colors duration-200">
+                  <Heart className="w-5 h-5 mr-3" />
+                  {primaryCta.label}
+                </Link>
+              </Button>
 
-            <Button
-              variant="wedding-outline"
-              size="lg"
-              asChild
-              className="backdrop-blur-sm shadow-xl"
-              style={{
-                borderWidth: '2px',
-                borderColor: 'rgba(255, 255, 255, 0.95)',
-                color: 'white',
-                fontWeight: '600',
-                textShadow: '0 2px 8px rgba(0,0,0,0.3)'
-              }}
-            >
-              <Link href={secondaryCta.href} className="hover:bg-white/20 transition-all duration-200">
-                {secondaryCta.label}
-              </Link>
-            </Button>
+              <Button
+                variant="wedding-outline"
+                size="lg"
+                asChild
+                className="backdrop-blur-sm shadow-xl"
+                style={{
+                  borderWidth: '2px',
+                  borderColor: 'rgba(255, 255, 255, 0.95)',
+                  color: 'white',
+                  fontWeight: '600',
+                  textShadow: '0 2px 8px rgba(0,0,0,0.3)'
+                }}
+              >
+                <Link href={secondaryCta.href} className="hover:bg-white/20 transition-all duration-200">
+                  {secondaryCta.label}
+                </Link>
+              </Button>
+            </motion.div>
+
+            {/* Desktop Audio Toggle (hidden on mobile) */}
+            {!shouldReduceMotion && isVideoLoaded && (
+              <div className="hidden md:block">
+                <AudioToggleButton />
+              </div>
+            )}
           </div>
         </motion.div>
       </div>
-
-      {/* Scroll Indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2, duration: 0.8 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20"
-      >
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          className="flex flex-col items-center gap-2 cursor-pointer"
-          onClick={() => {
-            window.scrollTo({
-              top: window.innerHeight,
-              behavior: 'smooth'
-            })
-          }}
-        >
-          <span
-            className="text-white/80 text-sm tracking-widest uppercase"
-            style={{ fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}
-          >
-            {scrollText}
-          </span>
-          <ChevronDown className="w-6 h-6 text-white/80" strokeWidth={1.5} />
-        </motion.div>
-      </motion.div>
     </section>
   )
 }

@@ -29,8 +29,8 @@ export default function AboutUsSection({ data }: AboutUsSectionProps) {
   // In the future, you could use @portabletext/react to render the content field
 
   return (
-    <section className="py-32" style={{ background: 'var(--background)' }}>
-      <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16">
+    <section className="min-h-screen md:h-screen flex items-center py-16 md:py-0" style={{ background: 'var(--background)' }}>
+      <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16 w-full">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}

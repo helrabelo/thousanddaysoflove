@@ -60,8 +60,8 @@ export default function QuickPreview({ data }: QuickPreviewProps) {
     : '10:30h'
 
   return (
-    <section className="py-32" style={{ background: 'var(--accent)' }}>
-      <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16">
+    <section className="min-h-screen md:h-screen flex items-center py-16 md:py-0" style={{ background: 'var(--accent)' }}>
+      <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16 w-full">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
