@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { usePathname } from 'next/navigation'
 
 const navItems = [
   {
@@ -48,9 +49,47 @@ export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [hoveredItem, setHoveredItem] = useState<string | null>(null)
   const [showTooltip, setShowTooltip] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+  const pathname = usePathname()
+  const isHomePage = pathname === '/'
+
+  // Detect scroll position
+  useEffect(() => {
+    if (!isHomePage) {
+      setScrolled(true) // Always show navbar on non-home pages
+      return
+    }
+
+    const handleScroll = () => {
+      // Show navbar after scrolling past the hero section (viewport height)
+      const heroHeight = window.innerHeight
+      setScrolled(window.scrollY > heroHeight * 0.85) // Trigger at 85% of hero height
+    }
+
+    // Initial check
+    handleScroll()
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [isHomePage])
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50" style={{ background: 'var(--white-soft)', borderBottom: '1px solid var(--border-subtle)' }}>
+    <motion.nav
+      className="fixed top-0 left-0 right-0 z-50"
+      style={{
+        background: 'var(--white-soft)',
+        borderBottom: '1px solid var(--border-subtle)'
+      }}
+      initial={false}
+      animate={{
+        y: isHomePage && !scrolled ? '-100%' : '0%',
+        opacity: isHomePage && !scrolled ? 0 : 1
+      }}
+      transition={{
+        duration: 0.3,
+        ease: 'easeInOut'
+      }}
+    >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-row justify-between items-center h-20">
           {/* Elegant Logo */}
@@ -323,6 +362,6 @@ export default function Navigation() {
           </motion.div>
         )}
       </AnimatePresence>
-    </nav>
+    </motion.nav>
   )
 }

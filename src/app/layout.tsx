@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter, Playfair_Display, Crimson_Text, Cormorant } from "next/font/google";
 import "./globals.css";
 import "../styles/wedding-theme.css";
+import { sanityFetch } from '@/sanity/lib/client'
+import { seoSettingsQuery } from '@/sanity/queries/seo'
 
 const inter = Inter({
   variable: "--font-inter",
@@ -31,32 +33,52 @@ const cormorant = Cormorant({
   weight: ['300', '400', '500', '600'],
 });
 
-export const metadata: Metadata = {
-  title: "Mil Dias de Amor | Casamento Hel & Ylana",
-  description: "Junte-se a Hel e Ylana para celebrar seus 1000 dias de amor com o casamento em 20 de novembro de 2025. Confirme presença, explore nossa lista de presentes e faça parte do nosso dia especial.",
-  keywords: "casamento, Hel e Ylana, 11 novembro 2025, mil dias de amor, RSVP, lista de presentes",
-  authors: [{ name: "Hel & Ylana" }],
-  openGraph: {
-    title: "Mil Dias de Amor | Casamento Hel & Ylana",
-    description: "Junte-se a nós para celebrar 1000 dias de amor se tornando para sempre em 20 de novembro de 2025",
-    type: "website",
-    url: "https://thousandaysof.love",
-    images: [
-      {
-        url: "/og/wedding-invitation.png",
-        width: 1200,
-        height: 630,
-        alt: "Hel & Ylana - Casamento 20 de Novembro 2025",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Mil Dias de Amor | Casamento Hel & Ylana",
-    description: "Junte-se a nós para celebrar 1000 dias de amor se tornando para sempre em 20 de novembro de 2025",
-    images: ["/og/wedding-invitation.png"],
-  },
-};
+// Generate metadata from Sanity
+export async function generateMetadata(): Promise<Metadata> {
+  // Fetch SEO settings from Sanity
+  const seoSettings = await sanityFetch<any>({
+    query: seoSettingsQuery,
+    tags: ['seoSettings'],
+  })
+
+  // Fallback values if Sanity data is not available
+  const defaultTitle = seoSettings?.defaultTitle || "Mil Dias de Amor | Casamento Hel & Ylana"
+  const defaultDescription = seoSettings?.defaultDescription || "Junte-se a Hel e Ylana para celebrar seus 1000 dias de amor com o casamento em 20 de novembro de 2025. Confirme presença, explore nossa lista de presentes e faça parte do nosso dia especial."
+  const keywords = seoSettings?.keywords?.join(', ') || "casamento, Hel e Ylana, 20 novembro 2025, mil dias de amor, RSVP, lista de presentes"
+  const siteName = seoSettings?.openGraph?.siteName || "Thousand Days of Love"
+  const twitterCard = seoSettings?.twitter?.cardType || "summary_large_image"
+
+  return {
+    title: defaultTitle,
+    description: defaultDescription,
+    keywords: keywords,
+    authors: [{ name: "Hel & Ylana" }],
+    robots: seoSettings?.robotsIndex !== false ? 'index, follow' : 'noindex, nofollow',
+    openGraph: {
+      title: defaultTitle,
+      description: defaultDescription,
+      type: seoSettings?.openGraph?.type || "website",
+      locale: seoSettings?.openGraph?.locale || "pt_BR",
+      url: "https://thousandaysof.love",
+      siteName: siteName,
+      images: [
+        {
+          url: "/og/wedding-invitation.png",
+          width: 1200,
+          height: 630,
+          alt: "Hel & Ylana - Casamento 20 de Novembro 2025",
+        },
+      ],
+    },
+    twitter: {
+      card: twitterCard as any,
+      title: defaultTitle,
+      description: defaultDescription,
+      images: ["/og/wedding-invitation.png"],
+      site: seoSettings?.twitter?.handle,
+    },
+  }
+}
 
 export default function RootLayout({
   children,

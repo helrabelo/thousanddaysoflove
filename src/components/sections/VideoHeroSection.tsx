@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
-import { Heart, ChevronDown } from 'lucide-react'
+import { Heart, ChevronDown, Volume2, VolumeX } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
@@ -44,10 +44,11 @@ interface VideoHeroProps {
 export default function VideoHeroSection({ data }: VideoHeroProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [isVideoLoaded, setIsVideoLoaded] = useState(false)
+  const [isMuted, setIsMuted] = useState(true)
   const shouldReduceMotion = useReducedMotion()
 
   // Fallback values
-  const showMonogram = data?.monogram !== undefined ? data.monogram : true
+  const showMonogram = data?.monogram !== undefined ? data.monogram : false
   const tagline = data?.tagline || '1000 dias. Sim, a gente fez a conta.'
   const dateBadge = data?.dateBadge || '20.11.2025'
   const primaryCta = data?.primaryCta || { label: 'Confirmar Presença', href: '/rsvp' }
@@ -66,8 +67,15 @@ export default function VideoHeroSection({ data }: VideoHeroProps) {
     }
   }, [shouldReduceMotion])
 
+  const toggleAudio = () => {
+    if (videoRef.current) {
+      setIsMuted(!isMuted)
+      videoRef.current.muted = !isMuted
+    }
+  }
+
   return (
-    <section className="relative h-screen overflow-hidden">
+    <section className="relative h-screen overflow-hidden -mt-20">
       {/* Background Video or Image */}
       {shouldReduceMotion ? (
         // Static image for reduced motion preference
@@ -76,7 +84,11 @@ export default function VideoHeroSection({ data }: VideoHeroProps) {
             src={posterUrl}
             alt="Hel e Ylana"
             fill
-            className="object-cover"
+            className="object-cover object-center"
+            style={{
+              minHeight: '100vh',
+              minWidth: '100vw'
+            }}
             priority
           />
         </div>
@@ -87,11 +99,15 @@ export default function VideoHeroSection({ data }: VideoHeroProps) {
             ref={videoRef}
             autoPlay
             loop
-            muted
+            muted={isMuted}
             playsInline
             poster={posterUrl}
             onLoadedData={() => setIsVideoLoaded(true)}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover object-center"
+            style={{
+              minHeight: '100vh',
+              minWidth: '100vw'
+            }}
           >
             <source src={videoUrl} type="video/mp4" />
           </video>
@@ -100,6 +116,97 @@ export default function VideoHeroSection({ data }: VideoHeroProps) {
 
       {/* Gradient Overlay - Dark at bottom for text readability */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+
+      {/* Audio Toggle Button - Only show when video is loaded and not in reduced motion */}
+      {!shouldReduceMotion && isVideoLoaded && (
+        <motion.button
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 1, duration: 0.5 }}
+          onClick={toggleAudio}
+          className="absolute bottom-24 right-8 z-20 group"
+          aria-label={isMuted ? 'Ativar áudio' : 'Desativar áudio'}
+        >
+          <motion.div
+            className="relative flex items-center justify-center w-16 h-16 rounded-full backdrop-blur-md border-2 border-white/40 cursor-pointer shadow-xl"
+            style={{
+              background: 'rgba(255,255,255,0.15)'
+            }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            animate={{
+              boxShadow: isMuted
+                ? '0 0 0 0 rgba(255,255,255,0)'
+                : ['0 0 0 0 rgba(255,255,255,0.7)', '0 0 0 20px rgba(255,255,255,0)']
+            }}
+            transition={{
+              boxShadow: {
+                duration: 1.5,
+                repeat: isMuted ? 0 : Infinity,
+                ease: 'easeOut'
+              }
+            }}
+          >
+            <motion.div
+              animate={{ rotate: isMuted ? 0 : 360 }}
+              transition={{ duration: 0.3 }}
+            >
+              {isMuted ? (
+                <VolumeX className="w-6 h-6 text-white" strokeWidth={1.5} />
+              ) : (
+                <Volume2 className="w-6 h-6 text-white" strokeWidth={1.5} />
+              )}
+            </motion.div>
+
+            {/* Animated sound waves when audio is on */}
+            {!isMuted && (
+              <motion.div
+                className="absolute -right-1"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                {[0, 1, 2].map((i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute w-1 bg-white rounded-full"
+                    style={{
+                      height: '6px',
+                      right: `${-4 - i * 3}px`,
+                      top: '50%',
+                      transform: 'translateY(-50%)'
+                    }}
+                    animate={{
+                      scaleY: [1, 1.5, 1],
+                      opacity: [0.3, 0.7, 0.3]
+                    }}
+                    transition={{
+                      duration: 0.8,
+                      repeat: Infinity,
+                      delay: i * 0.15,
+                      ease: 'easeInOut'
+                    }}
+                  />
+                ))}
+              </motion.div>
+            )}
+          </motion.div>
+
+          {/* Tooltip */}
+          <motion.div
+            className="absolute top-full mt-3 right-0 px-3 py-2 rounded-lg text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+            style={{
+              background: 'rgba(255,255,255,0.95)',
+              color: 'var(--primary-text)',
+              fontFamily: 'var(--font-crimson)',
+              fontStyle: 'italic',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+            }}
+          >
+            {isMuted ? 'Ativar som' : 'Desativar som'}
+          </motion.div>
+        </motion.button>
+      )}
 
       {/* Content Overlay */}
       <div className="relative z-10 h-full flex items-end pb-20 px-8 md:px-16 lg:px-20">
@@ -182,9 +289,15 @@ export default function VideoHeroSection({ data }: VideoHeroProps) {
               variant="wedding"
               size="lg"
               asChild
-              className="backdrop-blur-sm bg-white/95 hover:bg-white text-[var(--primary-text)] shadow-2xl"
+              className="backdrop-blur-sm shadow-2xl"
+              style={{
+                background: 'rgba(255, 255, 255, 0.98)',
+                color: '#2C2C2C',
+                borderColor: 'rgba(255, 255, 255, 0.98)',
+                fontWeight: '600'
+              }}
             >
-              <Link href={primaryCta.href} className="flex items-center">
+              <Link href={primaryCta.href} className="flex items-center hover:bg-white transition-colors duration-200">
                 <Heart className="w-5 h-5 mr-3" />
                 {primaryCta.label}
               </Link>
@@ -194,9 +307,16 @@ export default function VideoHeroSection({ data }: VideoHeroProps) {
               variant="wedding-outline"
               size="lg"
               asChild
-              className="backdrop-blur-sm border-2 border-white/90 text-white hover:bg-white/20"
+              className="backdrop-blur-sm shadow-xl"
+              style={{
+                borderWidth: '2px',
+                borderColor: 'rgba(255, 255, 255, 0.95)',
+                color: 'white',
+                fontWeight: '600',
+                textShadow: '0 2px 8px rgba(0,0,0,0.3)'
+              }}
             >
-              <Link href={secondaryCta.href}>
+              <Link href={secondaryCta.href} className="hover:bg-white/20 transition-all duration-200">
                 {secondaryCta.label}
               </Link>
             </Button>
