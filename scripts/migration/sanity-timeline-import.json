@@ -1,0 +1,143 @@
+{
+  "_type": "timelinePage",
+  "title": "Nossa História Completa",
+  "hero": {
+    "title": "Mil Dias de Amor",
+    "subtitle": "Do primeiro \"oi\" no WhatsApp ao altar. Nossa jornada de 1000 dias juntos, contada em momentos especiais que construíram o amor da nossa vida."
+  },
+  "phases": [
+    {
+      "id": "primeiros_dias",
+      "title": "Os Primeiros Dias",
+      "dayRange": "Dia 1 - 100",
+      "subtitle": "Do match no Tinder ao início de uma história de amor única",
+      "events": [
+        {
+          "dayNumber": 1,
+          "date": "2023-01-06",
+          "title": "Do Tinder ao WhatsApp",
+          "description": "Primeiro 'oi' que mudou tudo. Quem diria que um match se tornaria a mais linda história de amor? O início de mil dias mágicos.",
+          "contentAlign": "right"
+        },
+        {
+          "dayNumber": 9,
+          "date": "2023-01-14",
+          "title": "Casa Fontana & Avatar VIP",
+          "description": "Jantar no Casa Fontana seguido de Avatar: O Caminho da Água nas poltronas VIP F11/F12. A química foi instantânea - conversamos, rimos e já sabíamos que isso era especial.",
+          "contentAlign": "left"
+        },
+        {
+          "dayNumber": 41,
+          "date": "2023-02-15",
+          "title": "O Gesto que Mudou Tudo",
+          "description": "Ylana levando remédio e chá quando Hel ficou doente. Na hora eu já sabia: 'é ela'. Às vezes o amor se revela nos cuidados mais simples e sinceros.",
+          "contentAlign": "right"
+        },
+        {
+          "dayNumber": 51,
+          "date": "2023-02-25",
+          "title": "Guaramiranga Espontâneo",
+          "description": "Planejei jantar especial, mas não consegui esperar! Pedi para namorar na manhã, em meio às montanhas. O coração não sabe de planos - só de amor.",
+          "contentAlign": "left"
+        },
+        {
+          "dayNumber": 55,
+          "date": "2023-03-01",
+          "title": "Cacao Se Junta à Linda",
+          "description": "Nossa família peluda cresceu! Cacao chegou para fazer companhia à Linda. Dois pets, dois corações humanos - nossa casa ficou ainda mais cheia de amor.",
+          "contentAlign": "right"
+        }
+      ]
+    },
+    {
+      "id": "construindo_juntos",
+      "title": "Construindo Juntos",
+      "dayRange": "Dia 101 - 500",
+      "subtitle": "Família, casa própria e conquistas lado a lado",
+      "events": [
+        {
+          "dayNumber": 360,
+          "date": "2023-12-31",
+          "title": "Primeiro Réveillon Juntos",
+          "description": "Nosso primeiro réveillon morando juntos! Brindando 2024 em casa, com Linda e Cacao aos nossos pés. Alguns momentos merecem intimidade.",
+          "contentAlign": "left"
+        },
+        {
+          "dayNumber": 416,
+          "date": "2024-02-25",
+          "title": "1º Aniversário Surpresa",
+          "description": "Balões, rosas vermelhas, café da manhã na cama e presentes caros. Celebrando um ano daquele pedido espontâneo que mudou nossas vidas para sempre.",
+          "contentAlign": "right"
+        },
+        {
+          "dayNumber": 430,
+          "date": "2024-03-10",
+          "title": "Linda Nos Deu Olivia e Oliver",
+          "description": "A matriarca Linda trouxe 4 filhotes! Olivia e Oliver ficaram conosco. De 2 pets para 4 - nossa família peluda estava completa e nossos corações transbordando.",
+          "contentAlign": "left"
+        },
+        {
+          "dayNumber": 435,
+          "date": "2024-03-15",
+          "title": "O Apartamento dos Sonhos",
+          "description": "Mudança para o apartamento que Hel passava de bicicleta na faculdade sonhando em morar. Anos de trabalho duro para realizar o sonho de uma casa própria para nossa família de 6.",
+          "contentAlign": "right"
+        }
+      ]
+    },
+    {
+      "id": "rumo_ao_para_sempre",
+      "title": "Rumo ao Para Sempre",
+      "dayRange": "Dia 501 - 1000",
+      "subtitle": "Do pedido de casamento aos mil dias de amor",
+      "events": [
+        {
+          "dayNumber": 659,
+          "date": "2024-10-25",
+          "title": "Mangue Azul & Rio de Janeiro",
+          "description": "2º aniversário no nosso restaurante favorito Mangue Azul, seguido de viagem dos sonhos: Rio de Janeiro e Búzios em hotel 5 estrelas. Se o Mangue não tivesse fechado, o casamento seria lá.",
+          "contentAlign": "left"
+        },
+        {
+          "dayNumber": 720,
+          "date": "2024-12-25",
+          "title": "Natal em Casa Própria",
+          "description": "Primeiro Natal recebendo a família em NOSSA casa. Não mais em apartamento alugado - era nosso lar, nosso espaço, nossas memórias sendo construídas.",
+          "contentAlign": "right"
+        },
+        {
+          "dayNumber": 726,
+          "date": "2024-12-31",
+          "title": "Segundo Réveillon em Casa PRÓPRIA",
+          "description": "Brindando 2025 em casa própria (não alugada!), com nossos 4 pets, planejando nosso futuro. Que diferença faz celebrar no que é verdadeiramente nosso.",
+          "contentAlign": "left"
+        },
+        {
+          "dayNumber": 831,
+          "date": "2025-04-15",
+          "title": "Pensando no Futuro Juntos",
+          "description": "Ylana congelou óvulos aos 34 anos - cuidando do nosso futuro, planejando nossa família. Algumas decisões são sobre amor que ainda está por vir.",
+          "contentAlign": "right"
+        },
+        {
+          "dayNumber": 968,
+          "date": "2025-08-30",
+          "title": "O Pedido Perfeito",
+          "description": "Icaraí de Amontada: \"Vamos jantar no restaurante do hotel\" virou surpresa na suíte com câmeras ligadas. Ajoelhado, anel na mão, coração transbordando. O 'SIM' mais lindo do mundo.",
+          "contentAlign": "left"
+        },
+        {
+          "dayNumber": 1050,
+          "date": "2025-11-20",
+          "title": "Mil Dias Viram Para Sempre",
+          "description": "Constable Galerie, 10h30. Exatamente 1000 dias após aquele primeiro 'oi' no WhatsApp. Caseiros e introvertidos, mas hoje celebramos nosso amor com quem mais amamos. O dia em que mil dias se tornam toda uma vida.",
+          "contentAlign": "right"
+        }
+      ]
+    }
+  ],
+  "seo": {
+    "title": "Nossa História | Hel & Ylana",
+    "description": "A história completa de Hel e Ylana, desde o primeiro encontro até o casamento. 1000 dias de amor, companheirismo e sonhos realizados juntos."
+  }
+}
