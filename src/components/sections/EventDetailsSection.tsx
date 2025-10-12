@@ -138,7 +138,7 @@ export default function EventDetailsSection({ data }: EventDetailsSectionProps) 
 
   return (
     <section
-      className="relative overflow-hidden min-h-screen md:h-screen"
+      className="relative overflow-hidden min-h-screen md:h-[calc(100vh-80px)]"
       style={{
         background: 'var(--background)',
       }}
@@ -443,7 +443,7 @@ export default function EventDetailsSection({ data }: EventDetailsSectionProps) 
       </div>
 
       {/* Desktop Layout - Side by Side */}
-      <div className="hidden md:flex items-center justify-center h-screen px-8 lg:px-16 relative z-10">
+      <div className="hidden md:flex items-center justify-center h-[calc(100vh-80px)] px-8 lg:px-16 relative z-10">
         <div className="max-w-7xl w-full grid md:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Left Column - Countdown Timer */}
           {showCountdown && (

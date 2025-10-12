@@ -46,7 +46,7 @@ export default function StoryPreview({ data }: StoryPreviewProps) {
   const placeholderPhoto = !hasPhotoInCards
 
   return (
-    <section className="min-h-screen md:h-screen flex items-center py-16 md:py-0" style={{ background: 'var(--accent)' }}>
+    <section className="min-h-screen md:h-[calc(100vh-80px)] flex items-center py-16 md:py-0" style={{ background: 'var(--accent)' }}>
       <div className="max-w-7xl mx-auto px-8 sm:px-12 lg:px-16 w-full">
         {/* Split Layout: Image Left, Content Right */}
         <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
