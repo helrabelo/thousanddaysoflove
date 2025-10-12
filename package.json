@@ -25,7 +25,9 @@
     "mailpit": "open http://127.0.0.1:54324",
     "sanity:studio": "open http://localhost:3001/studio",
     "sanity:typegen": "sanity schema extract && sanity typegen generate",
-    "migrate:to-sanity": "tsx scripts/migration/migrate-to-sanity.ts"
+    "migrate:to-sanity": "tsx scripts/migration/migrate-to-sanity.ts",
+    "migrate:timeline": "tsx scripts/migrate-timeline-to-sanity.ts",
+    "setup:story-preview": "tsx scripts/setup-story-preview.ts"
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.16.10",

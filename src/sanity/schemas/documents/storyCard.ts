@@ -24,12 +24,47 @@ export default defineType({
     }),
 
     defineField({
+      name: 'date',
+      title: 'Data',
+      type: 'string',
+      description: 'Data formatada (ex: "6 de janeiro de 2023")',
+      placeholder: '6 de janeiro de 2023',
+    }),
+
+    defineField({
+      name: 'icon',
+      title: 'Ícone/Emoji',
+      type: 'string',
+      description: 'Emoji ou ícone representativo (ex: 💑, 💍, ❤️)',
+      validation: (Rule) => Rule.max(10),
+      placeholder: '❤️',
+    }),
+
+    defineField({
       name: 'description',
       title: 'Descrição',
       type: 'text',
       rows: 4,
       description: 'História deste momento (200-300 caracteres)',
       validation: (Rule) => Rule.required().max(500),
+    }),
+
+    defineField({
+      name: 'image',
+      title: 'Imagem',
+      type: 'image',
+      description: 'Foto deste momento',
+      options: {
+        hotspot: true,
+      },
+      fields: [
+        {
+          name: 'alt',
+          title: 'Texto Alternativo',
+          type: 'string',
+          description: 'Descrição da imagem para acessibilidade',
+        },
+      ],
     }),
 
     defineField({
@@ -69,10 +104,11 @@ export default defineType({
       title: 'title',
       day: 'dayNumber',
       order: 'displayOrder',
+      icon: 'icon',
     },
-    prepare({ title, day, order }) {
+    prepare({ title, day, order, icon }) {
       return {
-        title: `${order}. ${title}`,
+        title: `${icon || '❤️'} ${order}. ${title}`,
         subtitle: day ? `Dia ${day}` : 'Sem dia específico',
       }
     },

@@ -1,10 +1,12 @@
 /**
  * Sanity Studio Desk Structure
  *
- * Organizes the Studio sidebar into logical sections:
- * - Pages (Homepage, Timeline, Other Pages)
- * - Content (Sections, Documents)
- * - Settings (Globals)
+ * Organizes the Studio sidebar with clear hierarchy:
+ * - Nossa História (Timeline content and pages)
+ * - Páginas (Homepage, Other Pages)
+ * - Conteúdo (Pets, Features, Wedding Settings)
+ * - Seções (Page sections and components)
+ * - Configurações (Global settings)
  */
 
 import type { StructureResolver } from 'sanity/structure'
@@ -23,15 +25,93 @@ import {
   PanelBottom,
   Search,
   Cog,
+  Layers,
+  ImageIcon,
 } from 'lucide-react'
 
 export const deskStructure: StructureResolver = (S) =>
   S.list()
     .title('Conteúdo')
     .items([
-      // PAGES SECTION
+      // ❤️ NOSSA HISTÓRIA SECTION (New unified section)
       S.listItem()
-        .title('Páginas')
+        .title('❤️ Nossa História')
+        .icon(Heart)
+        .child(
+          S.list()
+            .title('Nossa História')
+            .items([
+              // 📖 Content Library Subgroup
+              S.listItem()
+                .title('📖 Conteúdo da História')
+                .icon(Database)
+                .child(
+                  S.list()
+                    .title('Biblioteca de Conteúdo')
+                    .items([
+                      // Chapters (Fases → Capítulos)
+                      S.listItem()
+                        .title('Capítulos')
+                        .icon(Layers)
+                        .child(
+                          S.documentTypeList('storyPhase')
+                            .title('Capítulos da História')
+                            .filter('_type == "storyPhase"')
+                            .defaultOrdering([{ field: 'displayOrder', direction: 'asc' }])
+                        ),
+
+                      // Moments (Momentos → Momentos Especiais)
+                      S.listItem()
+                        .title('Momentos Especiais')
+                        .icon(Heart)
+                        .child(
+                          S.documentTypeList('storyMoment')
+                            .title('Momentos da História')
+                            .filter('_type == "storyMoment"')
+                            .defaultOrdering([{ field: 'displayOrder', direction: 'asc' }])
+                        ),
+                    ])
+                ),
+
+              S.divider(),
+
+              // 📄 Pages Using Content
+              S.listItem()
+                .title('📄 Onde Aparece')
+                .icon(FileText)
+                .child(
+                  S.list()
+                    .title('Páginas com História')
+                    .items([
+                      // Homepage Preview Section
+                      S.listItem()
+                        .title('🏠 Prévia na Homepage')
+                        .child(
+                          S.documentTypeList('storyPreview')
+                            .title('Seção: História (Homepage)')
+                            .filter('_type == "storyPreview"')
+                        ),
+
+                      // Full Timeline Page
+                      S.listItem()
+                        .title('🕰️ Página Completa')
+                        .icon(Clock)
+                        .child(
+                          S.document()
+                            .schemaType('timelinePage')
+                            .documentId('timelinePage')
+                            .title('Página: História Completa')
+                        ),
+                    ])
+                ),
+            ])
+        ),
+
+      S.divider(),
+
+      // 📄 PAGES SECTION (without timeline page)
+      S.listItem()
+        .title('📄 Páginas')
         .icon(FileText)
         .child(
           S.list()
@@ -48,17 +128,6 @@ export const deskStructure: StructureResolver = (S) =>
                     .title('Homepage')
                 ),
 
-              // Timeline Page (singleton)
-              S.listItem()
-                .title('Nossa História (Timeline)')
-                .icon(Clock)
-                .child(
-                  S.document()
-                    .schemaType('timelinePage')
-                    .documentId('timelinePage')
-                    .title('Nossa História Completa')
-                ),
-
               S.divider(),
 
               // Other Pages (list)
@@ -71,25 +140,141 @@ export const deskStructure: StructureResolver = (S) =>
 
       S.divider(),
 
-      // CONTENT SECTION
+      // 📷 GALLERY SECTION
       S.listItem()
-        .title('Conteúdo')
+        .title('📷 Galeria')
+        .icon(ImageIcon)
+        .child(
+          S.list()
+            .title('Galeria de Fotos')
+            .items([
+              // All Gallery Images
+              S.listItem()
+                .title('Todas as Imagens')
+                .icon(ImageIcon)
+                .child(
+                  S.documentTypeList('galleryImage')
+                    .title('Galeria Completa')
+                    .filter('_type == "galleryImage"')
+                    .defaultOrdering([{ field: 'displayOrder', direction: 'asc' }, { field: 'dateTaken', direction: 'desc' }])
+                ),
+
+              S.divider(),
+
+              // Featured Images
+              S.listItem()
+                .title('⭐ Imagens Destacadas')
+                .child(
+                  S.documentTypeList('galleryImage')
+                    .title('Imagens Destacadas')
+                    .filter('_type == "galleryImage" && isFeatured == true')
+                    .defaultOrdering([{ field: 'displayOrder', direction: 'asc' }])
+                ),
+
+              S.divider(),
+
+              // By Category
+              S.listItem()
+                .title('📂 Por Categoria')
+                .child(
+                  S.list()
+                    .title('Categorias')
+                    .items([
+                      S.listItem()
+                        .title('💍 Noivado')
+                        .child(
+                          S.documentTypeList('galleryImage')
+                            .title('Noivado')
+                            .filter('_type == "galleryImage" && category == "engagement"')
+                            .defaultOrdering([{ field: 'dateTaken', direction: 'desc' }])
+                        ),
+                      S.listItem()
+                        .title('✈️ Viagens')
+                        .child(
+                          S.documentTypeList('galleryImage')
+                            .title('Viagens')
+                            .filter('_type == "galleryImage" && category == "travel"')
+                            .defaultOrdering([{ field: 'dateTaken', direction: 'desc' }])
+                        ),
+                      S.listItem()
+                        .title('💕 Encontros')
+                        .child(
+                          S.documentTypeList('galleryImage')
+                            .title('Encontros')
+                            .filter('_type == "galleryImage" && category == "dates"')
+                            .defaultOrdering([{ field: 'dateTaken', direction: 'desc' }])
+                        ),
+                      S.listItem()
+                        .title('👨‍👩‍👧‍👦 Família')
+                        .child(
+                          S.documentTypeList('galleryImage')
+                            .title('Família')
+                            .filter('_type == "galleryImage" && category == "family"')
+                            .defaultOrdering([{ field: 'dateTaken', direction: 'desc' }])
+                        ),
+                      S.listItem()
+                        .title('👯 Amigos')
+                        .child(
+                          S.documentTypeList('galleryImage')
+                            .title('Amigos')
+                            .filter('_type == "galleryImage" && category == "friends"')
+                            .defaultOrdering([{ field: 'dateTaken', direction: 'desc' }])
+                        ),
+                      S.listItem()
+                        .title('✨ Momentos Especiais')
+                        .child(
+                          S.documentTypeList('galleryImage')
+                            .title('Momentos Especiais')
+                            .filter('_type == "galleryImage" && category == "special_moments"')
+                            .defaultOrdering([{ field: 'dateTaken', direction: 'desc' }])
+                        ),
+                      S.listItem()
+                        .title('💎 Pedido')
+                        .child(
+                          S.documentTypeList('galleryImage')
+                            .title('Pedido')
+                            .filter('_type == "galleryImage" && category == "proposal"')
+                            .defaultOrdering([{ field: 'dateTaken', direction: 'desc' }])
+                        ),
+                      S.listItem()
+                        .title('👰 Preparativos')
+                        .child(
+                          S.documentTypeList('galleryImage')
+                            .title('Preparativos')
+                            .filter('_type == "galleryImage" && category == "wedding_prep"')
+                            .defaultOrdering([{ field: 'dateTaken', direction: 'desc' }])
+                        ),
+                      S.listItem()
+                        .title('🎬 Bastidores')
+                        .child(
+                          S.documentTypeList('galleryImage')
+                            .title('Bastidores')
+                            .filter('_type == "galleryImage" && category == "behind_scenes"')
+                            .defaultOrdering([{ field: 'dateTaken', direction: 'desc' }])
+                        ),
+                      S.listItem()
+                        .title('📸 Profissionais')
+                        .child(
+                          S.documentTypeList('galleryImage')
+                            .title('Profissionais')
+                            .filter('_type == "galleryImage" && category == "professional"')
+                            .defaultOrdering([{ field: 'dateTaken', direction: 'desc' }])
+                        ),
+                    ])
+                ),
+            ])
+        ),
+
+      S.divider(),
+
+      // 🎁 CONTENT SECTION (Pets, Features, Wedding Settings)
+      S.listItem()
+        .title('🎁 Conteúdo')
         .icon(Database)
         .child(
           S.list()
             .title('Conteúdo')
             .items([
-              // Story Cards
-              S.listItem()
-                .title('Story Cards')
-                .icon(Heart)
-                .child(
-                  S.documentTypeList('storyCard')
-                    .title('Story Cards')
-                    .filter('_type == "storyCard"')
-                    .defaultOrdering([{ field: 'displayOrder', direction: 'asc' }])
-                ),
-
               // Feature Cards
               S.listItem()
                 .title('Feature Cards')
@@ -129,9 +314,9 @@ export const deskStructure: StructureResolver = (S) =>
 
       S.divider(),
 
-      // SECTIONS (for reference, not commonly edited)
+      // 🎨 SECTIONS (page components)
       S.listItem()
-        .title('Seções')
+        .title('🎨 Seções')
         .icon(Layout)
         .child(
           S.list()
@@ -144,10 +329,6 @@ export const deskStructure: StructureResolver = (S) =>
               S.listItem()
                 .title('Event Details')
                 .child(S.documentTypeList('eventDetails').title('Event Details Sections')),
-
-              S.listItem()
-                .title('Story Preview')
-                .child(S.documentTypeList('storyPreview').title('Story Preview Sections')),
 
               S.listItem()
                 .title('About Us')
@@ -169,9 +350,9 @@ export const deskStructure: StructureResolver = (S) =>
 
       S.divider(),
 
-      // SETTINGS SECTION
+      // ⚙️ SETTINGS SECTION
       S.listItem()
-        .title('Configurações')
+        .title('⚙️ Configurações')
         .icon(Settings)
         .child(
           S.list()

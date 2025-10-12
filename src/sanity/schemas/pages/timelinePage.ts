@@ -10,7 +10,7 @@ import { Clock } from 'lucide-react'
 
 export default defineType({
   name: 'timelinePage',
-  title: 'Página da Timeline',
+  title: 'Página: História Completa',
   type: 'document',
   icon: Clock,
 

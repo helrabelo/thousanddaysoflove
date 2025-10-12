@@ -5,80 +5,58 @@ import { motion } from 'framer-motion'
 import Navigation from '@/components/ui/Navigation'
 import TimelineMomentCard from '@/components/timeline/TimelineMomentCard'
 import TimelinePhaseHeader from '@/components/timeline/TimelinePhaseHeader'
-import { createClient } from '@/lib/supabase/client'
+import { client } from '@/sanity/lib/client'
+import { timelineQuery } from '@/sanity/queries/timeline'
 import { ArrowLeft, Heart } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
-interface TimelineEvent {
-  id: string
-  day_number: number
-  date: string
+interface TimelineMoment {
+  _id: string
   title: string
+  date: string
+  icon?: string
   description: string
-  image_url: string
-  image_alt: string
-  content_align: 'left' | 'right'
-  phase: string
-  video_url?: string
+  image?: {
+    asset: { url: string }
+    alt?: string
+  }
+  video?: {
+    asset: { url: string }
+  }
+  dayNumber?: number
+  contentAlign: 'left' | 'right'
+  displayOrder: number
 }
 
-interface PhaseConfig {
-  id: string
+interface TimelinePhase {
+  _id: string
+  id: { current: string }
   title: string
   dayRange: string
-  subtitle: string
+  subtitle?: string
+  displayOrder: number
+  moments: TimelineMoment[]
 }
 
-const phases: PhaseConfig[] = [
-  {
-    id: 'primeiros_dias',
-    title: 'Os Primeiros Dias',
-    dayRange: 'Dia 1 - 100',
-    subtitle: 'Do Tinder ao primeiro encontro. Aquele nervosismo que a gente não admitia.',
-  },
-  {
-    id: 'construindo_juntos',
-    title: 'Construindo Juntos',
-    dayRange: 'Dia 100 - 500',
-    subtitle: 'Quando a gente percebeu que isso aqui era pra valer. Casa própria, primeira dog, e muitas cervejas no Mangue Azul.',
-  },
-  {
-    id: 'nossa_familia',
-    title: 'Nossa Família',
-    dayRange: 'Dia 500 - 900',
-    subtitle: 'De 1 pra 4 cachorros. Caos total. A gente ama cada segundo.',
-  },
-  {
-    id: 'caminhando_altar',
-    title: 'Caminhando Pro Altar',
-    dayRange: 'Dia 900 - 1000',
-    subtitle: 'O pedido em Icaraí. Planejamento do casamento. E a gente aqui, prestes a celebrar 1000 dias juntos.',
-  },
-]
+interface TimelineData {
+  phases: TimelinePhase[]
+}
 
 export default function HistoriaPage() {
-  const [events, setEvents] = useState<TimelineEvent[]>([])
+  const [timelineData, setTimelineData] = useState<TimelineData | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    loadEvents()
+    loadTimeline()
   }, [])
 
-  const loadEvents = async () => {
+  const loadTimeline = async () => {
     try {
-      const supabase = createClient()
-      const { data, error } = await supabase
-        .from('timeline_events')
-        .select('*')
-        .eq('is_visible', true)
-        .not('day_number', 'is', null)
-        .order('day_number')
-
-      if (error) throw error
-      setEvents(data || [])
+      const data = await client.fetch<TimelineData>(timelineQuery)
+      setTimelineData(data)
     } catch (error) {
-      console.error('Error loading timeline events:', error)
+      console.error('Error loading timeline from Sanity:', error)
     } finally {
       setLoading(false)
     }
@@ -94,12 +72,15 @@ export default function HistoriaPage() {
     )
   }
 
-  // Group events by phase
-  const eventsByPhase = events.reduce((acc, event) => {
-    if (!acc[event.phase]) acc[event.phase] = []
-    acc[event.phase].push(event)
-    return acc
-  }, {} as Record<string, TimelineEvent[]>)
+  if (!timelineData || timelineData.phases.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--background)' }}>
+        <p style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-crimson)', fontSize: '1.25rem' }}>
+          Nenhum momento encontrado. Adicione momentos no Sanity Studio!
+        </p>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--background)' }}>
@@ -155,34 +136,33 @@ export default function HistoriaPage() {
         </div>
       </section>
 
-      {/* Dynamic Timeline Phases and Events from Supabase */}
-      {phases.map((phase) => {
-        const phaseEvents = eventsByPhase[phase.id] || []
-        if (phaseEvents.length === 0) return null
+      {/* Dynamic Timeline Phases and Events from Sanity */}
+      {timelineData.phases.map((phase) => {
+        if (!phase.moments || phase.moments.length === 0) return null
 
         return (
-          <div key={phase.id}>
+          <div key={phase._id}>
             <TimelinePhaseHeader
               title={phase.title}
               dayRange={phase.dayRange}
-              subtitle={phase.subtitle}
+              subtitle={phase.subtitle || ''}
             />
 
-            {phaseEvents.map((event) => (
+            {phase.moments.map((moment) => (
               <TimelineMomentCard
-                key={event.id}
-                day={event.day_number}
-                date={new Date(event.date).toLocaleDateString('pt-BR', {
+                key={moment._id}
+                day={moment.dayNumber || 0}
+                date={new Date(moment.date).toLocaleDateString('pt-BR', {
                   day: '2-digit',
                   month: 'long',
                   year: 'numeric',
                 })}
-                title={event.title}
-                description={event.description}
-                imageUrl={event.image_url}
-                imageAlt={event.image_alt}
-                contentAlign={event.content_align}
-                videoUrl={event.video_url}
+                title={moment.title}
+                description={moment.description}
+                imageUrl={moment.image?.asset?.url || ''}
+                imageAlt={moment.image?.alt || moment.title}
+                contentAlign={moment.contentAlign}
+                videoUrl={moment.video?.asset?.url}
               />
             ))}
           </div>

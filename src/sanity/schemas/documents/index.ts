@@ -1,14 +1,24 @@
 /**
- * Document Schemas Index
+ * Document Schemas
  *
- * Reusable content documents referenced by sections.
+ * Reusable content types that can be referenced by sections and pages.
+ * These are standalone documents that can be created and managed independently.
  */
 
-import featureCard from './featureCard'
 import pet from './pet'
-import storyCard from './storyCard'
+import storyMoment from './storyMoment'
+import storyPhase from './storyPhase'
+import featureCard from './featureCard'
 import weddingSettings from './weddingSettings'
+import galleryImage from './galleryImage'
 
-export const documentSchemas = [featureCard, pet, storyCard, weddingSettings]
+export const documentSchemas = [
+  pet,
+  storyMoment,
+  storyPhase,
+  featureCard,
+  weddingSettings,
+  galleryImage,
+]
 
 export default documentSchemas

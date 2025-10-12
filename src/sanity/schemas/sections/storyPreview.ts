@@ -2,7 +2,7 @@
  * Story Preview Section Schema
  *
  * Timeline preview of the couple's story with key moments.
- * Displays proposal photo and story cards in chronological order.
+ * Displays cinematic background with horizontal timeline carousel.
  */
 
 import { defineType, defineField } from 'sanity'
@@ -10,7 +10,7 @@ import { Heart } from 'lucide-react'
 
 export default defineType({
   name: 'storyPreview',
-  title: 'Nossa História (Preview)',
+  title: 'Seção: História (Homepage)',
   type: 'document',
   icon: Heart,
 
@@ -44,12 +44,23 @@ export default defineType({
       placeholder: 'Dos mil dias do nosso amor...',
     }),
 
-    // Proposal Photo
+    // Background Video
     defineField({
-      name: 'proposalPhoto',
-      title: 'Foto do Pedido',
+      name: 'backgroundVideo',
+      title: 'Vídeo de Fundo',
+      type: 'file',
+      description: 'Vídeo de fundo cinématico (MP4 recomendado, opcional)',
+      options: {
+        accept: 'video/*',
+      },
+    }),
+
+    // Background Image
+    defineField({
+      name: 'backgroundImage',
+      title: 'Imagem de Fundo',
       type: 'image',
-      description: 'Foto destacada do pedido de casamento',
+      description: 'Imagem de fundo cinématica (fallback se não houver vídeo)',
       options: {
         hotspot: true,
       },
@@ -60,29 +71,25 @@ export default defineType({
           type: 'string',
           description: 'Descrição da imagem para acessibilidade',
         },
-        {
-          name: 'caption',
-          title: 'Legenda',
-          type: 'string',
-          description: 'Legenda da foto (opcional)',
-          placeholder: 'O momento mais especial das nossas vidas',
-        },
       ],
     }),
 
-    // Story Cards
+    // Story Moments
     defineField({
-      name: 'storyCards',
-      title: 'Cards da História',
+      name: 'storyMoments',
+      title: 'Momentos da História',
       type: 'array',
-      description: 'Momentos-chave da jornada do casal',
+      description: 'Momentos-chave para exibir na homepage (filtrado automaticamente por "Exibir na Homepage")',
       of: [
         {
           type: 'reference',
-          to: [{ type: 'storyCard' }],
+          to: [{ type: 'storyMoment' }],
+          options: {
+            filter: 'showInPreview == true && isVisible == true',
+          },
         },
       ],
-      validation: (Rule) => Rule.required().min(1).max(6),
+      validation: (Rule) => Rule.min(1).max(6),
     }),
 
     // CTA Button
@@ -124,11 +131,11 @@ export default defineType({
     select: {
       title: 'sectionTitle',
       description: 'sectionDescription',
-      media: 'proposalPhoto',
-      cardsCount: 'storyCards',
+      media: 'backgroundImage',
+      momentsCount: 'storyMoments',
     },
-    prepare({ title, description, media, cardsCount }) {
-      const count = Array.isArray(cardsCount) ? cardsCount.length : 0
+    prepare({ title, description, media, momentsCount }) {
+      const count = Array.isArray(momentsCount) ? momentsCount.length : 0
       return {
         title: `História: ${title}`,
         subtitle: count ? `${count} momentos` : 'Adicionar momentos',

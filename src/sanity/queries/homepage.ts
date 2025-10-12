@@ -71,16 +71,36 @@ export const homePageQuery = groq`
       _type == "storyPreview" => {
         sectionTitle,
         sectionDescription,
-        storyCards[]-> {
+        backgroundVideo {
+          asset-> { url }
+        },
+        backgroundImage {
+          asset-> { url },
+          alt
+        },
+        storyMoments[]-> {
           _id,
           title,
+          date,
+          icon,
           description,
-          dayNumber,
-          displayOrder,
           image {
             asset-> { url },
             alt
-          }
+          },
+          video {
+            asset-> { url }
+          },
+          phase-> {
+            _id,
+            title,
+            dayRange
+          },
+          dayNumber,
+          displayOrder,
+          contentAlign,
+          showInPreview,
+          showInTimeline
         },
         ctaButton
       },

@@ -54,8 +54,8 @@ export default async function Home() {
       {/* Event Details Section */}
       {sections.eventDetails && <EventDetailsSection data={sections.eventDetails} />}
 
-      {/* Story Preview Section */}
-      {sections.storyPreview && <StoryPreview data={sections.storyPreview} />}
+      {/* Story Preview Section - Now self-contained, loads own data */}
+      <StoryPreview />
 
       {/* About Us Section */}
       {sections.aboutUs && <AboutUsSection data={sections.aboutUs} />}

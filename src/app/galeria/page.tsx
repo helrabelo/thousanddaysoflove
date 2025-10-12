@@ -8,7 +8,7 @@ import MasonryGallery from '@/components/gallery/MasonryGallery'
 import VideoGallery from '@/components/gallery/VideoGallery'
 import MediaLightbox from '@/components/gallery/MediaLightbox'
 import { MediaItem } from '@/types/wedding'
-import { SupabaseGalleryService } from '@/lib/services/supabaseGalleryService'
+import { SanityGalleryService } from '@/sanity/queries/gallery'
 
 const mockMediaItems: MediaItem[] = [
   {
@@ -170,8 +170,8 @@ export default function GaleriaPage() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Load data from SupabaseGalleryService
-        const items = await SupabaseGalleryService.getMediaItems()
+        // Load data from SanityGalleryService
+        const items = await SanityGalleryService.getMediaItems()
         setMediaItems(items)
       } catch (error) {
         console.error('Error loading gallery data:', error)
