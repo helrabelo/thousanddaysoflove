@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 const navItems = [
   {
@@ -54,9 +55,18 @@ export default function Navigation() {
         <div className="flex flex-row justify-between items-center h-20">
           {/* Elegant Logo */}
           <Link href="/" className="flex flex-row items-center min-w-[44px] min-h-[44px] flex-shrink-0">
-            <span className="text-2xl" style={{ fontFamily: 'var(--monogram-font)', color: 'var(--primary-text)', fontWeight: '300', letterSpacing: '0.15em' }}>
-              H <span className="heart-symbol">♥</span> Y
-            </span>
+            <Image
+              src="/hy-logo.svg"
+              alt="H & Y"
+              width={100}
+              height={34}
+              className="h-auto"
+              style={{
+                width: 'clamp(80px, 12vw, 100px)',
+                filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.1))'
+              }}
+              priority
+            />
           </Link>
 
           {/* Elegant Desktop Navigation */}
@@ -151,16 +161,18 @@ export default function Navigation() {
                 transition={{ duration: 0.4, delay: 0.1 }}
                 className="text-center mb-8"
               >
-                <div
-                  className="text-3xl mb-3"
-                  style={{
-                    fontFamily: 'var(--monogram-font)',
-                    color: 'var(--primary-text)',
-                    letterSpacing: '0.15em',
-                    fontWeight: '300'
-                  }}
-                >
-                  H <span style={{ color: 'var(--decorative)' }}>♥</span> Y
+                <div className="flex justify-center mb-3">
+                  <Image
+                    src="/hy-logo.svg"
+                    alt="H & Y"
+                    width={120}
+                    height={41}
+                    className="h-auto"
+                    style={{
+                      width: 'clamp(100px, 25vw, 120px)',
+                      filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
+                    }}
+                  />
                 </div>
                 <div
                   className="text-xs tracking-widest uppercase"
