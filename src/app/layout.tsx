@@ -41,11 +41,20 @@ export const metadata: Metadata = {
     description: "Junte-se a nós para celebrar 1000 dias de amor se tornando para sempre em 20 de novembro de 2025",
     type: "website",
     url: "https://thousandaysof.love",
+    images: [
+      {
+        url: "/og/wedding-invitation.png",
+        width: 1200,
+        height: 630,
+        alt: "Hel & Ylana - Casamento 20 de Novembro 2025",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Mil Dias de Amor | Casamento Hel & Ylana",
     description: "Junte-se a nós para celebrar 1000 dias de amor se tornando para sempre em 20 de novembro de 2025",
+    images: ["/og/wedding-invitation.png"],
   },
 };
 
