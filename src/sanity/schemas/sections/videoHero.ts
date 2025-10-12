@@ -24,14 +24,13 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
 
-    // Monogram
+    // Show Logo
     defineField({
       name: 'monogram',
-      title: 'Monograma',
-      type: 'string',
-      description: 'Monograma dos noivos (ex: "H ♥ Y")',
-      validation: (Rule) => Rule.required().max(20),
-      initialValue: 'H ♥ Y',
+      title: 'Exibir Logo',
+      type: 'boolean',
+      description: 'Exibir o logo H & Y no hero',
+      initialValue: true,
     }),
 
     // Tagline
@@ -175,14 +174,14 @@ export default defineType({
 
   preview: {
     select: {
-      monogram: 'monogram',
+      showLogo: 'monogram',
       tagline: 'tagline',
       dateBadge: 'dateBadge',
       media: 'backgroundImage',
     },
-    prepare({ monogram, tagline, dateBadge, media }) {
+    prepare({ showLogo, tagline, dateBadge, media }) {
       return {
-        title: `Hero: ${monogram}`,
+        title: `Hero com Vídeo ${showLogo ? '(com logo)' : '(sem logo)'}`,
         subtitle: `${dateBadge} - ${tagline?.substring(0, 50)}...`,
         media,
       }

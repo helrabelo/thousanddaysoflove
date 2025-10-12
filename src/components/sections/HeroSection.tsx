@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import CountdownTimer from '@/components/ui/CountdownTimer'
 import { Heart, Calendar, MapPin, Clock } from 'lucide-react'
 import Link from 'next/link'
@@ -22,22 +23,25 @@ export default function HeroSection() {
       <CornerFlourish position="bottom-left" size="lg" className="bottom-16 left-16" />
 
       <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
-        {/* Monograma H ♥ Y */}
+        {/* Logo H & Y */}
         <motion.div
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: "easeOut" }}
-          className="wedding-monogram mb-8"
-          style={{
-            fontFamily: 'var(--font-cormorant)',
-            fontSize: 'clamp(4rem, 10vw, 7rem)',
-            fontWeight: '300',
-            color: 'var(--primary-text)',
-            letterSpacing: '0.15em',
-            lineHeight: '1.1'
-          }}
+          className="wedding-monogram mb-8 flex justify-center"
         >
-          H <span className="heart-symbol text-[var(--decorative)]" style={{ fontSize: '0.9em' }}>♥</span> Y
+          <Image
+            src="/hy-logo.svg"
+            alt="H & Y"
+            width={280}
+            height={95}
+            className="h-auto"
+            style={{
+              width: 'clamp(200px, 25vw, 280px)',
+              filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.1))'
+            }}
+            priority
+          />
         </motion.div>
 
         {/* Nomes dos noivos */}

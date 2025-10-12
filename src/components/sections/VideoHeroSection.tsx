@@ -9,7 +9,7 @@ import Image from 'next/image'
 
 interface VideoHeroProps {
   data?: {
-    monogram?: string
+    monogram?: boolean
     tagline?: string
     dateBadge?: string
     primaryCta?: {
@@ -47,7 +47,7 @@ export default function VideoHeroSection({ data }: VideoHeroProps) {
   const shouldReduceMotion = useReducedMotion()
 
   // Fallback values
-  const monogram = data?.monogram || 'H ♥ Y'
+  const showMonogram = data?.monogram !== undefined ? data.monogram : true
   const tagline = data?.tagline || '1000 dias. Sim, a gente fez a conta.'
   const dateBadge = data?.dateBadge || '20.11.2025'
   const primaryCta = data?.primaryCta || { label: 'Confirmar Presença', href: '/rsvp' }
@@ -109,20 +109,23 @@ export default function VideoHeroSection({ data }: VideoHeroProps) {
           transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
           className="max-w-4xl"
         >
-          {/* Monogram */}
-          <div
-            className="mb-6"
-            style={{
-              fontFamily: 'var(--font-cormorant)',
-              fontSize: 'clamp(3rem, 8vw, 5rem)',
-              fontWeight: '300',
-              color: 'white',
-              letterSpacing: '0.2em',
-              textShadow: '0 2px 20px rgba(0,0,0,0.5)'
-            }}
-          >
-            {monogram}
-          </div>
+          {/* Logo Monogram */}
+          {showMonogram && (
+            <div className="mb-6 flex justify-start">
+              <Image
+                src="/hy-logo.svg"
+                alt="H & Y"
+                width={200}
+                height={68}
+                className="h-auto drop-shadow-2xl"
+                style={{
+                  width: 'clamp(150px, 20vw, 200px)',
+                  filter: 'brightness(0) invert(1) drop-shadow(0 2px 20px rgba(0,0,0,0.5))'
+                }}
+                priority
+              />
+            </div>
+          )}
 
           {/* Names - hardcoded as they're the couple's actual names */}
           <h1
