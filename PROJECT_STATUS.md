@@ -1,14 +1,41 @@
-# Thousand Days of Love - Project Status Report
-**Last Updated**: October 11, 2025
+# Thousand Days of Love - Project Status
+
+**Last Updated**: October 12, 2025
+**Wedding Date**: November 20, 2025
 **Domain**: thousandaysof.love
-**Wedding Date**: November 20, 2025 (1000 days since first "oi")
 
 ---
 
-## 📊 Overall Progress: 85% Complete
+## 🎯 Current Status: Phase 1 Cleanup Complete
 
-### 🎯 Current Phase: Content & Polish
-The core website is **production-ready** with all essential features implemented. Remaining work focuses on real content replacement and optional enhancements.
+### ✅ What's Working
+
+**Frontend Architecture** (100% Complete)
+- Next.js 15.5.4 + TypeScript + Tailwind CSS
+- All sections load from **Sanity CMS** (correct architecture)
+- Homepage: `src/app/page.tsx` → Sanity `homePageQuery`
+- Components accept Sanity data format
+- Design system implemented with wedding invitation aesthetic
+
+**Content Management**
+- **Sanity Studio**: `/studio` - Marketing content (pages, sections, media)
+- **Supabase Admin**: `/admin` - Transactional data (RSVPs, payments)
+- Clean separation of concerns
+
+### 🚧 Recent Cleanup (October 12, 2025)
+
+**Problem Identified**: Migrations 018-021 created duplicate admin systems
+
+**Solution Executed**:
+1. ✅ Deleted 6 redundant admin routes
+2. ✅ Dropped 7 duplicate Supabase tables
+3. ✅ Consolidated 39 .md files → 3 essential docs
+4. ✅ Moved historical docs to `docs/archive/`
+
+**Admin Routes** (Before → After):
+- ~~14 routes~~ → **4 routes** (71% reduction)
+- Keep: `/admin` (dashboard), `/admin/guests`, `/admin/pagamentos`, `/admin/analytics`
+- Future phases will migrate: galeria, presentes, pets, timeline to Sanity
 
 ---
 

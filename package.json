@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "dev:webpack": "next dev",
-    "build": "next build --turbopack",
+    "build": "next build",
+    "build:turbo": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
     "type-check": "tsc --noEmit",
@@ -21,11 +22,16 @@
     "db:seed": "supabase db reset --debug",
     "dev:full": "npm run supabase:start && npm run dev",
     "setup:local": "cp .env.local.example .env.local && npm run supabase:start",
-    "mailpit": "open http://127.0.0.1:54324"
+    "mailpit": "open http://127.0.0.1:54324",
+    "sanity:studio": "open http://localhost:3001/studio",
+    "sanity:typegen": "sanity schema extract && sanity typegen generate",
+    "migrate:to-sanity": "tsx scripts/migration/migrate-to-sanity.ts"
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.16.10",
     "@headlessui/react": "^2.2.9",
+    "@sanity/image-url": "^1.2.0",
+    "@sanity/vision": "^4.10.2",
     "@sendgrid/mail": "^8.1.6",
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.58.0",
@@ -35,20 +41,25 @@
     "framer-motion": "^12.23.22",
     "lucide-react": "^0.544.0",
     "next": "15.5.4",
+    "next-sanity": "^11.4.2",
     "qrcode": "^1.5.4",
-    "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "sanity": "^4.10.2",
+    "styled-components": "^6.1.19"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@types/google.maps": "^3.58.1",
     "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@types/react": "^18.3.26",
+    "@types/react-dom": "^18.3.7",
+    "dotenv": "^17.2.3",
     "eslint": "^9",
     "eslint-config-next": "15.5.4",
     "tailwindcss": "^4",
+    "tsx": "^4.20.6",
     "typescript": "^5"
   }
 }
