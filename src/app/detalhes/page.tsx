@@ -272,10 +272,6 @@ export default function DetalhesPage() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="font-bold" style={{ color: 'var(--decorative)' }}>✓</span>
-                <span>Manobrista disponível</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="font-bold" style={{ color: 'var(--decorative)' }}>✓</span>
                 <span>Serviço gratuito</span>
               </li>
               <li className="flex items-start gap-2">
