@@ -39,7 +39,7 @@ export default function LocationDetailsCard({
   if (variant === 'compact') {
     return (
       <motion.div
-        className={`bg-white/60 backdrop-blur-xl rounded-2xl p-6 border border-white/30 shadow-lg ${className}`}
+        className={`bg-white/60 backdrop-blur-xl rounded-2xl p-5 border border-white/30 shadow-lg ${className}`}
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4 }}
@@ -49,24 +49,24 @@ export default function LocationDetailsCard({
             <MapPin className="w-5 h-5 text-white" />
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-gray-800 mb-1">{location.name}</h3>
+            <h3 className="text-base font-semibold text-gray-800 mb-1">{location.name}</h3>
             <p className="text-sm text-gray-600 mb-2 line-clamp-2">{location.address}</p>
-            <p className="text-xs text-gray-500">20 de Novembro de 2025 • 10:30h</p>
+            <p className="text-sm text-gray-500">20 de Novembro de 2025 • 10:30h</p>
           </div>
         </div>
 
         {showActions && (
-          <div className="flex gap-2 mt-4">
+          <div className="flex gap-2 mt-3">
             <button
               onClick={handleDirections}
-              className="flex-1 bg-rose-500 hover:bg-rose-600 text-white px-3 py-2 rounded-lg text-sm transition-colors duration-200 flex items-center justify-center gap-1"
+              className="flex-1 bg-rose-500 hover:bg-rose-600 text-white px-3 py-2.5 rounded-lg text-sm transition-colors duration-200 flex items-center justify-center gap-1"
             >
               <Navigation className="w-3 h-3" />
               Direções
             </button>
             <button
               onClick={handleOpenMaps}
-              className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-2 rounded-lg text-sm transition-colors duration-200"
+              className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-2.5 rounded-lg text-sm transition-colors duration-200"
               title="Abrir no Google Maps"
             >
               <ExternalLink className="w-3 h-3" />
@@ -96,7 +96,7 @@ export default function LocationDetailsCard({
           </div>
         </div>
 
-        <div className="space-y-2 text-xs text-gray-600">
+        <div className="space-y-1.5 text-xs text-gray-600">
           <div className="flex items-center gap-2">
             <Clock className="w-3 h-3 text-purple-500" />
             <span>20 de Nov • 10:30h</span>
@@ -123,47 +123,83 @@ export default function LocationDetailsCard({
   // Default variant
   return (
     <motion.div
-      className={`bg-white/60 backdrop-blur-xl rounded-3xl p-8 border border-white/30 shadow-xl ${className}`}
+      className={`bg-white/60 backdrop-blur-xl rounded-3xl p-5 border border-white/30 shadow-xl ${className}`}
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
     >
-      <div className="flex items-start gap-4 mb-6">
-        <div className="bg-gradient-to-br from-rose-500 to-pink-600 p-4 rounded-full">
-          <MapPin className="w-6 h-6 text-white" />
+      <div className="flex items-start gap-3 mb-4">
+        <div className="bg-rose-500 p-3 rounded-full">
+          <MapPin className="w-5.5 h-5.5 text-white" style={{ width: '1.375rem', height: '1.375rem' }} />
         </div>
         <div className="flex-1">
-          <h3 className="text-2xl font-bold text-gray-800 mb-2">
+          <h3
+            className="font-bold text-gray-800 mb-2"
+            style={{
+              fontSize: 'clamp(1.5rem, 3vw, 2rem)',
+              lineHeight: '1.25'
+            }}
+          >
             {location.name}
           </h3>
           {location.description && (
-            <p className="text-gray-600 leading-relaxed mb-4">
+            <p
+              className="text-gray-600 mb-3"
+              style={{
+                fontSize: 'clamp(1rem, 2vw, 1.125rem)',
+                lineHeight: '1.5'
+              }}
+            >
               {location.description}
             </p>
           )}
         </div>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-4">
         {/* Address */}
-        <div className="flex items-start gap-4">
-          <div className="bg-gray-100 p-2 rounded-full">
-            <MapPin className="w-4 h-4 text-gray-600" />
+        <div className="flex items-start gap-3">
+          <div className="bg-gray-100 p-1.5 rounded-full">
+            <MapPin className="w-4 h-4 text-gray-600" style={{ width: '1rem', height: '1rem' }} />
           </div>
           <div>
-            <p className="font-medium text-gray-800 mb-1">Endereço</p>
-            <p className="text-gray-600 text-sm leading-relaxed">{location.address}</p>
+            <p
+              className="font-semibold text-gray-800 mb-1"
+              style={{ fontSize: 'clamp(0.875rem, 1.5vw, 1rem)' }}
+            >
+              Endereço
+            </p>
+            <p
+              className="text-gray-600"
+              style={{
+                fontSize: 'clamp(1rem, 2vw, 1.125rem)',
+                lineHeight: '1.5'
+              }}
+            >
+              {location.address}
+            </p>
           </div>
         </div>
 
         {/* Date and Time */}
-        <div className="flex items-start gap-4">
-          <div className="bg-purple-100 p-2 rounded-full">
-            <Clock className="w-4 h-4 text-purple-600" />
+        <div className="flex items-start gap-3">
+          <div className="bg-purple-100 p-1.5 rounded-full">
+            <Clock className="w-4 h-4 text-purple-600" style={{ width: '1rem', height: '1rem' }} />
           </div>
           <div>
-            <p className="font-medium text-gray-800 mb-1">Data e Horário</p>
-            <p className="text-gray-600 text-sm">
+            <p
+              className="font-semibold text-gray-800 mb-1"
+              style={{ fontSize: 'clamp(0.875rem, 1.5vw, 1rem)' }}
+            >
+              Data e Horário
+            </p>
+            <p
+              className="text-gray-600"
+              style={{
+                fontSize: 'clamp(1rem, 2vw, 1.125rem)',
+                lineHeight: '1.5'
+              }}
+            >
               <strong>20 de Novembro de 2025</strong><br />
               Início às <strong>10:30h</strong> (Horário de Brasília)
             </p>
@@ -172,39 +208,78 @@ export default function LocationDetailsCard({
 
         {/* Parking */}
         {location.parkingInfo && (
-          <div className="flex items-start gap-4">
-            <div className="bg-blue-100 p-2 rounded-full">
-              <Car className="w-4 h-4 text-blue-600" />
+          <div className="flex items-start gap-3">
+            <div className="bg-blue-100 p-1.5 rounded-full">
+              <Car className="w-4 h-4 text-blue-600" style={{ width: '1rem', height: '1rem' }} />
             </div>
             <div>
-              <p className="font-medium text-gray-800 mb-1">Estacionamento</p>
-              <p className="text-gray-600 text-sm">{location.parkingInfo}</p>
+              <p
+                className="font-semibold text-gray-800 mb-1"
+                style={{ fontSize: 'clamp(0.875rem, 1.5vw, 1rem)' }}
+              >
+                Estacionamento
+              </p>
+              <p
+                className="text-gray-600"
+                style={{
+                  fontSize: 'clamp(1rem, 2vw, 1.125rem)',
+                  lineHeight: '1.5'
+                }}
+              >
+                {location.parkingInfo}
+              </p>
             </div>
           </div>
         )}
 
         {/* Phone */}
         {location.phoneNumber && (
-          <div className="flex items-start gap-4">
-            <div className="bg-green-100 p-2 rounded-full">
-              <Phone className="w-4 h-4 text-green-600" />
+          <div className="flex items-start gap-3">
+            <div className="bg-green-100 p-1.5 rounded-full">
+              <Phone className="w-4 h-4 text-green-600" style={{ width: '1rem', height: '1rem' }} />
             </div>
             <div>
-              <p className="font-medium text-gray-800 mb-1">Contato</p>
-              <p className="text-gray-600 text-sm">{location.phoneNumber}</p>
+              <p
+                className="font-semibold text-gray-800 mb-1"
+                style={{ fontSize: 'clamp(0.875rem, 1.5vw, 1rem)' }}
+              >
+                Contato
+              </p>
+              <p
+                className="text-gray-600"
+                style={{
+                  fontSize: 'clamp(1rem, 2vw, 1.125rem)',
+                  lineHeight: '1.5'
+                }}
+              >
+                {location.phoneNumber}
+              </p>
             </div>
           </div>
         )}
 
         {/* Accessibility */}
         {location.accessibilityInfo && (
-          <div className="flex items-start gap-4">
-            <div className="bg-emerald-100 p-2 rounded-full">
-              <Info className="w-4 h-4 text-emerald-600" />
+          <div className="flex items-start gap-3">
+            <div className="bg-emerald-100 p-1.5 rounded-full">
+              <Info className="w-4 h-4 text-emerald-600" style={{ width: '1rem', height: '1rem' }} />
             </div>
             <div>
-              <p className="font-medium text-gray-800 mb-1">Acessibilidade</p>
-              <p className="text-gray-600 text-sm">{location.accessibilityInfo}</p>
+              <p
+                className="font-semibold text-gray-800 mb-1"
+                style={{ fontSize: 'clamp(0.875rem, 1.5vw, 1rem)' }}
+              >
+                Acessibilidade
+              </p>
+              <p
+                className="text-gray-600"
+                style={{
+                  fontSize: 'clamp(1rem, 2vw, 1.125rem)',
+                  lineHeight: '1.5'
+                }}
+              >
+                {location.accessibilityInfo}
+              </p>
             </div>
           </div>
         )}
@@ -212,10 +287,10 @@ export default function LocationDetailsCard({
 
       {/* Action Buttons */}
       {showActions && (
-        <div className="flex flex-col sm:flex-row gap-3 mt-8">
+        <div className="flex flex-col sm:flex-row gap-2.5 mt-5">
           <button
             onClick={handleDirections}
-            className="flex-1 bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white px-6 py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
+            className="flex-1 bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white px-5 py-2.5 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
           >
             <Navigation className="w-5 h-5" />
             Como Chegar
@@ -223,7 +298,7 @@ export default function LocationDetailsCard({
 
           <button
             onClick={handleOpenMaps}
-            className="flex-1 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white px-6 py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
+            className="flex-1 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white px-5 py-2.5 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
           >
             <ExternalLink className="w-5 h-5" />
             Abrir no Maps
@@ -231,7 +306,7 @@ export default function LocationDetailsCard({
 
           <button
             onClick={handleWhatsAppShare}
-            className="sm:w-auto bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
+            className="sm:w-auto bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-5 py-2.5 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
           >
             <Share2 className="w-5 h-5" />
             Compartilhar
@@ -240,7 +315,7 @@ export default function LocationDetailsCard({
       )}
 
       {/* Additional Info */}
-      <div className="mt-8 p-4 bg-gradient-to-r from-rose-50 to-pink-50 rounded-xl border border-rose-200">
+      <div className="mt-5 p-3.5 bg-gradient-to-r from-rose-50 to-pink-50 rounded-xl border border-rose-200">
         <div className="flex items-start gap-3">
           <Info className="w-5 h-5 text-rose-600 mt-0.5" />
           <div>

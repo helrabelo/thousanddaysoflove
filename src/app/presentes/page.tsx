@@ -330,33 +330,33 @@ export default function PresentsPage() {
           </motion.div>
         )}
 
-        {/* Call to Action */}
+        {/* Call to Action - OPTIMIZED */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="text-center rounded-2xl p-12"
+          className="text-center rounded-2xl p-8"
           style={{ background: 'var(--decorative)', color: 'var(--white-soft)' }}
         >
-          <Heart className="w-12 h-12 mx-auto mb-6" style={{ color: 'var(--white-soft)' }} />
-          <h3 className="text-2xl font-bold mb-6" style={{ fontFamily: 'var(--font-playfair)', letterSpacing: '0.15em' }}>
+          <Heart className="w-10 h-10 mx-auto mb-4" style={{ color: 'var(--white-soft)' }} />
+          <h3 className="text-2xl font-bold mb-4" style={{ fontFamily: 'var(--font-playfair)', letterSpacing: '0.15em' }}>
             Obrigado por Ajudar a Construir Nosso Lar!
           </h3>
-          <p className="max-w-2xl mx-auto mb-8" style={{ fontFamily: 'var(--font-crimson)', fontStyle: 'italic', lineHeight: '1.8', color: 'var(--white-soft)', opacity: '0.9' }}>
+          <p className="max-w-2xl mx-auto mb-6" style={{ fontFamily: 'var(--font-crimson)', fontStyle: 'italic', lineHeight: '1.6', color: 'var(--white-soft)', opacity: '0.9' }}>
             Cada presente ajuda a transformar esse apartamento (que o Hel sonhava desde a faculdade) em nosso lar de verdade. Os 4 cachorros barulhentos também agradecem. Te esperamos na Casa HY dia 20 de novembro!
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <div className="flex flex-row items-center gap-2">
               <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--white-soft)' }} />
-              <span style={{ fontFamily: 'var(--font-crimson)', fontSize: '0.875rem' }}>PIX brasileiro, rápido e seguro</span>
+              <span style={{ fontFamily: 'var(--font-crimson)', fontSize: '0.9375rem' }}>PIX brasileiro, rápido e seguro</span>
             </div>
             <div className="flex flex-row items-center gap-2">
               <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--white-soft)' }} />
-              <span style={{ fontFamily: 'var(--font-crimson)', fontSize: '0.875rem' }}>Confirmação na hora do carinho</span>
+              <span style={{ fontFamily: 'var(--font-crimson)', fontSize: '0.9375rem' }}>Confirmação na hora do carinho</span>
             </div>
             <div className="flex flex-row items-center gap-2">
               <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--white-soft)' }} />
-              <span style={{ fontFamily: 'var(--font-crimson)', fontSize: '0.875rem' }}>"O que temos entre nós é muito maior" - Hel & Ylana</span>
+              <span style={{ fontFamily: 'var(--font-crimson)', fontSize: '0.9375rem' }}>"O que temos entre nós é muito maior" - Hel & Ylana</span>
             </div>
           </div>
         </motion.div>

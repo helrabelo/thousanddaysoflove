@@ -128,36 +128,40 @@ export default function WeddingLocation({ data }: WeddingLocationProps) {
             viewport={{ once: true }}
           >
             <div
-              className="rounded-3xl p-6"
+              className="rounded-3xl p-4"
               style={{
                 background: 'var(--white-soft)',
                 border: '1px solid var(--border-subtle)',
                 boxShadow: '0 8px 24px var(--shadow-medium)'
               }}
             >
-              <div className="flex items-start gap-3 mb-5">
+              <div className="flex items-start gap-2.5 mb-3.5">
                 <div
-                  className="p-2.5 rounded-full flex-shrink-0"
+                  className="p-2 rounded-full flex-shrink-0"
                   style={{ background: 'var(--primary-text)' }}
                 >
-                  <MapPin className="w-5 h-5" style={{ color: 'var(--white-soft)' }} />
+                  <MapPin className="w-6 h-6" style={{ color: 'var(--white-soft)' }} />
                 </div>
                 <div className="flex-1">
                   <h3
-                    className="text-xl font-bold mb-1"
+                    className="font-bold mb-1"
                     style={{
                       fontFamily: 'var(--font-playfair)',
-                      color: 'var(--primary-text)'
+                      color: 'var(--primary-text)',
+                      fontSize: 'clamp(1.25rem, 3vw, 1.5rem)',
+                      lineHeight: '1.25'
                     }}
                   >
                     {venueName}
                   </h3>
                   <p
-                    className="text-sm leading-relaxed"
+                    className="leading-relaxed"
                     style={{
                       color: 'var(--secondary-text)',
                       fontFamily: 'var(--font-crimson)',
-                      fontStyle: 'italic'
+                      fontStyle: 'italic',
+                      fontSize: 'clamp(0.9375rem, 2vw, 1rem)',
+                      lineHeight: '1.5'
                     }}
                   >
                     Um espaço elegante e acolhedor
@@ -165,50 +169,111 @@ export default function WeddingLocation({ data }: WeddingLocationProps) {
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <div className="flex items-start gap-2.5">
+              <div className="space-y-2.5">
+                <div className="flex items-start gap-2">
                   <MapPin className="w-4 h-4 text-rose-500 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="font-medium text-gray-800 text-sm">Endereço</p>
-                    <p className="text-gray-600 text-xs">{fullAddress}</p>
+                    <p
+                      className="font-medium text-gray-800"
+                      style={{
+                        fontSize: 'clamp(0.9375rem, 2vw, 1rem)'
+                      }}
+                    >
+                      Endereço
+                    </p>
+                    <p
+                      className="text-gray-600"
+                      style={{
+                        fontSize: 'clamp(0.875rem, 1.8vw, 0.9375rem)',
+                        lineHeight: '1.5'
+                      }}
+                    >
+                      {fullAddress}
+                    </p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-2.5">
+                <div className="flex items-start gap-2">
                   <Clock className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="font-medium text-gray-800 text-sm">Data e Horário</p>
-                    <p className="text-gray-600 text-xs">20 de Novembro de 2025, às 10:30h</p>
+                    <p
+                      className="font-medium text-gray-800"
+                      style={{
+                        fontSize: 'clamp(0.9375rem, 2vw, 1rem)'
+                      }}
+                    >
+                      Data e Horário
+                    </p>
+                    <p
+                      className="text-gray-600"
+                      style={{
+                        fontSize: 'clamp(0.875rem, 1.8vw, 0.9375rem)',
+                        lineHeight: '1.5'
+                      }}
+                    >
+                      20 de Novembro de 2025, às 10:30h
+                    </p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-2.5">
+                <div className="flex items-start gap-2">
                   <Car className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="font-medium text-gray-800 text-sm">Estacionamento</p>
-                    <p className="text-gray-600 text-xs">{locationData.parkingInfo}</p>
+                    <p
+                      className="font-medium text-gray-800"
+                      style={{
+                        fontSize: 'clamp(0.9375rem, 2vw, 1rem)'
+                      }}
+                    >
+                      Estacionamento
+                    </p>
+                    <p
+                      className="text-gray-600"
+                      style={{
+                        fontSize: 'clamp(0.875rem, 1.8vw, 0.9375rem)',
+                        lineHeight: '1.5'
+                      }}
+                    >
+                      {locationData.parkingInfo}
+                    </p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-2.5">
+                <div className="flex items-start gap-2">
                   <Info className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="font-medium text-gray-800 text-sm">Acessibilidade</p>
-                    <p className="text-gray-600 text-xs">{locationData.accessibilityInfo}</p>
+                    <p
+                      className="font-medium text-gray-800"
+                      style={{
+                        fontSize: 'clamp(0.9375rem, 2vw, 1rem)'
+                      }}
+                    >
+                      Acessibilidade
+                    </p>
+                    <p
+                      className="text-gray-600"
+                      style={{
+                        fontSize: 'clamp(0.875rem, 1.8vw, 0.9375rem)',
+                        lineHeight: '1.5'
+                      }}
+                    >
+                      {locationData.accessibilityInfo}
+                    </p>
                   </div>
                 </div>
               </div>
 
               {/* Action Buttons */}
               {showDirections && (
-                <div className="flex gap-2.5 mt-5">
+                <div className="flex gap-2 mt-4">
                   <button
                     onClick={handleDirections}
-                    className="flex-1 px-4 py-2.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 font-medium love-cursor text-sm"
+                    className="flex-1 px-4 py-2 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 font-medium love-cursor"
                     style={{
                       background: 'var(--primary-text)',
                       color: 'var(--white-soft)',
                       fontFamily: 'var(--font-playfair)',
+                      fontSize: 'clamp(0.875rem, 2vw, 0.9375rem)',
                       boxShadow: '0 4px 12px var(--shadow-subtle)'
                     }}
                   >
@@ -218,11 +283,12 @@ export default function WeddingLocation({ data }: WeddingLocationProps) {
 
                   <button
                     onClick={handleWhatsAppShare}
-                    className="flex-1 px-4 py-2.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 font-medium love-cursor text-sm"
+                    className="flex-1 px-4 py-2 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 font-medium love-cursor"
                     style={{
                       background: 'var(--accent)',
                       color: 'var(--primary-text)',
                       fontFamily: 'var(--font-playfair)',
+                      fontSize: 'clamp(0.875rem, 2vw, 0.9375rem)',
                       border: '1px solid var(--border-subtle)',
                       boxShadow: '0 4px 12px var(--shadow-subtle)'
                     }}
@@ -243,30 +309,44 @@ export default function WeddingLocation({ data }: WeddingLocationProps) {
             viewport={{ once: true }}
           >
             <div
-              className="rounded-2xl p-5"
+              className="rounded-2xl p-4"
               style={{
                 background: 'var(--white-soft)',
                 border: '1px solid var(--border-subtle)',
                 boxShadow: '0 8px 24px var(--shadow-medium)'
               }}
             >
-              <div className="flex items-center gap-2.5 mb-3">
+              <div className="flex items-center gap-2 mb-2.5">
                 <div
                   className="p-1.5 rounded-full"
                   style={{ background: 'var(--decorative)' }}
                 >
-                  <MapPin className="w-4 h-4" style={{ color: 'var(--white-soft)' }} />
+                  <MapPin className="w-4.5 h-4.5" style={{ color: 'var(--white-soft)' }} />
                 </div>
                 <h4
-                  className="font-semibold text-sm"
-                  style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-playfair)' }}
+                  className="font-semibold"
+                  style={{
+                    color: 'var(--primary-text)',
+                    fontFamily: 'var(--font-playfair)',
+                    fontSize: 'clamp(0.9375rem, 2vw, 1rem)'
+                  }}
                 >
                   Pontos de Referência
                 </h4>
               </div>
-              <ul className="space-y-1.5">
+              <ul className="space-y-1">
                 {nearbyLandmarks.map((landmark, index) => (
-                  <li key={index} className="text-xs flex items-start gap-2" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
+                  <li
+                    key={index}
+                    className="flex items-start gap-2"
+                    style={{
+                      color: 'var(--secondary-text)',
+                      fontFamily: 'var(--font-crimson)',
+                      fontStyle: 'italic',
+                      fontSize: 'clamp(0.875rem, 1.8vw, 0.9375rem)',
+                      lineHeight: '1.5'
+                    }}
+                  >
                     <div className="w-1 h-1 rounded-full mt-1.5 flex-shrink-0" style={{ background: 'var(--primary-text)' }} />
                     {landmark}
                   </li>
@@ -282,8 +362,15 @@ export default function WeddingLocation({ data }: WeddingLocationProps) {
             transition={{ duration: 0.6, delay: 0.3 }}
             viewport={{ once: true }}
           >
-            <div className="bg-white/60 backdrop-blur-xl rounded-3xl p-5 border border-white/30 shadow-xl">
-              <h3 className="text-lg font-semibold text-gray-800 mb-3 text-center">
+            <div className="bg-white/60 backdrop-blur-xl rounded-3xl p-4 border border-white/30 shadow-xl">
+              <h3
+                className="font-semibold text-gray-800 text-center"
+                style={{
+                  fontSize: 'clamp(1.0625rem, 2.5vw, 1.125rem)',
+                  lineHeight: '1.3',
+                  marginBottom: '0.625rem'
+                }}
+              >
                 Localização no Mapa
               </h3>
 
@@ -296,27 +383,28 @@ export default function WeddingLocation({ data }: WeddingLocationProps) {
               />
 
               <div
-                className="mt-4 p-3.5 rounded-xl"
+                className="mt-3 p-3 rounded-xl"
                 style={{
                   background: 'var(--accent)',
                   border: '1px solid var(--border-subtle)'
                 }}
               >
                 <h4
-                  className="font-medium mb-1.5 text-sm"
+                  className="font-medium mb-1"
                   style={{
                     color: 'var(--primary-text)',
-                    fontFamily: 'var(--font-playfair)'
+                    fontFamily: 'var(--font-playfair)',
+                    fontSize: 'clamp(0.9375rem, 2vw, 1rem)'
                   }}
                 >
                   💕 Com Todo Nosso Amor
                 </h4>
                 <p
-                  className="text-xs"
                   style={{
                     color: 'var(--secondary-text)',
                     fontFamily: 'var(--font-crimson)',
                     fontStyle: 'italic',
+                    fontSize: 'clamp(0.875rem, 1.8vw, 0.9375rem)',
                     lineHeight: '1.5'
                   }}
                 >
@@ -340,36 +428,40 @@ export default function WeddingLocation({ data }: WeddingLocationProps) {
           >
             {/* Main Venue Details Card */}
             <div
-              className="rounded-3xl p-6 flex-1"
+              className="rounded-3xl p-5 flex-1"
               style={{
                 background: 'var(--white-soft)',
                 border: '1px solid var(--border-subtle)',
                 boxShadow: '0 8px 24px var(--shadow-medium)'
               }}
             >
-              <div className="flex items-start gap-3 mb-5">
+              <div className="flex items-start gap-2.5 mb-4">
                 <div
-                  className="p-2.5 rounded-full flex-shrink-0"
+                  className="p-2 rounded-full flex-shrink-0"
                   style={{ background: 'var(--primary-text)' }}
                 >
-                  <MapPin className="w-5 h-5" style={{ color: 'var(--white-soft)' }} />
+                  <MapPin className="w-5.5 h-5.5" style={{ color: 'var(--white-soft)' }} />
                 </div>
                 <div className="flex-1">
                   <h3
-                    className="text-2xl font-bold mb-1"
+                    className="font-bold mb-1"
                     style={{
                       fontFamily: 'var(--font-playfair)',
-                      color: 'var(--primary-text)'
+                      color: 'var(--primary-text)',
+                      fontSize: 'clamp(1.375rem, 2vw, 1.5rem)',
+                      lineHeight: '1.25'
                     }}
                   >
                     {venueName}
                   </h3>
                   <p
-                    className="text-sm leading-relaxed"
+                    className="leading-relaxed"
                     style={{
                       color: 'var(--secondary-text)',
                       fontFamily: 'var(--font-crimson)',
-                      fontStyle: 'italic'
+                      fontStyle: 'italic',
+                      fontSize: 'clamp(0.9375rem, 1.2vw, 1rem)',
+                      lineHeight: '1.5'
                     }}
                   >
                     Nosso dia, nossa casinha! Não podia ser mais especial.
@@ -377,43 +469,88 @@ export default function WeddingLocation({ data }: WeddingLocationProps) {
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <div className="flex items-start gap-2.5">
+              <div className="space-y-2.5">
+                <div className="flex items-start gap-2">
                   <MapPin className="w-4 h-4 text-rose-500 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="font-medium text-gray-800 text-sm">Endereço</p>
-                    <p className="text-gray-600 text-xs leading-relaxed">{fullAddress}</p>
+                    <p
+                      className="font-medium text-gray-800"
+                      style={{
+                        fontSize: 'clamp(0.9375rem, 1.2vw, 1rem)'
+                      }}
+                    >
+                      Endereço
+                    </p>
+                    <p
+                      className="text-gray-600 leading-relaxed"
+                      style={{
+                        fontSize: 'clamp(0.875rem, 1.1vw, 0.9375rem)',
+                        lineHeight: '1.5'
+                      }}
+                    >
+                      {fullAddress}
+                    </p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-2.5">
+                <div className="flex items-start gap-2">
                   <Clock className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="font-medium text-gray-800 text-sm">Data e Horário</p>
-                    <p className="text-gray-600 text-xs">20 de Novembro de 2025, às 10:30h</p>
+                    <p
+                      className="font-medium text-gray-800"
+                      style={{
+                        fontSize: 'clamp(0.9375rem, 1.2vw, 1rem)'
+                      }}
+                    >
+                      Data e Horário
+                    </p>
+                    <p
+                      className="text-gray-600"
+                      style={{
+                        fontSize: 'clamp(0.875rem, 1.1vw, 0.9375rem)',
+                        lineHeight: '1.5'
+                      }}
+                    >
+                      20 de Novembro de 2025, às 10:30h
+                    </p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-2.5">
+                <div className="flex items-start gap-2">
                   <Car className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="font-medium text-gray-800 text-sm">Estacionamento</p>
-                    <p className="text-gray-600 text-xs">{locationData.parkingInfo}</p>
+                    <p
+                      className="font-medium text-gray-800"
+                      style={{
+                        fontSize: 'clamp(0.9375rem, 1.2vw, 1rem)'
+                      }}
+                    >
+                      Estacionamento
+                    </p>
+                    <p
+                      className="text-gray-600"
+                      style={{
+                        fontSize: 'clamp(0.875rem, 1.1vw, 0.9375rem)',
+                        lineHeight: '1.5'
+                      }}
+                    >
+                      {locationData.parkingInfo}
+                    </p>
                   </div>
                 </div>
               </div>
 
               {/* Action Buttons - Side by Side */}
               {showDirections && (
-                <div className="flex gap-2.5 mt-5">
+                <div className="flex gap-2 mt-4">
                   <button
                     onClick={handleDirections}
-                    className="flex-1 px-4 py-2.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 font-medium love-cursor"
+                    className="flex-1 px-4 py-2 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 font-medium love-cursor"
                     style={{
                       background: 'var(--primary-text)',
                       color: 'var(--white-soft)',
                       fontFamily: 'var(--font-playfair)',
-                      fontSize: '0.875rem',
+                      fontSize: 'clamp(0.875rem, 1.1vw, 0.9375rem)',
                       boxShadow: '0 4px 12px var(--shadow-subtle)'
                     }}
                     onMouseEnter={(e) => {
@@ -431,12 +568,12 @@ export default function WeddingLocation({ data }: WeddingLocationProps) {
 
                   <button
                     onClick={handleWhatsAppShare}
-                    className="flex-1 px-4 py-2.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 font-medium love-cursor"
+                    className="flex-1 px-4 py-2 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 font-medium love-cursor"
                     style={{
                       background: 'var(--accent)',
                       color: 'var(--primary-text)',
                       fontFamily: 'var(--font-playfair)',
-                      fontSize: '0.875rem',
+                      fontSize: 'clamp(0.875rem, 1.1vw, 0.9375rem)',
                       border: '1px solid var(--border-subtle)',
                       boxShadow: '0 4px 12px var(--shadow-subtle)'
                     }}
@@ -460,14 +597,14 @@ export default function WeddingLocation({ data }: WeddingLocationProps) {
 
             {/* Nearby Landmarks - Compact */}
             <div
-              className="rounded-2xl p-4"
+              className="rounded-2xl p-3.5"
               style={{
                 background: 'var(--white-soft)',
                 border: '1px solid var(--border-subtle)',
                 boxShadow: '0 8px 24px var(--shadow-medium)'
               }}
             >
-              <div className="flex items-center gap-2.5 mb-3">
+              <div className="flex items-center gap-2 mb-2.5">
                 <div
                   className="p-1.5 rounded-full"
                   style={{ background: 'var(--decorative)' }}
@@ -475,15 +612,29 @@ export default function WeddingLocation({ data }: WeddingLocationProps) {
                   <MapPin className="w-4 h-4" style={{ color: 'var(--white-soft)' }} />
                 </div>
                 <h4
-                  className="font-semibold text-sm"
-                  style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-playfair)' }}
+                  className="font-semibold"
+                  style={{
+                    color: 'var(--primary-text)',
+                    fontFamily: 'var(--font-playfair)',
+                    fontSize: 'clamp(0.9375rem, 1.2vw, 1rem)'
+                  }}
                 >
                   Pontos de Referência
                 </h4>
               </div>
-              <ul className="space-y-1.5">
+              <ul className="space-y-1">
                 {nearbyLandmarks.map((landmark, index) => (
-                  <li key={index} className="text-xs flex items-start gap-2" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
+                  <li
+                    key={index}
+                    className="flex items-start gap-2"
+                    style={{
+                      color: 'var(--secondary-text)',
+                      fontFamily: 'var(--font-crimson)',
+                      fontStyle: 'italic',
+                      fontSize: 'clamp(0.875rem, 1.1vw, 0.9375rem)',
+                      lineHeight: '1.5'
+                    }}
+                  >
                     <div className="w-1 h-1 rounded-full mt-1.5 flex-shrink-0" style={{ background: 'var(--primary-text)' }} />
                     {landmark}
                   </li>
@@ -500,7 +651,7 @@ export default function WeddingLocation({ data }: WeddingLocationProps) {
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            <div className="bg-white/60 backdrop-blur-xl rounded-3xl p-5 border border-white/30 shadow-xl flex flex-col h-full">
+            <div className="bg-white/60 backdrop-blur-xl rounded-3xl p-4 border border-white/30 shadow-xl flex flex-col h-full">
 
               <div className="flex-1 min-h-0">
                 <GoogleMap
