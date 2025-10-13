@@ -218,3 +218,397 @@ export async function hasUploadedPhotos(code: string): Promise<boolean> {
   const invitation = await getInvitationByCode(code);
   return invitation?.photos_uploaded ?? false;
 }
+
+// =====================================================
+// ADMIN FUNCTIONS - Phase 4
+// =====================================================
+
+/**
+ * Get all invitations (admin use)
+ *
+ * Retrieves all invitations with optional filtering and sorting
+ *
+ * @param filters - Optional filters (relationship_type, search query)
+ * @param sortBy - Sort field (created_at, guest_name, opened_at)
+ * @param sortOrder - Sort order (asc, desc)
+ * @returns Array of invitations
+ */
+export async function getAllInvitations(
+  filters?: {
+    relationship_type?: 'family' | 'friend' | 'colleague' | 'other';
+    search?: string;
+    rsvp_completed?: boolean;
+    gift_selected?: boolean;
+    photos_uploaded?: boolean;
+    has_opened?: boolean;
+  },
+  sortBy: 'created_at' | 'guest_name' | 'opened_at' | 'open_count' = 'created_at',
+  sortOrder: 'asc' | 'desc' = 'desc'
+): Promise<Invitation[]> {
+  const supabase = createClient();
+
+  let query = supabase.from('invitations').select('*');
+
+  // Apply filters
+  if (filters) {
+    if (filters.relationship_type) {
+      query = query.eq('relationship_type', filters.relationship_type);
+    }
+    if (filters.rsvp_completed !== undefined) {
+      query = query.eq('rsvp_completed', filters.rsvp_completed);
+    }
+    if (filters.gift_selected !== undefined) {
+      query = query.eq('gift_selected', filters.gift_selected);
+    }
+    if (filters.photos_uploaded !== undefined) {
+      query = query.eq('photos_uploaded', filters.photos_uploaded);
+    }
+    if (filters.has_opened) {
+      query = query.not('opened_at', 'is', null);
+    }
+    if (filters.search) {
+      query = query.or(
+        `guest_name.ilike.%${filters.search}%,guest_email.ilike.%${filters.search}%,code.ilike.%${filters.search}%`
+      );
+    }
+  }
+
+  // Apply sorting
+  query = query.order(sortBy, { ascending: sortOrder === 'asc' });
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error('Error fetching invitations:', error);
+    return [];
+  }
+
+  return data as Invitation[];
+}
+
+/**
+ * Create new invitation (admin use)
+ *
+ * Generates a new invitation with a unique code
+ *
+ * @param invitation - Invitation data
+ * @returns Created invitation or null on error
+ */
+export async function createInvitation(
+  invitation: Omit<Invitation, 'id' | 'created_at' | 'updated_at' | 'open_count' | 'opened_at' | 'rsvp_completed' | 'gift_selected' | 'photos_uploaded'>
+): Promise<Invitation | null> {
+  const supabase = createClient();
+
+  const { data, error } = await supabase
+    .from('invitations')
+    .insert({
+      code: invitation.code.toUpperCase(),
+      guest_name: invitation.guest_name,
+      guest_email: invitation.guest_email,
+      guest_phone: invitation.guest_phone,
+      relationship_type: invitation.relationship_type,
+      plus_one_allowed: invitation.plus_one_allowed,
+      plus_one_name: invitation.plus_one_name,
+      custom_message: invitation.custom_message,
+      table_number: invitation.table_number,
+      dietary_restrictions: invitation.dietary_restrictions,
+      created_by: invitation.created_by,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error creating invitation:', error);
+    return null;
+  }
+
+  return data as Invitation;
+}
+
+/**
+ * Update invitation (admin use)
+ *
+ * Updates an existing invitation
+ *
+ * @param id - Invitation ID
+ * @param updates - Fields to update
+ * @returns Updated invitation or null on error
+ */
+export async function updateInvitation(
+  id: string,
+  updates: Partial<Omit<Invitation, 'id' | 'created_at' | 'updated_at'>>
+): Promise<Invitation | null> {
+  const supabase = createClient();
+
+  const { data, error } = await supabase
+    .from('invitations')
+    .update(updates)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error updating invitation:', error);
+    return null;
+  }
+
+  return data as Invitation;
+}
+
+/**
+ * Delete invitation (admin use)
+ *
+ * Deletes an invitation by ID
+ *
+ * @param id - Invitation ID
+ * @returns Success boolean
+ */
+export async function deleteInvitation(id: string): Promise<boolean> {
+  const supabase = createClient();
+
+  const { error } = await supabase.from('invitations').delete().eq('id', id);
+
+  if (error) {
+    console.error('Error deleting invitation:', error);
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * Generate unique invitation code
+ *
+ * Creates a unique code in the format: TYPE###
+ * Examples: FAMILY001, FRIEND042, WORK015
+ *
+ * @param relationship_type - Relationship type for prefix
+ * @returns Unique code string
+ */
+export async function generateUniqueCode(
+  relationship_type: 'family' | 'friend' | 'colleague' | 'other'
+): Promise<string> {
+  const supabase = createClient();
+
+  // Map relationship types to prefixes
+  const prefixMap = {
+    family: 'FAMILY',
+    friend: 'FRIEND',
+    colleague: 'WORK',
+    other: 'OTHER',
+  };
+
+  const prefix = prefixMap[relationship_type];
+
+  // Get all existing codes with this prefix
+  const { data } = await supabase
+    .from('invitations')
+    .select('code')
+    .ilike('code', `${prefix}%`);
+
+  if (!data) return `${prefix}001`;
+
+  // Extract numbers from existing codes
+  const numbers = data
+    .map((inv) => {
+      const match = inv.code.match(/\d+$/);
+      return match ? parseInt(match[0]) : 0;
+    })
+    .filter((n) => n > 0);
+
+  // Find the next available number
+  const nextNumber = numbers.length > 0 ? Math.max(...numbers) + 1 : 1;
+
+  return `${prefix}${nextNumber.toString().padStart(3, '0')}`;
+}
+
+/**
+ * Bulk create invitations (admin use)
+ *
+ * Creates multiple invitations at once with auto-generated codes
+ *
+ * @param invitations - Array of invitation data (without codes)
+ * @returns Array of created invitations
+ */
+export async function bulkCreateInvitations(
+  invitations: Array<
+    Omit<Invitation, 'id' | 'code' | 'created_at' | 'updated_at' | 'open_count' | 'opened_at' | 'rsvp_completed' | 'gift_selected' | 'photos_uploaded'>
+  >
+): Promise<Invitation[]> {
+  const createdInvitations: Invitation[] = [];
+
+  for (const inv of invitations) {
+    const code = await generateUniqueCode(inv.relationship_type);
+    const created = await createInvitation({ ...inv, code });
+    if (created) {
+      createdInvitations.push(created);
+    }
+  }
+
+  return createdInvitations;
+}
+
+/**
+ * Export invitations to CSV format (admin use)
+ *
+ * Generates CSV string of all invitations for export
+ *
+ * @returns CSV string
+ */
+export async function exportInvitationsToCSV(): Promise<string> {
+  const invitations = await getAllInvitations();
+
+  // CSV header
+  const headers = [
+    'Code',
+    'Guest Name',
+    'Email',
+    'Phone',
+    'Relationship',
+    'Plus One',
+    'Plus One Name',
+    'Table',
+    'Dietary Restrictions',
+    'Custom Message',
+    'Opened',
+    'Open Count',
+    'RSVP',
+    'Gift',
+    'Photos',
+    'Created At',
+  ];
+
+  // CSV rows
+  const rows = invitations.map((inv) => [
+    inv.code,
+    inv.guest_name,
+    inv.guest_email || '',
+    inv.guest_phone || '',
+    inv.relationship_type,
+    inv.plus_one_allowed ? 'Yes' : 'No',
+    inv.plus_one_name || '',
+    inv.table_number || '',
+    inv.dietary_restrictions || '',
+    (inv.custom_message || '').replace(/"/g, '""'), // Escape quotes
+    inv.opened_at ? new Date(inv.opened_at).toLocaleDateString('pt-BR') : '',
+    inv.open_count.toString(),
+    inv.rsvp_completed ? 'Yes' : 'No',
+    inv.gift_selected ? 'Yes' : 'No',
+    inv.photos_uploaded ? 'Yes' : 'No',
+    new Date(inv.created_at).toLocaleDateString('pt-BR'),
+  ]);
+
+  // Combine headers and rows
+  const csv = [
+    headers.join(','),
+    ...rows.map((row) =>
+      row
+        .map((cell) => (cell.includes(',') || cell.includes('"') ? `"${cell}"` : cell))
+        .join(',')
+    ),
+  ].join('\n');
+
+  return csv;
+}
+
+/**
+ * Get detailed invitation analytics (admin use)
+ *
+ * Retrieves comprehensive analytics with breakdowns and rates
+ *
+ * @returns Detailed analytics object
+ */
+export async function getInvitationAnalytics() {
+  const invitations = await getAllInvitations();
+
+  const total = invitations.length;
+  const opened = invitations.filter((i) => i.opened_at).length;
+  const rsvp_completed = invitations.filter((i) => i.rsvp_completed).length;
+  const gift_selected = invitations.filter((i) => i.gift_selected).length;
+  const photos_uploaded = invitations.filter((i) => i.photos_uploaded).length;
+
+  // Calculate rates
+  const open_rate = total > 0 ? Math.round((opened / total) * 100) : 0;
+  const rsvp_rate = total > 0 ? Math.round((rsvp_completed / total) * 100) : 0;
+  const gift_rate = total > 0 ? Math.round((gift_selected / total) * 100) : 0;
+  const photo_rate = total > 0 ? Math.round((photos_uploaded / total) * 100) : 0;
+
+  // Breakdown by relationship type
+  const by_relationship = {
+    family: {
+      total: invitations.filter((i) => i.relationship_type === 'family').length,
+      opened: invitations.filter(
+        (i) => i.relationship_type === 'family' && i.opened_at
+      ).length,
+      rsvp: invitations.filter(
+        (i) => i.relationship_type === 'family' && i.rsvp_completed
+      ).length,
+    },
+    friend: {
+      total: invitations.filter((i) => i.relationship_type === 'friend').length,
+      opened: invitations.filter(
+        (i) => i.relationship_type === 'friend' && i.opened_at
+      ).length,
+      rsvp: invitations.filter(
+        (i) => i.relationship_type === 'friend' && i.rsvp_completed
+      ).length,
+    },
+    colleague: {
+      total: invitations.filter((i) => i.relationship_type === 'colleague')
+        .length,
+      opened: invitations.filter(
+        (i) => i.relationship_type === 'colleague' && i.opened_at
+      ).length,
+      rsvp: invitations.filter(
+        (i) => i.relationship_type === 'colleague' && i.rsvp_completed
+      ).length,
+    },
+    other: {
+      total: invitations.filter((i) => i.relationship_type === 'other').length,
+      opened: invitations.filter(
+        (i) => i.relationship_type === 'other' && i.opened_at
+      ).length,
+      rsvp: invitations.filter(
+        (i) => i.relationship_type === 'other' && i.rsvp_completed
+      ).length,
+    },
+  };
+
+  // Recent activity (last 10 openings)
+  const recent_openings = invitations
+    .filter((i) => i.opened_at)
+    .sort(
+      (a, b) =>
+        new Date(b.opened_at!).getTime() - new Date(a.opened_at!).getTime()
+    )
+    .slice(0, 10)
+    .map((i) => ({
+      code: i.code,
+      guest_name: i.guest_name,
+      opened_at: i.opened_at!,
+      relationship_type: i.relationship_type,
+    }));
+
+  // Plus one stats
+  const plus_one_allowed = invitations.filter((i) => i.plus_one_allowed).length;
+  const plus_one_with_name = invitations.filter((i) => i.plus_one_name).length;
+
+  return {
+    total,
+    opened,
+    rsvp_completed,
+    gift_selected,
+    photos_uploaded,
+    open_rate,
+    rsvp_rate,
+    gift_rate,
+    photo_rate,
+    total_opens: invitations.reduce((sum, i) => sum + i.open_count, 0),
+    by_relationship,
+    recent_openings,
+    plus_one_stats: {
+      allowed: plus_one_allowed,
+      with_name: plus_one_with_name,
+    },
+  };
+}
