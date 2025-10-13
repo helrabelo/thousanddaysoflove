@@ -11,6 +11,7 @@ import storyPhase from './storyPhase'
 import featureCard from './featureCard'
 import weddingSettings from './weddingSettings'
 import galleryImage from './galleryImage'
+import guestMedia from './guestMedia'
 
 export const documentSchemas = [
   pet,
@@ -19,6 +20,7 @@ export const documentSchemas = [
   featureCard,
   weddingSettings,
   galleryImage,
+  guestMedia, // Guest-uploaded photos and videos
 ]
 
 export default documentSchemas
