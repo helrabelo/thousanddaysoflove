@@ -1,18 +1,15 @@
 'use client';
 
-import { useState, FormEvent, useEffect } from 'react';
+import { useState, FormEvent, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { LogIn, AlertCircle, Heart } from 'lucide-react';
 import { loginWithInvitationCode } from '@/lib/supabase/invitations';
 
 /**
- * Guest Login Page
- *
- * Simple form to authenticate guests with their invitation code
- * Creates persistent session in localStorage
+ * Guest Login Form Component (with useSearchParams)
  */
-export default function GuestLoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [code, setCode] = useState('');
@@ -208,5 +205,27 @@ export default function GuestLoginPage() {
         </motion.div>
       </motion.div>
     </div>
+  );
+}
+
+/**
+ * Guest Login Page
+ *
+ * Wrapper component with Suspense boundary for useSearchParams
+ */
+export default function GuestLoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#F8F6F3] flex items-center justify-center">
+          <div className="text-center">
+            <Heart className="w-16 h-16 text-pink-600 mx-auto mb-4 animate-pulse" />
+            <p className="font-crimson text-lg text-[#4A4A4A]">Carregando...</p>
+          </div>
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }
