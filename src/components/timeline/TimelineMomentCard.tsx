@@ -1,8 +1,8 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import Image from 'next/image'
 import { ReactNode } from 'react'
+import MediaCarousel, { MediaItem } from '@/components/ui/MediaCarousel'
 
 interface TimelineMomentCardProps {
   /** Day number in the relationship */
@@ -13,14 +13,10 @@ interface TimelineMomentCardProps {
   title: string
   /** Description/story of the moment */
   description: string
-  /** Background image URL */
-  imageUrl: string
-  /** Alternative text for image */
-  imageAlt: string
+  /** Media items (images and/or videos) */
+  media: MediaItem[]
   /** Content alignment: 'left' or 'right' */
   contentAlign?: 'left' | 'right'
-  /** Optional video URL for background */
-  videoUrl?: string
   /** Custom children for more complex layouts */
   children?: ReactNode
 }
@@ -30,10 +26,8 @@ export default function TimelineMomentCard({
   date,
   title,
   description,
-  imageUrl,
-  imageAlt,
+  media,
   contentAlign = 'left',
-  videoUrl,
   children,
 }: TimelineMomentCardProps) {
   const isLeft = contentAlign === 'left'
@@ -49,29 +43,15 @@ export default function TimelineMomentCard({
         height: 'clamp(60vh, 80vh, 900px)',
       }}
     >
-      {/* Background Image/Video */}
+      {/* Background Media Carousel */}
       <div className="absolute inset-0">
-        {videoUrl ? (
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="w-full h-full object-cover"
-            poster={imageUrl}
-          >
-            <source src={videoUrl} type="video/mp4" />
-          </video>
-        ) : (
-          <Image
-            src={imageUrl}
-            alt={imageAlt}
-            fill
-            className="object-cover"
-            sizes="100vw"
-            priority={false}
-          />
-        )}
+        <MediaCarousel
+          media={media}
+          autoplayInterval={6000}
+          showControls={media.length > 1}
+          fillMode="cover"
+          className="!rounded-none h-full"
+        />
       </div>
 
       {/* Gradient Overlay - Alternates based on content alignment */}

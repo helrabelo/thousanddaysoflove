@@ -5,20 +5,15 @@ import HistoriaHero from '@/components/historia/HistoriaHero'
 import HistoriaBackButton from '@/components/historia/HistoriaBackButton'
 import { sanityFetch } from '@/sanity/lib/client'
 import { timelineQuery } from '@/sanity/queries/timeline'
+import { getStoryMomentMedia } from '@/lib/utils/sanity-media'
+import type { SanityStoryMoment } from '@/types/wedding'
 
-interface TimelineMoment {
+interface TimelineMoment extends SanityStoryMoment {
   _id: string
   title: string
   date: string
   icon?: string
   description: string
-  image?: {
-    asset: { url: string }
-    alt?: string
-  }
-  video?: {
-    asset: { url: string }
-  }
   dayNumber?: number
   contentAlign: 'left' | 'right'
   displayOrder: number
@@ -81,23 +76,31 @@ export default async function HistoriaPage() {
               subtitle={phase.subtitle || ''}
             />
 
-            {phase.moments.map((moment) => (
-              <TimelineMomentCard
-                key={moment._id}
-                day={moment.dayNumber || 0}
-                date={new Date(moment.date).toLocaleDateString('pt-BR', {
-                  day: '2-digit',
-                  month: 'long',
-                  year: 'numeric',
-                })}
-                title={moment.title}
-                description={moment.description}
-                imageUrl={moment.image?.asset?.url || ''}
-                imageAlt={moment.image?.alt || moment.title}
-                contentAlign={moment.contentAlign}
-                videoUrl={moment.video?.asset?.url}
-              />
-            ))}
+            {phase.moments.map((moment) => {
+              // Transform Sanity media into MediaCarousel format
+              const mediaItems = getStoryMomentMedia(moment).map(item => ({
+                mediaType: item.type as 'image' | 'video',
+                url: item.url,
+                alt: item.alt,
+                caption: item.caption
+              }))
+
+              return (
+                <TimelineMomentCard
+                  key={moment._id}
+                  day={moment.dayNumber || 0}
+                  date={new Date(moment.date).toLocaleDateString('pt-BR', {
+                    day: '2-digit',
+                    month: 'long',
+                    year: 'numeric',
+                  })}
+                  title={moment.title}
+                  description={moment.description}
+                  media={mediaItems}
+                  contentAlign={moment.contentAlign}
+                />
+              )
+            })}
           </div>
         )
       })}
