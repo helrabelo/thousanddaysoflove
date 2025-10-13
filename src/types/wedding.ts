@@ -344,3 +344,115 @@ export interface SocialShare {
   share_count?: number;
   last_shared?: string;
 }
+
+// =====================================================
+// SANITY CMS TYPES - "Nossa História" Timeline Section
+// =====================================================
+
+/**
+ * Sanity Story Moment Media Item
+ * Represents a single media item (image or video) within a story moment
+ */
+export interface SanityStoryMomentMediaItem {
+  mediaType: 'image' | 'video';
+  image?: {
+    asset: {
+      url: string;
+    };
+    alt?: string;
+    hotspot?: {
+      x: number;
+      y: number;
+      height: number;
+      width: number;
+    };
+    crop?: {
+      top: number;
+      bottom: number;
+      left: number;
+      right: number;
+    };
+  };
+  video?: {
+    asset: {
+      url: string;
+    };
+  };
+  alt?: string;
+  caption?: string;
+  displayOrder: number;
+}
+
+/**
+ * Sanity Story Phase (Chapter)
+ * Represents a chapter/phase in the couple's journey
+ */
+export interface SanityStoryPhase {
+  _id: string;
+  id?: string;
+  title: string;
+  dayRange: string;
+  subtitle?: string;
+  displayOrder: number;
+}
+
+/**
+ * Sanity Story Moment
+ * Represents a key moment in the couple's timeline with support for multiple media items
+ */
+export interface SanityStoryMoment {
+  _id: string;
+  title: string;
+  date: string;
+  icon?: string;
+  description: string;
+  media: SanityStoryMomentMediaItem[];
+  phase?: SanityStoryPhase;
+  dayNumber?: number;
+  contentAlign: 'left' | 'right';
+  displayOrder: number;
+  showInPreview?: boolean;
+  showInTimeline?: boolean;
+
+  // Legacy fields (for backwards compatibility during migration)
+  legacyImage?: {
+    asset: {
+      url: string;
+    };
+    alt?: string;
+  };
+  legacyVideo?: {
+    asset: {
+      url: string;
+    };
+  };
+}
+
+/**
+ * Timeline Query Response
+ * Full response structure from the Sanity timeline query
+ */
+export interface TimelineQueryResponse {
+  phases: Array<
+    SanityStoryPhase & {
+      moments: SanityStoryMoment[];
+    }
+  >;
+}
+
+/**
+ * Helper type for rendering media items in the frontend
+ */
+export interface RenderedStoryMediaItem {
+  type: 'image' | 'video';
+  url: string;
+  alt?: string;
+  caption?: string;
+  order: number;
+  hotspot?: {
+    x: number;
+    y: number;
+    height: number;
+    width: number;
+  };
+}

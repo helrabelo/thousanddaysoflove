@@ -7,6 +7,47 @@
 import { groq } from 'next-sanity'
 
 /**
+ * Media Fragment
+ * Fetches media array with proper asset resolution for both images and videos
+ */
+const mediaFragment = groq`
+  media[] {
+    mediaType,
+    "image": select(
+      mediaType == "image" => image {
+        asset-> { url },
+        alt,
+        hotspot,
+        crop
+      }
+    ),
+    "video": select(
+      mediaType == "video" => video {
+        asset-> { url }
+      }
+    ),
+    alt,
+    caption,
+    displayOrder
+  } | order(displayOrder asc)
+`
+
+/**
+ * Legacy Media Fragment (for backwards compatibility)
+ * Fetches old single image/video fields if they exist
+ * This can be removed once all content is migrated to the new media array
+ */
+const legacyMediaFragment = groq`
+  "legacyImage": image {
+    asset-> { url },
+    alt
+  },
+  "legacyVideo": video {
+    asset-> { url }
+  }
+`
+
+/**
  * Timeline Query
  * Fetches all story phases with their associated moments
  * Note: showInTimeline defaults to true if not set (for backwards compatibility)
@@ -26,13 +67,8 @@ export const timelineQuery = groq`
         date,
         icon,
         description,
-        image {
-          asset-> { url },
-          alt
-        },
-        video {
-          asset-> { url }
-        },
+        ${mediaFragment},
+        ${legacyMediaFragment},
         dayNumber,
         contentAlign,
         displayOrder
@@ -54,13 +90,8 @@ export const storyPreviewMomentsQuery = groq`
     date,
     icon,
     description,
-    image {
-      asset-> { url },
-      alt
-    },
-    video {
-      asset-> { url }
-    },
+    ${mediaFragment},
+    ${legacyMediaFragment},
     phase-> {
       _id,
       title,

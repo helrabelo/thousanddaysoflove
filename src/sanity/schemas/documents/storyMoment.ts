@@ -3,9 +3,13 @@
  *
  * Timeline moments for the "Nossa História" section.
  * Represents key moments in the couple's journey together.
+ *
+ * MIGRATION NOTE: This schema has been updated to support multiple media items.
+ * Legacy fields (image, video) have been replaced with a media array.
+ * Existing content will need to be migrated to the new media array structure.
  */
 
-import { defineType, defineField } from 'sanity'
+import { defineType, defineField, defineArrayMember } from 'sanity'
 import { Heart } from 'lucide-react'
 
 export default defineType({
@@ -53,10 +57,123 @@ export default defineType({
     }),
 
     defineField({
+      name: 'media',
+      title: 'Mídia',
+      type: 'array',
+      description: 'Fotos e vídeos deste momento (pelo menos 1 item necessário)',
+      validation: (Rule) => Rule.required().min(1).max(10),
+      of: [
+        defineArrayMember({
+          name: 'mediaItem',
+          title: 'Item de Mídia',
+          type: 'object',
+          fields: [
+            defineField({
+              name: 'mediaType',
+              title: 'Tipo de Mídia',
+              type: 'string',
+              description: 'Tipo de arquivo: imagem ou vídeo',
+              options: {
+                list: [
+                  { title: 'Imagem', value: 'image' },
+                  { title: 'Vídeo', value: 'video' },
+                ],
+                layout: 'radio',
+              },
+              validation: (Rule) => Rule.required(),
+              initialValue: 'image',
+            }),
+            defineField({
+              name: 'image',
+              title: 'Imagem',
+              type: 'image',
+              description: 'Arquivo de imagem',
+              options: {
+                hotspot: true,
+              },
+              hidden: ({ parent }) => parent?.mediaType !== 'image',
+              validation: (Rule) =>
+                Rule.custom((image, context) => {
+                  const parent = context.parent as { mediaType?: string }
+                  if (parent?.mediaType === 'image' && !image) {
+                    return 'Imagem é obrigatória quando o tipo é "Imagem"'
+                  }
+                  return true
+                }),
+            }),
+            defineField({
+              name: 'video',
+              title: 'Vídeo',
+              type: 'file',
+              description: 'Arquivo de vídeo',
+              options: {
+                accept: 'video/*',
+              },
+              hidden: ({ parent }) => parent?.mediaType !== 'video',
+              validation: (Rule) =>
+                Rule.custom((video, context) => {
+                  const parent = context.parent as { mediaType?: string }
+                  if (parent?.mediaType === 'video' && !video) {
+                    return 'Vídeo é obrigatório quando o tipo é "Vídeo"'
+                  }
+                  return true
+                }),
+            }),
+            defineField({
+              name: 'alt',
+              title: 'Texto Alternativo',
+              type: 'string',
+              description: 'Descrição da mídia para acessibilidade',
+              validation: (Rule) => Rule.max(200),
+            }),
+            defineField({
+              name: 'caption',
+              title: 'Legenda (Opcional)',
+              type: 'string',
+              description: 'Legenda descritiva para a mídia',
+              validation: (Rule) => Rule.max(200),
+            }),
+            defineField({
+              name: 'displayOrder',
+              title: 'Ordem de Exibição',
+              type: 'number',
+              description: 'Ordem deste item na galeria (1, 2, 3...)',
+              validation: (Rule) => Rule.required().min(1),
+              initialValue: 1,
+            }),
+          ],
+          preview: {
+            select: {
+              mediaType: 'mediaType',
+              image: 'image',
+              video: 'video',
+              alt: 'alt',
+              caption: 'caption',
+              order: 'displayOrder',
+            },
+            prepare({ mediaType, image, video, alt, caption, order }) {
+              const mediaAsset = mediaType === 'image' ? image : video
+              const title = caption || alt || `${mediaType === 'image' ? 'Imagem' : 'Vídeo'} #${order}`
+
+              return {
+                title: `${order}. ${title}`,
+                subtitle: mediaType === 'image' ? '📷 Imagem' : '🎥 Vídeo',
+                media: mediaAsset,
+              }
+            },
+          },
+        }),
+      ],
+    }),
+
+    // DEPRECATED FIELDS - kept for backwards compatibility during migration
+    // These will be hidden in the UI but preserved in the database
+    defineField({
       name: 'image',
-      title: 'Imagem',
+      title: 'Imagem (OBSOLETO)',
       type: 'image',
-      description: 'Foto deste momento',
+      description: '⚠️ OBSOLETO: Use o campo "Mídia" acima. Este campo será removido.',
+      hidden: true,
       options: {
         hotspot: true,
       },
@@ -72,9 +189,10 @@ export default defineType({
 
     defineField({
       name: 'video',
-      title: 'Vídeo (Opcional)',
+      title: 'Vídeo (OBSOLETO)',
       type: 'file',
-      description: 'Vídeo alternativo/adicional ao invés de imagem',
+      description: '⚠️ OBSOLETO: Use o campo "Mídia" acima. Este campo será removido.',
+      hidden: true,
       options: {
         accept: 'video/*',
       },
@@ -171,9 +289,10 @@ export default defineType({
       showPreview: 'showInPreview',
       showTimeline: 'showInTimeline',
       visible: 'isVisible',
-      media: 'image',
+      media: 'media',
+      legacyImage: 'image',
     },
-    prepare({ title, day, order, icon, showPreview, showTimeline, visible, media }) {
+    prepare({ title, day, order, icon, showPreview, showTimeline, visible, media, legacyImage }) {
       // Build badge indicators
       const badges = []
       if (!visible) badges.push('🔒')
@@ -183,10 +302,17 @@ export default defineType({
       const badgeText = badges.length > 0 ? ` ${badges.join(' ')}` : ''
       const dayText = day ? `Dia ${day}` : 'Sem dia específico'
 
+      // Count media items
+      const mediaCount = media?.length || 0
+      const mediaText = mediaCount > 0 ? ` (${mediaCount} ${mediaCount === 1 ? 'mídia' : 'mídias'})` : ''
+
+      // Use first media item or legacy image for preview
+      const previewMedia = media?.[0]?.image || media?.[0]?.video || legacyImage
+
       return {
-        title: `${icon || '❤️'} ${order}. ${title}${badgeText}`,
+        title: `${icon || '❤️'} ${order}. ${title}${mediaText}${badgeText}`,
         subtitle: dayText,
-        media,
+        media: previewMedia,
       }
     },
   },
