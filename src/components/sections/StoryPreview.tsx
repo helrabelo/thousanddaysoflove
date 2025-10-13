@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { ArrowRight } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { ArrowRight, Calendar } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -60,6 +60,7 @@ const formatBrazilianDate = (dateString: string): string => {
 export default function StoryPreview() {
   const [storyMoments, setStoryMoments] = useState<StoryMoment[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null)
 
   useEffect(() => {
     loadData()
@@ -72,6 +73,11 @@ export default function StoryPreview() {
         query: storyPreviewMomentsQuery,
         tags: ['storyMoment', 'storyPhase'],
       })
+
+      console.log('📊 Story Preview - Loaded moments:', moments?.length || 0)
+      console.log('📸 Moments with images:', moments?.filter(m => m.image?.asset?.url).length || 0)
+      console.log('🎬 Moments with videos:', moments?.filter(m => m.video?.asset?.url).length || 0)
+      console.log('❌ Moments without media:', moments?.filter(m => !m.image?.asset?.url && !m.video?.asset?.url).length || 0)
 
       setStoryMoments(moments || [])
     } catch (error) {
@@ -88,7 +94,6 @@ export default function StoryPreview() {
         className="relative overflow-hidden"
         style={{
           minHeight: '600px',
-          background: 'var(--background)',
           paddingTop: '80px',
           paddingBottom: '80px',
         }}
@@ -111,11 +116,28 @@ export default function StoryPreview() {
 
   return (
     <section className="relative overflow-hidden">
-      {/* Header Section - Clean Cream Background */}
+      {/* Background Image with Overlay */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="/images/collage-background.jpg"
+          alt="Nossa História"
+          fill
+          className="object-cover"
+          priority
+        />
+        {/* Dark overlay for readability */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: 'linear-gradient(to bottom, rgba(248, 246, 243, 0.92) 0%, rgba(248, 246, 243, 0.88) 50%, rgba(248, 246, 243, 0.95) 100%)'
+          }}
+        />
+      </div>
+
+      {/* Header Section */}
       <div
-        className="relative px-8 sm:px-12 lg:px-16"
+        className="relative z-10 px-8 sm:px-12 lg:px-16"
         style={{
-          background: 'var(--background)',
           paddingTop: '80px',
           paddingBottom: '80px',
         }}
@@ -158,7 +180,7 @@ export default function StoryPreview() {
       </div>
 
       {/* Masonry Story Grid - Edge-to-Edge with Fixed Row Heights */}
-      <div className="relative">
+      <div className="relative z-10">
         {/* Story Grid Container */}
         <div className="w-full overflow-hidden">
           <div className="story-grid">
@@ -173,10 +195,8 @@ export default function StoryPreview() {
               // Vary column spans for visual interest (every 3rd and 5th item spans 2 columns)
               const shouldSpanTwo = index % 3 === 0 || index % 5 === 0
 
-              // Skip moments without images for now
-              if (!moment.image?.asset?.url) {
-                return null
-              }
+              // Use uploaded image or fallback to wedding invitation poster
+              const imageUrl = moment.image?.asset?.url || '/images/hero-poster.jpg'
 
               return (
                 <motion.div
@@ -186,40 +206,143 @@ export default function StoryPreview() {
                   transition={{ duration: 0.4, delay: Math.min(index * 0.015, 0.6) }}
                   viewport={{ once: true, margin: "-50px" }}
                   className={`story-item ${shouldSpanTwo ? 'story-item-wide' : ''}`}
+                  onMouseEnter={() => setHoveredItem(moment._id)}
+                  onMouseLeave={() => setHoveredItem(null)}
                 >
-                  <div className="relative w-full h-full overflow-hidden group">
+                  <div className="relative w-full h-full overflow-hidden group cursor-pointer rounded-[4px]">
                     {/* Moment Image */}
-                    <Image
-                      src={moment.image.asset.url}
-                      alt={moment.image.alt || moment.title}
-                      fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      loading="lazy"
-                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
-                    />
+                    <motion.div
+                      className="relative w-full h-full"
+                      animate={{
+                        scale: hoveredItem === moment._id ? 1.05 : 1,
+                      }}
+                      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                    >
+                      <Image
+                        src={imageUrl}
+                        alt={moment.image?.alt || moment.title}
+                        fill
+                        className="object-cover"
+                        loading="lazy"
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                      />
+                    </motion.div>
 
-                    {/* Hover Overlay with Story Content */}
-                    <div className="story-overlay">
-                      {/* Day Number Badge - Top Left */}
-                      {moment.dayNumber && (
-                        <div className="day-badge">
-                          Dia {moment.dayNumber}
-                        </div>
-                      )}
+                    {/* Hover Overlay with Story Content - Desktop Only */}
+                    <AnimatePresence>
+                      {hoveredItem === moment._id && (
+                        <motion.div
+                          className="absolute inset-0 hidden md:block"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                          style={{
+                            background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 50%, transparent 100%)',
+                            pointerEvents: 'none',
+                            padding: '1.5rem',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'space-between',
+                          }}
+                        >
+                          {/* Day Number Badge - Top */}
+                          {moment.dayNumber && (
+                            <motion.div
+                              style={{
+                                alignSelf: 'flex-start',
+                                background: 'rgba(168, 168, 168, 0.95)',
+                                color: 'white',
+                                padding: '0.625rem 1.125rem',
+                                borderRadius: '999px',
+                                fontFamily: 'var(--font-crimson)',
+                                fontSize: '0.875rem',
+                                fontWeight: 700,
+                                letterSpacing: '0.1em',
+                                boxShadow: '0 3px 12px rgba(0, 0, 0, 0.3)',
+                                textTransform: 'uppercase',
+                                backdropFilter: 'blur(8px)',
+                                border: '1px solid rgba(255, 255, 255, 0.2)',
+                              }}
+                              initial={{ y: -20, opacity: 0 }}
+                              animate={{ y: 0, opacity: 1 }}
+                              transition={{ duration: 0.4, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+                            >
+                              Dia {moment.dayNumber}
+                            </motion.div>
+                          )}
 
-                      {/* Story Content - Bottom */}
-                      <div className="story-content">
-                        <h3 className="story-title">{moment.title}</h3>
-                        <p className="story-description">
-                          {truncateText(moment.description, 120)}
-                        </p>
-                        {moment.date && (
-                          <div className="story-date">
-                            {formatBrazilianDate(moment.date)}
+                          {/* Story Content - Bottom */}
+                          <div style={{ textAlign: 'left', color: 'white' }}>
+                            {/* Title */}
+                            <motion.h3
+                              style={{
+                                fontFamily: 'var(--font-playfair)',
+                                fontSize: '1.375rem',
+                                fontWeight: 700,
+                                lineHeight: '1.25',
+                                textShadow: '0 3px 10px rgba(0, 0, 0, 0.7)',
+                                marginBottom: '0.5rem',
+                              }}
+                              initial={{ y: 20, opacity: 0 }}
+                              animate={{ y: 0, opacity: 1 }}
+                              transition={{ duration: 0.4, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+                            >
+                              {moment.title}
+                            </motion.h3>
+
+                            {/* Description */}
+                            <motion.p
+                              style={{
+                                fontFamily: 'var(--font-crimson)',
+                                fontSize: '1rem',
+                                lineHeight: '1.7',
+                                opacity: 0.98,
+                                fontStyle: 'italic',
+                                textShadow: '0 2px 6px rgba(0, 0, 0, 0.6)',
+                                marginBottom: '0.75rem',
+                                display: '-webkit-box',
+                                WebkitLineClamp: 3,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden',
+                              }}
+                              initial={{ y: 20, opacity: 0 }}
+                              animate={{ y: 0, opacity: 1 }}
+                              transition={{ duration: 0.4, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                            >
+                              {truncateText(moment.description, 120)}
+                            </motion.p>
+
+                            {/* Date */}
+                            {moment.date && (
+                              <motion.div
+                                style={{
+                                  fontFamily: 'var(--font-crimson)',
+                                  fontSize: '0.875rem',
+                                  opacity: 0.9,
+                                  fontStyle: 'italic',
+                                  textShadow: '0 2px 5px rgba(0, 0, 0, 0.6)',
+                                  paddingTop: '0.5rem',
+                                  borderTop: '1px solid rgba(255, 255, 255, 0.2)',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '0.5rem',
+                                }}
+                                initial={{ y: 20, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ duration: 0.4, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                              >
+                                <Calendar className="w-3.5 h-3.5" />
+                                {formatBrazilianDate(moment.date)}
+                              </motion.div>
+                            )}
                           </div>
-                        )}
-                      </div>
-                    </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    {/* Mobile Touch Overlay */}
+                    <div className="absolute inset-0 md:hidden active:bg-black/20 transition-colors duration-150" />
                   </div>
                 </motion.div>
               )
@@ -278,7 +401,7 @@ export default function StoryPreview() {
         </div>
       </div>
 
-      {/* CSS for Masonry Grid with Fixed Row Heights + Story Hover Effects */}
+      {/* Simplified CSS - Grid Layout Only */}
       <style jsx>{`
         .story-grid {
           display: grid;
@@ -336,173 +459,6 @@ export default function StoryPreview() {
         @media (max-width: 639px) {
           .story-item-wide {
             grid-column: span 1; /* Don't span on mobile, too narrow */
-          }
-        }
-
-        /* Ensure images fill their containers perfectly */
-        .story-item > div {
-          border-radius: 4px;
-        }
-
-        /* ======================================
-           STORY HOVER OVERLAY STYLES
-           ====================================== */
-
-        .story-overlay {
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(
-            to top,
-            rgba(0, 0, 0, 0.95) 0%,
-            rgba(0, 0, 0, 0.75) 40%,
-            rgba(0, 0, 0, 0.5) 70%,
-            rgba(0, 0, 0, 0.2) 100%
-          );
-          opacity: 0;
-          transition: opacity 500ms ease;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          padding: 1.5rem;
-          z-index: 10;
-        }
-
-        /* Show overlay on hover (desktop only) */
-        @media (hover: hover) and (pointer: fine) {
-          .story-item:hover .story-overlay {
-            opacity: 1;
-          }
-        }
-
-        /* Mobile: Show overlay on tap/touch */
-        @media (hover: none) {
-          .story-item:active .story-overlay {
-            opacity: 1;
-          }
-        }
-
-        /* Day Badge - Top Left */
-        .day-badge {
-          align-self: flex-start;
-          background: rgba(168, 168, 168, 0.95);
-          color: white;
-          padding: 0.625rem 1.125rem;
-          border-radius: 999px;
-          font-family: var(--font-crimson);
-          font-size: 0.875rem;
-          font-weight: 700;
-          letter-spacing: 0.1em;
-          box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
-          text-transform: uppercase;
-          backdrop-filter: blur(8px);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        /* Story Content - Bottom */
-        .story-content {
-          text-align: left;
-          color: white;
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-
-        .story-title {
-          font-family: var(--font-playfair);
-          font-size: 1.375rem;
-          font-weight: 700;
-          line-height: 1.25;
-          text-shadow: 0 3px 10px rgba(0, 0, 0, 0.7);
-          margin-bottom: 0.5rem;
-        }
-
-        .story-description {
-          font-family: var(--font-crimson);
-          font-size: 1rem;
-          line-height: 1.7;
-          opacity: 0.98;
-          font-style: italic;
-          text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
-          display: -webkit-box;
-          -webkit-line-clamp: 3;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-          margin-bottom: 0.75rem;
-        }
-
-        .story-date {
-          font-family: var(--font-crimson);
-          font-size: 0.875rem;
-          opacity: 0.9;
-          font-style: italic;
-          text-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
-          padding-top: 0.5rem;
-          border-top: 1px solid rgba(255, 255, 255, 0.2);
-          display: flex;
-          align-items: center;
-        }
-
-        .story-date::before {
-          content: '📅';
-          margin-right: 0.5rem;
-          font-size: 0.875rem;
-        }
-
-        /* Mobile adjustments for overlay content */
-        @media (max-width: 639px) {
-          .story-overlay {
-            padding: 0.75rem;
-          }
-
-          .day-badge {
-            padding: 0.375rem 0.75rem;
-            font-size: 0.75rem;
-          }
-
-          .story-title {
-            font-size: 1rem;
-          }
-
-          .story-description {
-            font-size: 0.8125rem;
-            -webkit-line-clamp: 2; /* Reduce to 2 lines on mobile */
-          }
-
-          .story-date {
-            font-size: 0.75rem;
-          }
-        }
-
-        /* Tablet adjustments */
-        @media (min-width: 640px) and (max-width: 1023px) {
-          .story-title {
-            font-size: 1.125rem;
-          }
-
-          .story-description {
-            font-size: 0.875rem;
-          }
-        }
-
-        /* Ensure overlay text is readable on all backgrounds */
-        .story-content * {
-          text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
-        }
-
-        /* Smooth transition for all overlay elements */
-        .day-badge,
-        .story-content > * {
-          transition: transform 200ms ease, opacity 200ms ease;
-        }
-
-        /* Subtle animation on hover */
-        @media (hover: hover) and (pointer: fine) {
-          .story-item:hover .day-badge {
-            transform: translateY(-2px);
-          }
-
-          .story-item:hover .story-content > * {
-            transform: translateY(-2px);
           }
         }
 
