@@ -132,7 +132,11 @@
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
+  background-image: url('/images/background.png');
+  background-repeat: repeat;
+  background-size: auto;
+  background-attachment: fixed;
   color: var(--primary-text);
   font-family: var(--font-crimson);
   line-height: 1.8;
@@ -587,6 +591,10 @@ a:focus-visible {
 
 /* Mobile optimization for backgrounds */
 @media (max-width: 768px) {
+  body {
+    background-attachment: scroll;
+  }
+
   .invitation-background, .rsvp-background, .botanical-texture-background, .subtle-pattern-background {
     background-attachment: scroll;
   }
@@ -602,6 +610,10 @@ a:focus-visible {
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
+  body {
+    background-attachment: scroll;
+  }
+
   .invitation-background, .rsvp-background, .botanical-texture-background, .subtle-pattern-background {
     background-attachment: scroll;
   }
