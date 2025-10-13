@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   QrCode,
@@ -24,9 +24,10 @@ export default function InvitationCard({ invitation }: InvitationCardProps) {
   const [qrLoading, setQrLoading] = useState(false);
 
   // Generate QR code on mount
-  useState(() => {
+  useEffect(() => {
     generateQRCode();
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const generateQRCode = async () => {
     setQrLoading(true);

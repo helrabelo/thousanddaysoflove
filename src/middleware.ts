@@ -10,8 +10,8 @@ export function middleware(request: NextRequest) {
       return NextResponse.next()
     }
 
-    // Check if admin is authenticated
-    const isAuthenticated = request.cookies.get('admin-auth')?.value === 'authenticated'
+    // Check if admin is authenticated (check for admin_session cookie set by login API)
+    const isAuthenticated = request.cookies.has('admin_session')
 
     if (!isAuthenticated) {
       // Redirect to admin login
