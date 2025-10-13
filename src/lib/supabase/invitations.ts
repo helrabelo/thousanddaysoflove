@@ -612,3 +612,67 @@ export async function getInvitationAnalytics() {
     },
   };
 }
+
+// =====================================================
+// GUEST AUTHENTICATION - Phase 6
+// =====================================================
+
+/**
+ * Authenticate guest with invitation code
+ *
+ * Creates a persistent session in localStorage for guest access
+ *
+ * @param code - Invitation code
+ * @returns Invitation object if valid, null otherwise
+ */
+export async function loginWithInvitationCode(
+  code: string
+): Promise<Invitation | null> {
+  const invitation = await getInvitationByCode(code);
+
+  if (!invitation) {
+    return null;
+  }
+
+  // Store session in localStorage
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('guest_session_code', code.toUpperCase());
+  }
+
+  // Track invitation open on first login
+  await trackInvitationOpen(code);
+
+  return invitation;
+}
+
+/**
+ * Get current guest session
+ *
+ * Retrieves the logged-in guest's invitation from localStorage
+ *
+ * @returns Invitation object if session exists, null otherwise
+ */
+export async function getGuestSession(): Promise<Invitation | null> {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  const code = localStorage.getItem('guest_session_code');
+
+  if (!code) {
+    return null;
+  }
+
+  return await getInvitationByCode(code);
+}
+
+/**
+ * Logout current guest
+ *
+ * Clears the guest session from localStorage
+ */
+export function logoutGuest(): void {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('guest_session_code');
+  }
+}
