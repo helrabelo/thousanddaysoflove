@@ -64,7 +64,7 @@ export default function HistoriaPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--background)' }}>
+      <div className="min-h-screen flex items-center justify-center" >
         <p style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-crimson)', fontSize: '1.25rem' }}>
           Carregando nossa história...
         </p>
@@ -74,7 +74,7 @@ export default function HistoriaPage() {
 
   if (!timelineData || timelineData.phases.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--background)' }}>
+      <div className="min-h-screen flex items-center justify-center" >
         <p style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-crimson)', fontSize: '1.25rem' }}>
           Nenhum momento encontrado. Adicione momentos no Sanity Studio!
         </p>
@@ -83,12 +83,30 @@ export default function HistoriaPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--background)' }}>
+    <div className="min-h-screen" >
       <Navigation />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20" style={{ background: 'var(--background)' }}>
-        <div className="max-w-4xl mx-auto text-center px-8">
+      <section className="pt-32 pb-20 relative overflow-hidden">
+        {/* Background Image with Overlay */}
+        <div
+          className="absolute inset-0 z-0"
+          style={{
+            backgroundImage: 'url(/images/collage-background.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+          }}
+        />
+        {/* Overlay for better text readability */}
+        <div
+          className="absolute inset-0 z-0"
+          style={{
+            background: 'linear-gradient(180deg, rgba(248, 246, 243, 0.92) 0%, rgba(248, 246, 243, 0.95) 100%)',
+          }}
+        />
+
+        <div className="max-w-4xl mx-auto text-center px-8 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -170,10 +188,10 @@ export default function HistoriaPage() {
       })}
 
       {/* Spacer before back button */}
-      <div className="py-16" style={{ background: 'var(--background)' }} />
+      <div className="py-16"  />
 
       {/* Navigation Back */}
-      <section className="py-20" style={{ background: 'var(--background)' }}>
+      <section className="py-20" >
         <div className="max-w-4xl mx-auto text-center px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

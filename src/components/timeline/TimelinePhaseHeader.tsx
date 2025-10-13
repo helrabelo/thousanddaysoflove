@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { SectionDivider } from '@/components/ui/BotanicalDecorations'
+import BotanicalCorners from '@/components/ui/BotanicalCorners'
 
 interface TimelinePhaseHeaderProps {
   /** Phase title (e.g., "Os Primeiros Dias") */
@@ -23,10 +24,13 @@ export default function TimelinePhaseHeader({
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
       viewport={{ once: true }}
-      className="py-24 text-center"
-      style={{ background: 'var(--background)' }}
+      className="py-24 text-center relative"
+
     >
-      <div className="max-w-4xl mx-auto px-8 sm:px-12 lg:px-16">
+      {/* Botanical Corner Decorations */}
+      <BotanicalCorners pattern="diagonal-right" opacity={0.15} />
+
+      <div className="max-w-4xl mx-auto px-8 sm:px-12 lg:px-16 relative z-10">
         {/* Day Range Badge */}
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
