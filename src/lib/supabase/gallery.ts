@@ -42,8 +42,7 @@ export class SupabaseGalleryService {
     try {
       const supabase = createServerClient()
 
-      // Type assertion needed because guest_photos table not in generated types yet
-      let query = (supabase as any)
+      let query = supabase
         .from('guest_photos')
         .select('*, guest:simple_guests(name)')
         .eq('moderation_status', 'approved')
@@ -119,8 +118,7 @@ export class SupabaseGalleryService {
     try {
       const supabase = createServerClient()
 
-      // Type assertion needed because guest_photos table not in generated types yet
-      const { data: allPhotos } = await (supabase as any)
+      const { data: allPhotos } = await supabase
         .from('guest_photos')
         .select('id, moderation_status, upload_phase')
         .eq('is_deleted', false)

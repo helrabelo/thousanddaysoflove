@@ -59,8 +59,7 @@ const RSVPForm: React.FC<RSVPFormProps> = ({
     }
 
     if (!formData.attendance) {
-      // Type error fix - attendance property doesn't expect string messages
-      console.log("Por favor, confirme sua presença")
+      newErrors.attendance = "Por favor, confirme sua presença" as any
     }
 
     setErrors(newErrors)

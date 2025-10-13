@@ -50,7 +50,6 @@ export class EmailService {
       }
 
       const result = await sgMail.send(msg)
-      console.log('RSVP confirmation email sent:', result[0].statusCode)
       return { success: true, messageId: result[0].headers['x-message-id'] }
 
     } catch (error) {
@@ -100,7 +99,6 @@ export class EmailService {
       }
 
       const result = await sgMail.send(msg)
-      console.log('Payment confirmation email sent:', result[0].statusCode)
 
       // Also send notification to the couple
       await this.sendPaymentNotificationToCouple(data)
@@ -135,7 +133,6 @@ export class EmailService {
       }
 
       const result = await sgMail.send(msg)
-      console.log('Couple notification email sent:', result[0].statusCode)
       return { success: true, messageId: result[0].headers['x-message-id'] }
 
     } catch (error) {
@@ -186,7 +183,6 @@ export class EmailService {
       }
 
       const result = await sgMail.send(msg)
-      console.log('RSVP reminder email sent:', result[0].statusCode)
       return { success: true, messageId: result[0].headers['x-message-id'] }
 
     } catch (error) {
@@ -552,7 +548,6 @@ export class EmailService {
       }
 
       const result = await sgMail.send(msg)
-      console.log('Test email sent successfully:', result[0].statusCode)
       return { success: true, messageId: result[0].headers['x-message-id'] }
 
     } catch (error) {

@@ -30,13 +30,6 @@ export async function POST(req: NextRequest) {
     const signature = req.headers.get('x-signature') || ''
     const webhookSecret = process.env.MERCADO_PAGO_WEBHOOK_SECRET
 
-    // Log webhook received
-    console.log('Mercado Pago webhook received:', {
-      timestamp: new Date().toISOString(),
-      signature: signature.substring(0, 20) + '...',
-      bodyLength: body.length
-    })
-
     // Verify webhook signature if secret is configured
     if (webhookSecret) {
       if (!verifyWebhookSignature(body, signature, webhookSecret)) {
@@ -60,7 +53,9 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    console.log('Webhook data:', JSON.stringify(webhookData, null, 2))
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Webhook data:', JSON.stringify(webhookData, null, 2))
+    }
 
     // Process the webhook notification
     const result = await PaymentService.processWebhookNotification(webhookData)
@@ -82,8 +77,6 @@ export async function POST(req: NextRequest) {
               buyerName: paymentStatus.payer?.first_name || 'Convidado',
               buyerEmail: paymentStatus.payer?.email || 'convidado@casamento.com'
             })
-
-            console.log(`Payment confirmation email sent for payment ${payment.id}`)
           }
         }
       } catch (emailError) {

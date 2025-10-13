@@ -1,8 +1,8 @@
 /**
  * Gallery Queries
  *
- * GROQ queries for fetching gallery images from Sanity CMS.
- * Replaces SupabaseGalleryService queries with Sanity-powered queries.
+ * GROQ queries for fetching gallery albums from Sanity CMS.
+ * Updated to support multiple media items per album.
  */
 
 import { groq } from 'next-sanity'
@@ -18,38 +18,54 @@ export function urlFor(source: SanityImageSource) {
 }
 
 /**
- * Gallery Image Fields
+ * Media Fragment
+ * Fetches media array with proper asset resolution for both images and videos
+ */
+const mediaFragment = groq`
+  media[] {
+    mediaType,
+    "image": select(
+      mediaType == "image" => image {
+        asset-> { url },
+        alt,
+        hotspot,
+        crop
+      }
+    ),
+    "video": select(
+      mediaType == "video" => video {
+        asset-> { url }
+      }
+    ),
+    alt,
+    caption,
+    displayOrder
+  } | order(displayOrder asc)
+`
+
+/**
+ * Legacy Media Fragment (for backwards compatibility)
+ * Fetches old single image/video fields if they exist
+ */
+const legacyMediaFragment = groq`
+  "legacyImage": image {
+    asset-> { url },
+    alt
+  }
+`
+
+/**
+ * Gallery Album Fields
  * Standard fields to fetch for all gallery queries
  */
-const galleryImageFields = groq`
+const galleryAlbumFields = groq`
   _id,
   _createdAt,
   _updatedAt,
   title,
   description,
-  image {
-    asset-> {
-      _id,
-      url,
-      metadata {
-        dimensions,
-        lqip,
-        blurhash,
-        palette
-      }
-    },
-    hotspot,
-    crop
-  },
-  video {
-    asset-> {
-      _id,
-      url,
-      size,
-      mimeType
-    }
-  },
-  mediaType,
+  ${mediaFragment},
+  ${legacyMediaFragment},
   category,
   tags,
   dateTaken,
@@ -63,7 +79,7 @@ const galleryImageFields = groq`
 `
 
 /**
- * Get all public gallery images
+ * Get all public gallery albums
  * Sorted by date taken (newest first) or display order
  */
 export const galleryImagesQuery = groq`
@@ -72,12 +88,12 @@ export const galleryImagesQuery = groq`
     dateTaken desc,
     _createdAt desc
   ) {
-    ${galleryImageFields}
+    ${galleryAlbumFields}
   }
 `
 
 /**
- * Get gallery images filtered by category
+ * Get gallery albums filtered by category
  */
 export function getGalleryImagesByCategoryQuery(category: string) {
   return groq`
@@ -86,13 +102,13 @@ export function getGalleryImagesByCategoryQuery(category: string) {
       dateTaken desc,
       _createdAt desc
     ) {
-      ${galleryImageFields}
+      ${galleryAlbumFields}
     }
   `
 }
 
 /**
- * Get featured gallery images
+ * Get featured gallery albums
  */
 export const featuredGalleryImagesQuery = groq`
   *[_type == "galleryImage" && isPublic == true && isFeatured == true] | order(
@@ -100,32 +116,17 @@ export const featuredGalleryImagesQuery = groq`
     dateTaken desc,
     _createdAt desc
   ) {
-    ${galleryImageFields}
+    ${galleryAlbumFields}
   }
 `
 
 /**
- * Get gallery images filtered by media type (photo or video)
- */
-export function getGalleryImagesByMediaTypeQuery(mediaType: 'photo' | 'video') {
-  return groq`
-    *[_type == "galleryImage" && isPublic == true && mediaType == $mediaType] | order(
-      displayOrder asc,
-      dateTaken desc,
-      _createdAt desc
-    ) {
-      ${galleryImageFields}
-    }
-  `
-}
-
-/**
- * Get single gallery image by ID
+ * Get single gallery album by ID
  */
 export function getGalleryImageByIdQuery(id: string) {
   return groq`
     *[_type == "galleryImage" && _id == $id][0] {
-      ${galleryImageFields}
+      ${galleryAlbumFields}
     }
   `
 }
@@ -135,8 +136,8 @@ export function getGalleryImageByIdQuery(id: string) {
  */
 export const galleryStatsQuery = groq`
   {
-    "total_photos": count(*[_type == "galleryImage" && isPublic == true && mediaType == "photo"]),
-    "total_videos": count(*[_type == "galleryImage" && isPublic == true && mediaType == "video"]),
+    "total_photos": count(*[_type == "galleryImage" && isPublic == true]),
+    "total_videos": count(*[_type == "galleryImage" && isPublic == true]),
     "featured_count": count(*[_type == "galleryImage" && isPublic == true && isFeatured == true]),
     "categories_breakdown": {
       "engagement": count(*[_type == "galleryImage" && isPublic == true && category == "engagement"]),
@@ -158,7 +159,7 @@ export const galleryStatsQuery = groq`
 `
 
 /**
- * Search gallery images by title, description, tags, or location
+ * Search gallery albums by title, description, tags, or location
  */
 export function searchGalleryImagesQuery(searchTerm: string) {
   return groq`
@@ -176,7 +177,7 @@ export function searchGalleryImagesQuery(searchTerm: string) {
       dateTaken desc,
       _createdAt desc
     ) {
-      ${galleryImageFields}
+      ${galleryAlbumFields}
     }
   `
 }
@@ -185,39 +186,33 @@ export function searchGalleryImagesQuery(searchTerm: string) {
  * TypeScript Interfaces for Gallery Data
  */
 
-export interface SanityGalleryImage {
+export interface SanityGalleryAlbumMediaItem {
+  mediaType: 'image' | 'video'
+  image?: {
+    asset: { url: string }
+    alt?: string
+    hotspot?: any
+    crop?: any
+  }
+  video?: {
+    asset: { url: string }
+  }
+  alt?: string
+  caption?: string
+  displayOrder: number
+}
+
+export interface SanityGalleryAlbum {
   _id: string
   _createdAt: string
   _updatedAt: string
   title: string
   description?: string
-  image?: {
-    asset: {
-      _id: string
-      url: string
-      metadata: {
-        dimensions: {
-          width: number
-          height: number
-          aspectRatio: number
-        }
-        lqip?: string
-        blurhash?: string
-        palette?: any
-      }
-    }
-    hotspot?: any
-    crop?: any
+  media: SanityGalleryAlbumMediaItem[]
+  legacyImage?: {
+    asset: { url: string }
+    alt?: string
   }
-  video?: {
-    asset: {
-      _id: string
-      url: string
-      size: number
-      mimeType: string
-    }
-  }
-  mediaType: 'photo' | 'video'
   category: string
   tags?: string[]
   dateTaken?: string
@@ -256,17 +251,21 @@ export interface SanityGalleryStats {
 }
 
 /**
- * Helper: Convert Sanity image to MediaItem format
+ * Helper: Convert Sanity album to MediaItem format
  * Maintains compatibility with existing MediaItem interface
+ * Returns the PRIMARY (first) media item from the album
  */
-export function sanityImageToMediaItem(sanityImage: SanityGalleryImage) {
-  const imageUrl = sanityImage.image?.asset?.url || ''
-  const videoUrl = sanityImage.video?.asset?.url || ''
-  const url = sanityImage.mediaType === 'video' ? videoUrl : imageUrl
+export function sanityAlbumToMediaItem(sanityAlbum: SanityGalleryAlbum) {
+  // Get first media item or fallback to legacy image
+  const firstMedia = sanityAlbum.media?.[0]
+  const imageUrl = firstMedia?.image?.asset?.url || sanityAlbum.legacyImage?.asset?.url || ''
+  const videoUrl = firstMedia?.video?.asset?.url || ''
+  const mediaType = firstMedia?.mediaType === 'video' ? 'video' : 'photo'
+  const url = mediaType === 'video' ? videoUrl : imageUrl
 
   // Generate optimized thumbnail using Sanity Image CDN
-  const thumbnailUrl = sanityImage.mediaType === 'photo' && sanityImage.image
-    ? urlFor(sanityImage.image)
+  const thumbnailUrl = mediaType === 'photo' && firstMedia?.image
+    ? urlFor(firstMedia.image)
         .width(400)
         .height(300)
         .quality(80)
@@ -274,33 +273,26 @@ export function sanityImageToMediaItem(sanityImage: SanityGalleryImage) {
         .url()
     : url
 
-  const aspectRatio = sanityImage.image?.asset?.metadata?.dimensions?.aspectRatio ||
-                      sanityImage.aspectRatio ||
-                      1.5
-
   return {
-    id: sanityImage._id,
-    title: sanityImage.title,
-    description: sanityImage.description || '',
+    id: sanityAlbum._id,
+    title: sanityAlbum.title,
+    description: sanityAlbum.description || '',
     url: url,
     thumbnail_url: thumbnailUrl,
-    media_type: sanityImage.mediaType,
-    aspect_ratio: aspectRatio,
-    category: sanityImage.category,
-    tags: sanityImage.tags || [],
-    date_taken: sanityImage.dateTaken,
-    location: sanityImage.location,
-    is_featured: sanityImage.isFeatured,
-    is_public: sanityImage.isPublic,
-    upload_date: sanityImage._createdAt,
-    created_at: sanityImage._createdAt,
-    updated_at: sanityImage._updatedAt,
+    media_type: mediaType,
+    aspect_ratio: sanityAlbum.aspectRatio || 1.5,
+    category: sanityAlbum.category,
+    tags: sanityAlbum.tags || [],
+    date_taken: sanityAlbum.dateTaken,
+    location: sanityAlbum.location,
+    is_featured: sanityAlbum.isFeatured,
+    is_public: sanityAlbum.isPublic,
+    upload_date: sanityAlbum._createdAt,
+    created_at: sanityAlbum._createdAt,
+    updated_at: sanityAlbum._updatedAt,
     // Additional Sanity-specific data
-    photographer: sanityImage.photographer,
-    camera_info: sanityImage.cameraInfo,
-    // Image metadata for placeholders
-    blurhash: sanityImage.image?.asset?.metadata?.blurhash,
-    lqip: sanityImage.image?.asset?.metadata?.lqip,
+    photographer: sanityAlbum.photographer,
+    camera_info: sanityAlbum.cameraInfo,
   }
 }
 
@@ -310,7 +302,7 @@ export function sanityImageToMediaItem(sanityImage: SanityGalleryImage) {
  */
 export class SanityGalleryService {
   /**
-   * Get all gallery images
+   * Get all gallery albums
    */
   static async getMediaItems(filters?: {
     categories?: string[]
@@ -330,24 +322,10 @@ export class SanityGalleryService {
             dateTaken desc,
             _createdAt desc
           ) {
-            ${galleryImageFields}
+            ${galleryAlbumFields}
           }
         `
         params.categories = filters.categories
-      }
-
-      // Apply media type filter
-      if (filters?.media_types && filters.media_types.length > 0) {
-        query = groq`
-          *[_type == "galleryImage" && isPublic == true && mediaType in $mediaTypes] | order(
-            displayOrder asc,
-            dateTaken desc,
-            _createdAt desc
-          ) {
-            ${galleryImageFields}
-          }
-        `
-        params.mediaTypes = filters.media_types
       }
 
       // Apply featured filter
@@ -358,7 +336,7 @@ export class SanityGalleryService {
             dateTaken desc,
             _createdAt desc
           ) {
-            ${galleryImageFields}
+            ${galleryAlbumFields}
           }
         `
         params.isFeatured = filters.is_featured
@@ -370,12 +348,12 @@ export class SanityGalleryService {
         params.searchTerm = `*${filters.search_query}*`
       }
 
-      const data: SanityGalleryImage[] = await client.fetch(query, params)
+      const data: SanityGalleryAlbum[] = await client.fetch(query, params)
 
-      // Convert to MediaItem format for compatibility
-      return data.map(sanityImageToMediaItem)
+      // Convert to MediaItem format for compatibility (using primary media item)
+      return data.map(sanityAlbumToMediaItem)
     } catch (error) {
-      console.error('Error fetching gallery images from Sanity:', error)
+      console.error('Error fetching gallery albums from Sanity:', error)
       return []
     }
   }
@@ -400,44 +378,44 @@ export class SanityGalleryService {
   }
 
   /**
-   * Get featured images
+   * Get featured albums
    */
   static async getFeaturedImages() {
     try {
-      const data: SanityGalleryImage[] = await client.fetch(featuredGalleryImagesQuery)
-      return data.map(sanityImageToMediaItem)
+      const data: SanityGalleryAlbum[] = await client.fetch(featuredGalleryImagesQuery)
+      return data.map(sanityAlbumToMediaItem)
     } catch (error) {
-      console.error('Error fetching featured images from Sanity:', error)
+      console.error('Error fetching featured albums from Sanity:', error)
       return []
     }
   }
 
   /**
-   * Get images by category
+   * Get albums by category
    */
   static async getImagesByCategory(category: string) {
     try {
       const query = getGalleryImagesByCategoryQuery(category)
-      const data: SanityGalleryImage[] = await client.fetch(query, { category })
-      return data.map(sanityImageToMediaItem)
+      const data: SanityGalleryAlbum[] = await client.fetch(query, { category })
+      return data.map(sanityAlbumToMediaItem)
     } catch (error) {
-      console.error(`Error fetching ${category} images from Sanity:`, error)
+      console.error(`Error fetching ${category} albums from Sanity:`, error)
       return []
     }
   }
 
   /**
-   * Search gallery images
+   * Search gallery albums
    */
   static async searchImages(searchTerm: string) {
     try {
       const query = searchGalleryImagesQuery(searchTerm)
-      const data: SanityGalleryImage[] = await client.fetch(query, {
+      const data: SanityGalleryAlbum[] = await client.fetch(query, {
         searchTerm: `*${searchTerm}*`
       })
-      return data.map(sanityImageToMediaItem)
+      return data.map(sanityAlbumToMediaItem)
     } catch (error) {
-      console.error('Error searching gallery images in Sanity:', error)
+      console.error('Error searching gallery albums in Sanity:', error)
       return []
     }
   }

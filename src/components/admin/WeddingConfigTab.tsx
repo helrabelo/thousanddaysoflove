@@ -296,7 +296,9 @@ export function WeddingConfigTab() {
     setIsSaving(true)
     try {
       // TODO: Save configuration to backend
-      console.log('Saving configuration:', config)
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Saving configuration:', config)
+      }
 
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000))

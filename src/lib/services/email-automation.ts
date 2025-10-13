@@ -693,11 +693,13 @@ Hel & Ylana 💕
   private static async sendEmailViaSendGrid(emailData: EmailData): Promise<SendGridResponse> {
     try {
       // TODO: Integrate with actual SendGrid API
-      console.log('Would send email via SendGrid:', {
-        to: emailData.to,
-        subject: emailData.subject,
-        html: emailData.html.substring(0, 100) + '...'
-      })
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Would send email via SendGrid:', {
+          to: emailData.to,
+          subject: emailData.subject,
+          html: emailData.html.substring(0, 100) + '...'
+        })
+      }
 
       // Simulate successful send
       return {

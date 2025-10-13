@@ -65,11 +65,13 @@ export default function StoryPreview() {
         tags: ['storyMoment', 'storyPhase'],
       })
 
-      console.log('📊 Story Preview - Loaded moments:', moments?.length || 0)
-      console.log('📸 Moments with images:', moments?.filter(m => getPrimaryStoryMedia(m)?.type === 'image').length || 0)
-      console.log('🎬 Moments with videos:', moments?.filter(m => getPrimaryStoryMedia(m)?.type === 'video').length || 0)
-      console.log('🎞️  Moments with multiple media:', moments?.filter(m => hasMultipleMedia(m)).length || 0)
-      console.log('❌ Moments without media:', moments?.filter(m => !getPrimaryStoryMedia(m)).length || 0)
+      if (process.env.NODE_ENV === 'development') {
+        console.log('📊 Story Preview - Loaded moments:', moments?.length || 0)
+        console.log('📸 Moments with images:', moments?.filter(m => getPrimaryStoryMedia(m)?.type === 'image').length || 0)
+        console.log('🎬 Moments with videos:', moments?.filter(m => getPrimaryStoryMedia(m)?.type === 'video').length || 0)
+        console.log('🎞️  Moments with multiple media:', moments?.filter(m => hasMultipleMedia(m)).length || 0)
+        console.log('❌ Moments without media:', moments?.filter(m => !getPrimaryStoryMedia(m)).length || 0)
+      }
 
       setStoryMoments(moments || [])
     } catch (error) {

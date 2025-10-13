@@ -36,7 +36,7 @@ export default function PaymentConfirmation({ paymentData, onClose }: PaymentCon
           url: window.location.origin
         })
       } catch (error) {
-        console.log('Error sharing:', error)
+        // User canceled share or sharing failed
         copyToClipboard()
       }
     } else {

@@ -407,8 +407,6 @@ export class GalleryService {
 
       // Only initialize if no data exists (DISABLED - user has real data)
       if (false && existingItems.length === 0) {
-        console.log('🎉 Inicializando dados de exemplo da galeria...')
-
         // Sample media items
         const sampleItems: MediaItem[] = [
           {
@@ -581,8 +579,6 @@ export class GalleryService {
         // Store sample events
         this.setStorageData(this.STORAGE_KEYS.TIMELINE_EVENTS, sampleEvents)
       }
-
-      console.log('✅ Dados de exemplo da galeria inicializados!')
     } catch (error) {
       console.error('Erro ao inicializar dados de exemplo:', error)
     }

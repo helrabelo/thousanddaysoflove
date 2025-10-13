@@ -395,7 +395,9 @@ export function BulkOperationsPanel({
       for (const guest of guestsWithPhone) {
         // For now, just generate WhatsApp URLs (actual sending would require WhatsApp Business API)
         const whatsappUrl = EnhancedGuestService.generateWhatsAppInvitation(guest)
-        console.log(`WhatsApp reminder for ${guest.name}:`, whatsappUrl)
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`WhatsApp reminder for ${guest.name}:`, whatsappUrl)
+        }
         result.success++
 
         // Track the attempt

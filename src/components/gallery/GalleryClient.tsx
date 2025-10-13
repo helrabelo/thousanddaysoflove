@@ -188,7 +188,7 @@ export default function GalleryClient({ mediaItems }: GalleryClientProps) {
         onClose={closeLightbox}
         onChange={changeLightboxIndex}
         onLike={(item) => {
-          console.log('Liked:', item.title)
+          // Like action (future: save to database)
         }}
         onShare={(item) => {
           if (navigator.share) {

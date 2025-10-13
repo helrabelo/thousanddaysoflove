@@ -1,8 +1,12 @@
 /**
- * Gallery Image Document Schema
+ * Gallery Album Document Schema
  *
- * Individual gallery images with full metadata support.
- * Replaces Supabase media_items table with Sanity's asset management.
+ * Gallery albums with multiple media support (images/videos).
+ * Updated to follow storyMoment.ts pattern for multi-media arrays.
+ *
+ * MIGRATION NOTE: This schema now supports multiple media items per album.
+ * Legacy single image field has been moved to hidden for backwards compatibility.
+ * New albums should use the media array field.
  *
  * Benefits:
  * - Sanity's global CDN for fast image delivery
@@ -12,49 +16,163 @@
  * - Better content management interface
  */
 
-import { defineField, defineType } from 'sanity'
+import { defineField, defineType, defineArrayMember } from 'sanity'
 
 export default defineType({
   name: 'galleryImage',
-  title: 'Gallery Images',
+  title: 'Álbuns da Galeria',
   type: 'document',
   icon: () => '📷',
   fields: [
-    // Primary Image Asset
-    defineField({
-      name: 'image',
-      title: 'Image',
-      type: 'image',
-      options: {
-        hotspot: true, // Enable focal point selection
-        metadata: ['blurhash', 'lqip', 'palette'], // Extract metadata for placeholders
-      },
-      validation: (Rule) => Rule.required(),
-    }),
-
     // Basic Information
     defineField({
       name: 'title',
-      title: 'Title',
+      title: 'Título do Álbum',
       type: 'string',
-      description: 'Give this photo a meaningful title',
+      description: 'Nome do álbum (ex: "Viagem para Gramado")',
       validation: (Rule) => Rule.required().max(255),
     }),
 
     defineField({
       name: 'description',
-      title: 'Description',
+      title: 'Descrição',
       type: 'text',
-      description: 'Tell the story behind this moment',
+      description: 'Conte a história deste momento',
       rows: 3,
     }),
 
-    // Video Support (for future video migration)
+    // Media Array (New Multi-Media Support)
+    defineField({
+      name: 'media',
+      title: 'Mídia',
+      type: 'array',
+      description: 'Fotos e vídeos deste álbum (pelo menos 1 item necessário)',
+      validation: (Rule) => Rule.required().min(1).max(10),
+      of: [
+        defineArrayMember({
+          name: 'mediaItem',
+          title: 'Item de Mídia',
+          type: 'object',
+          fields: [
+            defineField({
+              name: 'mediaType',
+              title: 'Tipo de Mídia',
+              type: 'string',
+              description: 'Tipo de arquivo: imagem ou vídeo',
+              options: {
+                list: [
+                  { title: 'Imagem', value: 'image' },
+                  { title: 'Vídeo', value: 'video' },
+                ],
+                layout: 'radio',
+              },
+              validation: (Rule) => Rule.required(),
+              initialValue: 'image',
+            }),
+            defineField({
+              name: 'image',
+              title: 'Imagem',
+              type: 'image',
+              description: 'Arquivo de imagem',
+              options: {
+                hotspot: true,
+                metadata: ['blurhash', 'lqip', 'palette'],
+              },
+              hidden: ({ parent }) => parent?.mediaType !== 'image',
+              validation: (Rule) =>
+                Rule.custom((image, context) => {
+                  const parent = context.parent as { mediaType?: string }
+                  if (parent?.mediaType === 'image' && !image) {
+                    return 'Imagem é obrigatória quando o tipo é "Imagem"'
+                  }
+                  return true
+                }),
+            }),
+            defineField({
+              name: 'video',
+              title: 'Vídeo',
+              type: 'file',
+              description: 'Arquivo de vídeo',
+              options: {
+                accept: 'video/*',
+              },
+              hidden: ({ parent }) => parent?.mediaType !== 'video',
+              validation: (Rule) =>
+                Rule.custom((video, context) => {
+                  const parent = context.parent as { mediaType?: string }
+                  if (parent?.mediaType === 'video' && !video) {
+                    return 'Vídeo é obrigatório quando o tipo é "Vídeo"'
+                  }
+                  return true
+                }),
+            }),
+            defineField({
+              name: 'alt',
+              title: 'Texto Alternativo',
+              type: 'string',
+              description: 'Descrição da mídia para acessibilidade',
+              validation: (Rule) => Rule.max(200),
+            }),
+            defineField({
+              name: 'caption',
+              title: 'Legenda (Opcional)',
+              type: 'string',
+              description: 'Legenda descritiva para a mídia',
+              validation: (Rule) => Rule.max(200),
+            }),
+            defineField({
+              name: 'displayOrder',
+              title: 'Ordem de Exibição',
+              type: 'number',
+              description: 'Ordem deste item na galeria (1, 2, 3...)',
+              validation: (Rule) => Rule.required().min(1),
+              initialValue: 1,
+            }),
+          ],
+          preview: {
+            select: {
+              mediaType: 'mediaType',
+              image: 'image',
+              video: 'video',
+              alt: 'alt',
+              caption: 'caption',
+              order: 'displayOrder',
+            },
+            prepare({ mediaType, image, video, alt, caption, order }) {
+              const mediaAsset = mediaType === 'image' ? image : video
+              const title = caption || alt || `${mediaType === 'image' ? 'Imagem' : 'Vídeo'} #${order}`
+
+              return {
+                title: `${order}. ${title}`,
+                subtitle: mediaType === 'image' ? '📷 Imagem' : '🎥 Vídeo',
+                media: mediaAsset,
+              }
+            },
+          },
+        }),
+      ],
+    }),
+
+    // DEPRECATED FIELDS - kept for backwards compatibility during migration
+    // These will be hidden in the UI but preserved in the database
+    defineField({
+      name: 'image',
+      title: 'Imagem (OBSOLETO)',
+      type: 'image',
+      description: '⚠️ OBSOLETO: Use o campo "Mídia" acima. Este campo será removido.',
+      hidden: true,
+      options: {
+        hotspot: true,
+        metadata: ['blurhash', 'lqip', 'palette'],
+      },
+    }),
+
     defineField({
       name: 'video',
-      title: 'Video (Optional)',
+      title: 'Vídeo (OBSOLETO)',
       type: 'file',
-      description: 'Upload a video file instead of an image',
+      description: '⚠️ OBSOLETO: Use o campo "Mídia" acima. Este campo será removido.',
+      hidden: true,
       options: {
         accept: 'video/*',
       },
@@ -62,8 +180,10 @@ export default defineType({
 
     defineField({
       name: 'mediaType',
-      title: 'Media Type',
+      title: 'Tipo de Mídia (OBSOLETO)',
       type: 'string',
+      description: '⚠️ OBSOLETO: Use o campo "Mídia" acima.',
+      hidden: true,
       options: {
         list: [
           { title: 'Photo', value: 'photo' },
@@ -72,15 +192,14 @@ export default defineType({
         layout: 'radio',
       },
       initialValue: 'photo',
-      validation: (Rule) => Rule.required(),
     }),
 
     // Categorization
     defineField({
       name: 'category',
-      title: 'Category',
+      title: 'Categoria',
       type: 'string',
-      description: 'What moment does this capture?',
+      description: 'Que momento este álbum representa?',
       options: {
         list: [
           { title: '💍 Engagement', value: 'engagement' },
@@ -103,7 +222,7 @@ export default defineType({
       name: 'tags',
       title: 'Tags',
       type: 'array',
-      description: 'Add tags for better organization and searching',
+      description: 'Adicione tags para melhor organização',
       of: [{ type: 'string' }],
       options: {
         layout: 'tags',
@@ -113,9 +232,9 @@ export default defineType({
     // Location & Date
     defineField({
       name: 'dateTaken',
-      title: 'Date Taken',
+      title: 'Data',
       type: 'date',
-      description: 'When was this photo taken?',
+      description: 'Quando foi este momento?',
       options: {
         dateFormat: 'DD/MM/YYYY',
       },
@@ -123,34 +242,34 @@ export default defineType({
 
     defineField({
       name: 'location',
-      title: 'Location',
+      title: 'Localização',
       type: 'string',
-      description: 'Where was this photo taken?',
-      placeholder: 'e.g., Fortaleza, Ceará',
+      description: 'Onde foi tirada?',
+      placeholder: 'ex: Fortaleza, Ceará',
     }),
 
     // Display Options
     defineField({
       name: 'isFeatured',
-      title: 'Featured',
+      title: 'Destaque',
       type: 'boolean',
-      description: 'Show this in featured galleries and highlights',
+      description: 'Mostrar nas galerias em destaque',
       initialValue: false,
     }),
 
     defineField({
       name: 'isPublic',
-      title: 'Public',
+      title: 'Público',
       type: 'boolean',
-      description: 'Make this photo visible on the website',
+      description: 'Tornar este álbum visível no site',
       initialValue: true,
     }),
 
     defineField({
       name: 'displayOrder',
-      title: 'Display Order',
+      title: 'Ordem de Exibição',
       type: 'number',
-      description: 'Lower numbers appear first (optional - auto-sorted by date if not set)',
+      description: 'Números menores aparecem primeiro (opcional)',
       validation: (Rule) => Rule.integer().positive(),
     }),
 
@@ -159,22 +278,22 @@ export default defineType({
       name: 'aspectRatio',
       title: 'Aspect Ratio',
       type: 'number',
-      description: 'Width / Height (calculated automatically if not set)',
+      description: 'Largura / Altura (calculado automaticamente)',
       readOnly: true,
     }),
 
     defineField({
       name: 'photographer',
-      title: 'Photographer',
+      title: 'Fotógrafo',
       type: 'string',
-      description: 'Who took this photo?',
+      description: 'Quem tirou estas fotos?',
     }),
 
     defineField({
       name: 'cameraInfo',
-      title: 'Camera Info',
+      title: 'Info da Câmera',
       type: 'object',
-      description: 'Technical details (optional)',
+      description: 'Detalhes técnicos (opcional)',
       options: {
         collapsible: true,
         collapsed: true,
@@ -182,27 +301,27 @@ export default defineType({
       fields: [
         {
           name: 'make',
-          title: 'Camera Make',
+          title: 'Marca',
           type: 'string',
-          placeholder: 'e.g., Canon',
+          placeholder: 'ex: Canon',
         },
         {
           name: 'model',
-          title: 'Camera Model',
+          title: 'Modelo',
           type: 'string',
-          placeholder: 'e.g., EOS R5',
+          placeholder: 'ex: EOS R5',
         },
         {
           name: 'lens',
-          title: 'Lens',
+          title: 'Lente',
           type: 'string',
-          placeholder: 'e.g., 24-70mm f/2.8',
+          placeholder: 'ex: 24-70mm f/2.8',
         },
         {
           name: 'settings',
-          title: 'Settings',
+          title: 'Configurações',
           type: 'string',
-          placeholder: 'e.g., ISO 400, f/2.8, 1/200s',
+          placeholder: 'ex: ISO 400, f/2.8, 1/200s',
         },
       ],
     }),
@@ -213,12 +332,13 @@ export default defineType({
     select: {
       title: 'title',
       subtitle: 'category',
-      media: 'image',
+      media: 'media',
+      legacyImage: 'image',
       isFeatured: 'isFeatured',
       isPublic: 'isPublic',
       dateTaken: 'dateTaken',
     },
-    prepare({ title, subtitle, media, isFeatured, isPublic, dateTaken }) {
+    prepare({ title, subtitle, media, legacyImage, isFeatured, isPublic, dateTaken }) {
       const categoryLabels: Record<string, string> = {
         engagement: '💍 Engagement',
         travel: '✈️ Travel',
@@ -239,17 +359,23 @@ export default defineType({
       const categoryLabel = categoryLabels[subtitle] || subtitle
       const dateStr = dateTaken ? new Date(dateTaken).toLocaleDateString('pt-BR') : ''
 
+      // Count media items
+      const mediaCount = media?.length || 0
+      const mediaText = mediaCount > 1 ? ` (${mediaCount} mídias)` : ''
+
+      // Use first media item or legacy image for preview
+      const previewMedia = media?.[0]?.image || media?.[0]?.video || legacyImage
+
       return {
-        title: title,
+        title: `${title}${mediaText}`,
         subtitle: `${categoryLabel}${dateStr ? ` • ${dateStr}` : ''}${badges.length > 0 ? ` • ${badges.join(' ')}` : ''}`,
-        media: media,
+        media: previewMedia,
       }
     },
   },
 
   // Initial Value
   initialValue: {
-    mediaType: 'photo',
     isPublic: true,
     isFeatured: false,
     category: 'special_moments',
@@ -258,27 +384,27 @@ export default defineType({
   // Ordering
   orderings: [
     {
-      title: 'Date Taken (Newest First)',
+      title: 'Data (Mais Recente)',
       name: 'dateTakenDesc',
       by: [{ field: 'dateTaken', direction: 'desc' }],
     },
     {
-      title: 'Date Taken (Oldest First)',
+      title: 'Data (Mais Antigo)',
       name: 'dateTakenAsc',
       by: [{ field: 'dateTaken', direction: 'asc' }],
     },
     {
-      title: 'Title (A-Z)',
+      title: 'Título (A-Z)',
       name: 'titleAsc',
       by: [{ field: 'title', direction: 'asc' }],
     },
     {
-      title: 'Category',
+      title: 'Categoria',
       name: 'categoryAsc',
       by: [{ field: 'category', direction: 'asc' }],
     },
     {
-      title: 'Display Order',
+      title: 'Ordem de Exibição',
       name: 'displayOrder',
       by: [{ field: 'displayOrder', direction: 'asc' }],
     },

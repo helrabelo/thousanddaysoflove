@@ -456,3 +456,67 @@ export interface RenderedStoryMediaItem {
     width: number;
   };
 }
+
+// =====================================================
+// SANITY CMS TYPES - Gallery Albums
+// =====================================================
+
+/**
+ * Sanity Gallery Album Media Item
+ * Represents a single media item (image or video) within a gallery album
+ */
+export interface SanityGalleryAlbumMediaItem {
+  mediaType: 'image' | 'video';
+  image?: {
+    asset: { url: string };
+    alt?: string;
+    hotspot?: { x: number; y: number; height: number; width: number };
+    crop?: { top: number; bottom: number; left: number; right: number };
+  };
+  video?: {
+    asset: { url: string };
+  };
+  alt?: string;
+  caption?: string;
+  displayOrder: number;
+}
+
+/**
+ * Sanity Gallery Album
+ * Represents an album in the gallery with support for multiple media items
+ */
+export interface SanityGalleryAlbum {
+  _id: string;
+  title: string;
+  description?: string;
+  media: SanityGalleryAlbumMediaItem[];
+  category: MediaCategory;
+  dateTaken?: string;
+  isFeatured: boolean;
+  isPublic: boolean;
+  tags: string[];
+  displayOrder?: number;
+
+  // Legacy field for backwards compatibility
+  legacyImage?: {
+    asset: { url: string };
+    alt?: string;
+  };
+}
+
+/**
+ * Helper type for rendering gallery media items in the frontend
+ */
+export interface RenderedGalleryMediaItem {
+  type: 'image' | 'video';
+  url: string;
+  alt?: string;
+  caption?: string;
+  order: number;
+  hotspot?: {
+    x: number;
+    y: number;
+    height: number;
+    width: number;
+  };
+}

@@ -49,10 +49,6 @@ export default function VideoHeroSection({ data }: VideoHeroProps) {
   const idleTimerRef = useRef<NodeJS.Timeout>()
   const fallbackTimerRef = useRef<NodeJS.Timeout>()
 
-  // Debug logging for poster state
-  useEffect(() => {
-    console.log('📊 Hero state - showPoster:', showPoster, 'isVideoLoaded:', isVideoLoaded)
-  }, [showPoster, isVideoLoaded])
   const shouldReduceMotion = useReducedMotion()
 
   // Fallback values
@@ -77,14 +73,15 @@ export default function VideoHeroSection({ data }: VideoHeroProps) {
     // Try to play video
     if (videoRef.current) {
       videoRef.current.play().catch(err => {
-        console.log('Video autoplay prevented:', err)
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Video autoplay prevented:', err)
+        }
       })
     }
 
     // Fallback: Show content and hide poster after 2 seconds regardless of video load state
     // This ensures content always appears even if video fails to load or loads slowly
     fallbackTimerRef.current = setTimeout(() => {
-      console.log('⏱️ Fallback timer: hiding poster and showing content')
       setIsVideoLoaded(true)
       setShowPoster(false)
     }, 2000)
@@ -98,8 +95,6 @@ export default function VideoHeroSection({ data }: VideoHeroProps) {
 
   // Handle video loaded - trigger poster fade out
   const handleVideoLoaded = () => {
-    console.log('🎬 Video loaded successfully')
-
     // Clear fallback timer since video loaded properly
     if (fallbackTimerRef.current) {
       clearTimeout(fallbackTimerRef.current)
@@ -109,7 +104,6 @@ export default function VideoHeroSection({ data }: VideoHeroProps) {
 
     // Start poster fade out after a brief moment to ensure video is ready
     setTimeout(() => {
-      console.log('✨ Hiding poster, showing video')
       setShowPoster(false)
     }, 300)
   }
