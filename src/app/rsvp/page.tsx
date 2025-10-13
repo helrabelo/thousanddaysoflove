@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import Navigation from '@/components/ui/Navigation'
 import { motion, AnimatePresence } from 'framer-motion'
+import confetti from 'canvas-confetti'
+import Image from 'next/image'
 
 interface Guest {
   id: string
@@ -20,6 +22,107 @@ interface Guest {
   dietary_restrictions: string | null
   song_requests: string | null
   special_message: string | null
+}
+
+// Loading Spinner Component
+const LoadingSpinner = () => (
+  <motion.div
+    className="inline-flex items-center gap-2"
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+  >
+    <motion.div
+      className="w-4 h-4 border-2 border-current border-t-transparent rounded-full"
+      animate={{ rotate: 360 }}
+      transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
+    />
+    <span>Confirmando...</span>
+  </motion.div>
+)
+
+// Celebration Confetti Function
+const celebrateRSVP = (attending: boolean) => {
+  if (!attending) return // No confetti for "no" responses
+
+  // Elegant sparkle burst - sophisticated aesthetic
+  const duration = 2000
+  const animationEnd = Date.now() + duration
+  const defaults = {
+    startVelocity: 30,
+    spread: 360,
+    ticks: 60,
+    zIndex: 0,
+    colors: ['#ffffff', '#F8F6F3', '#E8E6E3', '#D4AF37'], // White + cream + gold
+    disableForReducedMotion: true
+  }
+
+  const interval = setInterval(() => {
+    const timeLeft = animationEnd - Date.now()
+
+    if (timeLeft <= 0) {
+      return clearInterval(interval)
+    }
+
+    const particleCount = 50 * (timeLeft / duration)
+    confetti({
+      ...defaults,
+      particleCount,
+      origin: { x: Math.random(), y: Math.random() - 0.2 },
+      scalar: 0.8
+    })
+  }, 250)
+}
+
+// Wedding Countdown Helper
+const getWeddingCountdown = () => {
+  const weddingDate = new Date('2025-11-20T10:30:00-03:00') // Fortaleza timezone
+  const today = new Date()
+  const daysUntil = Math.ceil((weddingDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+
+  // Handle day-of wedding
+  if (daysUntil === 0) {
+    return {
+      days: 'HOJE',
+      message: 'O grande dia chegou!',
+      emoji: '💒'
+    }
+  }
+
+  // Handle post-wedding
+  if (daysUntil < 0) {
+    return {
+      days: '—',
+      message: 'O casamento já aconteceu, mas você ainda está em nossos corações!',
+      emoji: '💕'
+    }
+  }
+
+  // Special messages for different timeframes
+  if (daysUntil > 100) {
+    return {
+      days: daysUntil,
+      message: 'Mal podemos esperar!',
+      emoji: '✨'
+    }
+  } else if (daysUntil > 30) {
+    return {
+      days: daysUntil,
+      message: 'A contagem regressiva começou!',
+      emoji: '🎊'
+    }
+  } else if (daysUntil > 7) {
+    return {
+      days: daysUntil,
+      message: 'Quase lá!',
+      emoji: '🎉'
+    }
+  } else {
+    return {
+      days: daysUntil,
+      message: 'Nos vemos em breve!',
+      emoji: '💕'
+    }
+  }
 }
 
 export default function SimpleRSVP() {
@@ -92,9 +195,14 @@ export default function SimpleRSVP() {
       // Close enhanced form
       setShowEnhancedForm(false)
 
-      // Show success modal with guidance
-      setConfirmedGuest({ name: guestName, attending })
-      setShowSuccessModal(true)
+      // 🎉 Trigger celebration BEFORE modal
+      celebrateRSVP(attending)
+
+      // Small delay for confetti to start before modal appears
+      setTimeout(() => {
+        setConfirmedGuest({ name: guestName, attending })
+        setShowSuccessModal(true)
+      }, 300)
     } catch (error) {
       console.error('Error saving RSVP:', error)
       alert('Erro ao salvar RSVP')
@@ -122,20 +230,95 @@ export default function SimpleRSVP() {
       <Navigation />
       <div className="py-16 px-4 pt-32">
         <div className="max-w-4xl mx-auto">
-          {/* Header */}
-          <div className="text-center mb-12">
-            <Link href="/" className="inline-block mb-4" style={{ color: 'var(--decorative)' }}>
+          {/* Back Link */}
+          <div className="text-center mb-8">
+            <Link href="/" className="inline-block" style={{ color: 'var(--decorative)' }}>
               <span className="flex items-center justify-center gap-2" style={{ fontFamily: 'var(--font-crimson)', fontSize: '1rem' }}>
                 ← Voltar
               </span>
             </Link>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)', letterSpacing: '0.1em' }}>
-              Confirme sua Presença
-            </h1>
-            <p className="text-lg" style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)', fontStyle: 'italic' }}>
-              Digite seu nome para encontrar seu convite
-            </p>
           </div>
+
+          {/* Story Moment Section - NEW */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+            className="text-center mb-16 max-w-3xl mx-auto"
+          >
+            {/* Featured couple photo */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1, delay: 0.2 }}
+              className="mb-8 rounded-2xl overflow-hidden shadow-2xl relative"
+              style={{
+                aspectRatio: '3/2',
+                boxShadow: '0 20px 60px rgba(0,0,0,0.15)'
+              }}
+            >
+              <Image
+                src="/images/rsvp-hero-story.jpg"
+                alt="Hel & Ylana - 1000 dias de amor"
+                fill
+                className="object-cover"
+                priority
+                sizes="(max-width: 768px) 100vw, 800px"
+              />
+            </motion.div>
+
+            {/* Story text */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+            >
+              <h1
+                className="mb-4"
+                style={{
+                  fontFamily: 'var(--font-playfair)',
+                  fontSize: 'clamp(1.75rem, 4vw, 2.25rem)',
+                  color: 'var(--primary-text)',
+                  letterSpacing: '0.05em',
+                  lineHeight: '1.3'
+                }}
+              >
+                1000 dias se transformam em para sempre
+              </h1>
+
+              <p
+                className="mb-2"
+                style={{
+                  fontFamily: 'var(--font-crimson)',
+                  fontSize: 'clamp(1.125rem, 2.5vw, 1.375rem)',
+                  color: 'var(--secondary-text)',
+                  fontStyle: 'italic',
+                  lineHeight: '1.7',
+                  maxWidth: '36rem',
+                  margin: '0 auto 1rem'
+                }}
+              >
+                Do primeiro "oi" no WhatsApp até este momento.
+                Queremos você ao nosso lado quando esses 1000 dias
+                se tornarem o começo de uma vida inteira juntos.
+              </p>
+
+              <p
+                className="text-sm mb-8"
+                style={{
+                  fontFamily: 'var(--font-crimson)',
+                  color: 'var(--decorative)',
+                  letterSpacing: '0.1em'
+                }}
+              >
+                20 DE NOVEMBRO DE 2025 • CASA HY, FORTALEZA
+              </p>
+
+              <p className="text-lg mb-4" style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)', fontStyle: 'italic' }}>
+                Digite seu nome para encontrar seu convite
+              </p>
+            </motion.div>
+          </motion.div>
 
           {/* Search */}
           <Card className="glass p-6 mb-8" style={{ background: 'var(--white-soft)', border: '1px solid var(--border-subtle)' }}>
@@ -203,19 +386,44 @@ export default function SimpleRSVP() {
                               onClick={() => quickConfirm(guest.id, guest.name, true)}
                               disabled={saving === guest.id}
                               variant="wedding"
-                              className="flex items-center gap-2 min-h-[48px] flex-1 sm:flex-initial"
+                              className="flex items-center gap-2 min-h-[48px] flex-1 sm:flex-initial relative overflow-hidden group"
                             >
-                              <Check className="w-4 h-4" />
-                              Sim, vou!
+                              {/* Animated background on hover */}
+                              <motion.div
+                                className="absolute inset-0 bg-gradient-to-r from-green-50 to-emerald-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                              />
+
+                              {/* Button content */}
+                              <span className="relative z-10 flex items-center gap-2">
+                                <motion.div
+                                  whileHover={{ scale: 1.2, rotate: 10 }}
+                                  whileTap={{ scale: 0.9 }}
+                                >
+                                  <Check className="w-4 h-4" />
+                                </motion.div>
+                                Sim, vou!
+                              </span>
                             </Button>
                             <Button
                               onClick={() => quickConfirm(guest.id, guest.name, false)}
                               disabled={saving === guest.id}
                               variant="wedding-outline"
-                              className="flex items-center gap-2 min-h-[48px] flex-1 sm:flex-initial"
+                              className="flex items-center gap-2 min-h-[48px] flex-1 sm:flex-initial relative overflow-hidden group"
                             >
-                              <X className="w-4 h-4" />
-                              Não posso
+                              {/* Subtle hover state */}
+                              <motion.div
+                                className="absolute inset-0 bg-gray-50 opacity-0 group-hover:opacity-50 transition-opacity duration-300"
+                              />
+
+                              <span className="relative z-10 flex items-center gap-2">
+                                <motion.div
+                                  whileHover={{ scale: 1.1 }}
+                                  whileTap={{ scale: 0.9 }}
+                                >
+                                  <X className="w-4 h-4" />
+                                </motion.div>
+                                Não posso
+                              </span>
                             </Button>
                           </div>
                         </div>
@@ -410,7 +618,7 @@ export default function SimpleRSVP() {
                   className="flex-1 min-h-[48px]"
                   disabled={saving === selectedGuestId}
                 >
-                  {saving === selectedGuestId ? 'Confirmando...' : 'Confirmar Presença'}
+                  {saving === selectedGuestId ? <LoadingSpinner /> : 'Confirmar Presença'}
                 </Button>
               </div>
             </motion.div>
@@ -484,6 +692,97 @@ export default function SimpleRSVP() {
                       Seu RSVP foi confirmado com sucesso. Veja o que vem a seguir:
                     </p>
                   </div>
+
+                  {/* Countdown Card - NEW */}
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.4, type: 'spring', stiffness: 150 }}
+                    className="mb-8"
+                  >
+                    <Card
+                      className="text-center p-8"
+                      style={{
+                        background: 'linear-gradient(135deg, #FFF5F7 0%, #F0F9FF 50%, #FFF9E6 100%)',
+                        border: '2px solid var(--border-subtle)',
+                        boxShadow: '0 8px 32px rgba(0,0,0,0.08)'
+                      }}
+                    >
+                      {(() => {
+                        const countdown = getWeddingCountdown()
+                        return (
+                          <>
+                            <motion.div
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              transition={{ delay: 0.6, type: 'spring', stiffness: 200 }}
+                              style={{
+                                fontFamily: 'var(--font-playfair)',
+                                fontSize: 'clamp(3rem, 8vw, 4.5rem)',
+                                fontWeight: '600',
+                                color: 'var(--primary-text)',
+                                lineHeight: '1',
+                                marginBottom: '0.5rem'
+                              }}
+                            >
+                              {countdown.days}
+                            </motion.div>
+
+                            <p
+                              style={{
+                                fontFamily: 'var(--font-crimson)',
+                                fontSize: '1.25rem',
+                                color: 'var(--secondary-text)',
+                                marginBottom: '0.75rem'
+                              }}
+                            >
+                              dias até o grande dia
+                            </p>
+
+                            <p
+                              style={{
+                                fontFamily: 'var(--font-crimson)',
+                                fontSize: '1rem',
+                                color: 'var(--decorative)',
+                                fontStyle: 'italic'
+                              }}
+                            >
+                              {countdown.emoji} {countdown.message}
+                            </p>
+
+                            {/* Date reminder */}
+                            <div
+                              className="mt-4 pt-4"
+                              style={{
+                                borderTop: '1px solid var(--border-subtle)'
+                              }}
+                            >
+                              <p
+                                style={{
+                                  fontFamily: 'var(--font-playfair)',
+                                  fontSize: '1.125rem',
+                                  color: 'var(--primary-text)',
+                                  letterSpacing: '0.05em'
+                                }}
+                              >
+                                20 DE NOVEMBRO • 10:30
+                              </p>
+                              <p
+                                className="text-sm mt-1"
+                                style={{
+                                  fontFamily: 'var(--font-crimson)',
+                                  color: 'var(--secondary-text)',
+                                  fontStyle: 'italic'
+                                }}
+                              >
+                                Casa HY, Fortaleza
+                              </p>
+                            </div>
+                          </>
+                        )
+                      })()}
+                    </Card>
+                  </motion.div>
 
                   {/* Next Steps Cards */}
                   <div className="space-y-4 mb-8">
