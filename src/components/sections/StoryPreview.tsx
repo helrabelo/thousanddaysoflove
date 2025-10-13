@@ -166,8 +166,7 @@ export default function StoryPreview() {
                 opacity: 0.95,
               }}
             >
-              De um simples "oi" no WhatsApp a 1000 dias de amor, cada momento nos trouxe até aqui.
-              Conheça a jornada que nos levou ao altar na Casa HY.
+              Do primeiro &quot;oi&quot; no WhatsApp ao dia do sim, cada instante nos trouxe até aqui.
             </p>
           </motion.div>
         </div>
@@ -376,23 +375,6 @@ export default function StoryPreview() {
             background: `linear-gradient(to bottom, transparent 0%, rgba(248, 246, 243, 0.5) 30%, var(--background) 85%)`,
           }}
         >
-          {/* Small Text Above Button */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            viewport={{ once: true }}
-            className="mb-6 text-center px-6"
-            style={{
-              fontFamily: 'var(--font-crimson)',
-              fontSize: 'clamp(0.875rem, 2vw, 1rem)',
-              color: 'var(--secondary-text)',
-              fontStyle: 'italic',
-              maxWidth: '500px',
-            }}
-          >
-            Descubra os 12 momentos que nos levaram ao altar
-          </motion.p>
 
           {/* CTA Button */}
           <motion.div
