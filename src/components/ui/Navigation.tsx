@@ -6,6 +6,8 @@ import { Menu, X } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
+import GuestMenu from './GuestMenu'
+import BottomNav from './BottomNav'
 
 const navItems = [
   {
@@ -74,6 +76,7 @@ export default function Navigation() {
   }, [isHomePage])
 
   return (
+    <>
     <motion.nav
       className="fixed top-0 left-0 right-0 z-50"
       style={{
@@ -109,7 +112,7 @@ export default function Navigation() {
           </Link>
 
           {/* Elegant Desktop Navigation */}
-          <div className="hidden md:flex md:flex-row space-x-12 flex-1 justify-center">
+          <div className="hidden md:flex md:flex-row space-x-8 flex-1 justify-center items-center">
             {navItems.map((item) => (
               <motion.div key={item.name} className="relative group">
                 <Link
@@ -163,6 +166,9 @@ export default function Navigation() {
                 </Link>
               </motion.div>
             ))}
+
+            {/* Guest Menu Dropdown */}
+            <GuestMenu />
           </div>
 
           {/* Mobile menu button - Increased touch target */}
@@ -363,5 +369,9 @@ export default function Navigation() {
         )}
       </AnimatePresence>
     </motion.nav>
+
+    {/* Mobile Bottom Navigation */}
+    <BottomNav />
+    </>
   )
 }

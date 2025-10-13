@@ -1,11 +1,7 @@
 import Navigation from '@/components/ui/Navigation'
 import VideoHeroSection from '@/components/sections/VideoHeroSection'
-import StoryPreview from '@/components/sections/StoryPreview'
-import AboutUsSection from '@/components/sections/AboutUsSection'
-import OurFamilySection from '@/components/sections/OurFamilySection'
-import EventDetailsSection from '@/components/sections/EventDetailsSection'
-import QuickPreview from '@/components/sections/QuickPreview'
-import WeddingLocation from '@/components/sections/WeddingLocation'
+import FeatureHubSection from '@/components/sections/FeatureHubSection'
+import InvitationCTASection from '@/components/sections/InvitationCTASection'
 import { sanityFetch } from '@/sanity/lib/client'
 import { homePageQuery } from '@/sanity/queries/homepage'
 
@@ -48,30 +44,14 @@ export default async function Home() {
     <main className="min-h-screen">
       <Navigation />
 
-      {/* Video Hero Section */}
+      {/* Video Hero Section - SUPER IMPORTANT, unchanged */}
       {sections.videoHero && <VideoHeroSection data={sections.videoHero} />}
 
-      {/* Event Details Section */}
-      {sections.eventDetails && <EventDetailsSection data={sections.eventDetails} />}
+      {/* Feature Hub Section - NEW: 2x2 grid showcasing main features */}
+      <FeatureHubSection />
 
-      {/* Story Preview Section - Now self-contained, loads own data */}
-      <StoryPreview />
-
-      {/* About Us Section */}
-      {sections.aboutUs && <AboutUsSection data={sections.aboutUs} />}
-
-      {/* Our Family Section */}
-      {sections.ourFamily && <OurFamilySection data={sections.ourFamily} />}
-
-      {/* Quick Preview Section */}
-      {sections.quickPreview && <QuickPreview data={sections.quickPreview} />}
-
-      {/* Wedding Location Section */}
-      {sections.weddingLocation && (
-        <div id="location">
-          <WeddingLocation data={sections.weddingLocation} />
-        </div>
-      )}
+      {/* Invitation CTA Section - NEW: Introduces personalized guest experience */}
+      <InvitationCTASection />
     </main>
   )
 }
