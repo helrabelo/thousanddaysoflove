@@ -174,8 +174,9 @@ All content editing happens in Sanity Studio:
 - **Pages**: All marketing pages and sections
 
 ### Guest Photo Upload System
-**Status**: ✅ PHASE 1 COMPLETE
+**Status**: ✅ PHASE 1 & 2 COMPLETE
 
+### Phase 1: Admin Photo Moderation ✅
 #### Guest Flow
 1. **Authentication**: `/dia-1000/login`
    - Password: `1000dias` (from `GUEST_SHARED_PASSWORD` env var)
@@ -200,6 +201,32 @@ All content editing happens in Sanity Studio:
 3. View all uploaded photos with filters
 4. Approve/reject individual or batch photos
 5. Activity feed automatically updated on approval
+
+### Phase 2: Gallery Integration ✅
+#### Gallery Display
+- **Location**: `/galeria` page
+- **Main Gallery**: Displays Sanity CMS photos + all approved guest photos merged
+- **Guest Photos Section**: Dedicated section with phase filtering tabs
+
+#### Features
+- **Phase Tabs**: Filter by before/during/after wedding phases
+- **Guest Attribution**: Avatar, name, and upload date displayed
+- **Photo Counts**: Real-time counts per phase
+- **Responsive Design**: Mobile-first with elegant wedding aesthetic
+- **Animations**: Framer Motion hover and reveal effects
+
+#### Technical Implementation
+- **Service Layer**: `src/lib/supabase/gallery.ts` (SupabaseGalleryService)
+- **Component**: `src/components/gallery/GuestPhotosSection.tsx`
+- **Data Merging**: Sanity photos + guest photos in compatible MediaItem format
+- **Filters**: Phase filtering (all/before/during/after)
+- **Type Safety**: Type assertions for guest_photos table (not in generated types yet)
+
+#### Key Files
+- `src/lib/supabase/gallery.ts`: Guest photo fetching service
+- `src/app/galeria/page.tsx`: Gallery page with merged data sources
+- `src/components/gallery/GuestPhotosSection.tsx`: Phase-filtered guest photo display
+- `src/lib/supabase/server.ts`: Supabase client creation
 
 #### Technical Details
 - **Cloud Supabase**: `uottcbjzpiudgmqzhuii.supabase.co`
