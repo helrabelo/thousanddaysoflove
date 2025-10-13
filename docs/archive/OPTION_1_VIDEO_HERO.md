@@ -212,7 +212,7 @@ import CountdownTimer from '@/components/ui/CountdownTimer'
 
 export default function EventDetailsSection() {
   return (
-    <section className="py-20 px-8" style={{ background: 'var(--background)' }}>
+    <section className="py-20 px-8" >
       <div className="max-w-6xl mx-auto">
         {/* Countdown Timer */}
         <div className="mb-16 text-center">

@@ -53,7 +53,7 @@ Updated all homepage sections to follow the responsive 100vh pattern:
 ```tsx
 // Current: py-32
 // Update to:
-<section className="min-h-screen md:h-screen flex items-center py-16 md:py-0" style={{ background: 'var(--background)' }}>
+<section className="min-h-screen md:h-screen flex items-center py-16 md:py-0" >
   <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16 w-full">
     {/* Existing content */}
   </div>
@@ -86,7 +86,7 @@ Updated all homepage sections to follow the responsive 100vh pattern:
 ```tsx
 // Current: py-20
 // Update to:
-<section className="min-h-screen md:h-screen flex items-center py-16 md:py-0" style={{ background: 'var(--background)' }}>
+<section className="min-h-screen md:h-screen flex items-center py-16 md:py-0" >
   <div className="max-w-7xl mx-auto relative z-10 px-4 w-full">
     {/* Existing content */}
   </div>
@@ -124,8 +124,8 @@ Run the following commands to update the remaining sections:
 
 ```bash
 # 1. Update AboutUsSection
-# Change line 32 from: <section className="py-32" style={{ background: 'var(--background)' }}>
-# To: <section className="min-h-screen md:h-screen flex items-center py-16 md:py-0" style={{ background: 'var(--background)' }}>
+# Change line 32 from: <section className="py-32" >
+# To: <section className="min-h-screen md:h-screen flex items-center py-16 md:py-0" >
 
 # 2. Update OurFamilySection
 # Change line 68 from: <section className="py-24 px-6" style={{ background: 'var(--accent)' }}>
@@ -136,8 +136,8 @@ Run the following commands to update the remaining sections:
 # To: <section className="min-h-screen md:h-screen flex items-center py-16 md:py-0" style={{ background: 'var(--accent)' }}>
 
 # 4. Update WeddingLocation
-# Change line 83 from: <section className="py-20 px-4 relative overflow-hidden" style={{ background: 'var(--background)' }}>
-# To: <section className="min-h-screen md:h-screen flex items-center py-16 md:py-0 px-4 relative overflow-hidden" style={{ background: 'var(--background)' }}>
+# Change line 83 from: <section className="py-20 px-4 relative overflow-hidden" >
+# To: <section className="min-h-screen md:h-screen flex items-center py-16 md:py-0 px-4 relative overflow-hidden" >
 ```
 
 ## Code Examples
@@ -167,4 +167,3 @@ All sections follow Tailwind's mobile-first responsive design:
 - `md:` prefix applies from 768px and up (h-screen, py-0)
 - Content remains readable and accessible at all sizes
 - Preserves existing design aesthetic
-

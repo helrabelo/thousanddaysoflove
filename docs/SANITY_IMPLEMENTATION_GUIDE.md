@@ -413,7 +413,7 @@ export default async function HistoriaPage() {
   const timelinePage = await client.fetch(TIMELINE_PAGE_QUERY)
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--background)' }}>
+    <div className="min-h-screen" >
       <Navigation />
 
       {/* Hero Section */}

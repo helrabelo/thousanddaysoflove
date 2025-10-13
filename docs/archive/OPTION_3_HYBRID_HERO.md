@@ -163,7 +163,7 @@ export default function HybridHeroSection() {
       {/* Integrated Info Section - Immediate Continuation */}
       <section
         className="relative -mt-1 py-16 px-8"
-        style={{ background: 'var(--background)' }}
+        
       >
         <div className="max-w-6xl mx-auto">
           {/* Countdown Timer */}

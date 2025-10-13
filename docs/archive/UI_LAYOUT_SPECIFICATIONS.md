@@ -1028,7 +1028,7 @@ Option A - Horizontal Scroll Pet Gallery:
 </motion.div>
 
 {/* Spacer between events */}
-<div className="h-20" style={{ background: 'var(--background)' }} />
+<div className="h-20"  />
 ```
 
 **Timeline Events Content:**
@@ -1122,7 +1122,7 @@ const timelineEvents = [
   </div>
 
   {/* Content Column */}
-  <div className="flex items-center p-16 lg:p-24" style={{ background: 'var(--background)' }}>
+  <div className="flex items-center p-16 lg:p-24" >
     <div>
       <DateBadge />
       <h3 className="text-4xl lg:text-5xl font-playfair mb-6">{event.title}</h3>
