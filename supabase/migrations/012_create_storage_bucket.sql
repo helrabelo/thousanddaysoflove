@@ -1,9 +1,9 @@
 -- Create Storage Bucket for Wedding Photos
 -- This bucket will store timeline photos, gallery images, and other wedding media
 
--- Create the bucket
-INSERT INTO storage.buckets (id, name, public)
-VALUES ('wedding-photos', 'wedding-photos', true)
+-- Create the bucket (simplified for local Supabase schema)
+INSERT INTO storage.buckets (id, name)
+VALUES ('wedding-photos', 'wedding-photos')
 ON CONFLICT (id) DO NOTHING;
 
 -- Set up RLS policies for the bucket

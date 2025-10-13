@@ -70,7 +70,7 @@ Copy `.env.local.example` to `.env.local` and configure:
 ## Git Repository
 - **Location**: `/Users/helrabelo/code/personal/thousanddaysoflove`
 - **Current Status**: Phase 2 (Gallery Migration) implementation complete
-- **Next Steps**: Execute gallery migration to Sanity
+- **Next Steps**: Guest Experience Enhancement (see docs/GUEST_EXPERIENCE_ROADMAP.md)
 
 ## Supabase Local Development
 **Status**: ✅ COMPLETE - Full local development environment ready
@@ -325,5 +325,173 @@ All components feature elegant animations:
   - `guestAuth.ts`: Client-safe utilities
   - `guestAuth.server.ts`: Server-only functions
 - **Utilities**: Shared formatters in `lib/utils/format.ts`
+
+---
+
+## Guest Experience Enhancement Roadmap
+**Status**: 📋 PLANNING COMPLETE - Ready for implementation
+
+### Overview
+Comprehensive plan to transform the wedding website from a static invitation into an interactive celebration platform with personalized invitations, guest messaging, real-time wedding day feed, and progress tracking.
+
+### Documentation
+Complete implementation roadmap available at:
+- **Full Roadmap**: `/docs/GUEST_EXPERIENCE_ROADMAP.md` (200+ lines with detailed implementation guide)
+- **Quick Summary**: `/docs/IMPLEMENTATION_SUMMARY.md` (High-level overview and quick reference)
+
+### Planned Features (4 New Pages)
+
+#### 1. `/convite` - Personalized Invitation Landing Page
+**Purpose**: Primary guest entry point with personalized experiences
+
+**Features**:
+- Generic version (public access)
+- Personalized version with invite codes (`/convite/[code]`)
+- Event details, venue, dress code
+- Interactive website guide
+- Progress tracker (RSVP, gifts, photos, messages)
+- QR code for sharing
+
+**Database**: New `invitations` table with invite codes, guest details, tracking
+**Admin**: `/admin/convites` for invitation management, code generation, analytics
+
+#### 2. `/mensagens` - Guest Messaging & Social Feed
+**Purpose**: Social feed where guests share messages, photos, and videos
+
+**Features**:
+- Rich post composer (text + emoji + multi-file upload)
+- Like/reaction system (heart, clap, laugh, celebrate)
+- Comment threads with nested replies
+- Filter by post type (all/text/photos/videos)
+- Admin moderation (approve/reject)
+
+**Database**: New tables - `guest_posts`, `post_reactions`, `post_comments`
+**Admin**: `/admin/posts` for content moderation with keyboard shortcuts
+
+#### 3. `/ao-vivo` - Wedding Day Live Feed
+**Purpose**: Real-time celebration dashboard for wedding day
+
+**Features**:
+- Live post stream (Supabase real-time subscriptions)
+- Live photo gallery
+- Confirmed guests grid with avatars
+- Admin-pinned special moments
+- Celebration statistics (posts, photos, guests checked in)
+
+**Database**: New `pinned_posts` table for special moments
+**Admin**: Pin/unpin controls, quick moderation, mobile-optimized
+
+#### 4. `/meu-convite` - Guest Dashboard
+**Purpose**: Personalized hub showing guest's progress
+
+**Features**:
+- Completion checklist (RSVP, gifts, photos, messages)
+- Event countdown timer
+- Quick action buttons
+- Recent activity feed
+- Invite code with QR code
+
+**Dependencies**: All other features (tracks overall progress)
+
+### Implementation Timeline (4 Weeks)
+
+**Week 1 - Phase 1: Foundation & Invitations**
+- Database migrations (all tables)
+- Build `/convite` page (generic + personalized)
+- Implement invite code system
+- Build `/admin/convites` management
+- Add first-visit onboarding tutorial
+
+**Week 2 - Phase 2: Social Features**
+- Post composer with emoji picker
+- Build `/mensagens` feed page
+- Like/reaction/comment system
+- Build `/admin/posts` moderation
+- Activity feed integration
+
+**Week 3 - Phase 3: Live Experience**
+- Real-time Supabase subscriptions
+- Build `/ao-vivo` live feed page
+- Special moments pinning
+- Celebration stats dashboard
+- Mobile optimization
+
+**Week 4 - Phase 4: Polish & Launch**
+- Build `/meu-convite` dashboard
+- Enhanced navigation (mobile bottom nav)
+- Onboarding tooltips
+- Comprehensive testing
+- Production launch
+
+### Database Schema Changes
+
+**New Tables Required**:
+1. `invitations` - Personalized invite codes and guest details
+2. `guest_posts` - Guest messages with moderation
+3. `post_reactions` - Likes and reactions on posts
+4. `post_comments` - Comments with nested replies support
+5. `pinned_posts` - Admin-pinned special moments
+
+All SQL schemas and RLS policies included in full roadmap document.
+
+### Success Metrics
+
+**Engagement Targets**:
+- Invitation open rate: 85%+
+- Message posting rate: 40%+ of guests
+- Photo upload rate: 60%+ of guests
+- Dashboard completion: 50%+ complete all 4 actions
+
+**Wedding Day Performance**:
+- Concurrent users during ceremony: 70%+ of guests
+- Posts per hour during reception: 20+
+- Real-time subscription success rate: 99%+
+
+**Technical Performance**:
+- Page load time: < 2 seconds
+- Lighthouse score: 90+ for all pages
+
+### Rollout Strategy
+
+1. **Phase 1 Launch**: Close family (10-15 guests) - Test invitation system
+2. **Phase 2 Launch**: Extended family & friends (50-75 guests) - Test social features
+3. **Phase 3 Launch**: All guests (100+ total) - Full feature set
+4. **Wedding Day**: Live at venue - Real-time feed active
+
+### Technical Considerations
+
+**Real-time Infrastructure**:
+- Supabase real-time subscriptions for live feed
+- Fallback auto-refresh every 30 seconds
+- Connection limit: 200 concurrent (consider plan upgrade if needed)
+
+**Content Moderation**:
+- All posts/photos require admin approval
+- Keyboard shortcuts for quick moderation (A/R)
+- Batch operations support
+- Activity feed integration
+
+**Mobile Optimization**:
+- Bottom navigation bar for mobile
+- Floating action button (FAB)
+- Dark mode for evening reception
+- Mobile admin panel for on-site moderation
+
+### Next Steps to Begin Implementation
+
+Ready to start? Use this command:
+
+```bash
+# Create feature branch
+git checkout -b feature/guest-experience-phase-1
+
+# Review full roadmap
+cat docs/GUEST_EXPERIENCE_ROADMAP.md
+
+# Start with database migrations
+npm run db:generate
+```
+
+Then follow the detailed Phase 1 implementation guide in the roadmap document.
 
 ---
