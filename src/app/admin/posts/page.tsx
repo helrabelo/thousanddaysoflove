@@ -54,11 +54,6 @@ export default function AdminPostsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [stats, setStats] = useState<any>(null);
 
-  // Check admin auth
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
   // Load posts when filter changes
   useEffect(() => {
     loadPosts();
@@ -93,17 +88,6 @@ export default function AdminPostsPage() {
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [posts, selectedPosts]);
-
-  const checkAuth = async () => {
-    try {
-      const response = await fetch('/api/admin/check-session');
-      if (!response.ok) {
-        router.push('/admin/login');
-      }
-    } catch (error) {
-      router.push('/admin/login');
-    }
-  };
 
   const loadPosts = async () => {
     setIsLoading(true);

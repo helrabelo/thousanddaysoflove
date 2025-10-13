@@ -19,6 +19,13 @@ export default function AdminPage() {
       color: 'blush'
     },
     {
+      href: '/admin/posts',
+      icon: Heart,
+      title: 'Moderação de Mensagens',
+      description: 'Aprovar/rejeitar mensagens dos convidados',
+      color: 'blush'
+    },
+    {
       href: '/admin/photos',
       icon: ImageIcon,
       title: 'Moderação de Fotos',
