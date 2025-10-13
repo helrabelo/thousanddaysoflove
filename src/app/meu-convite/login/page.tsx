@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, FormEvent, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { LogIn, AlertCircle, Heart } from 'lucide-react';
 import { loginWithInvitationCode } from '@/lib/supabase/invitations';
@@ -14,9 +14,20 @@ import { loginWithInvitationCode } from '@/lib/supabase/invitations';
  */
 export default function GuestLoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [code, setCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Check for error in URL params
+  useEffect(() => {
+    const errorParam = searchParams.get('error');
+    if (errorParam === 'invalid_code') {
+      setError('Código inválido. Verifique seu convite e tente novamente.');
+    } else if (errorParam === 'login_failed') {
+      setError('Erro ao fazer login. Tente novamente.');
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
