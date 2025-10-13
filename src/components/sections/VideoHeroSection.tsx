@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { motion, useReducedMotion } from 'framer-motion'
+import { motion, useReducedMotion, AnimatePresence } from 'framer-motion'
 import { Heart, Volume2, VolumeX } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -43,9 +43,16 @@ interface VideoHeroProps {
 export default function VideoHeroSection({ data }: VideoHeroProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [isVideoLoaded, setIsVideoLoaded] = useState(false)
+  const [showPoster, setShowPoster] = useState(true)
   const [isMuted, setIsMuted] = useState(true)
   const [contentVisibility, setContentVisibility] = useState<'initial' | 'audioOn' | 'idle'>('initial')
   const idleTimerRef = useRef<NodeJS.Timeout>()
+  const fallbackTimerRef = useRef<NodeJS.Timeout>()
+
+  // Debug logging for poster state
+  useEffect(() => {
+    console.log('📊 Hero state - showPoster:', showPoster, 'isVideoLoaded:', isVideoLoaded)
+  }, [showPoster, isVideoLoaded])
   const shouldReduceMotion = useReducedMotion()
 
   // Fallback values
@@ -63,6 +70,7 @@ export default function VideoHeroSection({ data }: VideoHeroProps) {
     // If reduced motion, show content immediately (static image, no video loading needed)
     if (shouldReduceMotion) {
       setIsVideoLoaded(true)
+      setShowPoster(true) // Keep poster visible for reduced motion
       return
     }
 
@@ -73,14 +81,38 @@ export default function VideoHeroSection({ data }: VideoHeroProps) {
       })
     }
 
-    // Fallback: Show content after 1.5 seconds regardless of video load state
+    // Fallback: Show content and hide poster after 2 seconds regardless of video load state
     // This ensures content always appears even if video fails to load or loads slowly
-    const fallbackTimer = setTimeout(() => {
+    fallbackTimerRef.current = setTimeout(() => {
+      console.log('⏱️ Fallback timer: hiding poster and showing content')
       setIsVideoLoaded(true)
-    }, 1500)
+      setShowPoster(false)
+    }, 2000)
 
-    return () => clearTimeout(fallbackTimer)
+    return () => {
+      if (fallbackTimerRef.current) {
+        clearTimeout(fallbackTimerRef.current)
+      }
+    }
   }, [shouldReduceMotion])
+
+  // Handle video loaded - trigger poster fade out
+  const handleVideoLoaded = () => {
+    console.log('🎬 Video loaded successfully')
+
+    // Clear fallback timer since video loaded properly
+    if (fallbackTimerRef.current) {
+      clearTimeout(fallbackTimerRef.current)
+    }
+
+    setIsVideoLoaded(true)
+
+    // Start poster fade out after a brief moment to ensure video is ready
+    setTimeout(() => {
+      console.log('✨ Hiding poster, showing video')
+      setShowPoster(false)
+    }, 300)
+  }
 
   // Idle timer for persistent accessibility
   const startIdleTimer = () => {
@@ -255,30 +287,73 @@ export default function VideoHeroSection({ data }: VideoHeroProps) {
           />
         </div>
       ) : (
-        // Video background
+        // Video background with poster transition
         <div className="absolute inset-0">
-          <video
-            ref={videoRef}
-            autoPlay
-            loop
-            muted={isMuted}
-            playsInline
-            poster={posterUrl}
-            onLoadedData={() => setIsVideoLoaded(true)}
-            className="w-full h-full object-cover object-center"
-            style={{
-              minHeight: '100vh',
-              minWidth: '100vw'
+          {/* Poster Image Layer - Animated exit */}
+          <AnimatePresence>
+            {showPoster && (
+              <motion.div
+                className="absolute inset-0 z-20"
+                initial={{ opacity: 1, scale: 1 }}
+                exit={{
+                  opacity: 0,
+                  scale: 1.05,
+                  transition: {
+                    duration: 1.2,
+                    ease: [0.43, 0.13, 0.23, 0.96] // Custom cubic-bezier for elegant fade
+                  }
+                }}
+              >
+                <Image
+                  src={posterUrl}
+                  alt="Hel e Ylana"
+                  fill
+                  className="object-cover object-center"
+                  style={{
+                    minHeight: '100vh',
+                    minWidth: '100vw'
+                  }}
+                  priority
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Video Layer - Animated entrance from behind */}
+          <motion.div
+            className="absolute inset-0 z-10"
+            initial={{ opacity: 0 }}
+            animate={{
+              opacity: showPoster ? 0 : 1,
+              transition: {
+                duration: 1.2,
+                ease: [0.43, 0.13, 0.23, 0.96],
+                delay: 0.2 // Slight delay for smooth crossfade
+              }
             }}
           >
-            <source src={videoUrl} type="video/mp4" />
-          </video>
+            <video
+              ref={videoRef}
+              autoPlay
+              loop
+              muted={isMuted}
+              playsInline
+              onLoadedData={handleVideoLoaded}
+              className="w-full h-full object-cover object-center"
+              style={{
+                minHeight: '100vh',
+                minWidth: '100vw'
+              }}
+            >
+              <source src={videoUrl} type="video/mp4" />
+            </video>
+          </motion.div>
         </div>
       )}
 
       {/* Gradient Overlay - Dynamic based on visibility state */}
       <motion.div
-        className="absolute inset-0 bg-gradient-to-t"
+        className="absolute inset-0 bg-gradient-to-t z-30"
         animate={{
           backgroundImage: contentVisibility === 'initial'
             ? 'linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0.3), transparent)'
@@ -291,7 +366,7 @@ export default function VideoHeroSection({ data }: VideoHeroProps) {
 
 
       {/* Content Overlay */}
-      <div className="relative z-10 h-full w-full flex-grow flex items-end pb-20 px-8 md:px-16 lg:px-20">
+      <div className="relative z-40 h-full w-full flex-grow flex items-end pb-20 px-8 md:px-16 lg:px-20">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: isVideoLoaded ? 1 : 0, y: isVideoLoaded ? 0 : 40 }}
