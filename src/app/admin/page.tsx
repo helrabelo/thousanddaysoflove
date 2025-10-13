@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Heart, Users, Calendar, Image, User, Gift, CreditCard, BarChart3, ImageIcon, PawPrint } from 'lucide-react'
+import { Heart, Users, Calendar, Gift, CreditCard, BarChart3, ImageIcon } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 
@@ -19,38 +19,10 @@ export default function AdminPage() {
       color: 'blush'
     },
     {
-      href: '/admin/timeline',
-      icon: Calendar,
-      title: 'Gerenciar Nossa História',
-      description: 'Adicionar e editar eventos da timeline',
-      color: 'sage'
-    },
-    {
-      href: '/admin/hero-images',
+      href: '/admin/photos',
       icon: ImageIcon,
-      title: 'Imagens Hero',
-      description: 'Gerenciar imagens do banner principal',
-      color: 'purple'
-    },
-    {
-      href: '/admin/pets',
-      icon: PawPrint,
-      title: 'Nossa Família Peluda',
-      description: 'Gerenciar Linda, Cacao, Olivia e Oliver',
-      color: 'blush'
-    },
-    {
-      href: '/admin/about-us',
-      icon: User,
-      title: 'Gerenciar Sobre Nós',
-      description: 'Editar informações sobre o casal',
-      color: 'sage'
-    },
-    {
-      href: '/admin/galeria',
-      icon: Image,
-      title: 'Gerenciar Galeria',
-      description: 'Upload e organização de fotos',
+      title: 'Moderação de Fotos',
+      description: 'Aprovar/rejeitar fotos dos convidados',
       color: 'purple'
     },
     {
@@ -73,6 +45,14 @@ export default function AdminPage() {
       title: 'Analytics',
       description: 'Estatísticas do casamento',
       color: 'purple'
+    },
+    {
+      href: '/studio',
+      icon: Calendar,
+      title: 'Sanity Studio',
+      description: 'Gerenciar conteúdo: História, Galeria, Pets, Sobre Nós',
+      color: 'sage',
+      external: true
     }
   ]
 
