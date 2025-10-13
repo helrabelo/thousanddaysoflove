@@ -16,6 +16,12 @@
 
 ### 3. Database Migration ⚠️ NEEDS MANUAL APPLICATION
 
+### 4. **RLS Policy Issue - Guest Posts** 🔥 CRITICAL
+**Error**: `new row violates row-level security policy for table "guest_posts"`
+**Root Cause**: The "Service role can manage all posts" policy (FOR ALL) conflicts with guest INSERT policy
+**Impact**: Guests cannot submit messages, photos, or videos
+**Fix**: Apply migration `025_fix_guest_posts_rls.sql` to update RLS policies
+
 ## Step-by-Step Migration Instructions
 
 ### Prerequisites
@@ -34,11 +40,23 @@
 
 ### Application Steps
 
-#### Step 1: Access Supabase SQL Editor
+#### Step 1: Apply RLS Policy Fix (PRIORITY - DO THIS FIRST!)
+
+**This is the MOST CRITICAL fix** - without it, guests cannot post messages.
+
+1. Go to: https://supabase.com/dashboard/project/uottcbjzpiudgmqzhuii/sql/new
+2. Copy the RLS fix:
+```bash
+cat supabase/migrations/025_fix_guest_posts_rls.sql | pbcopy
+```
+3. Paste into SQL Editor and click **"Run"**
+4. Verify success - you should see "Success. No rows returned"
+
+#### Step 2: Access Supabase SQL Editor
 1. Go to: https://supabase.com/dashboard/project/uottcbjzpiudgmqzhuii/sql/new
 2. Login with your Supabase credentials
 
-#### Step 2: Copy Migration SQL
+#### Step 3: Copy Migration SQL
 ```bash
 # Copy the entire migration file contents
 cat supabase/migrations/024_fixed_guest_posts.sql | pbcopy
@@ -46,13 +64,13 @@ cat supabase/migrations/024_fixed_guest_posts.sql | pbcopy
 
 Or manually open the file and copy all ~600 lines.
 
-#### Step 3: Execute in SQL Editor
+#### Step 4: Execute in SQL Editor
 1. Paste the entire migration SQL into the editor
 2. Click **"Run"** button (bottom right)
 3. Wait for execution to complete (~5-10 seconds)
 4. Verify success message
 
-#### Step 4: Verify Tables Created
+#### Step 5: Verify Tables Created
 Check tables exist at: https://supabase.com/dashboard/project/uottcbjzpiudgmqzhuii/database/tables
 
 Expected new tables:
@@ -62,7 +80,7 @@ Expected new tables:
 - ✅ `post_comments` (8 columns)
 - ✅ `pinned_posts` (6 columns)
 
-#### Step 5: Verify RLS Policies
+#### Step 6: Verify RLS Policies
 Go to: https://supabase.com/dashboard/project/uottcbjzpiudgmqzhuii/auth/policies
 
 Each table should have 3-5 RLS policies:
