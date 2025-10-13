@@ -12,10 +12,9 @@ import {
 import {
   uploadFile,
   validateFile,
-  generateStoragePath,
   type UploadPhase,
-} from '@/lib/supabase/storage'
-import { createServerClient } from '@/lib/supabase/server'
+} from '@/lib/supabase/storage-server'
+import { createAdminClient } from '@/lib/supabase/server'
 
 export const runtime = 'nodejs' // Need Node runtime for file handling
 export const maxDuration = 60 // 1 minute timeout for large uploads
@@ -89,7 +88,6 @@ export async function POST(request: NextRequest) {
     })
 
     // Create database record (use admin client to bypass RLS)
-    const { createAdminClient } = await import('@/lib/supabase/server')
     const supabase = createAdminClient()
 
     const { data: photo, error: dbError } = await supabase

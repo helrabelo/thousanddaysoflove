@@ -4,7 +4,6 @@
  */
 
 import { createClient } from '@/lib/supabase/client'
-import { cookies } from 'next/headers'
 
 export const GUEST_SESSION_COOKIE = 'guest_session_token'
 export const GUEST_SESSION_DURATION_HOURS = 72
@@ -273,19 +272,8 @@ export async function verifyGuestSession(
   return session as GuestSession
 }
 
-/**
- * Get current guest session (server-side)
- */
-export async function getCurrentGuestSession(): Promise<GuestSession | null> {
-  const cookieStore = await cookies()
-  const sessionToken = cookieStore.get(GUEST_SESSION_COOKIE)?.value
-
-  if (!sessionToken) {
-    return null
-  }
-
-  return verifyGuestSession(sessionToken)
-}
+// Note: getCurrentGuestSession moved to guestAuth.server.ts
+// to avoid importing next/headers in client components
 
 /**
  * Logout guest session
