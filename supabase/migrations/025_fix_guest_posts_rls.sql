@@ -3,14 +3,16 @@
 -- Problem: The "Service role can manage all posts" policy was blocking
 -- anonymous guest post creation because FOR ALL includes INSERT operations.
 --
--- Solution: Split the admin policy into specific operations (UPDATE, DELETE)
--- and keep the INSERT policy separate for guests.
+-- Solution: Drop and recreate policies with proper role targeting
+-- to eliminate conflicts between service_role and anonymous users.
 
--- Drop the problematic ALL policy
+-- Drop ALL existing policies on guest_posts
 DROP POLICY IF EXISTS "Service role can manage all posts" ON guest_posts;
+DROP POLICY IF EXISTS "Guests can create posts" ON guest_posts;
+DROP POLICY IF EXISTS "Anyone can view approved posts" ON guest_posts;
 
--- Recreate with specific operations (UPDATE, DELETE, SELECT)
--- This allows the guest INSERT policy to work independently
+-- Recreate service role policy with TO clause (only affects service_role)
+-- This policy does NOT affect anonymous users
 CREATE POLICY "Service role can manage all posts"
   ON guest_posts
   FOR ALL
@@ -18,15 +20,17 @@ CREATE POLICY "Service role can manage all posts"
   USING (true)
   WITH CHECK (true);
 
--- Ensure the guest INSERT policy exists
-CREATE POLICY IF NOT EXISTS "Guests can create posts"
+-- Recreate guest INSERT policy targeting anonymous and authenticated users
+-- This is the KEY fix - allows guests to create posts
+CREATE POLICY "Guests can create posts"
   ON guest_posts
   FOR INSERT
   TO anon, authenticated
   WITH CHECK (true);
 
--- Ensure guests can read approved posts
-CREATE POLICY IF NOT EXISTS "Anyone can view approved posts"
+-- Recreate SELECT policy allowing everyone to read approved posts
+-- Service role can see ALL posts (pending, approved, rejected)
+CREATE POLICY "Anyone can view approved posts"
   ON guest_posts
   FOR SELECT
   TO anon, authenticated, service_role
