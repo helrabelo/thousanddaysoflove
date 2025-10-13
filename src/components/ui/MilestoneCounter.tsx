@@ -187,7 +187,7 @@ export default function MilestoneCounter({
   }
 
   return (
-    <section className="py-24" style={{ background: 'var(--background)' }}>
+    <section className="py-24" >
       <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16">
         {/* Header */}
         <motion.div

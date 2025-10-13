@@ -15,7 +15,7 @@ export default function HeroSection() {
       {/* Fundo com cor do convite */}
       <div
         className="absolute inset-0"
-        style={{ background: 'var(--background)' }}
+        
       />
 
       {/* Elegant botanical corner flourishes */}

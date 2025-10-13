@@ -9,17 +9,18 @@ import { groq } from 'next-sanity'
 /**
  * Timeline Query
  * Fetches all story phases with their associated moments
+ * Note: showInTimeline defaults to true if not set (for backwards compatibility)
  */
 export const timelineQuery = groq`
   {
-    "phases": *[_type == "storyPhase" && isVisible == true] | order(displayOrder asc) {
+    "phases": *[_type == "storyPhase" && isVisible != false] | order(displayOrder asc) {
       _id,
       id,
       title,
       dayRange,
       subtitle,
       displayOrder,
-      "moments": *[_type == "storyMoment" && references(^._id) && showInTimeline == true && isVisible == true] | order(displayOrder asc) {
+      "moments": *[_type == "storyMoment" && references(^._id) && (showInTimeline == true || !defined(showInTimeline)) && isVisible != false] | order(displayOrder asc) {
         _id,
         title,
         date,
@@ -43,9 +44,11 @@ export const timelineQuery = groq`
 /**
  * Story Preview Query (for homepage)
  * Fetches moments that should appear in homepage preview
+ * Uses same filtering as timeline to ensure consistency
+ * Note: showInTimeline defaults to true if not set (for backwards compatibility)
  */
 export const storyPreviewMomentsQuery = groq`
-  *[_type == "storyMoment" && isVisible == true] | order(displayOrder asc) [0...12] {
+  *[_type == "storyMoment" && (showInTimeline == true || !defined(showInTimeline)) && isVisible != false] | order(displayOrder asc) [0...12] {
     _id,
     title,
     date,

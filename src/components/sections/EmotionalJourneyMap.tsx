@@ -121,7 +121,7 @@ export default function EmotionalJourneyMap() {
   }
 
   return (
-    <section className="py-32" style={{ background: 'var(--background)' }}>
+    <section className="py-32" >
       <div className="max-w-7xl mx-auto px-8 sm:px-12 lg:px-16">
         {/* Header */}
         <motion.div

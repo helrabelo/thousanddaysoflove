@@ -83,7 +83,6 @@ export default function WeddingLocation({ data }: WeddingLocationProps) {
   return (
     <section
       className="min-h-screen md:h-[calc(100vh-80px)] flex items-center py-12 md:py-0 px-4 md:px-8 relative overflow-hidden"
-      style={{ background: 'var(--background)' }}
     >
       {/* Botanical Corner Decorations */}
       <BotanicalCorners pattern="diagonal-right" />

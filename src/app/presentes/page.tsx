@@ -112,7 +112,7 @@ export default function PresentsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen" style={{ background: 'var(--background)' }}>
+      <div className="min-h-screen" >
         <div className="container mx-auto px-4 py-16">
           <div className="text-center mb-12">
             <div className="w-12 h-12 border-4 rounded-full animate-spin mx-auto mb-4" style={{ borderColor: 'var(--decorative)', borderTopColor: 'var(--primary-text)' }} />
@@ -124,7 +124,7 @@ export default function PresentsPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--background)' }}>
+    <div className="min-h-screen" >
       <Navigation />
       <div className="container mx-auto px-4 py-8 pt-24">
         {/* Header */}

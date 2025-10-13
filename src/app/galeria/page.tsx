@@ -204,7 +204,7 @@ export default function GaleriaPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen" style={{ background: 'var(--background)' }}>
+      <div className="min-h-screen" >
         <div className="flex items-center justify-center min-h-screen">
           <motion.div
             className="text-center"
@@ -226,7 +226,7 @@ export default function GaleriaPage() {
   }
 
   return (
-    <main className="min-h-screen" style={{ background: 'var(--background)' }}>
+    <main className="min-h-screen" >
       <Navigation />
 
       {/* Hero Section - Wedding Invitation Style */}
