@@ -30,7 +30,7 @@ export default function AboutUsSection({ data }: AboutUsSectionProps) {
 
   return (
     <section className="min-h-screen md:h-[calc(100vh-80px)] flex items-center py-16 md:py-0">
-      <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16 w-full">
+      <div className="max-w-6xl mx-auto container-padding w-full">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}

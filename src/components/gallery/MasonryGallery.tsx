@@ -173,8 +173,8 @@ export default function MasonryGallery({
   return (
     <>
       <section className="py-20">
-        <div className="max-w-8xl mx-auto px-6">
-          {/* Header */}
+        {/* Header with padding */}
+        <div className="container-padding max-w-8xl mx-auto">
           <motion.div
             className="text-center mb-12"
             initial={{ opacity: 0, y: 30 }}
@@ -309,8 +309,10 @@ export default function MasonryGallery({
               Mostrando {filteredItems.length} de {items.length} {filteredItems.length === 1 ? 'memória' : 'memórias'}
             </p>
           </motion.div>
+        </div>
 
-          {/* Masonry Grid - Collage Style */}
+        {/* Masonry Grid - Full Width, Edge-to-Edge */}
+        <div className="full-width">
           <motion.div
             className="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-3"
             initial={{ opacity: 0 }}
@@ -564,8 +566,10 @@ export default function MasonryGallery({
               )
             })}
           </motion.div>
+        </div>
 
-          {/* Empty State - Whimsical */}
+        {/* Empty State - Whimsical (with padding) */}
+        <div className="container-padding">
           {filteredItems.length === 0 && (
             <motion.div
               className="text-center py-20"

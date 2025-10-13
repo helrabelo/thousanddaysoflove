@@ -458,6 +458,121 @@ export interface RenderedStoryMediaItem {
 }
 
 // =====================================================
+// GUEST EXPERIENCE - Invitations System
+// =====================================================
+
+/**
+ * Invitation
+ * Represents a personalized wedding invitation with tracking
+ */
+export interface Invitation {
+  id: string;
+  code: string;
+  guest_name: string;
+  guest_email?: string;
+  guest_phone?: string;
+  relationship_type: 'family' | 'friend' | 'colleague' | 'other';
+  plus_one_allowed: boolean;
+  plus_one_name?: string;
+  custom_message?: string;
+  table_number?: number;
+  dietary_restrictions?: string;
+
+  // Tracking
+  opened_at?: string;
+  open_count: number;
+  rsvp_completed: boolean;
+  gift_selected: boolean;
+  photos_uploaded: boolean;
+
+  // Metadata
+  created_at: string;
+  updated_at: string;
+  created_by?: string;
+}
+
+/**
+ * Guest Progress
+ * Calculated progress for a guest's invitation actions
+ */
+export interface GuestProgress {
+  rsvp_completed: boolean;
+  gift_selected: boolean;
+  photos_uploaded: boolean;
+  messages_sent: boolean;
+  completion_percentage: number;
+  completed_count: number;
+  total_count: number;
+}
+
+/**
+ * Guest Post
+ * Social feed posts from wedding guests
+ */
+export interface GuestPost {
+  id: string;
+  guest_session_id?: string;
+  guest_name: string;
+  content: string;
+  post_type: 'text' | 'image' | 'video' | 'mixed';
+  media_urls?: string[];
+
+  // Moderation
+  status: 'pending' | 'approved' | 'rejected';
+  moderation_reason?: string;
+  moderated_at?: string;
+  moderated_by?: string;
+
+  // Engagement
+  likes_count: number;
+  comments_count: number;
+
+  // Metadata
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Post Reaction
+ * Likes and reactions on guest posts
+ */
+export interface PostReaction {
+  id: string;
+  post_id: string;
+  guest_session_id?: string;
+  guest_name?: string;
+  reaction_type: 'heart' | 'clap' | 'laugh' | 'celebrate' | 'love';
+  created_at: string;
+}
+
+/**
+ * Post Comment
+ * Comments and replies on guest posts
+ */
+export interface PostComment {
+  id: string;
+  post_id: string;
+  parent_comment_id?: string;
+  guest_session_id?: string;
+  guest_name: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Pinned Post
+ * Admin-pinned special moments
+ */
+export interface PinnedPost {
+  id: string;
+  post_id: string;
+  pinned_by: string;
+  pinned_at: string;
+  display_order: number;
+}
+
+// =====================================================
 // SANITY CMS TYPES - Gallery Albums
 // =====================================================
 

@@ -263,7 +263,7 @@ export default function VideoHeroSection({ data }: VideoHeroProps) {
   )
 
   return (
-    <section className="relative h-screen overflow-hidden -mt-20 w-screen" style={{ marginLeft: 'calc(-50vw + 50%)' }}>
+    <section className="full-width relative h-screen overflow-hidden -mt-20">
       {/* Background Video or Image */}
       {shouldReduceMotion ? (
         // Static image for reduced motion preference
@@ -360,7 +360,7 @@ export default function VideoHeroSection({ data }: VideoHeroProps) {
 
 
       {/* Content Overlay */}
-      <div className="relative z-40 h-full w-full flex-grow flex items-end pb-20 px-8 md:px-16 lg:px-20">
+      <div className="relative z-40 h-full w-full flex-grow flex items-end pb-20 container-padding">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: isVideoLoaded ? 1 : 0, y: isVideoLoaded ? 0 : 40 }}

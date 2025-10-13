@@ -15,14 +15,14 @@ export default function HeroSection() {
       {/* Fundo com cor do convite */}
       <div
         className="absolute inset-0"
-        
+
       />
 
       {/* Elegant botanical corner flourishes */}
       <CornerFlourish position="top-right" size="lg" className="top-16 right-16" />
       <CornerFlourish position="bottom-left" size="lg" className="bottom-16 left-16" />
 
-      <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+      <div className="relative z-10 text-center container-padding max-w-4xl mx-auto">
         {/* Logo H & Y */}
         <motion.div
           initial={{ opacity: 0, y: -30 }}

@@ -109,7 +109,7 @@ export default function StoryPreview() {
   }
 
   return (
-    <section className="relative overflow-hidden w-screen" style={{ marginLeft: 'calc(-50vw + 50%)' }}>
+    <section className="full-width relative overflow-hidden">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 z-0">
         <Image
@@ -128,15 +128,15 @@ export default function StoryPreview() {
         />
       </div>
 
-      {/* Header Section - Full Width */}
+      {/* Header Section - With Container Padding */}
       <div
-        className="relative z-10"
+        className="relative z-10 container-padding"
         style={{
           paddingTop: '80px',
           paddingBottom: '80px',
         }}
       >
-        <div className="max-w-4xl mx-auto text-center px-6">
+        <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -173,7 +173,7 @@ export default function StoryPreview() {
       </div>
 
       {/* Masonry Story Grid - Edge-to-Edge Full-Width with Fixed Row Heights */}
-      <div className="relative z-10 w-screen" style={{ marginLeft: 'calc(-50vw + 50%)' }}>
+      <div className="relative z-10 w-full">
         {/* Story Grid Container - Full Bleed */}
         <div className="w-full overflow-hidden">
           <div className="story-grid">
