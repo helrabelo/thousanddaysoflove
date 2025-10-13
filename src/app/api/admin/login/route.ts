@@ -1,31 +1,60 @@
+/**
+ * Admin Login API
+ * POST /api/admin/login - Authenticate admin with password
+ */
+
 import { NextRequest, NextResponse } from 'next/server'
 
-// Simple password-based authentication for wedding admin
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'HelYlana2025!' // Change this in production!
+export const runtime = 'edge'
+
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'HelYlana1000Dias!'
+const SESSION_DURATION = 24 * 60 * 60 // 24 hours in seconds
 
 export async function POST(request: NextRequest) {
   try {
-    const { password } = await request.json()
+    const body = await request.json()
+    const { password } = body
 
-    if (password === ADMIN_PASSWORD) {
-      // Set secure cookie for authentication
-      const response = NextResponse.json({ success: true })
+    // Validate password
+    if (!password) {
+      return NextResponse.json(
+        { error: 'Senha é obrigatória' },
+        { status: 400 }
+      )
+    }
 
-      response.cookies.set('admin-auth', 'authenticated', {
-        httpOnly: false, // Allow client-side access for middleware
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 86400, // 24 hours
-        path: '/'
-      })
-
-      return response
-    } else {
+    // Check password
+    if (password !== ADMIN_PASSWORD) {
       return NextResponse.json(
         { error: 'Senha incorreta' },
         { status: 401 }
       )
     }
+
+    // Generate simple session token
+    const sessionToken = generateSessionToken()
+
+    // Create response
+    const response = NextResponse.json(
+      {
+        success: true,
+        message: 'Login realizado com sucesso',
+      },
+      { status: 200 }
+    )
+
+    // Set session cookie
+    response.cookies.set({
+      name: 'admin_session',
+      value: sessionToken,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: SESSION_DURATION,
+      path: '/',
+    })
+
+    return response
   } catch (error) {
     console.error('Admin login error:', error)
     return NextResponse.json(
@@ -35,11 +64,10 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Logout endpoint
-export async function DELETE() {
-  const response = NextResponse.json({ success: true })
-
-  response.cookies.delete('admin-auth')
-
-  return response
+function generateSessionToken(): string {
+  const array = new Uint8Array(32)
+  crypto.getRandomValues(array)
+  return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join(
+    ''
+  )
 }
