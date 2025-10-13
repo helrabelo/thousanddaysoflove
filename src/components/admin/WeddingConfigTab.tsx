@@ -161,7 +161,7 @@ export function WeddingConfigTab() {
         basicInfo: {
           brideNames: 'Ylana',
           groomNames: 'Hel',
-          weddingDate: '2025-11-11',
+          weddingDate: '2025-11-20',
           venue: {
             name: 'Espaço Villa Leopoldina',
             address: 'Rua Carlos Weber, 1235',

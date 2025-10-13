@@ -7,7 +7,7 @@
  */
 
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import Image from 'next/image'
 import { MediaItem } from '@/types/wedding'
 
@@ -32,6 +32,7 @@ export default function GuestPhotosSection({
   photosByPhase,
 }: GuestPhotosSectionProps) {
   const [selectedPhase, setSelectedPhase] = useState<Phase>('all')
+  const shouldReduceMotion = useReducedMotion()
 
   // Get photos for selected phase
   const getPhotos = (): MediaItem[] => {
@@ -87,15 +88,18 @@ export default function GuestPhotosSection({
             Momentos capturados através dos olhos de nossos queridos amigos e
             familiares
           </p>
-          <p
+          <motion.p
             className="text-lg mt-4"
             style={{
               fontFamily: 'var(--font-crimson)',
               color: 'var(--decorative)',
             }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
           >
             {totalPhotos} foto{totalPhotos !== 1 ? 's' : ''} compartilhada{totalPhotos !== 1 ? 's' : ''}
-          </p>
+          </motion.p>
         </motion.div>
 
         {/* Phase Filter Tabs */}
@@ -117,7 +121,7 @@ export default function GuestPhotosSection({
             }
 
             return (
-              <button
+              <motion.button
                 key={phase}
                 onClick={() => setSelectedPhase(phase)}
                 className="px-6 py-3 rounded-lg font-medium transition-all duration-300"
@@ -140,9 +144,14 @@ export default function GuestPhotosSection({
                       ? '0 4px 15px var(--shadow-medium)'
                       : '0 2px 8px var(--shadow-subtle)',
                 }}
+                whileHover={shouldReduceMotion ? {} : {
+                  scale: 1.05,
+                  y: -2
+                }}
+                whileTap={{ scale: 0.95 }}
               >
                 {phaseLabels[phase]}
-                <span
+                <motion.span
                   className="ml-2 inline-flex items-center justify-center min-w-[24px] h-6 px-2 rounded-full text-xs"
                   style={{
                     background:
@@ -154,17 +163,43 @@ export default function GuestPhotosSection({
                         ? 'var(--white-soft)'
                         : 'var(--primary-text)',
                   }}
+                  animate={selectedPhase === phase && !shouldReduceMotion ? {
+                    scale: [1, 1.1, 1]
+                  } : {}}
+                  transition={{
+                    duration: 0.3,
+                    ease: "easeInOut"
+                  }}
                 >
                   {count}
-                </span>
-              </button>
+                </motion.span>
+              </motion.button>
             )
           })}
         </motion.div>
 
         {/* Photos Grid */}
         {displayedPhotos.length === 0 ? (
-          <div className="text-center py-12">
+          <motion.div
+            className="text-center py-12"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4 }}
+          >
+            <motion.div
+              className="text-5xl mb-3"
+              animate={shouldReduceMotion ? {} : {
+                rotate: [0, -10, 10, 0],
+                scale: [1, 1.1, 1]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            >
+              📸
+            </motion.div>
             <p
               style={{
                 fontFamily: 'var(--font-crimson)',
@@ -174,11 +209,16 @@ export default function GuestPhotosSection({
             >
               Nenhuma foto nesta fase ainda
             </p>
-          </div>
+          </motion.div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {displayedPhotos.map((photo, index) => (
-              <GuestPhotoCard key={photo.id} photo={photo} index={index} />
+              <GuestPhotoCard
+                key={photo.id}
+                photo={photo}
+                index={index}
+                shouldReduceMotion={shouldReduceMotion}
+              />
             ))}
           </div>
         )}
@@ -191,9 +231,12 @@ export default function GuestPhotosSection({
 interface GuestPhotoCardProps {
   photo: MediaItem
   index: number
+  shouldReduceMotion?: boolean
 }
 
-function GuestPhotoCard({ photo, index }: GuestPhotoCardProps) {
+function GuestPhotoCard({ photo, index, shouldReduceMotion }: GuestPhotoCardProps) {
+  const [isHovered, setIsHovered] = useState(false)
+
   const phaseColors = {
     before: {
       bg: 'rgba(168, 168, 168, 0.1)',
@@ -218,23 +261,21 @@ function GuestPhotoCard({ photo, index }: GuestPhotoCardProps) {
       className="group cursor-pointer"
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: index * 0.05 }}
+      transition={{
+        duration: shouldReduceMotion ? 0.3 : 0.6,
+        delay: shouldReduceMotion ? 0 : index * 0.05
+      }}
       viewport={{ once: true }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      whileHover={shouldReduceMotion ? {} : { y: -8 }}
     >
       <div
         className="relative overflow-hidden rounded-xl transition-all duration-500"
         style={{
           background: 'var(--white-soft)',
-          boxShadow: '0 4px 20px var(--shadow-subtle)',
+          boxShadow: isHovered ? '0 8px 30px var(--shadow-medium)' : '0 4px 20px var(--shadow-subtle)',
           border: '1px solid var(--border-subtle)',
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.transform = 'translateY(-4px)'
-          e.currentTarget.style.boxShadow = '0 8px 30px var(--shadow-medium)'
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = 'translateY(0)'
-          e.currentTarget.style.boxShadow = '0 4px 20px var(--shadow-subtle)'
         }}
       >
         {/* Image */}
@@ -256,9 +297,9 @@ function GuestPhotoCard({ photo, index }: GuestPhotoCardProps) {
             />
           )}
 
-          {/* Phase Badge */}
+          {/* Phase Badge with Gentle Pulse */}
           {photo.upload_phase && (
-            <div
+            <motion.div
               className="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm"
               style={{
                 background: phaseColor.bg,
@@ -266,37 +307,63 @@ function GuestPhotoCard({ photo, index }: GuestPhotoCardProps) {
                 fontFamily: 'var(--font-crimson)',
                 border: `1px solid ${phaseColor.text}`,
               }}
+              animate={shouldReduceMotion ? {} : {
+                scale: isHovered ? [1, 1.05, 1] : 1
+              }}
+              transition={{
+                duration: 0.3,
+                ease: "easeInOut"
+              }}
             >
               {phaseLabels[photo.upload_phase]}
-            </div>
+            </motion.div>
           )}
 
-          {/* Guest Upload Badge */}
-          <div
+          {/* Guest Upload Badge with Subtle Shimmer */}
+          <motion.div
             className="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm"
             style={{
               background: 'rgba(44, 44, 44, 0.8)',
               color: 'var(--white-soft)',
               fontFamily: 'var(--font-crimson)',
             }}
+            animate={shouldReduceMotion ? {} : {
+              boxShadow: [
+                '0 2px 8px rgba(0, 0, 0, 0.2)',
+                '0 2px 12px rgba(0, 0, 0, 0.3)',
+                '0 2px 8px rgba(0, 0, 0, 0.2)'
+              ]
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
           >
             📸 Convidado
-          </div>
+          </motion.div>
         </div>
 
         {/* Content */}
         <div className="p-4">
-          {/* Guest Attribution */}
+          {/* Guest Attribution with Bounce on Hover */}
           <div className="flex items-center gap-2 mb-2">
-            <div
+            <motion.div
               className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
               style={{
                 background: 'var(--decorative)',
                 color: 'var(--white-soft)',
               }}
+              animate={shouldReduceMotion ? {} : {
+                scale: isHovered ? 1.1 : 1
+              }}
+              transition={{
+                duration: 0.2,
+                ease: "easeOut"
+              }}
             >
               {photo.guest_name?.charAt(0).toUpperCase() || '?'}
-            </div>
+            </motion.div>
             <div>
               <p
                 className="font-medium text-sm"
@@ -323,29 +390,38 @@ function GuestPhotoCard({ photo, index }: GuestPhotoCardProps) {
 
           {/* Caption */}
           {photo.description && (
-            <p
+            <motion.p
               className="text-sm line-clamp-2 mt-2"
               style={{
                 fontFamily: 'var(--font-crimson)',
                 color: 'var(--secondary-text)',
                 fontStyle: 'italic',
               }}
+              initial={{ opacity: 0.8 }}
+              animate={{ opacity: isHovered ? 1 : 0.8 }}
+              transition={{ duration: 0.3 }}
             >
               {photo.description}
-            </p>
+            </motion.p>
           )}
         </div>
 
-        {/* Hover Overlay */}
-        <div
-          className="absolute inset-0 bg-gradient-to-t opacity-0 group-hover:opacity-100 transition-all duration-300 rounded-xl"
+        {/* Hover Overlay with Staggered Fade */}
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-t rounded-xl pointer-events-none"
           style={{
             background: 'linear-gradient(to top, rgba(44, 44, 44, 0.9), transparent 60%)',
           }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: isHovered ? 1 : 0 }}
+          transition={{ duration: 0.3 }}
         >
-          <div
+          <motion.div
             className="absolute bottom-4 left-4 right-4"
             style={{ color: 'var(--white-soft)' }}
+            initial={{ y: 20, opacity: 0 }}
+            animate={isHovered ? { y: 0, opacity: 1 } : { y: 20, opacity: 0 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
           >
             <p
               className="font-bold text-base mb-1"
@@ -361,8 +437,8 @@ function GuestPhotoCard({ photo, index }: GuestPhotoCardProps) {
                 {photo.description}
               </p>
             )}
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     </motion.div>
   )

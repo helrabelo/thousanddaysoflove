@@ -335,7 +335,7 @@ export class PaymentService {
         gift_name: paymentData.giftName,
         buyer_name: paymentData.buyerName,
         wedding_couple: 'Hel & Ylana',
-        wedding_date: '2025-11-11'
+        wedding_date: '2025-11-20'
       }
     }
 

@@ -1,6 +1,6 @@
 # Thousand Days of Love 💕
 
-A beautiful, modern wedding website built for Hel and Ylana's November 11th, 2025 wedding - celebrating 1000 days together!
+A beautiful, modern wedding website built for Hel and Ylana's November 20th, 2025 wedding - celebrating 1000 days together!
 
 ## Features
 
@@ -14,7 +14,7 @@ A beautiful, modern wedding website built for Hel and Ylana's November 11th, 202
 
 ## Tech Stack
 
-- **Frontend**: Next.js 14 + TypeScript + Tailwind CSS
+- **Frontend**: Next.js 15.5.4 + TypeScript + Tailwind CSS
 - **Database**: Supabase (PostgreSQL)
 - **Payments**: Mercado Pago (PIX support for Brazil)
 - **Email**: SendGrid
@@ -49,7 +49,7 @@ See `.env.local.example` for all required environment variables:
 - **SendGrid**: Email notifications
 - **Mercado Pago**: Payment processing with PIX support
 
-## Wedding Date: November 11th, 2025 🗓️
+## Wedding Date: November 20th, 2025 🗓️
 
 This special date marks our 1000th day together - a milestone worth celebrating!
 

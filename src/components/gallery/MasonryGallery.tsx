@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback, useMemo } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { Search, Filter, X, Share2, Heart, Download, Play, MapPin, Calendar, Images } from 'lucide-react'
 import { MediaItem, MediaCategory, GalleryFilter } from '@/types/wedding'
 import GalleryLightbox from './GalleryLightbox'
@@ -100,6 +100,7 @@ export default function MasonryGallery({
   const [isLoading, setIsLoading] = useState(false)
   const [likedItems, setLikedItems] = useState<Set<string>>(new Set())
   const [hoveredItem, setHoveredItem] = useState<string | null>(null)
+  const shouldReduceMotion = useReducedMotion()
 
   // Lightbox state
   const [lightboxOpen, setLightboxOpen] = useState(false)
@@ -231,7 +232,7 @@ export default function MasonryGallery({
                       fontFamily: 'var(--font-crimson)',
                       boxShadow: selectedCategory === category ? '0 2px 8px var(--shadow-subtle)' : 'none'
                     }}
-                    whileHover={{ scale: 1.05 }}
+                    whileHover={{ scale: shouldReduceMotion ? 1 : 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
                     <span>{categoryIcons[category]}</span>
@@ -326,7 +327,10 @@ export default function MasonryGallery({
                   className="break-inside-avoid mb-3 group cursor-pointer"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.05 }}
+                  transition={{
+                    duration: shouldReduceMotion ? 0.3 : 0.5,
+                    delay: shouldReduceMotion ? 0 : index * 0.05
+                  }}
                   onClick={() => handleItemClick(item, index)}
                   onMouseEnter={() => setHoveredItem(item.id)}
                   onMouseLeave={() => setHoveredItem(null)}
@@ -352,7 +356,7 @@ export default function MasonryGallery({
                         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                       />
 
-                      {/* Multi-Media Badge - Top Right (matching StoryPreview pattern) */}
+                      {/* Multi-Media Badge with Shimmer Effect */}
                       {hasMultiple && (
                         <motion.div
                           className="absolute top-3 right-3 z-10 px-3 py-1.5 rounded-full backdrop-blur-md flex items-center gap-1.5"
@@ -366,15 +370,31 @@ export default function MasonryGallery({
                             boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
                           }}
                           initial={{ opacity: 0, scale: 0.8 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ delay: 0.2, duration: 0.3 }}
+                          animate={{
+                            opacity: 1,
+                            scale: 1,
+                            boxShadow: shouldReduceMotion ? '0 2px 8px rgba(0, 0, 0, 0.3)' : [
+                              '0 2px 8px rgba(255, 255, 255, 0.3)',
+                              '0 4px 16px rgba(255, 255, 255, 0.5)',
+                              '0 2px 8px rgba(255, 255, 255, 0.3)'
+                            ]
+                          }}
+                          transition={{
+                            delay: 0.2,
+                            duration: 0.3,
+                            boxShadow: {
+                              duration: 2,
+                              repeat: Infinity,
+                              ease: "easeInOut"
+                            }
+                          }}
                         >
                           <Images className="w-3.5 h-3.5" strokeWidth={2.5} />
                           <span>{(item as any).media?.length || '2+'}</span>
                         </motion.div>
                       )}
 
-                      {/* Featured Badge - Subtle */}
+                      {/* Featured Badge - Subtle with Gentle Pulse */}
                       {item.is_featured && (
                         <motion.div
                           className="absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-semibold backdrop-blur-md"
@@ -385,7 +405,15 @@ export default function MasonryGallery({
                             boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
                           }}
                           initial={{ opacity: 0.7 }}
-                          whileHover={{ opacity: 1 }}
+                          animate={shouldReduceMotion ? { opacity: 1 } : {
+                            opacity: [0.7, 1, 0.7],
+                            scale: [1, 1.05, 1]
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }}
                         >
                           ⭐
                         </motion.div>
@@ -406,9 +434,38 @@ export default function MasonryGallery({
                         </motion.div>
                       )}
 
+                      {/* "Ver álbum completo" Hint - Only for multi-media albums */}
+                      {hasMultiple && (
+                        <AnimatePresence>
+                          {hoveredItem === item.id && (
+                            <motion.div
+                              className="absolute bottom-4 left-4 right-4 z-10 hidden md:block"
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: 5 }}
+                              transition={{ duration: 0.3 }}
+                            >
+                              <div
+                                className="px-4 py-2 rounded-lg backdrop-blur-md text-center"
+                                style={{
+                                  background: 'rgba(255, 255, 255, 0.95)',
+                                  color: 'var(--primary-text)',
+                                  fontFamily: 'var(--font-crimson)',
+                                  fontSize: '0.875rem',
+                                  fontWeight: '600',
+                                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)'
+                                }}
+                              >
+                                Ver álbum completo →
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      )}
+
                       {/* Hover Overlay with Information - Desktop Only */}
                       <AnimatePresence>
-                        {hoveredItem === item.id && (
+                        {hoveredItem === item.id && !hasMultiple && (
                           <motion.div
                             className="absolute inset-0 hidden md:block"
                             initial={{ opacity: 0 }}
@@ -508,7 +565,7 @@ export default function MasonryGallery({
             })}
           </motion.div>
 
-          {/* Empty State */}
+          {/* Empty State - Whimsical */}
           {filteredItems.length === 0 && (
             <motion.div
               className="text-center py-20"
@@ -516,14 +573,27 @@ export default function MasonryGallery({
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
-              <div className="text-6xl mb-4">📸</div>
+              <motion.div
+                className="text-6xl mb-4"
+                animate={shouldReduceMotion ? {} : {
+                  rotate: [0, -5, 5, 0],
+                  scale: [1, 1.05, 1]
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              >
+                📸
+              </motion.div>
               <h3 className="text-xl font-semibold mb-2" style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-playfair)' }}>
                 Nenhuma memória encontrada
               </h3>
               <p className="mb-6" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
-                Tente ajustar os filtros ou fazer uma nova busca
+                Em breve, muitas memórias! 📸✨
               </p>
-              <button
+              <motion.button
                 onClick={() => {
                   setSelectedCategory('all')
                   setSearchQuery('')
@@ -535,9 +605,11 @@ export default function MasonryGallery({
                   color: 'var(--white-soft)',
                   fontFamily: 'var(--font-playfair)'
                 }}
+                whileHover={{ scale: shouldReduceMotion ? 1 : 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 Limpar Filtros
-              </button>
+              </motion.button>
             </motion.div>
           )}
         </div>

@@ -78,7 +78,7 @@ export function WeddingAnalyticsTab() {
   const [isLoading, setIsLoading] = useState(true)
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d' | 'all'>('30d')
 
-  const weddingDate = new Date('2025-11-11T00:00:00')
+  const weddingDate = new Date('2025-11-20T00:00:00')
   const today = new Date()
   const daysRemaining = Math.ceil((weddingDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
 
@@ -162,7 +162,7 @@ export function WeddingAnalyticsTab() {
             { name: '100 Confirmações', date: '2024-10-05', description: 'Meta de 100 confirmações' },
             { name: 'Lista 75% Completa', date: '2024-10-15', description: '75% da lista de presentes' },
             { name: 'RSVP Deadline', date: '2024-10-25', description: 'Prazo final para confirmações' },
-            { name: 'O Grande Dia!', date: '2025-11-11', description: 'Mil Dias de Amor - Casamento!' }
+            { name: 'O Grande Dia!', date: '2025-11-20', description: 'Mil Dias de Amor - Casamento!' }
           ]
         }
       }
@@ -268,7 +268,7 @@ export function WeddingAnalyticsTab() {
 
           <div className="text-center">
             <div className="text-3xl font-bold text-burgundy-800 mb-1">
-              11/11
+              20/11
             </div>
             <div className="text-sm text-burgundy-600">Data do Casamento</div>
             <div className="text-xs text-blush-600 mt-1">

@@ -205,7 +205,7 @@ All content editing happens in Sanity Studio:
 ### Phase 2: Gallery Integration ✅
 #### Gallery Display
 - **Location**: `/galeria` page
-- **Main Gallery**: Displays Sanity CMS photos + all approved guest photos merged
+- **Main Gallery**: Displays Sanity CMS albums (with multi-media) + all approved guest photos merged
 - **Guest Photos Section**: Dedicated section with phase filtering tabs
 
 #### Features
@@ -214,6 +214,95 @@ All content editing happens in Sanity Studio:
 - **Photo Counts**: Real-time counts per phase
 - **Responsive Design**: Mobile-first with elegant wedding aesthetic
 - **Animations**: Framer Motion hover and reveal effects
+- **Multi-Media Albums**: Sanity albums support 1-10 images/videos with carousel lightbox
+
+### Phase 3: Multi-Media Album Support ✅
+**Status**: COMPLETE - Gallery albums now support multiple images/videos
+
+#### Architecture
+We maintain **TWO SEPARATE gallery systems** that work together seamlessly:
+
+1. **Sanity CMS Albums** (Admin-managed)
+   - Multiple images/videos per album (1-10 items)
+   - Managed via Sanity Studio
+   - Carousel lightbox for viewing all media
+   - Professional curated content
+
+2. **Guest Photo Uploads** (User-generated)
+   - Single image/video per upload (simpler UX)
+   - Supabase storage and database
+   - Phase filtering and guest attribution
+   - Community-contributed content
+
+#### Sanity Schema Updates
+**File**: `src/sanity/schemas/documents/galleryImage.ts`
+
+- Added `media[]` array field (1-10 items)
+- Each media item includes:
+  - `mediaType`: 'image' | 'video'
+  - Conditional `image` or `video` assets
+  - `alt`, `caption`, `displayOrder` fields
+- Legacy `image` field hidden for backwards compatibility
+- Preview shows media count: "Beach Trip (5 mídias)"
+- Portuguese labels throughout
+
+#### Gallery Utilities
+**File**: `src/lib/utils/sanity-gallery.ts`
+
+- `getGalleryAlbumMedia()`: Transforms media arrays with legacy fallback
+- `getPrimaryGalleryMedia()`: Gets first media for thumbnails
+- `hasMultipleMedia()`: Checks for multi-media albums
+- `getGalleryMediaByType()`: Filters by image/video
+- Sanity CDN optimization helpers (srcset, hotspot, etc.)
+
+#### Frontend Components
+
+**GalleryLightbox** (`src/components/gallery/GalleryLightbox.tsx`):
+- Full-screen modal with MediaCarousel integration
+- Album title and description display
+- Loading state with playful "Preparando álbum..." animation
+- Close button with delightful rotation animation
+- ESC key support
+- Keyboard hints with pulse effect
+
+**MasonryGallery** (`src/components/gallery/MasonryGallery.tsx`):
+- Multi-media badge with shimmer effect on albums
+- Badge shows count: "5 📸" when album has multiple items
+- Click on album badge opens GalleryLightbox with carousel
+- Single media uses existing MediaLightbox
+- "Ver álbum completo" hover hint for multi-media albums
+
+**GuestPhotosSection** (Enhanced with whimsy):
+- Phase tabs with hover lift and count badge bounce
+- Guest cards with lift, avatar bounce, and badge pulse
+- Shimmer effect on "Convidado" badge
+- Empty states with playful camera emoji animations
+
+#### Delightful Micro-interactions
+All components feature elegant animations:
+- Shimmer/pulse effects on badges
+- Staggered entrance animations
+- Hover lift and scale effects
+- Playful empty states
+- Loading states with camera emoji animations
+- Full `useReducedMotion` support for accessibility
+
+#### Type Safety
+**File**: `src/types/wedding.ts` (lines 460-522)
+
+- `SanityGalleryAlbumMediaItem`: Single media item in album
+- `SanityGalleryAlbum`: Complete album with media array
+- `RenderedGalleryMediaItem`: Frontend rendering helper
+- Full TypeScript coverage with proper interfaces
+
+#### Key Benefits
+✅ Backwards compatible with legacy single-image galleries
+✅ No conflicts with guest photo upload system
+✅ Reuses MediaCarousel component from Story Moments
+✅ Elegant wedding aesthetic maintained
+✅ GPU-accelerated animations for smooth performance
+✅ Mobile-first responsive design
+✅ Accessibility: keyboard nav, reduced motion, ARIA labels
 
 #### Technical Implementation
 - **Service Layer**: `src/lib/supabase/gallery.ts` (SupabaseGalleryService)

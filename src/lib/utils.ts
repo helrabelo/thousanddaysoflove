@@ -23,14 +23,14 @@ export function formatDateTime(date: Date): string {
 }
 
 export function getDaysUntilWedding(): number {
-  const weddingDate = new Date('2025-11-11T00:00:00')
+  const weddingDate = new Date('2025-11-20T00:00:00')
   const today = new Date()
   const diffTime = weddingDate.getTime() - today.getTime()
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
 }
 
 export function getTimeUntilWedding() {
-  const weddingDate = new Date('2025-11-11T18:00:00') // 6 PM ceremony
+  const weddingDate = new Date('2025-11-20T10:30:00') // 10:30 AM ceremony
   const now = new Date()
   const diff = weddingDate.getTime() - now.getTime()
 
