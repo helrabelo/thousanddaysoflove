@@ -123,4 +123,91 @@ npm run db:generate        # Update TypeScript types
 - Wedding invitation aesthetic
 - Mobile-first responsive design
 
+## Admin Area Structure
+**Status**: ✅ CLEANED UP - Minimal admin focused on Supabase features
+
+### Overview
+The admin area has been streamlined to avoid duplication with Sanity CMS. Content management (gallery, timeline, pets, about us, hero images) is handled in Sanity Studio, while transactional features remain in the custom admin.
+
+### Admin Dashboard (`/admin`)
+**Authentication**: Simple password-based (cookie: `admin_session`)
+- Password: `ADMIN_PASSWORD` env var
+- Login page: `/admin/login`
+- Uses `createAdminClient()` to bypass RLS
+
+### Active Admin Sections (Supabase-managed)
+
+#### 1. Guest Management (`/admin/guests`)
+- View and manage guest list
+- Confirm RSVPs
+- Track attendance
+
+#### 2. Photo Moderation (`/admin/photos`) ✅ NEW
+- Moderate guest-uploaded photos
+- Approve/reject with reasons
+- Batch operations
+- Keyboard shortcuts (A=approve, R=reject, Space=select)
+- Filters: status, phase, guest search
+- Updates `activity_feed` on moderation actions
+
+#### 3. Gift Registry (`/admin/presentes`)
+- Manage wedding gift registry
+- Track gift selections
+
+#### 4. Payment Tracking (`/admin/pagamentos`)
+- Track PIX payments
+- Monitor gift contributions
+
+#### 5. Analytics (`/admin/analytics`)
+- Wedding statistics and insights
+- Guest engagement metrics
+
+### Content Management (Sanity Studio)
+
+#### Sanity Studio (`/studio`)
+All content editing happens in Sanity Studio:
+- **Gallery**: Photo albums and images (`galleryImage`)
+- **Timeline/Historia**: Story moments and phases (`storyMoment`, `storyPhase`, `storyCard`)
+- **Pets**: Family pets section (`pet`, `ourFamily`)
+- **About Us**: Couple information (`aboutUs`)
+- **Hero Images**: Homepage hero section (`videoHero`)
+- **Pages**: All marketing pages and sections
+
+### Guest Photo Upload System
+**Status**: ✅ PHASE 1 COMPLETE
+
+#### Guest Flow
+1. **Authentication**: `/dia-1000/login`
+   - Password: `1000dias` (from `GUEST_SHARED_PASSWORD` env var)
+   - Creates session in `guest_sessions` table
+   - Optional guest name collection
+
+2. **Upload**: `/dia-1000/upload`
+   - Select upload phase: before/during/after
+   - Multi-file upload (photos + videos)
+   - Storage: Supabase Storage bucket `wedding-photos`
+   - Database: `guest_photos` table
+
+3. **Database Tables**:
+   - `guest_photos`: Photo metadata and moderation status
+   - `guest_sessions`: Guest authentication sessions
+   - `simple_guests`: Guest information
+   - `activity_feed`: Updates on photo approvals
+
+#### Admin Moderation Flow
+1. Login at `/admin/login` (password: `HelYlana1000Dias!`)
+2. Navigate to `/admin/photos`
+3. View all uploaded photos with filters
+4. Approve/reject individual or batch photos
+5. Activity feed automatically updated on approval
+
+#### Technical Details
+- **Cloud Supabase**: `uottcbjzpiudgmqzhuii.supabase.co`
+- **Storage Bucket**: `wedding-photos` (public)
+- **Image Configuration**: Added Supabase hostname to `next.config.ts`
+- **Auth Separation**:
+  - `guestAuth.ts`: Client-safe utilities
+  - `guestAuth.server.ts`: Server-only functions
+- **Utilities**: Shared formatters in `lib/utils/format.ts`
+
 ---
