@@ -2,31 +2,22 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowRight, Calendar } from 'lucide-react'
+import { ArrowRight, Calendar, Images } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import Image from 'next/image'
 import { sanityFetch } from '@/sanity/lib/client'
 import { storyPreviewMomentsQuery } from '@/sanity/queries/timeline'
+import { getPrimaryStoryMedia, hasMultipleMedia } from '@/lib/utils/sanity-media'
+import type { SanityStoryMoment } from '@/types/wedding'
 
 // Story Moment Interface (from Sanity storyMoment document)
-interface StoryMoment {
+interface StoryMoment extends SanityStoryMoment {
   _id: string
   title: string
   date?: string
   icon?: string
   description: string
-  image?: {
-    asset: {
-      url: string
-    }
-    alt?: string
-  }
-  video?: {
-    asset: {
-      url: string
-    }
-  }
   dayNumber?: number
   contentAlign?: 'left' | 'right' | 'center'
   displayOrder: number
@@ -75,9 +66,10 @@ export default function StoryPreview() {
       })
 
       console.log('📊 Story Preview - Loaded moments:', moments?.length || 0)
-      console.log('📸 Moments with images:', moments?.filter(m => m.image?.asset?.url).length || 0)
-      console.log('🎬 Moments with videos:', moments?.filter(m => m.video?.asset?.url).length || 0)
-      console.log('❌ Moments without media:', moments?.filter(m => !m.image?.asset?.url && !m.video?.asset?.url).length || 0)
+      console.log('📸 Moments with images:', moments?.filter(m => getPrimaryStoryMedia(m)?.type === 'image').length || 0)
+      console.log('🎬 Moments with videos:', moments?.filter(m => getPrimaryStoryMedia(m)?.type === 'video').length || 0)
+      console.log('🎞️  Moments with multiple media:', moments?.filter(m => hasMultipleMedia(m)).length || 0)
+      console.log('❌ Moments without media:', moments?.filter(m => !getPrimaryStoryMedia(m)).length || 0)
 
       setStoryMoments(moments || [])
     } catch (error) {
@@ -195,8 +187,10 @@ export default function StoryPreview() {
               // Vary column spans for visual interest (every 3rd and 5th item spans 2 columns)
               const shouldSpanTwo = index % 3 === 0 || index % 5 === 0
 
-              // Use uploaded image or fallback to wedding invitation poster
-              const imageUrl = moment.image?.asset?.url || '/images/hero-poster.jpg'
+              // Get primary media from the moment (first image or video)
+              const primaryMedia = getPrimaryStoryMedia(moment)
+              const imageUrl = primaryMedia?.url || '/images/hero-poster.jpg'
+              const hasMultiple = hasMultipleMedia(moment)
 
               return (
                 <motion.div
@@ -220,13 +214,35 @@ export default function StoryPreview() {
                     >
                       <Image
                         src={imageUrl}
-                        alt={moment.image?.alt || moment.title}
+                        alt={primaryMedia?.alt || moment.title}
                         fill
                         className="object-cover"
                         loading="lazy"
                         sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
                       />
                     </motion.div>
+
+                    {/* Multiple Media Badge - Top Right */}
+                    {hasMultiple && (
+                      <motion.div
+                        className="absolute top-3 right-3 z-10 px-3 py-1.5 rounded-full backdrop-blur-md flex items-center gap-1.5"
+                        style={{
+                          background: 'rgba(0, 0, 0, 0.6)',
+                          border: '1px solid rgba(255, 255, 255, 0.3)',
+                          color: 'white',
+                          fontSize: '0.75rem',
+                          fontWeight: '600',
+                          fontFamily: 'var(--font-crimson)',
+                          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
+                        }}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.2, duration: 0.3 }}
+                      >
+                        <Images className="w-3.5 h-3.5" strokeWidth={2.5} />
+                        <span>{getPrimaryStoryMedia(moment) ? '3+' : '2+'}</span>
+                      </motion.div>
+                    )}
 
                     {/* Hover Overlay with Story Content - Desktop Only */}
                     <AnimatePresence>
