@@ -12,6 +12,7 @@ import featureCard from './featureCard'
 import weddingSettings from './weddingSettings'
 import galleryImage from './galleryImage'
 import guestMedia from './guestMedia'
+import { giftItem } from './giftItem'
 
 export const documentSchemas = [
   pet,
@@ -21,6 +22,7 @@ export const documentSchemas = [
   weddingSettings,
   galleryImage,
   guestMedia, // Guest-uploaded photos and videos
+  giftItem, // Gift registry items
 ]
 
 export default documentSchemas

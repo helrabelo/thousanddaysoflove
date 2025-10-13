@@ -6,8 +6,9 @@ import { Payment } from '@/types/wedding'
 
 export class PaymentService {
   // Create a new payment intent
+  // Updated to use sanityGiftId from Sanity CMS instead of Supabase gift_id
   static async createPayment(paymentData: {
-    giftId: string
+    sanityGiftId: string // Sanity CMS gift _id
     guestId?: string
     amount: number
     paymentMethod: 'pix' | 'credit_card' | 'bank_transfer'
@@ -16,7 +17,7 @@ export class PaymentService {
     const supabase = createClient()
 
     const newPayment = {
-      gift_id: paymentData.giftId,
+      sanity_gift_id: paymentData.sanityGiftId, // Now using Sanity reference
       guest_id: paymentData.guestId || null,
       amount: paymentData.amount,
       status: 'pending' as const,
@@ -366,8 +367,9 @@ export class PaymentService {
   }
 
   // Create PIX payment with QR code
+  // Updated to use sanityGiftId from Sanity CMS
   static async createPixPayment(paymentData: {
-    giftId: string
+    sanityGiftId: string // Sanity CMS gift _id
     guestId?: string
     amount: number
     message?: string
@@ -378,7 +380,7 @@ export class PaymentService {
     try {
       // Create payment record
       const payment = await this.createPayment({
-        giftId: paymentData.giftId,
+        sanityGiftId: paymentData.sanityGiftId, // Now using Sanity reference
         guestId: paymentData.guestId,
         amount: paymentData.amount,
         paymentMethod: 'pix',
@@ -389,7 +391,7 @@ export class PaymentService {
         throw new Error('Failed to create payment record')
       }
 
-      // Process with Mercado Pago
+      // Process with Mercado Pago (no changes - this is external API)
       const mercadoPagoResult = await this.processMercadoPagoPayment({
         paymentId: payment.id,
         amount: paymentData.amount,

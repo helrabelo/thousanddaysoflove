@@ -4,13 +4,13 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, QrCode, Copy, Check, Heart, Clock, CreditCard } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Gift } from '@/types/wedding'
+import { GiftWithProgress } from '@/lib/services/gifts'
 import Image from 'next/image'
 
 interface PaymentModalProps {
   isOpen: boolean
   onClose: () => void
-  gift: Gift
+  gift: GiftWithProgress
   onPaymentSuccess: (paymentId: string) => void
 }
 
@@ -38,7 +38,7 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
   const [buyerInfo, setBuyerInfo] = useState({
     name: '',
     email: '',
-    amount: gift.price,
+    amount: gift.fullPrice,
     message: ''
   })
   const [statusChecking, setStatusChecking] = useState(false)
@@ -81,7 +81,7 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          giftId: gift.id,
+          sanityGiftId: gift._id,
           amount: buyerInfo.amount,
           payerEmail: buyerInfo.email,
           buyerName: buyerInfo.name,
@@ -130,7 +130,7 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
     setBuyerInfo({
       name: '',
       email: '',
-      amount: gift.price,
+      amount: gift.fullPrice,
       message: ''
     })
     setCopied(false)
@@ -179,7 +179,7 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
                     {step === 'success' && 'Pagamento Confirmado!'}
                     {step === 'error' && 'Erro no Pagamento'}
                   </h3>
-                  <p className="text-sm text-gray-600">{gift.name}</p>
+                  <p className="text-sm text-gray-600">{gift.title}</p>
                 </div>
               </div>
               <button
@@ -202,20 +202,20 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
               >
                 <div className="bg-gradient-to-br from-rose-50 to-purple-50 rounded-xl p-4 border border-rose-100">
                   <div className="flex items-center gap-3">
-                    {gift.image_url && (
+                    {gift.imageUrl && (
                       <Image
-                        src={gift.image_url}
-                        alt={gift.name}
+                        src={gift.imageUrl}
+                        alt={gift.title}
                         width={60}
                         height={60}
                         className="rounded-lg object-cover"
                       />
                     )}
                     <div>
-                      <h4 className="font-medium text-gray-900">{gift.name}</h4>
+                      <h4 className="font-medium text-gray-900">{gift.title}</h4>
                       <p className="text-sm text-gray-600">{gift.description}</p>
                       <p className="text-lg font-semibold text-purple-600 mt-1">
-                        {formatBRL(gift.price)}
+                        {formatBRL(gift.fullPrice)}
                       </p>
                     </div>
                   </div>
@@ -259,12 +259,11 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
                       value={buyerInfo.amount}
                       onChange={(e) => setBuyerInfo({ ...buyerInfo, amount: Number(e.target.value) })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                      min="1"
-                      max={gift.price}
-                      step="0.01"
+                      min="50"
+                      step="1"
                     />
                     <p className="text-xs text-gray-500 mt-1">
-                      Voce pode contribuir com qualquer valor ate {formatBRL(gift.price)}
+                      Valor mínimo: R$ 50. Contribua com qualquer valor {gift.allowPartialPayment && 'até'} {formatBRL(gift.fullPrice)}
                     </p>
                   </div>
 
@@ -418,7 +417,7 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
                     <Heart className="w-5 h-5" />
                     <span className="font-medium">Presente confirmado</span>
                   </div>
-                  <p className="text-sm text-gray-700">{gift.name}</p>
+                  <p className="text-sm text-gray-700">{gift.title}</p>
                   <p className="text-lg font-semibold text-purple-600 mt-1">
                     {formatBRL(buyerInfo.amount)}
                   </p>

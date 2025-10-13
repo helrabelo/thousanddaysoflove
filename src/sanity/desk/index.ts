@@ -299,6 +299,18 @@ export const deskStructure: StructureResolver = (S) =>
 
               S.divider(),
 
+              // Gift Registry
+              S.listItem()
+                .title('Lista de Presentes')
+                .child(
+                  S.documentTypeList('giftItem')
+                    .title('Lista de Presentes')
+                    .filter('_type == "giftItem"')
+                    .defaultOrdering([{ field: 'priority', direction: 'asc' }, { field: 'fullPrice', direction: 'desc' }])
+                ),
+
+              S.divider(),
+
               // Wedding Settings (singleton)
               S.listItem()
                 .title('Configurações do Casamento')

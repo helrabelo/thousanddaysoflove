@@ -3,8 +3,245 @@
 import { createClient } from '@/lib/supabase/client'
 import { createAdminClient } from '@/lib/supabase/server'
 import { Gift } from '@/types/wedding'
+import { client as sanityClient } from '@/sanity/lib/client'
+
+// Sanity Gift Item type (from CMS)
+export interface SanityGiftItem {
+  _id: string
+  title: string
+  description: string
+  fullPrice: number
+  imageUrl?: string
+  category: string
+  allowPartialPayment: boolean
+  suggestedContributions?: number[]
+  allowCustomAmount: boolean
+  priority: 'high' | 'medium' | 'low'
+  isActive: boolean
+  storeUrl?: string
+  notes?: string
+}
+
+// Gift with contribution progress
+export interface GiftWithProgress extends SanityGiftItem {
+  totalContributed: number
+  percentFunded: number
+  contributors: Array<{
+    payment_id: string
+    guest_id?: string
+    amount: number
+    payment_date: string
+    payment_method: string
+    message?: string
+    status: string
+  }>
+  contributionCount: number
+  remainingAmount: number
+  isFullyFunded: boolean
+}
 
 export class GiftService {
+  // ========================================
+  // NEW: Sanity CMS Gift Registry Methods
+  // ========================================
+
+  /**
+   * Fetch a single gift from Sanity CMS by its _id
+   * @param sanityGiftId - The Sanity document _id (e.g., "giftItem-abc123")
+   * @returns SanityGiftItem or null if not found
+   */
+  static async getGiftFromSanity(sanityGiftId: string): Promise<SanityGiftItem | null> {
+    try {
+      const query = `
+        *[_type == "giftItem" && _id == $sanityGiftId][0] {
+          _id,
+          title,
+          description,
+          fullPrice,
+          "imageUrl": image.asset->url,
+          category,
+          allowPartialPayment,
+          suggestedContributions,
+          allowCustomAmount,
+          priority,
+          isActive,
+          storeUrl,
+          notes
+        }
+      `
+
+      const gift = await sanityClient.fetch<SanityGiftItem | null>(query, { sanityGiftId })
+      return gift
+    } catch (error) {
+      console.error('Error fetching gift from Sanity:', error)
+      return null
+    }
+  }
+
+  /**
+   * Get contribution progress for a specific gift from Supabase
+   * Uses the gift_contributions view created in migration 020
+   * @param sanityGiftId - The Sanity document _id
+   * @returns Contribution summary with total, count, and contributors
+   */
+  static async getGiftContributions(sanityGiftId: string) {
+    try {
+      const supabase = createClient()
+
+      // Query the gift_contributions view
+      const { data, error } = await supabase
+        .from('gift_contributions')
+        .select('*')
+        .eq('sanity_gift_id', sanityGiftId)
+        .single()
+
+      if (error) {
+        // No contributions yet for this gift
+        if (error.code === 'PGRST116') {
+          return {
+            totalContributed: 0,
+            contributionCount: 0,
+            contributors: []
+          }
+        }
+        console.error('Error fetching gift contributions:', error)
+        return {
+          totalContributed: 0,
+          contributionCount: 0,
+          contributors: []
+        }
+      }
+
+      return {
+        totalContributed: parseFloat(data.total_contributed || '0'),
+        contributionCount: parseInt(data.contribution_count || '0'),
+        contributors: data.contributors || []
+      }
+    } catch (error) {
+      console.error('Error in getGiftContributions:', error)
+      return {
+        totalContributed: 0,
+        contributionCount: 0,
+        contributors: []
+      }
+    }
+  }
+
+  /**
+   * Get all active gifts from Sanity with contribution progress from Supabase
+   * Combines Sanity CMS content with real-time payment data
+   * @returns Array of gifts with contribution progress
+   */
+  static async getAllGiftsWithProgress(): Promise<GiftWithProgress[]> {
+    try {
+      // Fetch all active gifts from Sanity
+      const query = `
+        *[_type == "giftItem" && isActive == true] | order(priority asc, fullPrice desc) {
+          _id,
+          title,
+          description,
+          fullPrice,
+          "imageUrl": image.asset->url,
+          category,
+          allowPartialPayment,
+          suggestedContributions,
+          allowCustomAmount,
+          priority,
+          isActive,
+          storeUrl,
+          notes
+        }
+      `
+
+      const sanityGifts = await sanityClient.fetch<SanityGiftItem[]>(query)
+
+      // Fetch contribution progress for each gift
+      const giftsWithProgress = await Promise.all(
+        sanityGifts.map(async (gift) => {
+          const contributions = await this.getGiftContributions(gift._id)
+
+          const remainingAmount = gift.fullPrice - contributions.totalContributed
+          const percentFunded = (contributions.totalContributed / gift.fullPrice) * 100
+          const isFullyFunded = contributions.totalContributed >= gift.fullPrice
+
+          return {
+            ...gift,
+            totalContributed: contributions.totalContributed,
+            contributionCount: contributions.contributionCount,
+            contributors: contributions.contributors,
+            remainingAmount: Math.max(0, remainingAmount),
+            percentFunded: Math.min(100, percentFunded),
+            isFullyFunded
+          }
+        })
+      )
+
+      return giftsWithProgress
+    } catch (error) {
+      console.error('Error fetching gifts with progress:', error)
+      return []
+    }
+  }
+
+  /**
+   * Get gifts filtered by category with contribution progress
+   * @param category - Gift category (e.g., 'kitchen', 'honeymoon')
+   * @returns Array of gifts in that category with progress
+   */
+  static async getGiftsByCategoryWithProgress(category: string): Promise<GiftWithProgress[]> {
+    try {
+      const query = `
+        *[_type == "giftItem" && isActive == true && category == $category] | order(priority asc, fullPrice desc) {
+          _id,
+          title,
+          description,
+          fullPrice,
+          "imageUrl": image.asset->url,
+          category,
+          allowPartialPayment,
+          suggestedContributions,
+          allowCustomAmount,
+          priority,
+          isActive,
+          storeUrl,
+          notes
+        }
+      `
+
+      const sanityGifts = await sanityClient.fetch<SanityGiftItem[]>(query, { category })
+
+      const giftsWithProgress = await Promise.all(
+        sanityGifts.map(async (gift) => {
+          const contributions = await this.getGiftContributions(gift._id)
+
+          const remainingAmount = gift.fullPrice - contributions.totalContributed
+          const percentFunded = (contributions.totalContributed / gift.fullPrice) * 100
+          const isFullyFunded = contributions.totalContributed >= gift.fullPrice
+
+          return {
+            ...gift,
+            totalContributed: contributions.totalContributed,
+            contributionCount: contributions.contributionCount,
+            contributors: contributions.contributors,
+            remainingAmount: Math.max(0, remainingAmount),
+            percentFunded: Math.min(100, percentFunded),
+            isFullyFunded
+          }
+        })
+      )
+
+      return giftsWithProgress
+    } catch (error) {
+      console.error('Error fetching gifts by category:', error)
+      return []
+    }
+  }
+
+  // ========================================
+  // LEGACY: Supabase Gift Registry Methods
+  // (Will be deprecated after migration)
+  // ========================================
+
   // Public gift registry functions
   static async getAllGifts(): Promise<Gift[]> {
     const supabase = createClient()

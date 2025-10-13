@@ -26,13 +26,6 @@ export default function AdminPage() {
       color: 'purple'
     },
     {
-      href: '/admin/presentes',
-      icon: Gift,
-      title: 'Lista de Presentes',
-      description: 'Gerenciar presentes e registro',
-      color: 'blush'
-    },
-    {
       href: '/admin/pagamentos',
       icon: CreditCard,
       title: 'Pagamentos',
@@ -50,7 +43,7 @@ export default function AdminPage() {
       href: '/studio',
       icon: Calendar,
       title: 'Sanity Studio',
-      description: 'Gerenciar conteúdo: História, Galeria, Pets, Sobre Nós',
+      description: 'Gerenciar conteúdo: História, Galeria, Pets, Sobre Nós, Lista de Presentes',
       color: 'sage',
       external: true
     }

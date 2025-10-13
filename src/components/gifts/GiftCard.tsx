@@ -4,14 +4,14 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Heart, ShoppingCart, Users, QrCode, CheckCircle, Sparkles } from 'lucide-react'
 import Image from 'next/image'
-import { Gift } from '@/types/wedding'
+import { GiftWithProgress } from '@/lib/services/gifts'
 import { Button } from '@/components/ui/button'
 import PaymentModal from '@/components/payments/PaymentModal'
 import { Badge } from '@/components/ui/badge'
 import { giftStories } from '@/lib/utils/wedding'
 
 interface GiftCardProps {
-  gift: Gift
+  gift: GiftWithProgress
   onPaymentSuccess?: (paymentId: string) => void
 }
 
@@ -25,14 +25,10 @@ export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
     }).format(amount)
   }
 
-  const getProgressPercentage = () => {
-    if (gift.quantity_desired === 0) return 0
-    return Math.round((gift.quantity_purchased / gift.quantity_desired) * 100)
-  }
-
-  const isCompleted = gift.quantity_purchased >= gift.quantity_desired
-  const isPartial = gift.quantity_purchased > 0 && !isCompleted
-  const progress = getProgressPercentage()
+  // Now using contribution progress from Sanity + Supabase
+  const isCompleted = gift.isFullyFunded
+  const isPartial = gift.totalContributed > 0 && !isCompleted
+  const progress = Math.round(gift.percentFunded)
 
   const getPriorityLabel = (priority: string) => {
     switch (priority) {
@@ -48,8 +44,7 @@ export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
   }
 
   const getRemainingAmount = () => {
-    const remaining = (gift.quantity_desired - gift.quantity_purchased) * gift.price
-    return formatBRL(remaining)
+    return formatBRL(gift.remainingAmount)
   }
 
   // Use romantic context from wedding utils with couple's specific stories
@@ -118,10 +113,10 @@ export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
 
         {/* Gift Image */}
         <div className="relative h-56 overflow-hidden">
-          {gift.image_url ? (
+          {gift.imageUrl ? (
             <Image
-              src={gift.image_url}
-              alt={gift.name}
+              src={gift.imageUrl}
+              alt={gift.title}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-110"
             />
@@ -197,7 +192,7 @@ export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
           {/* Gift Info */}
           <div className="mb-5">
             <h3 className="text-xl font-semibold mb-2 line-clamp-2" style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-playfair)', lineHeight: '1.3' }}>
-              {gift.name}
+              {gift.title}
             </h3>
             <p className="text-sm line-clamp-3 mb-3" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic', lineHeight: '1.6' }}>
               {gift.description}
@@ -211,18 +206,18 @@ export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
                 background: 'var(--accent)',
                 border: '1px solid var(--border-subtle)'
               }}>
-                {getRomanticContext(gift.category, gift.name)}
+                {getRomanticContext(gift.category, gift.title)}
               </p>
             </div>
 
             {/* Price and Store Link */}
             <div className="flex items-center justify-between mb-4">
               <span className="text-2xl font-bold" style={{ color: 'var(--decorative)', fontFamily: 'var(--font-playfair)' }}>
-                {formatBRL(gift.price)}
+                {formatBRL(gift.fullPrice)}
               </span>
-              {gift.registry_url && !isCompleted && (
+              {gift.storeUrl && !isCompleted && (
                 <a
-                  href={gift.registry_url}
+                  href={gift.storeUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm underline transition-colors duration-200 hover:no-underline"
@@ -242,7 +237,7 @@ export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
               <div className="flex items-center gap-1.5">
                 <Users className="w-4 h-4" />
                 <span className="font-medium">
-                  {gift.quantity_purchased} de {gift.quantity_desired}
+                  {gift.contributionCount} {gift.contributionCount === 1 ? 'contribuição' : 'contribuições'}
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -316,7 +311,7 @@ export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
                     fontSize: '1rem',
                     letterSpacing: '0.02em'
                   }}
-                  title={getRomanticContext(gift.category, gift.name)}
+                  title={getRomanticContext(gift.category, gift.title)}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.background = 'var(--secondary-text)'
                     e.currentTarget.style.transform = 'translateY(-2px)'
@@ -340,7 +335,7 @@ export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
                 </button>
 
                 {/* Secondary Actions - More subtle */}
-                {gift.registry_url && (
+                {gift.storeUrl && (
                   <button
                     className="w-full text-sm py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
                     style={{
@@ -349,7 +344,7 @@ export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
                       border: '1px solid var(--border-subtle)',
                       fontFamily: 'var(--font-crimson)'
                     }}
-                    onClick={() => window.open(gift.registry_url, '_blank')}
+                    onClick={() => window.open(gift.storeUrl, '_blank')}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.background = 'var(--accent)'
                       e.currentTarget.style.borderColor = 'var(--decorative)'

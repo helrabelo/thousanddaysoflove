@@ -5,35 +5,37 @@ import { motion } from 'framer-motion'
 import { Search, Filter, Heart, Gift as GiftIcon, Sparkles } from 'lucide-react'
 import Navigation from '@/components/ui/Navigation'
 import GiftCard from '@/components/gifts/GiftCard'
-import { Gift } from '@/types/wedding'
-import { GiftService } from '@/lib/services/gifts'
+import { GiftService, GiftWithProgress } from '@/lib/services/gifts'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 
 export default function PresentsPage() {
-  const [gifts, setGifts] = useState<Gift[]>([])
-  const [filteredGifts, setFilteredGifts] = useState<Gift[]>([])
+  const [gifts, setGifts] = useState<GiftWithProgress[]>([])
+  const [filteredGifts, setFilteredGifts] = useState<GiftWithProgress[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [selectedPriority, setSelectedPriority] = useState<string>('all')
   const [showCompleted, setShowCompleted] = useState(true)
 
+  // Updated categories to match Sanity schema
   const categories = [
-    'all',
-    'Casa e Decoracao',
-    'Cozinha',
-    'Quarto',
-    'Banheiro',
-    'Eletronicos',
-    'Experiencias'
+    { value: 'all', label: 'Todas as Categorias' },
+    { value: 'kitchen', label: 'Cozinha' },
+    { value: 'living-room', label: 'Sala de Estar' },
+    { value: 'bedroom', label: 'Quarto' },
+    { value: 'bathroom', label: 'Banheiro' },
+    { value: 'electronics', label: 'Eletrônicos' },
+    { value: 'decor', label: 'Decoração' },
+    { value: 'honeymoon', label: 'Lua de Mel' },
+    { value: 'other', label: 'Outros' }
   ]
 
   const priorities = [
     { value: 'all', label: 'Todas as Prioridades' },
-    { value: 'high', label: 'Prioridade Alta' },
-    { value: 'medium', label: 'Prioridade Media' },
-    { value: 'low', label: 'Prioridade Baixa' }
+    { value: 'high', label: 'Prioridade Alta ⭐⭐⭐' },
+    { value: 'medium', label: 'Prioridade Média ⭐⭐' },
+    { value: 'low', label: 'Prioridade Baixa ⭐' }
   ]
 
   useEffect(() => {
@@ -47,7 +49,8 @@ export default function PresentsPage() {
   const loadGifts = async () => {
     try {
       setLoading(true)
-      const data = await GiftService.getAllGifts()
+      // Now fetching from Sanity CMS with Supabase contribution progress
+      const data = await GiftService.getAllGiftsWithProgress()
       setGifts(data)
     } catch (error) {
       console.error('Error loading gifts:', error)
@@ -62,7 +65,7 @@ export default function PresentsPage() {
     // Filter by search term
     if (searchTerm) {
       filtered = filtered.filter(gift =>
-        gift.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        gift.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         gift.description.toLowerCase().includes(searchTerm.toLowerCase())
       )
     }
@@ -77,26 +80,24 @@ export default function PresentsPage() {
       filtered = filtered.filter(gift => gift.priority === selectedPriority)
     }
 
-    // Filter by completion status
+    // Filter by completion status (fully funded gifts)
     if (!showCompleted) {
-      filtered = filtered.filter(gift => gift.quantity_purchased < gift.quantity_desired)
+      filtered = filtered.filter(gift => !gift.isFullyFunded)
     }
 
     setFilteredGifts(filtered)
   }
 
   const handlePaymentSuccess = () => {
-    // Reload gifts to update the quantities
+    // Reload gifts to update contribution progress
     loadGifts()
   }
 
   const getStats = () => {
     const total = gifts.length
-    const completed = gifts.filter(g => g.quantity_purchased >= g.quantity_desired).length
-    const totalValue = gifts.reduce((sum, gift) => sum + gift.price, 0)
-    const completedValue = gifts
-      .filter(g => g.quantity_purchased >= g.quantity_desired)
-      .reduce((sum, gift) => sum + gift.price, 0)
+    const completed = gifts.filter(g => g.isFullyFunded).length
+    const totalValue = gifts.reduce((sum, gift) => sum + gift.fullPrice, 0)
+    const completedValue = gifts.reduce((sum, gift) => sum + gift.totalContributed, 0)
 
     return { total, completed, totalValue, completedValue }
   }
@@ -215,8 +216,8 @@ export default function PresentsPage() {
               }}
             >
               {categories.map(category => (
-                <option key={category} value={category}>
-                  {category === 'all' ? 'Todas as Categorias' : category}
+                <option key={category.value} value={category.value}>
+                  {category.label}
                 </option>
               ))}
             </select>
@@ -291,7 +292,7 @@ export default function PresentsPage() {
           >
             {filteredGifts.map((gift, index) => (
               <motion.div
-                key={gift.id}
+                key={gift._id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 * index }}
