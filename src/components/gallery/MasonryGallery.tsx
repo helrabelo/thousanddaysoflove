@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, Filter, X, Share2, Heart, Download, Play } from 'lucide-react'
+import { Search, Filter, X, Share2, Heart, Download, Play, MapPin, Calendar } from 'lucide-react'
 import { MediaItem, MediaCategory, GalleryFilter } from '@/types/wedding'
 
 interface MasonryGalleryProps {
@@ -56,6 +56,7 @@ export default function MasonryGallery({
   const [mediaTypeFilter, setMediaTypeFilter] = useState<'all' | 'photo' | 'video'>('all')
   const [isLoading, setIsLoading] = useState(false)
   const [likedItems, setLikedItems] = useState<Set<string>>(new Set())
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null)
 
   // Get unique categories from items
   const availableCategories = useMemo(() => {
@@ -111,7 +112,7 @@ export default function MasonryGallery({
   }, [])
 
   return (
-    <section className="py-20" style={{ background: 'var(--background)' }}>
+    <section className="py-20">
       <div className="max-w-8xl mx-auto px-6">
         {/* Header */}
         <motion.div
@@ -249,9 +250,9 @@ export default function MasonryGallery({
           </p>
         </motion.div>
 
-        {/* Masonry Grid */}
+        {/* Masonry Grid - Collage Style */}
         <motion.div
-          className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 2xl:columns-5 gap-6"
+          className="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-3"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.4 }}
@@ -259,111 +260,162 @@ export default function MasonryGallery({
           {filteredItems.map((item, index) => (
             <motion.div
               key={item.id}
-              className="break-inside-avoid mb-6 group cursor-pointer"
+              className="break-inside-avoid mb-3 group cursor-pointer"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.05 }}
               onClick={() => handleItemClick(item, index)}
+              onMouseEnter={() => setHoveredItem(item.id)}
+              onMouseLeave={() => setHoveredItem(null)}
             >
-              <div className="relative overflow-hidden rounded-2xl transition-all duration-500" style={{ background: 'var(--white-soft)', boxShadow: '0 4px 20px var(--shadow-subtle)', border: '1px solid var(--border-subtle)' }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 30px var(--shadow-medium)' }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 20px var(--shadow-subtle)' }}>
-                {/* Media Content */}
+              <div className="relative overflow-hidden rounded-xl transition-all duration-300"
+                style={{
+                  boxShadow: hoveredItem === item.id ? '0 12px 40px rgba(0,0,0,0.15)' : '0 2px 8px rgba(0,0,0,0.08)',
+                }}>
+                {/* Clean Image */}
                 <div className="relative overflow-hidden">
-                  <img
+                  <motion.img
                     src={item.thumbnail_url || item.url}
                     alt={item.title}
-                    className="w-full h-auto object-cover group-hover:scale-110 transition-transform duration-700"
-                    style={{ aspectRatio: item.aspect_ratio }}
+                    className="w-full h-auto object-cover"
+                    style={{
+                      aspectRatio: item.aspect_ratio,
+                      display: 'block'
+                    }}
                     loading="lazy"
+                    animate={{
+                      scale: hoveredItem === item.id ? 1.05 : 1,
+                    }}
+                    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                   />
 
-                  {/* Video Play Overlay */}
-                  {item.media_type === 'video' && (
-                    <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                      <div className="w-16 h-16 rounded-full flex items-center justify-center backdrop-blur-sm" style={{ background: 'var(--white-soft)' }}>
-                        <Play className="w-8 h-8 ml-1" style={{ color: 'var(--decorative)' }} />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Featured Badge */}
+                  {/* Featured Badge - Subtle */}
                   {item.is_featured && (
-                    <div className="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-bold" style={{ background: 'var(--decorative)', color: 'var(--white-soft)', fontFamily: 'var(--font-crimson)', boxShadow: '0 2px 8px var(--shadow-subtle)' }}>
-                      ⭐ Destaque
-                    </div>
-                  )}
-
-                  {/* Hover Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300" />
-
-                  {/* Action Buttons */}
-                  <div className="absolute bottom-3 right-3 flex space-x-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                    <button
-                      onClick={(e) => toggleLike(item.id, e)}
-                      className="p-2 rounded-full backdrop-blur-md border border-white/20 transition-all duration-300"
+                    <motion.div
+                      className="absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-semibold backdrop-blur-md"
                       style={{
-                        background: likedItems.has(item.id) ? 'var(--decorative)' : 'rgba(255, 255, 255, 0.1)',
-                        color: 'white'
+                        background: 'rgba(255, 255, 255, 0.85)',
+                        color: 'var(--decorative)',
+                        fontFamily: 'var(--font-crimson)',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
                       }}
+                      initial={{ opacity: 0.7 }}
+                      whileHover={{ opacity: 1 }}
                     >
-                      <Heart className={`w-4 h-4 ${likedItems.has(item.id) ? 'fill-current' : ''}`} />
-                    </button>
-
-                    <button
-                      onClick={(e) => shareItem(item, e)}
-                      className="p-2 rounded-full bg-white/10 backdrop-blur-md text-white hover:bg-white/20 transition-all duration-300 border border-white/20"
-                    >
-                      <Share2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Content Info */}
-                <div className="p-4">
-                  <h3 className="font-semibold mb-2 line-clamp-2" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)' }}>
-                    {item.title}
-                  </h3>
-
-                  {item.description && (
-                    <p className="text-sm mb-3 line-clamp-2" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
-                      {item.description}
-                    </p>
+                      ⭐
+                    </motion.div>
                   )}
 
-                  {/* Tags */}
-                  {item.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mb-3">
-                      {item.tags.slice(0, 3).map(tag => (
-                        <span
-                          key={tag}
-                          className="px-2 py-1 rounded-full text-xs font-medium"
-                          style={{
-                            background: 'var(--accent)',
-                            color: 'var(--decorative)',
-                            fontFamily: 'var(--font-crimson)'
-                          }}
-                        >
-                          #{tag}
-                        </span>
-                      ))}
-                      {item.tags.length > 3 && (
-                        <span className="text-xs" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)' }}>
-                          +{item.tags.length - 3} mais
-                        </span>
-                      )}
-                    </div>
+                  {/* Video Play Icon - Subtle */}
+                  {item.media_type === 'video' && (
+                    <motion.div
+                      className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                      initial={{ opacity: 0.6 }}
+                      animate={{ opacity: hoveredItem === item.id ? 1 : 0.6 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <div className="w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-sm"
+                        style={{ background: 'rgba(255, 255, 255, 0.9)' }}>
+                        <Play className="w-6 h-6 ml-0.5" style={{ color: 'var(--primary-text)' }} fill="currentColor" />
+                      </div>
+                    </motion.div>
                   )}
 
-                  {/* Date and Location */}
-                  <div className="flex justify-between items-center text-xs" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)' }}>
-                    {item.date_taken && (
-                      <span>
-                        {new Date(item.date_taken).toLocaleDateString('pt-BR')}
-                      </span>
+                  {/* Hover Overlay with Information - Desktop Only */}
+                  <AnimatePresence>
+                    {hoveredItem === item.id && (
+                      <motion.div
+                        className="absolute inset-0 hidden md:block"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                        style={{
+                          background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 50%, transparent 100%)',
+                          pointerEvents: 'none'
+                        }}
+                      >
+                        {/* Content Container */}
+                        <div className="absolute bottom-0 left-0 right-0 p-4 pb-3 pointer-events-auto">
+                          {/* Title */}
+                          <motion.h3
+                            className="font-bold text-lg mb-2 line-clamp-2 text-white"
+                            style={{ fontFamily: 'var(--font-playfair)' }}
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ duration: 0.4, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+                          >
+                            {item.title}
+                          </motion.h3>
+
+                          {/* Description */}
+                          {item.description && (
+                            <motion.p
+                              className="text-sm mb-3 line-clamp-2 text-white/90"
+                              style={{ fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}
+                              initial={{ y: 20, opacity: 0 }}
+                              animate={{ y: 0, opacity: 1 }}
+                              transition={{ duration: 0.4, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+                            >
+                              {item.description}
+                            </motion.p>
+                          )}
+
+                          {/* Date and Location */}
+                          <motion.div
+                            className="flex items-center gap-3 text-xs text-white/75 mb-3"
+                            style={{ fontFamily: 'var(--font-crimson)' }}
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ duration: 0.4, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                          >
+                            {item.date_taken && (
+                              <span className="flex items-center gap-1">
+                                <Calendar className="w-3 h-3" />
+                                {new Date(item.date_taken).toLocaleDateString('pt-BR')}
+                              </span>
+                            )}
+                            {item.location && (
+                              <span className="flex items-center gap-1 truncate">
+                                <MapPin className="w-3 h-3" />
+                                {item.location}
+                              </span>
+                            )}
+                          </motion.div>
+
+                          {/* Action Buttons */}
+                          <motion.div
+                            className="flex gap-2"
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ duration: 0.4, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                          >
+                            <button
+                              onClick={(e) => toggleLike(item.id, e)}
+                              className="p-2 rounded-full backdrop-blur-md border border-white/30 transition-all duration-300 hover:scale-110"
+                              style={{
+                                background: likedItems.has(item.id) ? 'rgba(255, 255, 255, 0.25)' : 'rgba(255, 255, 255, 0.1)',
+                                color: 'white'
+                              }}
+                            >
+                              <Heart className={`w-4 h-4 ${likedItems.has(item.id) ? 'fill-current' : ''}`} />
+                            </button>
+
+                            <button
+                              onClick={(e) => shareItem(item, e)}
+                              className="p-2 rounded-full backdrop-blur-md border border-white/30 text-white hover:scale-110 transition-all duration-300"
+                              style={{ background: 'rgba(255, 255, 255, 0.1)' }}
+                            >
+                              <Share2 className="w-4 h-4" />
+                            </button>
+                          </motion.div>
+                        </div>
+                      </motion.div>
                     )}
-                    {item.location && (
-                      <span className="truncate ml-2">{item.location}</span>
-                    )}
-                  </div>
+                  </AnimatePresence>
+
+                  {/* Mobile Touch Overlay - Lighter */}
+                  <div className="absolute inset-0 md:hidden active:bg-black/20 transition-colors duration-150" />
                 </div>
               </div>
             </motion.div>
