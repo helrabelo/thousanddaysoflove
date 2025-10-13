@@ -134,9 +134,17 @@ export default function DetalhesPage() {
           </div>
 
           <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-gray-100">
-            <h3 className="text-2xl font-semibold mb-4" style={{ color: 'var(--primary-text)' }}>
-              Social
-            </h3>
+            <div className="text-center mb-6">
+              <p className="text-sm uppercase tracking-wider mb-2" style={{ color: 'var(--decorative)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
+                Dress Code
+              </p>
+              <h3 className="text-2xl sm:text-3xl font-semibold" style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-playfair)' }}>
+                Social Elegante
+              </h3>
+              <p className="text-sm mt-3 max-w-lg mx-auto" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
+                O casamento será ao meio dia, no Ceará.. não vai de preto todo agasalhado, né meu filho?
+              </p>
+            </div>
             <div className="grid md:grid-cols-2 gap-8">
               <div>
                 <h4 className="font-semibold text-lg mb-3" style={{ color: 'var(--primary-text)' }}>
@@ -163,7 +171,28 @@ export default function DetalhesPage() {
           </div>
         </motion.section>
 
+        {/* Parking Section */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="mb-16"
+        >
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: 'var(--decorative)' }}>
+              <Car className="w-6 h-6" style={{ color: 'var(--white-soft)' }} />
+            </div>
+            <h2 className="text-3xl font-light" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)' }}>
+              Estacionamento
+            </h2>
+          </div>
 
+          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-gray-100">
+            <p className="text-lg" style={{ color: 'var(--secondary-text)' }}>
+              Temos bastante vagas disponíveis na rua, com sombra, em local seguro. É tranquilo, fácil e rápido!
+            </p>
+          </div>
+        </motion.section>
 
         {/* Contact Section */}
         <motion.section

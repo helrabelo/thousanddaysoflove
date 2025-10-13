@@ -252,56 +252,56 @@ export default function EventDetailsSection({ data }: EventDetailsSectionProps) 
           </motion.div>
         )}
 
-        {/* Event Details - Mobile */}
+        {/* Event Details + Dress Code - Mobile Grid (1 column, same gap as desktop) */}
         {showEventDetails && (
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
-            className="space-y-4 mb-8"
           >
-            {eventDetails.map((detail, index) => {
-              const Icon = detail.icon
-              return (
-                <motion.div
-                  key={detail.label}
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                >
-                  <Card
-                    variant="elegant"
-                    style={{
-                      background: 'var(--white-soft)',
-                      border: '1px solid var(--decorative)',
-                    }}
+            <div className="grid grid-cols-1 gap-3 max-w-2xl mx-auto">
+              {eventDetails.map((detail, index) => {
+                const Icon = detail.icon
+                return (
+                  <motion.div
+                    key={detail.label}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    viewport={{ once: true }}
                   >
-                    <CardContent className="flex items-center gap-4 py-4">
-                      <div
-                        className="w-12 h-12 flex items-center justify-center rounded-full flex-shrink-0"
-                        style={{
-                          background: 'var(--decorative)',
-                          opacity: 0.9,
-                        }}
-                      >
-                        <Icon
-                          className="h-5 w-5"
+                    <Card
+                      variant="elegant"
+                      className="h-full"
+                      style={{
+                        background: 'var(--white-soft)',
+                        border: '1px solid var(--decorative)',
+                      }}
+                    >
+                      <CardContent className="flex flex-col items-center justify-center text-center py-5 h-full">
+                        <div
+                          className="w-12 h-12 flex items-center justify-center rounded-full mb-3"
                           style={{
-                            color: 'var(--white-soft)',
-                            strokeWidth: 1.5,
+                            background: 'var(--decorative)',
+                            opacity: 0.9,
                           }}
-                        />
-                      </div>
-                      <div className="flex-1 text-left">
+                        >
+                          <Icon
+                            className="h-5 w-5"
+                            style={{
+                              color: 'var(--white-soft)',
+                              strokeWidth: 1.5,
+                            }}
+                          />
+                        </div>
                         <div
                           className="mb-1"
                           style={{
                             fontFamily: 'var(--font-playfair)',
-                            fontSize: '0.75rem',
+                            fontSize: '0.7rem',
                             color: 'var(--decorative)',
-                            letterSpacing: '0.1em',
+                            letterSpacing: '0.15em',
                             textTransform: 'uppercase',
                             fontWeight: '600',
                           }}
@@ -309,9 +309,10 @@ export default function EventDetailsSection({ data }: EventDetailsSectionProps) 
                           {detail.label}
                         </div>
                         <h4
+                          className="mb-1"
                           style={{
                             fontFamily: 'var(--font-playfair)',
-                            fontSize: '1.125rem',
+                            fontSize: 'clamp(1rem, 1.5vw, 1.125rem)',
                             fontWeight: '600',
                             color: 'var(--primary-text)',
                             letterSpacing: '0.02em',
@@ -323,77 +324,94 @@ export default function EventDetailsSection({ data }: EventDetailsSectionProps) 
                         <p
                           style={{
                             fontFamily: 'var(--font-crimson)',
-                            fontSize: '0.875rem',
+                            fontSize: '0.8125rem',
                             color: 'var(--secondary-text)',
                             fontStyle: 'italic',
                           }}
                         >
                           {detail.subtitle}
                         </p>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                )
+              })}
+
+              {/* Dress Code - Mobile (part of 2x2 grid) */}
+              {showDressCode && settings.dressCode && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                  viewport={{ once: true }}
+                >
+                  <Card
+                    variant="elegant"
+                    className="h-full"
+                    style={{
+                      background: 'var(--white-soft)',
+                      border: '1px solid var(--decorative)',
+                    }}
+                  >
+                    <CardContent className="flex flex-col items-center justify-center text-center py-5 h-full">
+                      <div
+                        className="w-12 h-12 flex items-center justify-center rounded-full mb-3"
+                        style={{
+                          background: 'var(--decorative)',
+                          opacity: 0.9,
+                        }}
+                      >
+                        <Heart
+                          className="h-5 w-5"
+                          style={{
+                            color: 'var(--white-soft)',
+                            strokeWidth: 1.5,
+                          }}
+                        />
                       </div>
+                      <div
+                        className="mb-1"
+                        style={{
+                          fontFamily: 'var(--font-playfair)',
+                          fontSize: '0.7rem',
+                          color: 'var(--decorative)',
+                          letterSpacing: '0.15em',
+                          textTransform: 'uppercase',
+                          fontWeight: '600',
+                        }}
+                      >
+                        Dress Code
+                      </div>
+                      <h4
+                        className="mb-1"
+                        style={{
+                          fontFamily: 'var(--font-playfair)',
+                          fontSize: 'clamp(1rem, 1.5vw, 1.125rem)',
+                          fontWeight: '600',
+                          color: 'var(--primary-text)',
+                          letterSpacing: '0.02em',
+                          lineHeight: '1.3',
+                        }}
+                      >
+                        {settings.dressCode}
+                      </h4>
+                      {settings.dressCodeDescription && (
+                        <p
+                          style={{
+                            fontFamily: 'var(--font-crimson)',
+                            fontSize: '0.8125rem',
+                            color: 'var(--secondary-text)',
+                            fontStyle: 'italic',
+                          }}
+                        >
+                          {settings.dressCodeDescription}
+                        </p>
+                      )}
                     </CardContent>
                   </Card>
                 </motion.div>
-              )
-            })}
-          </motion.div>
-        )}
-
-        {/* Dress Code - Mobile */}
-        {showDressCode && settings.dressCode && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            viewport={{ once: true }}
-          >
-            <Card
-              variant="invitation"
-              style={{
-                background: 'var(--accent)',
-                border: '1px solid var(--decorative)',
-              }}
-            >
-              <CardContent className="py-6 text-center">
-                <div
-                  className="mb-2"
-                  style={{
-                    fontFamily: 'var(--font-playfair)',
-                    fontSize: '0.75rem',
-                    color: 'var(--decorative)',
-                    letterSpacing: '0.15em',
-                    textTransform: 'uppercase',
-                    fontWeight: '600',
-                  }}
-                >
-                  Dress Code
-                </div>
-                <div
-                  style={{
-                    fontFamily: 'var(--font-playfair)',
-                    fontSize: '1.25rem',
-                    fontWeight: '500',
-                    color: 'var(--primary-text)',
-                    letterSpacing: '0.05em',
-                  }}
-                >
-                  {settings.dressCode}
-                </div>
-                {settings.dressCodeDescription && (
-                  <p
-                    className="mt-2"
-                    style={{
-                      fontFamily: 'var(--font-crimson)',
-                      fontSize: '0.875rem',
-                      color: 'var(--secondary-text)',
-                      fontStyle: 'italic',
-                    }}
-                  >
-                    {settings.dressCodeDescription}
-                  </p>
-                )}
-              </CardContent>
-            </Card>
+              )}
+            </div>
           </motion.div>
         )}
       </div>
