@@ -23,7 +23,7 @@ export default function QuickActions({ invitation }: QuickActionsProps) {
       href: '/rsvp',
       completed: invitation.rsvp_completed,
       description: 'Confirme sua presença',
-      bgColor: 'bg-[#F8F6F3]',
+      bgColor: '',
     },
     {
       title: 'Presentes',
@@ -39,7 +39,7 @@ export default function QuickActions({ invitation }: QuickActionsProps) {
       href: '/dia-1000/upload',
       completed: invitation.photos_uploaded,
       description: 'Envie suas fotos',
-      bgColor: 'bg-[#F8F6F3]',
+      bgColor: '',
     },
     {
       title: 'Mensagens',
@@ -109,7 +109,7 @@ export default function QuickActions({ invitation }: QuickActionsProps) {
                             Completo
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-[#F8F6F3] text-[#4A4A4A] text-xs font-medium">
+                          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full  text-[#4A4A4A] text-xs font-medium">
                             Pendente
                           </span>
                         )}

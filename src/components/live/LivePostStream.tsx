@@ -144,7 +144,7 @@ export function LivePostStream() {
 
                 {/* Post type badge */}
                 {post.post_type !== 'text' && (
-                  <div className="flex items-center gap-1 text-xs text-[#4A4A4A] bg-[#F8F6F3] px-2 py-1 rounded-full">
+                  <div className="flex items-center gap-1 text-xs text-[#4A4A4A]  px-2 py-1 rounded-full">
                     {post.post_type === 'image' && <Image className="w-3 h-3" />}
                     {post.post_type === 'video' && <Video className="w-3 h-3" />}
                     {post.post_type === 'mixed' && (

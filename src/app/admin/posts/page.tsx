@@ -209,7 +209,7 @@ export default function AdminPostsPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#F8F6F3] py-6 px-4">
+    <div className="min-h-screen  py-6 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -282,7 +282,7 @@ export default function AdminPostsPage() {
                   className={`px-4 py-2 rounded-md text-sm transition-all ${
                     filter === status
                       ? 'bg-[#2C2C2C] text-white'
-                      : 'bg-[#F8F6F3] text-[#4A4A4A] hover:bg-[#E8E6E3]'
+                      : ' text-[#4A4A4A] hover:bg-[#E8E6E3]'
                   }`}
                 >
                   {status === 'all' && 'Todas'}
@@ -392,8 +392,8 @@ export default function AdminPostsPage() {
             Atalhos de Teclado
           </h3>
           <div className="grid grid-cols-2 gap-2 text-sm text-[#4A4A4A]">
-            <div><kbd className="px-2 py-1 bg-[#F8F6F3] rounded">A</kbd> = Aprovar</div>
-            <div><kbd className="px-2 py-1 bg-[#F8F6F3] rounded">R</kbd> = Rejeitar</div>
+            <div><kbd className="px-2 py-1  rounded">A</kbd> = Aprovar</div>
+            <div><kbd className="px-2 py-1  rounded">R</kbd> = Rejeitar</div>
           </div>
         </div>
       </div>
@@ -471,7 +471,7 @@ function PostModerationCard({
             {post.media_urls && post.media_urls.length > 0 && (
               <div className="grid grid-cols-4 gap-2 mb-4">
                 {post.media_urls.map((url, i) => (
-                  <div key={i} className="aspect-square rounded-md bg-[#F8F6F3] border border-[#E8E6E3]" />
+                  <div key={i} className="aspect-square rounded-md  border border-[#E8E6E3]" />
                 ))}
               </div>
             )}
@@ -544,7 +544,7 @@ function PostModerationCard({
 
             {/* Moderation Info */}
             {post.moderated_at && (
-              <div className="mt-4 p-3 bg-[#F8F6F3] rounded-md text-sm text-[#4A4A4A]">
+              <div className="mt-4 p-3  rounded-md text-sm text-[#4A4A4A]">
                 <p>
                   <strong>Moderado por:</strong> {post.moderated_by}
                 </p>

@@ -56,7 +56,7 @@ export function LivePhotoGallery() {
   if (photos.length === 0) {
     return (
       <Card className="p-6">
-        <div className="aspect-video bg-[#F8F6F3] rounded-lg flex items-center justify-center">
+        <div className="aspect-video  rounded-lg flex items-center justify-center">
           <p className="text-[#4A4A4A]">Nenhuma foto disponível ainda</p>
         </div>
       </Card>
@@ -72,7 +72,7 @@ export function LivePhotoGallery() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setIsPlaying(!isPlaying)}
-              className="p-2 rounded-lg bg-[#F8F6F3] hover:bg-[#E8E6E3] transition-colors"
+              className="p-2 rounded-lg  hover:bg-[#E8E6E3] transition-colors"
               title={isPlaying ? 'Pausar' : 'Reproduzir'}
             >
               {isPlaying ? (

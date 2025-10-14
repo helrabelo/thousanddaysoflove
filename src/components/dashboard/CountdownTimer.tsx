@@ -32,7 +32,7 @@ export default function CountdownTimer() {
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: 'spring', stiffness: 200 }}
-          className="inline-flex items-center justify-center w-12 h-12 bg-[#F8F6F3] rounded-full mb-3 shadow-md"
+          className="inline-flex items-center justify-center w-12 h-12  rounded-full mb-3 shadow-md"
         >
           <Calendar className="w-6 h-6 text-[#A8A8A8]" />
         </motion.div>

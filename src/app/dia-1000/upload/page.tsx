@@ -190,7 +190,7 @@ export default function GuestUploadPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F8F6F3] flex items-center justify-center">
+      <div className="min-h-screen  flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2C2C2C] mx-auto mb-4" />
           <p className="font-crimson text-[#4A4A4A]">Carregando...</p>
@@ -211,7 +211,7 @@ export default function GuestUploadPage() {
   return (
     <>
       <Navigation />
-      <div className="min-h-screen bg-[#F8F6F3] px-4 pt-32 pb-8">
+      <div className="min-h-screen  px-4 pt-32 pb-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">

@@ -77,7 +77,7 @@ export default function Navigation() {
   return (
     <>
     <motion.nav
-      className="fixed top-0 left-0 right-0 z-50"
+      className="fixed top-0 left-0 right-0 z-50 fixed-navbar"
       style={{
         background: 'var(--white-soft)',
         borderBottom: '1px solid var(--border-subtle)'

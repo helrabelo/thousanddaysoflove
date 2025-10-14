@@ -47,7 +47,7 @@ export default function DirectDashboardAccessPage() {
 
   // Loading state while auto-login happens
   return (
-    <div className="min-h-screen bg-[#F8F6F3] flex items-center justify-center px-4">
+    <div className="min-h-screen  flex items-center justify-center px-4">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

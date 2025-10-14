@@ -85,7 +85,7 @@ export default function GuestDashboardPage() {
     return (
       <>
         <Navigation />
-        <div className="min-h-screen bg-[#F8F6F3] flex items-center justify-center px-4 pt-20">
+        <div className="min-h-screen  flex items-center justify-center px-4 pt-20">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -112,7 +112,7 @@ export default function GuestDashboardPage() {
     return (
       <>
         <Navigation />
-        <div className="min-h-screen bg-[#F8F6F3] flex items-center justify-center px-4 pt-20">
+        <div className="min-h-screen  flex items-center justify-center px-4 pt-20">
           <div className="max-w-md text-center">
             <p className="font-crimson text-lg text-[#2C2C2C] mb-4">{error}</p>
             <button
@@ -131,7 +131,7 @@ export default function GuestDashboardPage() {
   return (
     <>
       <Navigation />
-      <div className="min-h-screen bg-[#F8F6F3] pt-20">
+      <div className="min-h-screen  pt-20">
         {/* Header */}
         <header className="bg-white border-b border-[#E8E6E3] shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -150,7 +150,7 @@ export default function GuestDashboardPage() {
               <button
                 onClick={handleRefresh}
                 disabled={isRefreshing}
-                className="p-2 hover:bg-[#F8F6F3] rounded-lg transition-colors"
+                className="p-2 hover: rounded-lg transition-colors"
                 title="Atualizar"
               >
                 <RefreshCw

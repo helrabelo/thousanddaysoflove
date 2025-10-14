@@ -96,7 +96,7 @@ export default function InvitationCard({ invitation }: InvitationCardProps) {
       {/* QR Code */}
       <div className="bg-white rounded-xl p-4 mb-6 text-center shadow-md">
         {qrLoading ? (
-          <div className="w-[200px] h-[200px] mx-auto bg-[#F8F6F3] rounded-lg flex items-center justify-center">
+          <div className="w-[200px] h-[200px] mx-auto  rounded-lg flex items-center justify-center">
             <QrCode className="w-8 h-8 text-[#A8A8A8] animate-pulse" />
           </div>
         ) : qrCodeUrl ? (
@@ -108,7 +108,7 @@ export default function InvitationCard({ invitation }: InvitationCardProps) {
             className="w-[200px] h-[200px] mx-auto rounded-lg"
           />
         ) : (
-          <div className="w-[200px] h-[200px] mx-auto bg-[#F8F6F3] rounded-lg flex items-center justify-center">
+          <div className="w-[200px] h-[200px] mx-auto  rounded-lg flex items-center justify-center">
             <QrCode className="w-8 h-8 text-[#A8A8A8]" />
           </div>
         )}
@@ -121,7 +121,7 @@ export default function InvitationCard({ invitation }: InvitationCardProps) {
       <div className="space-y-3 mb-6">
         {/* Plus One */}
         {invitation.plus_one_allowed && (
-          <div className="bg-[#F8F6F3] rounded-lg p-3 flex items-center gap-3">
+          <div className=" rounded-lg p-3 flex items-center gap-3">
             <Users className="w-5 h-5 text-[#A8A8A8] flex-shrink-0" />
             <div>
               <p className="font-crimson text-sm text-[#2C2C2C]">
@@ -138,7 +138,7 @@ export default function InvitationCard({ invitation }: InvitationCardProps) {
 
         {/* Table Number */}
         {invitation.table_number && (
-          <div className="bg-[#F8F6F3] rounded-lg p-3 flex items-center gap-3">
+          <div className=" rounded-lg p-3 flex items-center gap-3">
             <Utensils className="w-5 h-5 text-[#A8A8A8] flex-shrink-0" />
             <div>
               <p className="font-crimson text-sm text-[#2C2C2C]">
@@ -150,7 +150,7 @@ export default function InvitationCard({ invitation }: InvitationCardProps) {
 
         {/* Custom Message */}
         {invitation.custom_message && (
-          <div className="bg-[#F8F6F3] rounded-lg p-4">
+          <div className=" rounded-lg p-4">
             <p className="font-crimson text-sm text-[#2C2C2C] italic">
               &quot;{invitation.custom_message}&quot;
             </p>
@@ -166,7 +166,7 @@ export default function InvitationCard({ invitation }: InvitationCardProps) {
         <button
           onClick={handleCopyLink}
           className="w-full bg-white text-[#2C2C2C] font-crimson py-3 px-4 rounded-lg
-                   hover:bg-[#F8F6F3] transition-colors flex items-center justify-center gap-2 shadow-sm"
+                   hover: transition-colors flex items-center justify-center gap-2 shadow-sm"
         >
           {copied ? (
             <>
@@ -186,7 +186,7 @@ export default function InvitationCard({ invitation }: InvitationCardProps) {
             onClick={handleDownloadQR}
             disabled={!qrCodeUrl}
             className="bg-white text-[#2C2C2C] font-crimson py-3 px-4 rounded-lg
-                     hover:bg-[#F8F6F3] transition-colors flex items-center justify-center gap-2 shadow-sm
+                     hover: transition-colors flex items-center justify-center gap-2 shadow-sm
                      disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Download className="w-5 h-5" />

@@ -8,6 +8,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import { Search, RefreshCw, Loader2, AlertCircle } from 'lucide-react'
 import { formatFileSize } from '@/lib/utils/format'
 
 interface Photo {
@@ -51,16 +52,77 @@ export default function PhotoModerationGrid({
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [focusedIndex, setFocusedIndex] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
+  const [isRefreshing, setIsRefreshing] = useState(false)
+  const [stats, setStats] = useState<any>(null)
 
   // Filters
-  const [statusFilter, setStatusFilter] = useState(initialFilters.status)
-  const [phaseFilter, setPhaseFilter] = useState(initialFilters.phase)
-  const [searchQuery, setSearchQuery] = useState(initialFilters.search)
+  const [statusFilter, setStatusFilter] = useState<string>('pending')
+  const [phaseFilter, setPhaseFilter] = useState<string>('all')
+  const [searchQuery, setSearchQuery] = useState('')
 
-  // Update photos when initialPhotos changes (after navigation/refresh)
+  // Fetch photos when status filter changes
   useEffect(() => {
-    setPhotos(initialPhotos)
-  }, [initialPhotos])
+    loadPhotos()
+  }, [statusFilter])
+
+  // Load stats on mount
+  useEffect(() => {
+    loadStats()
+  }, [])
+
+  const loadPhotos = async () => {
+    setIsLoading(true)
+    try {
+      const params = new URLSearchParams()
+      if (statusFilter !== 'all') params.set('status', statusFilter)
+
+      const response = await fetch(`/api/admin/photos?${params.toString()}`)
+      if (!response.ok) throw new Error('Failed to load photos')
+
+      const data = await response.json()
+      setPhotos(data)
+    } catch (error) {
+      console.error('Error loading photos:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const loadStats = async () => {
+    try {
+      const response = await fetch('/api/admin/photos?action=stats')
+      if (!response.ok) throw new Error('Failed to load stats')
+
+      const data = await response.json()
+      setStats(data)
+    } catch (error) {
+      console.error('Error loading stats:', error)
+    }
+  }
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true)
+    await Promise.all([loadPhotos(), loadStats()])
+    setIsRefreshing(false)
+  }
+
+  // Client-side filtering for phase and search
+  const filteredPhotos = photos.filter(photo => {
+    // Phase filter
+    if (phaseFilter !== 'all' && photo.upload_phase !== phaseFilter) {
+      return false
+    }
+
+    // Search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase()
+      const matchesName = photo.guest_name?.toLowerCase().includes(query)
+      const matchesCaption = photo.caption?.toLowerCase().includes(query)
+      return matchesName || matchesCaption
+    }
+
+    return true
+  })
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -145,9 +207,9 @@ export default function PhotoModerationGrid({
     })
   }
 
-  // Select all
+  // Select all (filtered photos)
   const selectAll = () => {
-    setSelectedIds(new Set(photos.map((p) => p.id)))
+    setSelectedIds(new Set(filteredPhotos.map((p) => p.id)))
   }
 
   // Deselect all
@@ -257,8 +319,8 @@ export default function PhotoModerationGrid({
       // Clear selection
       setSelectedIds(new Set())
 
-      // Refresh server data
-      router.refresh()
+      // Reload data
+      await Promise.all([loadPhotos(), loadStats()])
     } catch (error) {
       console.error('Batch moderation error:', error)
       alert('Erro ao moderar fotos em lote')
@@ -267,205 +329,231 @@ export default function PhotoModerationGrid({
     }
   }
 
-  // Apply filters via URL
-  const applyFilters = () => {
-    const params = new URLSearchParams()
-    if (statusFilter !== 'all') params.set('status', statusFilter)
-    if (phaseFilter !== 'all') params.set('phase', phaseFilter)
-    if (searchQuery) params.set('search', searchQuery)
-
-    router.push(`/admin/photos?${params.toString()}`)
-  }
-
   return (
-    <div>
-      {/* Filters */}
-      <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {/* Status Filter */}
-          <div>
-            <label className="block text-sm font-medium text-[#2C2C2C] mb-2">
-              Status
-            </label>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full px-4 py-2 border border-[#E8E6E3] rounded-md focus:ring-2 focus:ring-[#2C2C2C] focus:border-transparent"
-            >
-              <option value="all">Todos</option>
-              <option value="pending">Pendente</option>
-              <option value="approved">Aprovado</option>
-              <option value="rejected">Rejeitado</option>
-            </select>
-          </div>
-
-          {/* Phase Filter */}
-          <div>
-            <label className="block text-sm font-medium text-[#2C2C2C] mb-2">
-              Fase
-            </label>
-            <select
-              value={phaseFilter}
-              onChange={(e) => setPhaseFilter(e.target.value)}
-              className="w-full px-4 py-2 border border-[#E8E6E3] rounded-md focus:ring-2 focus:ring-[#2C2C2C] focus:border-transparent"
-            >
-              <option value="all">Todas</option>
-              <option value="before">Antes</option>
-              <option value="during">Durante</option>
-              <option value="after">Depois</option>
-            </select>
-          </div>
-
-          {/* Search */}
-          <div>
-            <label className="block text-sm font-medium text-[#2C2C2C] mb-2">
-              Buscar Convidado
-            </label>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  applyFilters()
-                }
-              }}
-              placeholder="Nome do convidado..."
-              className="w-full px-4 py-2 border border-[#E8E6E3] rounded-md focus:ring-2 focus:ring-[#2C2C2C] focus:border-transparent"
-            />
-          </div>
-
-          {/* Apply Button */}
-          <div className="flex items-end">
+    <div className="min-h-screen  py-6 px-4">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-3xl font-serif text-[#2C2C2C]">
+              Moderação de Fotos
+            </h1>
             <button
-              onClick={applyFilters}
-              className="w-full px-4 py-2 bg-[#2C2C2C] text-white rounded-md hover:bg-[#4A4A4A] transition-colors"
+              type="button"
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              className="flex items-center gap-2 px-4 py-2 text-[#4A4A4A] hover:text-[#2C2C2C] transition-colors disabled:opacity-50"
             >
-              Aplicar Filtros
+              <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              <span>Atualizar</span>
             </button>
           </div>
-        </div>
-      </div>
 
-      {/* Selection Controls */}
-      <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            {/* Select All Checkbox */}
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={selectedIds.size === photos.length && photos.length > 0}
-                onChange={(e) => {
-                  if (e.target.checked) {
-                    selectAll()
-                  } else {
-                    deselectAll()
-                  }
-                }}
-                className="w-4 h-4 rounded border-[#E8E6E3]"
-              />
-              <span className="text-sm text-[#2C2C2C] font-medium">
-                Selecionar Todas ({photos.length})
-              </span>
-            </label>
-
-            {selectedIds.size > 0 && (
-              <p className="text-sm text-blue-800">
-                {selectedIds.size} foto(s) selecionada(s)
-              </p>
-            )}
-          </div>
-
-          {/* Batch Actions */}
-          {selectedIds.size > 0 && (
-            <div className="flex gap-2">
-              <button
-                onClick={() => moderateBatch('approved')}
-                disabled={isLoading}
-                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 transition-colors text-sm"
-              >
-                Aprovar Selecionadas
-              </button>
-              <button
-                onClick={() => {
-                  const reason = prompt('Motivo da rejeição:')
-                  if (reason) moderateBatch('rejected', reason)
-                }}
-                disabled={isLoading}
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50 transition-colors text-sm"
-              >
-                Rejeitar Selecionadas
-              </button>
-              <button
-                onClick={deselectAll}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors text-sm"
-              >
-                Desmarcar Todas
-              </button>
+          {/* Stats */}
+          {stats && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-white rounded-lg border border-[#E8E6E3] p-4">
+                <p className="text-sm text-[#4A4A4A] mb-1">Total</p>
+                <p className="text-2xl font-semibold text-[#2C2C2C]">{stats.total}</p>
+              </div>
+              <div className="bg-amber-50 rounded-lg border border-amber-200 p-4">
+                <p className="text-sm text-amber-700 mb-1">Pendentes</p>
+                <p className="text-2xl font-semibold text-amber-900">{stats.pending}</p>
+              </div>
+              <div className="bg-green-50 rounded-lg border border-green-200 p-4">
+                <p className="text-sm text-green-700 mb-1">Aprovadas</p>
+                <p className="text-2xl font-semibold text-green-900">{stats.approved}</p>
+              </div>
+              <div className="bg-red-50 rounded-lg border border-red-200 p-4">
+                <p className="text-sm text-red-700 mb-1">Rejeitadas</p>
+                <p className="text-2xl font-semibold text-red-900">{stats.rejected}</p>
+              </div>
             </div>
           )}
         </div>
-      </div>
 
-      {/* Grid */}
-      {photos.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-[#4A4A4A]">Nenhuma foto encontrada</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {photos.map((photo, index) => (
-            <PhotoCard
-              key={photo.id}
-              photo={photo}
-              isSelected={selectedIds.has(photo.id)}
-              isFocused={index === focusedIndex}
-              onToggleSelect={() => toggleSelection(photo.id)}
-              onApprove={() => moderatePhoto(photo.id, 'approved')}
-              onReject={() => {
-                const reason = prompt('Motivo da rejeição:')
-                if (reason) moderatePhoto(photo.id, 'rejected', reason)
-              }}
-              isLoading={isLoading}
-            />
-          ))}
-        </div>
-      )}
+        {/* Filters */}
+        <div className="bg-white rounded-lg border border-[#E8E6E3] p-4 mb-6">
+          {/* Search */}
+          <div className="mb-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A8A8A8]" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Buscar por nome ou legenda..."
+                className="w-full pl-10 pr-4 py-2 border border-[#E8E6E3] rounded-md focus:outline-none focus:ring-2 focus:ring-[#A8A8A8]"
+              />
+            </div>
+          </div>
 
-      {/* Keyboard Shortcuts Help */}
-      <div className="mt-8 bg-white rounded-lg shadow-sm p-6">
-        <h3 className="font-medium text-[#2C2C2C] mb-4">
-          Atalhos de Teclado
-        </h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-          <div>
-            <kbd className="px-2 py-1 bg-gray-100 rounded">←→↑↓</kbd>
-            <span className="ml-2 text-[#4A4A4A]">Navegar</span>
+          {/* Filter Buttons Row */}
+          <div className="flex flex-col sm:flex-row gap-4">
+            {/* Status Filter Buttons */}
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-[#2C2C2C] mb-2">
+                Status
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {(['all', 'pending', 'approved', 'rejected'] as const).map((status) => (
+                  <button
+                    key={status}
+                    type="button"
+                    onClick={() => setStatusFilter(status)}
+                    className={`px-4 py-2 rounded-md text-sm transition-all ${
+                      statusFilter === status
+                        ? 'bg-[#2C2C2C] text-white'
+                        : ' text-[#4A4A4A] hover:bg-[#E8E6E3]'
+                    }`}
+                  >
+                    {status === 'all' && 'Todos'}
+                    {status === 'pending' && 'Pendentes'}
+                    {status === 'approved' && 'Aprovados'}
+                    {status === 'rejected' && 'Rejeitados'}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Phase Filter Buttons */}
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-[#2C2C2C] mb-2">
+                Fase
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {(['all', 'before', 'during', 'after'] as const).map((phase) => (
+                  <button
+                    key={phase}
+                    type="button"
+                    onClick={() => setPhaseFilter(phase)}
+                    className={`px-4 py-2 rounded-md text-sm transition-all ${
+                      phaseFilter === phase
+                        ? 'bg-[#2C2C2C] text-white'
+                        : ' text-[#4A4A4A] hover:bg-[#E8E6E3]'
+                    }`}
+                  >
+                    {phase === 'all' && 'Todas'}
+                    {phase === 'before' && 'Antes'}
+                    {phase === 'during' && 'Durante'}
+                    {phase === 'after' && 'Depois'}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
-          <div>
-            <kbd className="px-2 py-1 bg-gray-100 rounded">Space</kbd>
-            <span className="ml-2 text-[#4A4A4A]">Selecionar</span>
+
+          {/* Select All & Batch Actions */}
+          <div className="flex items-center justify-between mt-4 pt-4 border-t border-[#E8E6E3]">
+            <div className="flex items-center gap-4">
+              {/* Select All Checkbox */}
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={selectedIds.size === filteredPhotos.length && filteredPhotos.length > 0}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      selectAll()
+                    } else {
+                      deselectAll()
+                    }
+                  }}
+                  className="w-4 h-4 rounded border-[#E8E6E3]"
+                />
+                <span className="text-sm text-[#2C2C2C] font-medium">
+                  Selecionar Todas ({filteredPhotos.length})
+                </span>
+              </label>
+
+              {selectedIds.size > 0 && (
+                <span className="text-sm text-[#4A4A4A]">
+                  {selectedIds.size} foto(s) selecionada(s)
+                </span>
+              )}
+            </div>
+
+            {/* Batch Action Buttons */}
+            {selectedIds.size > 0 && (
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => moderateBatch('approved')}
+                  disabled={isLoading}
+                  className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 transition-colors text-sm"
+                >
+                  Aprovar Selecionadas
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const reason = prompt('Motivo da rejeição:')
+                    if (reason) moderateBatch('rejected', reason)
+                  }}
+                  disabled={isLoading}
+                  className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50 transition-colors text-sm"
+                >
+                  Rejeitar Selecionadas
+                </button>
+                <button
+                  type="button"
+                  onClick={deselectAll}
+                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors text-sm"
+                >
+                  Desmarcar Todas
+                </button>
+              </div>
+            )}
           </div>
-          <div>
-            <kbd className="px-2 py-1 bg-gray-100 rounded">A</kbd>
-            <span className="ml-2 text-[#4A4A4A]">Aprovar</span>
+        </div>
+
+        {/* Grid */}
+        {isLoading ? (
+          <div className="text-center py-12">
+            <Loader2 className="w-8 h-8 text-[#A8A8A8] animate-spin mx-auto mb-4" />
+            <p className="text-[#4A4A4A]">Carregando fotos...</p>
           </div>
-          <div>
-            <kbd className="px-2 py-1 bg-gray-100 rounded">R</kbd>
-            <span className="ml-2 text-[#4A4A4A]">Rejeitar</span>
+        ) : filteredPhotos.length === 0 ? (
+          <div className="bg-white rounded-lg border border-[#E8E6E3] p-12 text-center">
+            <AlertCircle className="w-12 h-12 text-[#A8A8A8] mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-[#2C2C2C] mb-2">
+              Nenhuma foto encontrada
+            </h3>
+            <p className="text-[#4A4A4A]">
+              {searchQuery || phaseFilter !== 'all'
+                ? 'Tente ajustar os filtros de busca'
+                : 'Não há fotos neste status'}
+            </p>
           </div>
-          <div>
-            <kbd className="px-2 py-1 bg-gray-100 rounded">Shift+A</kbd>
-            <span className="ml-2 text-[#4A4A4A]">Aprovar Lote</span>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredPhotos.map((photo, index) => (
+              <PhotoCard
+                key={photo.id}
+                photo={photo}
+                isSelected={selectedIds.has(photo.id)}
+                isFocused={index === focusedIndex}
+                onToggleSelect={() => toggleSelection(photo.id)}
+                onApprove={() => moderatePhoto(photo.id, 'approved')}
+                onReject={() => {
+                  const reason = prompt('Motivo da rejeição:')
+                  if (reason) moderatePhoto(photo.id, 'rejected', reason)
+                }}
+                isLoading={isLoading}
+              />
+            ))}
           </div>
-          <div>
-            <kbd className="px-2 py-1 bg-gray-100 rounded">Shift+R</kbd>
-            <span className="ml-2 text-[#4A4A4A]">Rejeitar Lote</span>
-          </div>
-          <div>
-            <kbd className="px-2 py-1 bg-gray-100 rounded">Esc</kbd>
-            <span className="ml-2 text-[#4A4A4A]">Limpar Seleção</span>
+        )}
+
+        {/* Keyboard Shortcuts Help */}
+        <div className="mt-8 bg-white rounded-lg border border-[#E8E6E3] p-4">
+          <h3 className="text-sm font-semibold text-[#2C2C2C] mb-2">
+            Atalhos de Teclado
+          </h3>
+          <div className="grid grid-cols-2 gap-2 text-sm text-[#4A4A4A]">
+            <div><kbd className="px-2 py-1  rounded">A</kbd> = Aprovar</div>
+            <div><kbd className="px-2 py-1  rounded">R</kbd> = Rejeitar</div>
+            <div><kbd className="px-2 py-1  rounded">Space</kbd> = Selecionar</div>
+            <div><kbd className="px-2 py-1  rounded">Esc</kbd> = Limpar</div>
           </div>
         </div>
       </div>

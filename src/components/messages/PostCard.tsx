@@ -183,7 +183,7 @@ export default function PostCard({
       {/* Header */}
       <div className="flex items-start gap-3 mb-4">
         {/* Avatar */}
-        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#F8F6F3] border border-[#E8E6E3] flex items-center justify-center">
+        <div className="flex-shrink-0 w-10 h-10 rounded-full  border border-[#E8E6E3] flex items-center justify-center">
           <User className="w-5 h-5 text-[#A8A8A8]" />
         </div>
 
@@ -200,7 +200,7 @@ export default function PostCard({
         {/* Post Type Badge */}
         <div className="flex-shrink-0">
           {post.post_type !== 'text' && (
-            <span className="inline-flex items-center gap-1 px-2 py-1 bg-[#F8F6F3] border border-[#E8E6E3] rounded-full text-xs text-[#4A4A4A]">
+            <span className="inline-flex items-center gap-1 px-2 py-1  border border-[#E8E6E3] rounded-full text-xs text-[#4A4A4A]">
               {post.post_type === 'image' && '📸'}
               {post.post_type === 'video' && '🎥'}
               {post.post_type === 'mixed' && '🎬'}
@@ -228,7 +228,7 @@ export default function PostCard({
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: index * 0.1 }}
-                className="relative aspect-square rounded-md overflow-hidden bg-[#F8F6F3] border border-[#E8E6E3]"
+                className="relative aspect-square rounded-md overflow-hidden  border border-[#E8E6E3]"
               >
                 {isVideo ? (
                   <video
@@ -301,7 +301,7 @@ export default function PostCard({
               className={`flex items-center gap-1 px-3 py-2 rounded-full border transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
                 isActive
                   ? 'bg-[#2C2C2C] text-white border-[#2C2C2C]'
-                  : 'bg-white text-[#4A4A4A] border-[#E8E6E3] hover:bg-[#F8F6F3]'
+                  : 'bg-white text-[#4A4A4A] border-[#E8E6E3] hover:'
               }`}
               title={REACTION_LABELS[type]}
             >
@@ -316,7 +316,7 @@ export default function PostCard({
           <button
             type="button"
             onClick={() => setShowCommentInput(!showCommentInput)}
-            className="flex items-center gap-1 px-3 py-2 rounded-full border border-[#E8E6E3] bg-white text-[#4A4A4A] hover:bg-[#F8F6F3] transition-all"
+            className="flex items-center gap-1 px-3 py-2 rounded-full border border-[#E8E6E3] bg-white text-[#4A4A4A] hover: transition-all"
           >
             <MessageCircle className="w-4 h-4" />
             <span className="text-sm">Comentar</span>

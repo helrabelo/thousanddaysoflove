@@ -65,7 +65,7 @@ export default function GuestLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F6F3] flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen  flex items-center justify-center px-4 py-12">
       <div className="max-w-md w-full">
         {/* Header */}
         <div className="text-center mb-8">

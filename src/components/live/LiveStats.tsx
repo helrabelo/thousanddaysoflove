@@ -133,7 +133,7 @@ export function LiveStats() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#F8F6F3] transition-colors"
+                className="flex items-center gap-3 p-3 rounded-lg hover: transition-colors"
               >
                 {/* Activity icon */}
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white text-sm font-semibold flex-shrink-0">

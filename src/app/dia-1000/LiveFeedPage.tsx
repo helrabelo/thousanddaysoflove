@@ -13,7 +13,7 @@ export function LiveFeedPage() {
   const [connectionStatus, setConnectionStatus] = useState<'live' | 'polling'>('live')
 
   return (
-    <div className="min-h-screen bg-[#F8F6F3] pt-20">
+    <div className="min-h-screen  pt-20">
       {/* Hero section */}
       <div className="bg-gradient-to-br from-purple-600 via-pink-500 to-red-500 text-white py-12 px-6">
         <div className="max-w-7xl mx-auto">

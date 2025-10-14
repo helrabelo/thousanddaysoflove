@@ -80,7 +80,7 @@ export default function AdminPage() {
             return (
               <Link key={section.href} href={section.href}>
                 <Card className="glass p-8 text-center hover:shadow-xl transition-shadow cursor-pointer h-full">
-                  <Icon className={`w-16 h-16 text-${section.color}-500 mx-auto mb-4`} />
+                  <Icon className={`w-16 h-16 opacity-20 mx-auto mb-4`} />
                   <h2 className="text-xl font-bold text-burgundy-800 mb-3">
                     {section.title}
                   </h2>

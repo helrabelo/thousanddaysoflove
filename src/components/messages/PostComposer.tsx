@@ -276,7 +276,7 @@ export default function PostComposer({
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8 }}
-                  className="relative aspect-square rounded-md overflow-hidden bg-[#F8F6F3] border border-[#E8E6E3]"
+                  className="relative aspect-square rounded-md overflow-hidden  border border-[#E8E6E3]"
                 >
                   {isVideo ? (
                     <video
@@ -322,7 +322,7 @@ export default function PostComposer({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="mb-4 p-3 bg-[#F8F6F3] rounded-md border border-[#E8E6E3]"
+            className="mb-4 p-3  rounded-md border border-[#E8E6E3]"
           >
             <div className="grid grid-cols-12 gap-2">
               {WEDDING_EMOJIS.map((emoji) => (
@@ -374,7 +374,7 @@ export default function PostComposer({
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={isSubmitting || mediaFiles.length >= MAX_FILES}
-            className="p-2 rounded-full hover:bg-[#F8F6F3] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 rounded-full hover: transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             title="Adicionar foto/vídeo"
           >
             <ImageIcon className="w-5 h-5 text-[#4A4A4A]" />
@@ -385,7 +385,7 @@ export default function PostComposer({
             type="button"
             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
             disabled={isSubmitting}
-            className="p-2 rounded-full hover:bg-[#F8F6F3] transition-colors disabled:opacity-50"
+            className="p-2 rounded-full hover: transition-colors disabled:opacity-50"
             title="Adicionar emoji"
           >
             <Smile className="w-5 h-5 text-[#4A4A4A]" />
@@ -435,7 +435,7 @@ export default function PostComposer({
 
       {/* Moderation Notice */}
       {!isAuthenticated && (
-        <div className="mt-4 p-3 bg-[#F8F6F3] rounded-md border border-[#E8E6E3]">
+        <div className="mt-4 p-3  rounded-md border border-[#E8E6E3]">
           <p className="text-xs text-[#4A4A4A] text-center">
             ✨ Sua mensagem será revisada antes de aparecer no feed. Aguarde alguns minutos!
           </p>

@@ -21,7 +21,7 @@ export default function ActivityFeed({ activities }: ActivityFeedProps) {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: 'spring', stiffness: 200 }}
-            className="inline-flex items-center justify-center w-16 h-16 bg-[#F8F6F3] rounded-full mb-4"
+            className="inline-flex items-center justify-center w-16 h-16  rounded-full mb-4"
           >
             <Clock className="w-8 h-8 text-[#A8A8A8]" />
           </motion.div>
@@ -46,7 +46,7 @@ export default function ActivityFeed({ activities }: ActivityFeedProps) {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.4, delay: index * 0.05 }}
-            className="flex items-start gap-4 p-4 rounded-xl hover:bg-[#F8F6F3] transition-colors"
+            className="flex items-start gap-4 p-4 rounded-xl hover: transition-colors"
           >
             {/* Icon */}
             <div className="flex-shrink-0 w-10 h-10 bg-[#E8E6E3] rounded-full flex items-center justify-center">

@@ -394,7 +394,7 @@ export default function AdminInvitationsPage() {
       <Card className="overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-[#F8F6F3] border-b border-[#E8E6E3]">
+            <thead className=" border-b border-[#E8E6E3]">
               <tr>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-[#2C2C2C]">
                   Código
@@ -435,7 +435,7 @@ export default function AdminInvitationsPage() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
-                    className="hover:bg-[#F8F6F3]/50 transition-colors"
+                    className="hover:/50 transition-colors"
                   >
                     <td className="px-6 py-4">
                       <span className="font-mono bg-gray-100 px-3 py-1 rounded text-sm font-medium text-[#2C2C2C]">
@@ -1460,7 +1460,7 @@ function DetailViewModal({
                 {invitation.custom_message && (
                   <div>
                     <span className="text-sm text-[#4A4A4A]">Mensagem Personalizada:</span>
-                    <p className="text-[#2C2C2C] italic mt-1 p-3 bg-[#F8F6F3] rounded-lg">
+                    <p className="text-[#2C2C2C] italic mt-1 p-3  rounded-lg">
                       "{invitation.custom_message}"
                     </p>
                   </div>

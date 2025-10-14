@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
   Calendar,
@@ -70,6 +72,16 @@ const EVENT_DETAILS = [
 ];
 
 export default function ConvitePage() {
+  const router = useRouter();
+  const [inviteCode, setInviteCode] = useState('');
+
+  const handleAccessInvite = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (inviteCode.trim()) {
+      router.push(`/meu-convite/${inviteCode.trim().toUpperCase()}`);
+    }
+  };
+
   return (
     <>
       <Navigation />
@@ -135,23 +147,38 @@ export default function ConvitePage() {
                 }}
               >
                 <p
-                  className="text-sm mb-3"
+                  className="text-sm mb-4"
                   style={{ color: 'var(--secondary-text)' }}
                 >
                   <User className="inline w-4 h-4 mr-2" />
                   Tem um código de convite personalizado?
                 </p>
-                <Link
-                  href="/convite/CODIGO"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all hover:shadow-lg transform hover:scale-105"
-                  style={{
-                    background: 'var(--decorative)',
-                    color: 'var(--white-soft)',
-                  }}
-                >
-                  Acessar Convite Personalizado
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
+                <form onSubmit={handleAccessInvite} className="space-y-3">
+                  <input
+                    type="text"
+                    value={inviteCode}
+                    onChange={(e) => setInviteCode(e.target.value)}
+                    placeholder="Digite seu código (ex: FAMILY001)"
+                    className="w-full px-4 py-3 rounded-lg border-2 transition-all focus:outline-none focus:ring-2"
+                    style={{
+                      borderColor: 'var(--decorative)',
+                      background: 'var(--white-soft)',
+                      color: 'var(--primary-text)',
+                    }}
+                    required
+                  />
+                  <button
+                    type="submit"
+                    className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-medium transition-all hover:shadow-lg transform hover:scale-105"
+                    style={{
+                      background: 'var(--decorative)',
+                      color: 'var(--white-soft)',
+                    }}
+                  >
+                    Acessar Convite Personalizado
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </form>
               </motion.div>
             </motion.div>
           </div>

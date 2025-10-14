@@ -173,7 +173,7 @@ export default function MessagesFeed() {
                   className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-sm transition-all ${
                     filter === value
                       ? 'bg-[#2C2C2C] text-white'
-                      : 'bg-[#F8F6F3] text-[#4A4A4A] hover:bg-[#E8E6E3]'
+                      : ' text-[#4A4A4A] hover:bg-[#E8E6E3]'
                   }`}
                 >
                   <span>{emoji}</span>
@@ -253,7 +253,7 @@ export default function MessagesFeed() {
         <div className="text-center py-6">
           <button
             type="button"
-            className="px-6 py-3 bg-white border border-[#E8E6E3] text-[#2C2C2C] rounded-md hover:bg-[#F8F6F3] transition-colors"
+            className="px-6 py-3 bg-white border border-[#E8E6E3] text-[#2C2C2C] rounded-md hover: transition-colors"
           >
             Carregar mais mensagens
           </button>

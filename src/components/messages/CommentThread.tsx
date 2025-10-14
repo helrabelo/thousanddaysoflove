@@ -104,7 +104,7 @@ function CommentItem({
     <div className={`${depth > 0 ? 'ml-8' : ''}`}>
       <div className="flex gap-3 mb-3">
         {/* Avatar */}
-        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#F8F6F3] border border-[#E8E6E3] flex items-center justify-center">
+        <div className="flex-shrink-0 w-8 h-8 rounded-full  border border-[#E8E6E3] flex items-center justify-center">
           <User className="w-4 h-4 text-[#A8A8A8]" />
         </div>
 
