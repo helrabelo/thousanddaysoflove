@@ -5,7 +5,7 @@
  * Displays chronological story with phases and events.
  */
 
-import { defineType, defineField } from 'sanity'
+import { defineType, defineField, SchemaTypeDefinition } from 'sanity'
 import { Clock } from 'lucide-react'
 
 export default defineType({
@@ -232,7 +232,7 @@ export default defineType({
     },
     prepare({ phases }) {
       const totalEvents = phases?.reduce(
-        (sum: number, phase: any) => sum + (phase.events?.length || 0),
+        (sum: number, phase: { events?: unknown[] }) => sum + (phase.events?.length || 0),
         0
       )
       return {
@@ -241,4 +241,4 @@ export default defineType({
       }
     },
   },
-})
+}) satisfies SchemaTypeDefinition

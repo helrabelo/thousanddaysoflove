@@ -5,7 +5,7 @@
  * Composes sections in a specific order.
  */
 
-import { defineType, defineField } from 'sanity'
+import { defineType, defineField, SchemaTypeDefinition } from 'sanity'
 import { Home } from 'lucide-react'
 
 export default defineType({
@@ -95,4 +95,4 @@ export default defineType({
       }
     },
   },
-})
+}) satisfies SchemaTypeDefinition

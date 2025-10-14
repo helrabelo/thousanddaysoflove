@@ -5,7 +5,7 @@
  * Only one document of this type can exist.
  */
 
-import { defineType, defineField } from 'sanity'
+import { defineType, defineField, SchemaTypeDefinition } from 'sanity'
 import { Cog } from 'lucide-react'
 
 export default defineType({
@@ -106,4 +106,4 @@ export default defineType({
       subtitle: 'url',
     },
   },
-})
+}) satisfies SchemaTypeDefinition

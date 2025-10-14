@@ -4,7 +4,7 @@
  * Global singleton for site footer configuration.
  */
 
-import { defineType, defineField } from 'sanity'
+import { defineType, defineField, SchemaTypeDefinition } from 'sanity'
 import { PanelBottom } from 'lucide-react'
 
 export default defineType({
@@ -108,4 +108,4 @@ export default defineType({
       }
     },
   },
-})
+}) satisfies SchemaTypeDefinition

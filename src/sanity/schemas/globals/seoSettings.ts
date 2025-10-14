@@ -5,7 +5,7 @@
  * Individual pages can override these defaults.
  */
 
-import { defineType, defineField } from 'sanity'
+import { defineType, defineField, SchemaTypeDefinition } from 'sanity'
 import { Search } from 'lucide-react'
 
 export default defineType({
@@ -137,4 +137,4 @@ export default defineType({
       subtitle: 'defaultDescription',
     },
   },
-})
+}) satisfies SchemaTypeDefinition

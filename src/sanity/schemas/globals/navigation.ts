@@ -5,7 +5,7 @@
  * Manages header navigation links and mobile menu.
  */
 
-import { defineType, defineField } from 'sanity'
+import { defineType, defineField, SchemaTypeDefinition } from 'sanity'
 import { Menu } from 'lucide-react'
 
 export default defineType({
@@ -104,4 +104,4 @@ export default defineType({
       }
     },
   },
-})
+}) satisfies SchemaTypeDefinition

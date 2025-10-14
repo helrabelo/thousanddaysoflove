@@ -1,11 +1,11 @@
 import { defineField, defineType } from 'sanity'
-import { GiftIcon } from '@sanity/icons'
+import { Gift } from 'lucide-react'
 
 export const giftItem = defineType({
   name: 'giftItem',
   title: 'Presente',
   type: 'document',
-  icon: GiftIcon,
+  icon: Gift,
   fields: [
     defineField({
       name: 'title',

@@ -5,7 +5,7 @@
  * Singleton document referenced by multiple sections.
  */
 
-import { defineType, defineField } from 'sanity'
+import { defineType, defineField, SchemaTypeDefinition } from 'sanity'
 import { Church } from 'lucide-react'
 
 export default defineType({
@@ -181,4 +181,4 @@ export default defineType({
       }
     },
   },
-})
+}) satisfies SchemaTypeDefinition
