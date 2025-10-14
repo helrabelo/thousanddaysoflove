@@ -54,9 +54,9 @@ export default function BottomNav() {
 
   return (
     <>
-      {/* Bottom Navigation Bar */}
+      {/* Bottom Navigation Bar - HIDDEN */}
       <motion.nav
-        className="fixed bottom-0 left-0 right-0 z-40 md:hidden"
+        className="fixed bottom-0 left-0 right-0 z-40 hidden"
         style={{
           background: 'var(--white-soft)',
           borderTop: '1px solid var(--border-subtle)',

@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button'
 
 export default function HeroSection() {
   return (
-    <section className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
+    <section className="min-h-screen flex flex-col items-start justify-center relative overflow-hidden">
       {/* Fundo com cor do convite */}
       <div
         className="absolute inset-0"
@@ -22,13 +22,13 @@ export default function HeroSection() {
       <CornerFlourish position="top-right" size="lg" className="top-16 right-16" />
       <CornerFlourish position="bottom-left" size="lg" className="bottom-16 left-16" />
 
-      <div className="relative z-10 text-center container-padding max-w-4xl mx-auto">
+      <div className="relative z-10 text-left container-padding max-w-4xl mx-auto">
         {/* Logo H & Y */}
         <motion.div
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: "easeOut" }}
-          className="wedding-monogram mb-8 flex justify-center"
+          className="wedding-monogram mb-8 flex justify-start"
         >
           <Image
             src="/hy-logo.svg"
@@ -68,7 +68,7 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.4 }}
-          className="mb-12 max-w-2xl mx-auto text-center"
+          className="mb-12 max-w-2xl text-left"
           style={{
             fontFamily: 'var(--font-crimson)',
             fontSize: 'clamp(1.25rem, 3vw, 1.5rem)',
@@ -98,6 +98,7 @@ export default function HeroSection() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.7 }}
+          className="flex justify-start"
         >
           <SectionDivider />
         </motion.div>
@@ -107,10 +108,10 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8 }}
-          className="mb-16 max-w-4xl mx-auto"
+          className="mb-16 max-w-4xl"
         >
           <div
-            className="grid md:grid-cols-3 gap-12 text-center p-12 rounded-lg"
+            className="grid md:grid-cols-3 gap-12 p-12 rounded-lg"
             style={{
               background: 'var(--white-soft)',
               border: '1px solid var(--border-subtle)',
@@ -205,7 +206,7 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 1 }}
-          className="flex flex-col sm:flex-row gap-8 justify-center items-center"
+          className="flex flex-col sm:flex-row gap-8 justify-start items-start"
         >
           <Button
             variant="wedding"

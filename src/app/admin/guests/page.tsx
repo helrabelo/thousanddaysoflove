@@ -1,9 +1,23 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import type { ChangeEvent, FormEvent } from 'react'
+import type { ChangeEvent } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Plus, Check, X, Trash2 } from 'lucide-react'
+import {
+  Plus,
+  Check,
+  X,
+  Trash2,
+  Edit2,
+  Save,
+  XCircle,
+  Search,
+  Filter,
+  Download,
+  Mail,
+  Phone,
+  Users
+} from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
@@ -17,12 +31,18 @@ interface Guest {
   plus_ones: number
   notes: string | null
   confirmed_by: string | null
+  invitation_code?: string | null
 }
 
-interface NewGuestForm {
+interface EditingGuest {
+  id: string
   name: string
   phone: string
   email: string
+  attending: boolean | null
+  plus_ones: number
+  notes: string
+  invitation_code: string
 }
 
 interface GuestStats {
@@ -35,13 +55,21 @@ interface GuestStats {
 
 export default function AdminGuests(): JSX.Element {
   const [guests, setGuests] = useState<Guest[]>([])
+  const [filteredGuests, setFilteredGuests] = useState<Guest[]>([])
   const [loading, setLoading] = useState(true)
   const [showAddForm, setShowAddForm] = useState(false)
-  const [newGuest, setNewGuest] = useState<NewGuestForm>({ name: '', phone: '', email: '' })
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editForm, setEditForm] = useState<EditingGuest | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filterStatus, setFilterStatus] = useState<'all' | 'confirmed' | 'declined' | 'pending'>('all')
 
   useEffect(() => {
     loadGuests()
   }, [])
+
+  useEffect(() => {
+    filterAndSearchGuests()
+  }, [guests, searchQuery, filterStatus])
 
   const loadGuests = async (): Promise<void> => {
     setLoading(true)
@@ -62,8 +90,83 @@ export default function AdminGuests(): JSX.Element {
     }
   }
 
-  const addGuest = async (): Promise<void> => {
-    if (!newGuest.name.trim()) {
+  const filterAndSearchGuests = (): void => {
+    let filtered = [...guests]
+
+    // Apply status filter
+    if (filterStatus !== 'all') {
+      filtered = filtered.filter(g => {
+        if (filterStatus === 'confirmed') return g.attending === true
+        if (filterStatus === 'declined') return g.attending === false
+        if (filterStatus === 'pending') return g.attending === null
+        return true
+      })
+    }
+
+    // Apply search
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase()
+      filtered = filtered.filter(g =>
+        g.name.toLowerCase().includes(query) ||
+        g.email?.toLowerCase().includes(query) ||
+        g.phone?.includes(query) ||
+        g.invitation_code?.toLowerCase().includes(query)
+      )
+    }
+
+    setFilteredGuests(filtered)
+  }
+
+  const startEditing = (guest: Guest): void => {
+    setEditingId(guest.id)
+    setEditForm({
+      id: guest.id,
+      name: guest.name,
+      phone: guest.phone || '',
+      email: guest.email || '',
+      attending: guest.attending,
+      plus_ones: guest.plus_ones,
+      notes: guest.notes || '',
+      invitation_code: guest.invitation_code || ''
+    })
+  }
+
+  const cancelEditing = (): void => {
+    setEditingId(null)
+    setEditForm(null)
+  }
+
+  const saveGuest = async (): Promise<void> => {
+    if (!editForm) return
+
+    try {
+      const supabase = createClient()
+      const { error } = await supabase
+        .from('simple_guests')
+        .update({
+          name: editForm.name,
+          phone: editForm.phone || null,
+          email: editForm.email || null,
+          attending: editForm.attending,
+          plus_ones: editForm.plus_ones,
+          notes: editForm.notes || null,
+          invitation_code: editForm.invitation_code || null
+        })
+        .eq('id', editForm.id)
+
+      if (error) throw error
+
+      await loadGuests()
+      cancelEditing()
+      alert('Convidado atualizado!')
+    } catch (error) {
+      console.error('Error updating guest:', error)
+      alert('Erro ao atualizar convidado')
+    }
+  }
+
+  const addGuest = async (name: string, phone: string, email: string): Promise<void> => {
+    if (!name.trim()) {
       alert('Nome é obrigatório')
       return
     }
@@ -77,45 +180,20 @@ export default function AdminGuests(): JSX.Element {
       const { error } = await supabase
         .from('simple_guests')
         .insert({
-          name: newGuest.name,
-          phone: newGuest.phone || null,
-          email: newGuest.email || null,
+          name,
+          phone: phone || null,
+          email: email || null,
           invitation_code: invitationCode
         })
 
       if (error) throw error
 
-      setNewGuest({ name: '', phone: '', email: '' })
       setShowAddForm(false)
       await loadGuests()
       alert('Convidado adicionado!')
     } catch (error) {
       console.error('Error adding guest:', error)
       alert('Erro ao adicionar convidado')
-    }
-  }
-
-  const adminRSVP = async (guestId: string, guestName: string, attending: boolean): Promise<void> => {
-    if (!window.confirm(`Confirmar presença de ${guestName} como ADMIN?`)) return
-
-    try {
-      const supabase = createClient()
-      const { error } = await supabase
-        .from('simple_guests')
-        .update({
-          attending,
-          plus_ones: 0,
-          confirmed_at: new Date().toISOString(),
-          confirmed_by: 'admin'
-        })
-        .eq('id', guestId)
-
-      if (error) throw error
-      await loadGuests()
-      alert('RSVP confirmado!')
-    } catch (error) {
-      console.error('Error confirming RSVP:', error)
-      alert('Erro ao confirmar RSVP')
     }
   }
 
@@ -138,14 +216,50 @@ export default function AdminGuests(): JSX.Element {
     }
   }
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
-    const { name, value } = e.target
-    setNewGuest(prev => ({ ...prev, [name]: value }))
+  const updateRSVP = async (guestId: string, attending: boolean | null): Promise<void> => {
+    try {
+      const supabase = createClient()
+      const { error } = await supabase
+        .from('simple_guests')
+        .update({
+          attending,
+          confirmed_at: attending !== null ? new Date().toISOString() : null,
+          confirmed_by: attending !== null ? 'admin' : null
+        })
+        .eq('id', guestId)
+
+      if (error) throw error
+      await loadGuests()
+    } catch (error) {
+      console.error('Error updating RSVP:', error)
+      alert('Erro ao atualizar RSVP')
+    }
   }
 
-  const handleFormSubmit = (e: FormEvent): void => {
-    e.preventDefault()
-    addGuest()
+  const exportToCSV = (): void => {
+    const headers = ['Nome', 'Email', 'Telefone', 'Status', 'Acompanhantes', 'Código Convite', 'Observações']
+    const rows = filteredGuests.map(g => [
+      g.name,
+      g.email || '',
+      g.phone || '',
+      g.attending === true ? 'Confirmado' : g.attending === false ? 'Não Vai' : 'Pendente',
+      g.plus_ones.toString(),
+      g.invitation_code || '',
+      (g.notes || '').replace(/"/g, '""')
+    ])
+
+    const csv = [
+      headers.join(','),
+      ...rows.map(row =>
+        row.map(cell => cell.includes(',') || cell.includes('"') ? `"${cell}"` : cell).join(',')
+      )
+    ].join('\n')
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(blob)
+    link.download = `convidados-${new Date().toISOString().split('T')[0]}.csv`
+    link.click()
   }
 
   const stats: GuestStats = {
@@ -165,160 +279,401 @@ export default function AdminGuests(): JSX.Element {
   }
 
   return (
-    <div className="min-h-screen bg-hero-gradient py-16 px-4">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-hero-gradient py-8 px-4">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-6">
           <div>
-            <Link href="/admin" className="text-burgundy-700 hover:text-blush-600 inline-block mb-4">
+            <Link href="/admin" className="text-burgundy-700 hover:text-blush-600 inline-block mb-2 text-sm">
               ← Voltar ao Admin
             </Link>
-            <h1 className="text-4xl font-playfair font-bold text-burgundy-800">
+            <h1 className="text-3xl font-playfair font-bold text-burgundy-800">
               Gerenciar Convidados
             </h1>
           </div>
-          <Button
-            onClick={() => setShowAddForm(!showAddForm)}
-            className="flex items-center gap-2"
-          >
-            <Plus className="w-5 h-5" />
-            Adicionar Convidado
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={exportToCSV}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <Download className="w-4 h-4" />
+              Exportar CSV
+            </Button>
+            <Button
+              onClick={() => setShowAddForm(!showAddForm)}
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              Adicionar
+            </Button>
+          </div>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-          <Card className="glass p-4 text-center">
-            <div className="text-2xl font-bold text-burgundy-800">{stats.total}</div>
-            <div className="text-sm text-burgundy-600">Total</div>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+          <Card className="glass p-3 text-center">
+            <div className="text-xl font-bold text-burgundy-800">{stats.total}</div>
+            <div className="text-xs text-burgundy-600">Total</div>
           </Card>
-          <Card className="glass p-4 text-center">
-            <div className="text-2xl font-bold text-green-600">{stats.confirmed}</div>
-            <div className="text-sm text-burgundy-600">Confirmados</div>
+          <Card className="glass p-3 text-center">
+            <div className="text-xl font-bold text-green-600">{stats.confirmed}</div>
+            <div className="text-xs text-burgundy-600">Confirmados</div>
           </Card>
-          <Card className="glass p-4 text-center">
-            <div className="text-2xl font-bold text-red-600">{stats.declined}</div>
-            <div className="text-sm text-burgundy-600">Não Vão</div>
+          <Card className="glass p-3 text-center">
+            <div className="text-xl font-bold text-red-600">{stats.declined}</div>
+            <div className="text-xs text-burgundy-600">Não Vão</div>
           </Card>
-          <Card className="glass p-4 text-center">
-            <div className="text-2xl font-bold text-yellow-600">{stats.pending}</div>
-            <div className="text-sm text-burgundy-600">Pendentes</div>
+          <Card className="glass p-3 text-center">
+            <div className="text-xl font-bold text-yellow-600">{stats.pending}</div>
+            <div className="text-xs text-burgundy-600">Pendentes</div>
           </Card>
-          <Card className="glass p-4 text-center">
-            <div className="text-2xl font-bold text-purple-600">{stats.totalPlusOnes}</div>
-            <div className="text-sm text-burgundy-600">Acompanhantes</div>
+          <Card className="glass p-3 text-center">
+            <div className="text-xl font-bold text-purple-600">{stats.totalPlusOnes}</div>
+            <div className="text-xs text-burgundy-600">Acompanhantes</div>
           </Card>
         </div>
 
+        {/* Filters */}
+        <Card className="glass p-4 mb-4">
+          <div className="flex flex-col md:flex-row gap-3">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-burgundy-400" />
+              <input
+                type="text"
+                placeholder="Buscar por nome, email, telefone ou código..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-burgundy-200 rounded-lg text-sm"
+              />
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setFilterStatus('all')}
+                className={`px-3 py-2 rounded-lg text-sm ${
+                  filterStatus === 'all'
+                    ? 'bg-burgundy-800 text-white'
+                    : 'bg-white text-burgundy-700 border border-burgundy-200'
+                }`}
+              >
+                Todos
+              </button>
+              <button
+                onClick={() => setFilterStatus('confirmed')}
+                className={`px-3 py-2 rounded-lg text-sm ${
+                  filterStatus === 'confirmed'
+                    ? 'bg-green-600 text-white'
+                    : 'bg-white text-green-700 border border-green-200'
+                }`}
+              >
+                Confirmados
+              </button>
+              <button
+                onClick={() => setFilterStatus('declined')}
+                className={`px-3 py-2 rounded-lg text-sm ${
+                  filterStatus === 'declined'
+                    ? 'bg-red-600 text-white'
+                    : 'bg-white text-red-700 border border-red-200'
+                }`}
+              >
+                Não Vão
+              </button>
+              <button
+                onClick={() => setFilterStatus('pending')}
+                className={`px-3 py-2 rounded-lg text-sm ${
+                  filterStatus === 'pending'
+                    ? 'bg-yellow-600 text-white'
+                    : 'bg-white text-yellow-700 border border-yellow-200'
+                }`}
+              >
+                Pendentes
+              </button>
+            </div>
+          </div>
+        </Card>
+
         {/* Add Form */}
         {showAddForm && (
-          <Card className="glass p-6 mb-8">
-            <h3 className="text-xl font-bold text-burgundy-800 mb-4">Novo Convidado</h3>
-            <form onSubmit={handleFormSubmit}>
-              <div className="grid md:grid-cols-3 gap-4 mb-4">
+          <Card className="glass p-4 mb-4">
+            <h3 className="text-lg font-bold text-burgundy-800 mb-3">Novo Convidado</h3>
+            <form onSubmit={(e) => {
+              e.preventDefault()
+              const formData = new FormData(e.currentTarget)
+              addGuest(
+                formData.get('name') as string,
+                formData.get('phone') as string,
+                formData.get('email') as string
+              )
+            }}>
+              <div className="grid md:grid-cols-3 gap-3 mb-3">
                 <input
                   type="text"
                   name="name"
                   placeholder="Nome *"
-                  value={newGuest.name}
-                  onChange={handleInputChange}
-                  className="px-4 py-2 border border-burgundy-200 rounded-lg"
+                  className="px-3 py-2 border border-burgundy-200 rounded-lg text-sm"
                   required
-                />
-                <input
-                  type="tel"
-                  name="phone"
-                  placeholder="Telefone"
-                  value={newGuest.phone}
-                  onChange={handleInputChange}
-                  className="px-4 py-2 border border-burgundy-200 rounded-lg"
                 />
                 <input
                   type="email"
                   name="email"
                   placeholder="Email"
-                  value={newGuest.email}
-                  onChange={handleInputChange}
-                  className="px-4 py-2 border border-burgundy-200 rounded-lg"
+                  className="px-3 py-2 border border-burgundy-200 rounded-lg text-sm"
+                />
+                <input
+                  type="tel"
+                  name="phone"
+                  placeholder="Telefone"
+                  className="px-3 py-2 border border-burgundy-200 rounded-lg text-sm"
                 />
               </div>
-              <div className="flex gap-3">
-                <Button type="submit">Adicionar</Button>
-                <Button type="button" variant="outline" onClick={() => setShowAddForm(false)}>Cancelar</Button>
+              <div className="flex gap-2">
+                <Button type="submit" size="sm">Adicionar</Button>
+                <Button type="button" variant="outline" size="sm" onClick={() => setShowAddForm(false)}>
+                  Cancelar
+                </Button>
               </div>
             </form>
           </Card>
         )}
 
-        {/* Guest List */}
-        <div className="space-y-3">
-          {guests.map((guest) => (
-            <Card key={guest.id} className="glass p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3">
-                    <h3 className="font-bold text-burgundy-800">{guest.name}</h3>
-                    {guest.attending === true && (
-                      <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
-                        ✓ Confirmado {guest.plus_ones > 0 && `+${guest.plus_ones}`}
-                      </span>
-                    )}
-                    {guest.attending === false && (
-                      <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">
-                        ✗ Não vai
-                      </span>
-                    )}
-                    {guest.attending === null && (
-                      <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded">
-                        ? Pendente
-                      </span>
-                    )}
-                    {guest.confirmed_by === 'admin' && (
-                      <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
-                        Admin
-                      </span>
-                    )}
-                  </div>
-                  <div className="text-sm text-burgundy-600 mt-1">
-                    {guest.phone && <span className="mr-4">{guest.phone}</span>}
-                    {guest.email && <span>{guest.email}</span>}
-                  </div>
-                </div>
+        {/* Table */}
+        <Card className="glass overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-burgundy-200">
+                  <th className="text-left p-3 font-semibold text-burgundy-800">Nome</th>
+                  <th className="text-left p-3 font-semibold text-burgundy-800">Email</th>
+                  <th className="text-left p-3 font-semibold text-burgundy-800">Telefone</th>
+                  <th className="text-left p-3 font-semibold text-burgundy-800">Código</th>
+                  <th className="text-center p-3 font-semibold text-burgundy-800">Status</th>
+                  <th className="text-center p-3 font-semibold text-burgundy-800">+</th>
+                  <th className="text-left p-3 font-semibold text-burgundy-800">Obs</th>
+                  <th className="text-right p-3 font-semibold text-burgundy-800">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredGuests.map((guest) => {
+                  const isEditing = editingId === guest.id
 
-                <div className="flex gap-2">
-                  {guest.attending !== true && (
-                    <Button
-                      size="sm"
-                      onClick={() => adminRSVP(guest.id, guest.name, true)}
-                      className="flex items-center gap-1"
-                    >
-                      <Check className="w-4 h-4" />
-                      Confirmar
-                    </Button>
-                  )}
-                  {guest.attending !== false && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => adminRSVP(guest.id, guest.name, false)}
-                      className="flex items-center gap-1"
-                    >
-                      <X className="w-4 h-4" />
-                      Não Vai
-                    </Button>
-                  )}
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => deleteGuest(guest.id, guest.name)}
-                    className="text-red-600 hover:text-red-700"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          ))}
+                  return (
+                    <tr key={guest.id} className="border-b border-burgundy-100 hover:bg-burgundy-50/50">
+                      {isEditing && editForm ? (
+                        <>
+                          {/* Editing mode */}
+                          <td className="p-2">
+                            <input
+                              type="text"
+                              value={editForm.name}
+                              onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                              className="w-full px-2 py-1 border border-burgundy-200 rounded text-sm"
+                            />
+                          </td>
+                          <td className="p-2">
+                            <input
+                              type="email"
+                              value={editForm.email}
+                              onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                              className="w-full px-2 py-1 border border-burgundy-200 rounded text-sm"
+                              placeholder="email@example.com"
+                            />
+                          </td>
+                          <td className="p-2">
+                            <input
+                              type="tel"
+                              value={editForm.phone}
+                              onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+                              className="w-full px-2 py-1 border border-burgundy-200 rounded text-sm"
+                              placeholder="(00) 00000-0000"
+                            />
+                          </td>
+                          <td className="p-2">
+                            <input
+                              type="text"
+                              value={editForm.invitation_code}
+                              onChange={(e) => setEditForm({ ...editForm, invitation_code: e.target.value })}
+                              className="w-full px-2 py-1 border border-burgundy-200 rounded text-sm font-mono"
+                              placeholder="HY123456"
+                            />
+                          </td>
+                          <td className="p-2">
+                            <select
+                              value={editForm.attending === null ? 'null' : editForm.attending.toString()}
+                              onChange={(e) => {
+                                const val = e.target.value === 'null' ? null : e.target.value === 'true'
+                                setEditForm({ ...editForm, attending: val })
+                              }}
+                              className="w-full px-2 py-1 border border-burgundy-200 rounded text-sm"
+                            >
+                              <option value="null">Pendente</option>
+                              <option value="true">Confirmado</option>
+                              <option value="false">Não Vai</option>
+                            </select>
+                          </td>
+                          <td className="p-2">
+                            <input
+                              type="number"
+                              min="0"
+                              max="5"
+                              value={editForm.plus_ones}
+                              onChange={(e) => setEditForm({ ...editForm, plus_ones: parseInt(e.target.value) || 0 })}
+                              className="w-16 px-2 py-1 border border-burgundy-200 rounded text-sm text-center"
+                            />
+                          </td>
+                          <td className="p-2">
+                            <input
+                              type="text"
+                              value={editForm.notes}
+                              onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
+                              className="w-full px-2 py-1 border border-burgundy-200 rounded text-sm"
+                              placeholder="Observações..."
+                            />
+                          </td>
+                          <td className="p-2">
+                            <div className="flex justify-end gap-1">
+                              <button
+                                onClick={saveGuest}
+                                className="p-1 text-green-600 hover:bg-green-50 rounded"
+                                title="Salvar"
+                              >
+                                <Save className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={cancelEditing}
+                                className="p-1 text-red-600 hover:bg-red-50 rounded"
+                                title="Cancelar"
+                              >
+                                <XCircle className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </>
+                      ) : (
+                        <>
+                          {/* View mode */}
+                          <td className="p-3">
+                            <div className="font-medium text-burgundy-800">{guest.name}</div>
+                            {guest.confirmed_by === 'admin' && (
+                              <span className="text-xs text-blue-600">Admin</span>
+                            )}
+                          </td>
+                          <td className="p-3">
+                            {guest.email ? (
+                              <a href={`mailto:${guest.email}`} className="text-burgundy-600 hover:text-blush-600 flex items-center gap-1">
+                                <Mail className="w-3 h-3" />
+                                {guest.email}
+                              </a>
+                            ) : (
+                              <span className="text-burgundy-300 text-xs">—</span>
+                            )}
+                          </td>
+                          <td className="p-3">
+                            {guest.phone ? (
+                              <a href={`tel:${guest.phone}`} className="text-burgundy-600 hover:text-blush-600 flex items-center gap-1">
+                                <Phone className="w-3 h-3" />
+                                {guest.phone}
+                              </a>
+                            ) : (
+                              <span className="text-burgundy-300 text-xs">—</span>
+                            )}
+                          </td>
+                          <td className="p-3">
+                            {guest.invitation_code ? (
+                              <code className="text-xs bg-burgundy-100 px-2 py-1 rounded font-mono text-burgundy-800">
+                                {guest.invitation_code}
+                              </code>
+                            ) : (
+                              <span className="text-burgundy-300 text-xs">—</span>
+                            )}
+                          </td>
+                          <td className="p-3 text-center">
+                            <div className="flex gap-1 justify-center">
+                              <button
+                                onClick={() => updateRSVP(guest.id, true)}
+                                className={`p-1 rounded ${
+                                  guest.attending === true
+                                    ? 'bg-green-100 text-green-700'
+                                    : 'text-burgundy-300 hover:bg-green-50 hover:text-green-600'
+                                }`}
+                                title="Confirmar"
+                              >
+                                <Check className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => updateRSVP(guest.id, false)}
+                                className={`p-1 rounded ${
+                                  guest.attending === false
+                                    ? 'bg-red-100 text-red-700'
+                                    : 'text-burgundy-300 hover:bg-red-50 hover:text-red-600'
+                                }`}
+                                title="Não Vai"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => updateRSVP(guest.id, null)}
+                                className={`p-1 rounded ${
+                                  guest.attending === null
+                                    ? 'bg-yellow-100 text-yellow-700'
+                                    : 'text-burgundy-300 hover:bg-yellow-50 hover:text-yellow-600'
+                                }`}
+                                title="Pendente"
+                              >
+                                <Users className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </td>
+                          <td className="p-3 text-center">
+                            <span className="text-burgundy-800 font-medium">{guest.plus_ones}</span>
+                          </td>
+                          <td className="p-3">
+                            {guest.notes ? (
+                              <span className="text-xs text-burgundy-600" title={guest.notes}>
+                                {guest.notes.substring(0, 30)}{guest.notes.length > 30 ? '...' : ''}
+                              </span>
+                            ) : (
+                              <span className="text-burgundy-300 text-xs">—</span>
+                            )}
+                          </td>
+                          <td className="p-3">
+                            <div className="flex justify-end gap-1">
+                              <button
+                                onClick={() => startEditing(guest)}
+                                className="p-1 text-burgundy-600 hover:bg-burgundy-100 rounded"
+                                title="Editar"
+                              >
+                                <Edit2 className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => deleteGuest(guest.id, guest.name)}
+                                className="p-1 text-red-600 hover:bg-red-50 rounded"
+                                title="Deletar"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </>
+                      )}
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {filteredGuests.length === 0 && (
+            <div className="text-center py-8 text-burgundy-400">
+              <p>Nenhum convidado encontrado</p>
+            </div>
+          )}
+        </Card>
+
+        {/* Footer */}
+        <div className="mt-4 text-center text-sm text-burgundy-600">
+          Mostrando {filteredGuests.length} de {guests.length} convidados
         </div>
       </div>
     </div>

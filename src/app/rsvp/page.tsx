@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Search, Check, X, Users, Heart, Gift, MapPin, Calendar } from 'lucide-react'
 import { Card } from '@/components/ui/card'
@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import confetti from 'canvas-confetti'
 import Image from 'next/image'
 import type { Database } from '@/types/supabase'
+import ElegantInvitation from '@/components/sections/ElegantInvitation'
 
 interface Guest {
   id: string
@@ -144,7 +145,10 @@ export default function SimpleRSVP() {
   const [showEnhancedForm, setShowEnhancedForm] = useState(false)
 
   const searchGuests = async () => {
-    if (!searchTerm.trim()) return
+    if (!searchTerm.trim()) {
+      setGuests([])
+      return
+    }
 
     setSearching(true)
     try {
@@ -176,6 +180,15 @@ export default function SimpleRSVP() {
       setSearching(false)
     }
   }
+
+  // Real-time search with debounce
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      searchGuests()
+    }, 300) // Wait 300ms after user stops typing
+
+    return () => clearTimeout(debounceTimer)
+  }, [searchTerm])
 
   const openEnhancedForm = (guestId: string, guest: Guest) => {
     setSelectedGuestId(guestId)
@@ -272,14 +285,7 @@ export default function SimpleRSVP() {
                 boxShadow: '0 20px 60px rgba(0,0,0,0.15)'
               }}
             >
-              <Image
-                src="/images/rsvp-hero-story.jpg"
-                alt="Hel & Ylana - 1000 dias de amor"
-                fill
-                className="object-cover"
-                priority
-                sizes="(max-width: 768px) 100vw, 800px"
-              />
+              <ElegantInvitation />
             </motion.div>
 
             {/* Story text */}
@@ -298,7 +304,7 @@ export default function SimpleRSVP() {
                   lineHeight: '1.3'
                 }}
               >
-                1000 dias se transformam em para sempre
+                Bem vindo ao nosso casamento! 🎉
               </h1>
 
               <p
@@ -313,9 +319,7 @@ export default function SimpleRSVP() {
                   margin: '0 auto 1rem'
                 }}
               >
-                Do primeiro "oi" no WhatsApp até este momento.
-                Queremos você ao nosso lado quando esses 1000 dias
-                se tornarem o começo de uma vida inteira juntos.
+                Preparamos uma experiência digital super especial para nosso casório! Nossos convidados poderão mandar mensagens, postar fotos, vídeos, <br />&gt;&gt;&gt;&gt; COMPRAR PRESENTES &lt;&lt;&lt;&lt; e claro, confirmar presença. Tudo isso para deixar nossa celebração ainda mais inesquecível. 
               </p>
 
               <p
@@ -330,7 +334,7 @@ export default function SimpleRSVP() {
               </p>
 
               <p className="text-lg mb-4" style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)', fontStyle: 'italic' }}>
-                Digite seu nome para encontrar seu convite
+                Comece digitando seu nome para encontrar o seu convite 
               </p>
             </motion.div>
           </motion.div>

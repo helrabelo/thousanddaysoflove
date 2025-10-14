@@ -11,9 +11,6 @@ export default function ElegantInvitation() {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.8, ease: 'easeOut' }}
       className="relative w-full h-full flex items-center justify-center p-8"
-      style={{
-        background: 'var(--accent)',
-      }}
     >
       {/* Botanical corner decorations */}
       <BotanicalCorners pattern="diagonal-right" opacity={0.15} />

@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import { getRandomLoadingMessage } from '@/lib/utils/whimsy'
 import { petsPersonalities } from '@/lib/utils/wedding'
 
@@ -38,9 +39,9 @@ export function DelightfulLoader({ category = 'rsvp', message, withPets = true }
           }}
         />
 
-        {/* Inner heart */}
+        {/* Inner HY logo */}
         <motion.div
-          className="absolute inset-0 flex items-center justify-center text-3xl"
+          className="absolute inset-0 flex items-center justify-center"
           animate={{
             scale: [1, 1.2, 1],
             opacity: [0.6, 1, 0.6]
@@ -51,7 +52,13 @@ export function DelightfulLoader({ category = 'rsvp', message, withPets = true }
             ease: "easeInOut"
           }}
         >
-          💕
+          <Image
+            src="/HY.svg"
+            alt="H & Y"
+            width={32}
+            height={32}
+            className="w-8 h-8"
+          />
         </motion.div>
       </motion.div>
 

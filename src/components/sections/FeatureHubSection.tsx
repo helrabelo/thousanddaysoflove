@@ -126,7 +126,6 @@ export default function FeatureHubSection() {
                 <motion.div
                   className="relative h-full p-8 md:p-10 rounded-2xl overflow-hidden"
                   style={{
-                    background: 'var(--accent)',
                     border: '1px solid var(--border-subtle)',
                     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.06)',
                   }}

@@ -57,6 +57,11 @@ export default function PhotoModerationGrid({
   const [phaseFilter, setPhaseFilter] = useState(initialFilters.phase)
   const [searchQuery, setSearchQuery] = useState(initialFilters.search)
 
+  // Update photos when initialPhotos changes (after navigation/refresh)
+  useEffect(() => {
+    setPhotos(initialPhotos)
+  }, [initialPhotos])
+
   // Keyboard shortcuts
   useEffect(() => {
     function handleKeyboard(e: KeyboardEvent) {
@@ -320,6 +325,11 @@ export default function PhotoModerationGrid({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  applyFilters()
+                }
+              }}
               placeholder="Nome do convidado..."
               className="w-full px-4 py-2 border border-[#E8E6E3] rounded-md focus:ring-2 focus:ring-[#2C2C2C] focus:border-transparent"
             />
@@ -337,13 +347,38 @@ export default function PhotoModerationGrid({
         </div>
       </div>
 
-      {/* Batch Actions */}
-      {selectedIds.size > 0 && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-blue-800">
-              {selectedIds.size} foto(s) selecionada(s)
-            </p>
+      {/* Selection Controls */}
+      <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            {/* Select All Checkbox */}
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={selectedIds.size === photos.length && photos.length > 0}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    selectAll()
+                  } else {
+                    deselectAll()
+                  }
+                }}
+                className="w-4 h-4 rounded border-[#E8E6E3]"
+              />
+              <span className="text-sm text-[#2C2C2C] font-medium">
+                Selecionar Todas ({photos.length})
+              </span>
+            </label>
+
+            {selectedIds.size > 0 && (
+              <p className="text-sm text-blue-800">
+                {selectedIds.size} foto(s) selecionada(s)
+              </p>
+            )}
+          </div>
+
+          {/* Batch Actions */}
+          {selectedIds.size > 0 && (
             <div className="flex gap-2">
               <button
                 onClick={() => moderateBatch('approved')}
@@ -366,12 +401,12 @@ export default function PhotoModerationGrid({
                 onClick={deselectAll}
                 className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors text-sm"
               >
-                Desmarcar
+                Desmarcar Todas
               </button>
             </div>
-          </div>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Grid */}
       {photos.length === 0 ? (

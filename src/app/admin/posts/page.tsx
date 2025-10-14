@@ -193,6 +193,14 @@ export default function AdminPostsPage() {
     });
   };
 
+  const selectAll = () => {
+    setSelectedPosts(new Set(filteredPosts.map(p => p.id)));
+  };
+
+  const deselectAll = () => {
+    setSelectedPosts(new Set());
+  };
+
   const filteredPosts = posts.filter(post =>
     searchQuery
       ? post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -286,37 +294,64 @@ export default function AdminPostsPage() {
             </div>
           </div>
 
-          {/* Batch Actions */}
-          {selectedPosts.size > 0 && (
-            <div className="flex items-center gap-4 mt-4 pt-4 border-t border-[#E8E6E3]">
-              <span className="text-sm text-[#4A4A4A]">
-                {selectedPosts.size} selecionada{selectedPosts.size !== 1 && 's'}
-              </span>
-              <button
-                type="button"
-                onClick={() => handleBatchModerate('approve')}
-                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-              >
-                <Check className="w-4 h-4" />
-                Aprovar Todas
-              </button>
-              <button
-                type="button"
-                onClick={() => handleBatchModerate('reject')}
-                className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
-              >
-                <X className="w-4 h-4" />
-                Rejeitar Todas
-              </button>
-              <button
-                type="button"
-                onClick={() => setSelectedPosts(new Set())}
-                className="text-sm text-[#4A4A4A] hover:text-[#2C2C2C] transition-colors"
-              >
-                Limpar seleção
-              </button>
+          {/* Select All & Batch Actions */}
+          <div className="flex items-center justify-between mt-4 pt-4 border-t border-[#E8E6E3]">
+            <div className="flex items-center gap-4">
+              {/* Select All Checkbox */}
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={selectedPosts.size === filteredPosts.length && filteredPosts.length > 0}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      selectAll();
+                    } else {
+                      deselectAll();
+                    }
+                  }}
+                  className="w-4 h-4 rounded border-[#E8E6E3]"
+                />
+                <span className="text-sm text-[#2C2C2C] font-medium">
+                  Selecionar Todas ({filteredPosts.length})
+                </span>
+              </label>
+
+              {selectedPosts.size > 0 && (
+                <span className="text-sm text-[#4A4A4A]">
+                  {selectedPosts.size} selecionada{selectedPosts.size !== 1 && 's'}
+                </span>
+              )}
             </div>
-          )}
+
+            {/* Batch Action Buttons */}
+            {selectedPosts.size > 0 && (
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleBatchModerate('approve')}
+                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                >
+                  <Check className="w-4 h-4" />
+                  Aprovar Selecionadas
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleBatchModerate('reject')}
+                  className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                  Rejeitar Selecionadas
+                </button>
+                <button
+                  type="button"
+                  onClick={deselectAll}
+                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors"
+                >
+                  Desmarcar Todas
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Posts List */}

@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Heart } from 'lucide-react'
+import Image from 'next/image'
 
 export default function HistoriaHero() {
   return (
@@ -37,7 +37,14 @@ export default function HistoriaHero() {
               opacity: 0.9,
             }}
           >
-            <Heart className="w-8 h-8" style={{ color: 'var(--white-soft)' }} />
+            <Image
+              src="/HY.svg"
+              alt="H & Y"
+              width={32}
+              height={32}
+              className="w-8 h-8"
+              style={{ filter: 'brightness(0) invert(1)' }}
+            />
           </div>
 
           <h1
