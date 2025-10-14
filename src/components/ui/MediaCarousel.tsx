@@ -37,58 +37,61 @@ export default function MediaCarousel({
   const timerRef = useRef<NodeJS.Timeout>()
   const shouldReduceMotion = useReducedMotion()
 
-  // Handle empty media array
-  if (!media || media.length === 0) {
-    return (
-      <div
-        className={`flex items-center justify-center min-h-[400px] rounded-2xl ${className}`}
-        style={{
-          background: 'var(--accent)',
-          color: 'var(--secondary-text)',
-          fontFamily: 'var(--font-crimson)',
-          fontStyle: 'italic'
-        }}
-      >
-        <p>Nenhuma mídia disponível</p>
-      </div>
-    )
-  }
-
-  // If single media item, no carousel needed
-  const isSingleItem = media.length === 1
-  const currentMedia = media[currentIndex]
+  const itemCount = media.length
+  const hasMedia = itemCount > 0
+  const safeIndex = hasMedia ? Math.min(currentIndex, itemCount - 1) : 0
+  const isSingleItem = itemCount <= 1
+  const currentMedia = hasMedia ? media[safeIndex] : null
 
   // Reset image loaded state when index changes
   useEffect(() => {
-    if (currentMedia.mediaType === 'image') {
+    if (!hasMedia) return
+    if (currentMedia?.mediaType === 'image') {
       setImageLoaded(false)
     }
-  }, [currentIndex, currentMedia.mediaType])
+  }, [currentIndex, currentMedia?.mediaType, hasMedia])
 
   // Navigation handlers
   const goToNext = () => {
+    if (!hasMedia) return
     setDirection('forward')
-    setCurrentIndex((prev) => (prev + 1) % media.length)
+    setCurrentIndex((prev) => (prev + 1) % itemCount)
     setImageLoaded(false)
   }
 
   const goToPrevious = () => {
+    if (!hasMedia) return
     setDirection('backward')
-    setCurrentIndex((prev) => (prev - 1 + media.length) % media.length)
+    setCurrentIndex((prev) => (prev - 1 + itemCount) % itemCount)
     setImageLoaded(false)
   }
 
   const goToIndex = (index: number) => {
-    setDirection(index > currentIndex ? 'forward' : 'backward')
-    setCurrentIndex(index)
+    if (!hasMedia) return
+    const boundedIndex = ((index % itemCount) + itemCount) % itemCount
+    setDirection(boundedIndex > safeIndex ? 'forward' : 'backward')
+    setCurrentIndex(boundedIndex)
     setImageLoaded(false)
   }
 
+  useEffect(() => {
+    if (!hasMedia) {
+      if (currentIndex !== 0) {
+        setCurrentIndex(0)
+      }
+      return
+    }
+
+    if (currentIndex >= itemCount) {
+      setCurrentIndex(itemCount - 1)
+    }
+  }, [hasMedia, itemCount, currentIndex])
+
   // Auto-advance for images
   useEffect(() => {
-    if (isSingleItem || !isPlaying || isPaused) return
+    if (!hasMedia || isSingleItem || !isPlaying || isPaused) return
 
-    if (currentMedia.mediaType === 'image') {
+    if (currentMedia?.mediaType === 'image') {
       timerRef.current = setTimeout(() => {
         goToNext()
       }, autoplayInterval)
@@ -99,7 +102,7 @@ export default function MediaCarousel({
         clearTimeout(timerRef.current)
       }
     }
-  }, [currentIndex, currentMedia.mediaType, isPlaying, isPaused, autoplayInterval, isSingleItem])
+  }, [currentIndex, currentMedia?.mediaType, isPlaying, isPaused, autoplayInterval, isSingleItem, hasMedia, goToNext])
 
   // Handle video ended - move to next item
   const handleVideoEnded = () => {
@@ -110,6 +113,7 @@ export default function MediaCarousel({
 
   // Handle video error
   const handleVideoError = () => {
+    if (!currentMedia) return
     console.error('Video failed to load:', currentMedia.url)
     // Move to next item if video fails
     if (!isSingleItem) {
@@ -119,19 +123,27 @@ export default function MediaCarousel({
 
   // Toggle play/pause
   const togglePlayPause = () => {
-    setIsPaused(!isPaused)
+    if (!hasMedia) return
 
-    if (currentMedia.mediaType === 'video' && videoRef.current) {
-      if (isPaused) {
-        videoRef.current.play().catch(console.error)
-      } else {
-        videoRef.current.pause()
+    setIsPaused((prev) => {
+      const next = !prev
+
+      if (currentMedia?.mediaType === 'video' && videoRef.current) {
+        if (next) {
+          videoRef.current.pause()
+        } else {
+          videoRef.current.play().catch(console.error)
+        }
       }
-    }
+
+      return next
+    })
   }
 
   // Keyboard navigation
   useEffect(() => {
+    if (!hasMedia) return
+
     const handleKeyPress = (e: KeyboardEvent) => {
       if (isSingleItem) return
 
@@ -151,7 +163,7 @@ export default function MediaCarousel({
 
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
-  }, [currentIndex, isPaused, isSingleItem])
+  }, [hasMedia, isSingleItem, goToPrevious, goToNext, togglePlayPause])
 
   // Animation variants
   const slideVariants = {
@@ -178,6 +190,22 @@ export default function MediaCarousel({
   // Determine if we're in background mode (cover) or regular mode (contain)
   const isBackgroundMode = fillMode === 'cover'
   const objectFitClass = isBackgroundMode ? 'object-cover' : 'object-contain'
+
+  if (!hasMedia) {
+    return (
+      <div
+        className={`flex items-center justify-center min-h-[400px] rounded-2xl ${className}`}
+        style={{
+          background: 'var(--accent)',
+          color: 'var(--secondary-text)',
+          fontFamily: 'var(--font-crimson)',
+          fontStyle: 'italic'
+        }}
+      >
+        <p>Nenhuma mídia disponível</p>
+      </div>
+    )
+  }
 
   return (
     <div
@@ -206,7 +234,7 @@ export default function MediaCarousel({
             }}
             className="absolute inset-0"
           >
-            {currentMedia.mediaType === 'image' ? (
+            {currentMedia?.mediaType === 'image' ? (
               <div className="relative w-full h-full">
                 <Image
                   src={currentMedia.url}
@@ -249,7 +277,7 @@ export default function MediaCarousel({
                 className={`w-full h-full ${objectFitClass}`}
                 style={{ background: 'var(--primary-text)' }}
               >
-                <source src={currentMedia.url} type="video/mp4" />
+                <source src={currentMedia?.url} type="video/mp4" />
                 <p style={{ color: 'white', padding: '20px' }}>
                   Seu navegador não suporta vídeos.
                 </p>
@@ -260,7 +288,7 @@ export default function MediaCarousel({
       </div>
 
       {/* Caption */}
-      {currentMedia.caption && (
+      {currentMedia?.caption && (
         <motion.div
           key={`caption-${currentIndex}`}
           initial={{ opacity: 0, y: 10 }}

@@ -212,7 +212,7 @@ export function WeddingAnalyticsTab() {
             {(['7d', '30d', '90d', 'all'] as const).map(period => (
               <Button
                 key={period}
-                variant={timeRange === period ? 'primary' : 'outline'}
+                variant={timeRange === period ? 'wedding' : 'outline'}
                 size="sm"
                 onClick={() => setTimeRange(period)}
               >
@@ -230,7 +230,7 @@ export function WeddingAnalyticsTab() {
             Atualizar
           </Button>
           <Button
-            variant="secondary"
+            variant="outline"
             size="sm"
             className="flex items-center gap-2"
           >
@@ -247,7 +247,7 @@ export function WeddingAnalyticsTab() {
             <Heart className="w-6 h-6 text-blush-500" fill="currentColor" />
             Progresso até o Grande Dia
           </h3>
-          <Badge variant="secondary" className="text-lg px-4 py-2">
+          <Badge variant="pending" className="text-lg px-4 py-2">
             {analytics.weddingProgress.daysRemaining} dias restantes
           </Badge>
         </div>

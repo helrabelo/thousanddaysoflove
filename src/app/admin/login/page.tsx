@@ -7,6 +7,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 export default function AdminLoginPage() {
   const router = useRouter()
@@ -23,6 +24,7 @@ export default function AdminLoginPage() {
       const response = await fetch('/api/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ password }),
       })
 
@@ -123,7 +125,7 @@ export default function AdminLoginPage() {
 
           {/* Footer */}
           <div className="mt-6 text-center">
-            <a
+            <Link
               href="/"
               className="text-sm transition-colors"
               style={{ color: 'var(--secondary-text)' }}
@@ -135,7 +137,7 @@ export default function AdminLoginPage() {
               }
             >
               ← Voltar ao site
-            </a>
+            </Link>
           </div>
         </div>
       </div>

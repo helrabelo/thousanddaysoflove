@@ -95,7 +95,8 @@ export const storyPreviewMomentsQuery = groq`
     phase-> {
       _id,
       title,
-      dayRange
+      dayRange,
+      displayOrder
     },
     dayNumber,
     displayOrder,

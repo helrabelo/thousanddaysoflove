@@ -134,7 +134,7 @@ export default defineType({
       media: 'backgroundImage',
       momentsCount: 'storyMoments',
     },
-    prepare({ title, description, media, momentsCount }) {
+    prepare({ title, media, momentsCount }) {
       const count = Array.isArray(momentsCount) ? momentsCount.length : 0
       return {
         title: `História: ${title}`,

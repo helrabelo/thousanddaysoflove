@@ -65,3 +65,5 @@ tests/fixtures/*.jpeg
 tests/fixtures/*.png
 tests/fixtures/*.mp4
 tests/fixtures/*.mov
+playwright-report
+test-results

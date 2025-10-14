@@ -46,7 +46,18 @@ export default function AdminPagamentos() {
 
       if (error) throw error
 
-      const payments = data || []
+      const payments: Payment[] = (data || []).map(payment => ({
+        id: payment.id,
+        gift_id: payment.gift_id,
+        guest_name: payment.guest_id || 'Anônimo', // Fallback if guest_name doesn't exist
+        amount: payment.amount,
+        payment_method: payment.payment_method,
+        status: payment.status || 'pending',
+        pix_code: null, // Not in current schema
+        mercado_pago_id: payment.mercado_pago_payment_id,
+        created_at: payment.created_at,
+        confirmed_at: null // Not in current schema
+      }))
       setPayments(payments)
 
       // Calculate stats

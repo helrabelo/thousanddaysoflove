@@ -176,7 +176,7 @@ export default function StoryTimeline({
                       // Multiple media - use AutoCarousel
                       <AutoCarousel
                         media={event.media.map(m => ({
-                          media_type: m.media_type === 'image' ? 'image' : 'video',
+                          media_type: m.media_type === 'photo' ? 'image' : 'video',
                           media_url: m.media_url,
                           caption: m.caption
                         }))}
@@ -279,7 +279,7 @@ export default function StoryTimeline({
                 <div className="mb-6">
                   <AutoCarousel
                     media={selectedEvent.media.map(m => ({
-                      media_type: m.media_type === 'image' ? 'image' : 'video',
+                      media_type: m.media_type === 'photo' ? 'image' : 'video',
                       media_url: m.media_url,
                       caption: m.caption
                     }))}

@@ -7,7 +7,6 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { setGuestSessionCookie } from '@/lib/auth/guestAuth'
 
 type AuthMethod = 'invitation_code' | 'shared_password'
 
@@ -33,6 +32,7 @@ export default function GuestLoginPage() {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({
           authMethod,
           invitationCode: authMethod === 'invitation_code' ? invitationCode : undefined,
@@ -48,9 +48,10 @@ export default function GuestLoginPage() {
         return
       }
 
-      // Store session token in cookie (client-side)
-      if (data.session?.session_token) {
-        setGuestSessionCookie(data.session.session_token)
+      // Session cookie is already set by the API (httpOnly)
+      // No need to set client-side cookie
+      if (authMethod === 'shared_password' && guestName.trim()) {
+        sessionStorage.setItem('guest_name', guestName.trim())
       }
 
       // Redirect to upload page

@@ -201,13 +201,19 @@ export default function PhotoModerationGrid({
     action: 'approved' | 'rejected',
     rejectionReason?: string
   ) => {
-    if (selectedIds.size === 0) return
+    if (selectedIds.size === 0) {
+      console.log('No photos selected for batch moderation')
+      return
+    }
 
+    console.log(`Starting batch ${action} for ${selectedIds.size} photos`)
     setIsLoading(true)
 
     try {
-      const promises = Array.from(selectedIds).map((id) =>
-        fetch(`/api/admin/photos/${id}`, {
+      const ids = Array.from(selectedIds)
+      const promises = ids.map(async (id) => {
+        console.log(`Moderating photo ${id} as ${action}`)
+        const response = await fetch(`/api/admin/photos/${id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -215,14 +221,38 @@ export default function PhotoModerationGrid({
             rejection_reason: rejectionReason,
           }),
         })
-      )
 
-      await Promise.all(promises)
+        if (!response.ok) {
+          const error = await response.text()
+          console.error(`Failed to moderate photo ${id}:`, error)
+          throw new Error(`Failed to moderate photo ${id}`)
+        }
+
+        console.log(`Successfully moderated photo ${id}`)
+        return response
+      })
+
+      const results = await Promise.all(promises)
+      console.log(`Batch moderation completed: ${results.length} photos processed`)
+
+      // Update local state immediately
+      setPhotos((prev) =>
+        prev.map((p) =>
+          selectedIds.has(p.id)
+            ? {
+                ...p,
+                moderation_status: action,
+                moderated_at: new Date().toISOString(),
+                rejection_reason: rejectionReason || null,
+              }
+            : p
+        )
+      )
 
       // Clear selection
       setSelectedIds(new Set())
 
-      // Refresh
+      // Refresh server data
       router.refresh()
     } catch (error) {
       console.error('Batch moderation error:', error)
@@ -439,9 +469,12 @@ function PhotoCard({
     during: 'Durante',
     after: 'Depois',
   }
+  const selectionLabel = isSelected ? 'Desmarcar foto' : 'Selecionar foto'
 
   return (
     <div
+      data-testid="photo-card"
+      data-photo-id={photo.id}
       className={`bg-white rounded-lg shadow-sm overflow-hidden transition-all ${
         isSelected ? 'ring-4 ring-blue-500' : ''
       } ${isFocused ? 'ring-2 ring-gray-400' : ''}`}
@@ -466,16 +499,25 @@ function PhotoCard({
 
         {/* Selection Checkbox */}
         <button
+          type="button"
+          aria-pressed={isSelected}
+          aria-label={selectionLabel}
+          data-testid="photo-select-toggle"
           onClick={onToggleSelect}
           className="absolute top-2 left-2 w-6 h-6 bg-white rounded-md shadow-md flex items-center justify-center"
         >
-          {isSelected && <span className="text-blue-600">✓</span>}
+          {isSelected && (
+            <span className="text-blue-600" aria-hidden="true">
+              ✓
+            </span>
+          )}
         </button>
 
         {/* Phase Badge */}
         <div className="absolute top-2 right-2 px-2 py-1 bg-white/90 rounded-md text-xs font-medium">
           {phaseLabels[photo.upload_phase]}
         </div>
+
       </div>
 
       {/* Info */}
@@ -503,6 +545,7 @@ function PhotoCard({
 
         {/* Status Badge */}
         <div
+          data-testid="photo-status"
           className={`inline-flex px-2 py-1 rounded-md text-xs font-medium border mb-3 ${
             statusColors[photo.moderation_status]
           }`}

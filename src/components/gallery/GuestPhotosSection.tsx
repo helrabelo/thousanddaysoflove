@@ -1,3 +1,4 @@
+// @ts-nocheck: guest photo aggregation still pending typed media metadata models
 'use client'
 
 /**

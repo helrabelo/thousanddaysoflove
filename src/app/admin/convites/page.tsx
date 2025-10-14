@@ -17,15 +17,12 @@ import {
   Trash2,
   Copy,
   QrCode,
-  Send,
   Filter,
   TrendingUp,
   Gift,
   Camera,
   MessageSquare,
-  Heart,
   UserPlus,
-  Calendar,
   ExternalLink,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -237,7 +234,6 @@ export default function AdminInvitationsPage() {
             Exportar CSV
           </Button>
           <Button
-            variant="primary"
             size="sm"
             onClick={() => setShowCreateModal(true)}
             className="flex items-center gap-2"
@@ -339,7 +335,7 @@ export default function AdminInvitationsPage() {
 
             <div className="flex gap-2 flex-wrap">
               <Button
-                variant={filterStatus === 'all' ? 'primary' : 'outline'}
+                variant={filterStatus === 'all' ? 'wedding' : 'outline'}
                 size="sm"
                 onClick={() => setFilterStatus('all')}
               >
@@ -347,7 +343,7 @@ export default function AdminInvitationsPage() {
                 Todos
               </Button>
               <Button
-                variant={filterStatus === 'opened' ? 'primary' : 'outline'}
+                variant={filterStatus === 'opened' ? 'wedding' : 'outline'}
                 size="sm"
                 onClick={() => setFilterStatus('opened')}
               >
@@ -355,7 +351,7 @@ export default function AdminInvitationsPage() {
                 Abertos
               </Button>
               <Button
-                variant={filterStatus === 'rsvp' ? 'primary' : 'outline'}
+                variant={filterStatus === 'rsvp' ? 'wedding' : 'outline'}
                 size="sm"
                 onClick={() => setFilterStatus('rsvp')}
               >
@@ -363,7 +359,7 @@ export default function AdminInvitationsPage() {
                 RSVP
               </Button>
               <Button
-                variant={filterStatus === 'gift' ? 'primary' : 'outline'}
+                variant={filterStatus === 'gift' ? 'wedding' : 'outline'}
                 size="sm"
                 onClick={() => setFilterStatus('gift')}
               >
@@ -506,13 +502,13 @@ export default function AdminInvitationsPage() {
                       </div>
                       <div className="flex items-center gap-2 mt-2">
                         {invitation.rsvp_completed && (
-                          <UserCheck className="w-4 h-4 text-green-500" title="RSVP completo" />
+                          <UserCheck className="w-4 h-4 text-green-500" aria-label="RSVP completo" />
                         )}
                         {invitation.gift_selected && (
-                          <Gift className="w-4 h-4 text-blue-500" title="Presente selecionado" />
+                          <Gift className="w-4 h-4 text-blue-500" aria-label="Presente selecionado" />
                         )}
                         {invitation.photos_uploaded && (
-                          <Camera className="w-4 h-4 text-pink-500" title="Fotos enviadas" />
+                          <Camera className="w-4 h-4 text-pink-500" aria-label="Fotos enviadas" />
                         )}
                       </div>
                     </td>
@@ -683,9 +679,20 @@ function CreateInvitationModal({
 
   // Generate preview code when relationship type changes
   useEffect(() => {
-    if (formData.relationship_type) {
-      const code = generateUniqueCode(formData.relationship_type)
-      setPreviewCode(code)
+    let isActive = true
+
+    const loadCode = async () => {
+      if (!formData.relationship_type) return
+      const code = await generateUniqueCode(formData.relationship_type)
+      if (isActive) {
+        setPreviewCode(code)
+      }
+    }
+
+    void loadCode()
+
+    return () => {
+      isActive = false
     }
   }, [formData.relationship_type])
 
@@ -694,7 +701,11 @@ function CreateInvitationModal({
     setIsSubmitting(true)
 
     try {
+      const ensuredCode = previewCode || (await generateUniqueCode(formData.relationship_type))
+      setPreviewCode(ensuredCode)
+
       await createInvitation({
+        code: ensuredCode,
         guest_name: formData.guest_name,
         guest_email: formData.guest_email || undefined,
         guest_phone: formData.guest_phone || undefined,
@@ -946,7 +957,7 @@ function CreateInvitationModal({
               <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
                 Cancelar
               </Button>
-              <Button type="submit" variant="primary" disabled={isSubmitting}>
+              <Button type="submit" variant="wedding" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
                     <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
@@ -1246,7 +1257,7 @@ function EditInvitationModal({
               <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
                 Cancelar
               </Button>
-              <Button type="submit" variant="primary" disabled={isSubmitting}>
+              <Button type="submit" variant="wedding" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
                     <RefreshCw className="w-4 h-4 mr-2 animate-spin" />

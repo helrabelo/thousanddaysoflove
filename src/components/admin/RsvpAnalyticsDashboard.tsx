@@ -26,7 +26,6 @@ import {
   Zap,
   Globe,
   Smartphone,
-  Family,
   CheckCircle2,
   AlertTriangle,
   ArrowUp,
@@ -36,7 +35,7 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Guest, GuestRsvpStats } from '@/types/wedding'
-import { formatBrazilianDate, formatBrazilianCurrency, getWeddingTimelineData } from '@/lib/utils/wedding'
+import { formatBrazilianDate, formatBrazilianCurrency, generateWeddingTimelineData } from '@/lib/utils/wedding'
 import EnhancedGuestService from '@/lib/services/enhanced-guests'
 
 interface RsvpAnalyticsDashboardProps {
@@ -57,7 +56,7 @@ export function RsvpAnalyticsDashboard({ guests, className = '' }: RsvpAnalytics
   const [isLoading, setIsLoading] = useState(true)
   const [selectedTimeRange, setSelectedTimeRange] = useState<'7d' | '30d' | 'all'>('30d')
 
-  const weddingTimeline = getWeddingTimelineData()
+  const weddingTimeline = generateWeddingTimelineData()
 
   useEffect(() => {
     loadAnalytics()
@@ -244,7 +243,7 @@ export function RsvpAnalyticsDashboard({ guests, className = '' }: RsvpAnalytics
 
         {/* Family Groups */}
         <Card className="glass p-4 text-center">
-          <Family className="w-8 h-8 text-purple-500 mx-auto mb-2" />
+          <Users className="w-8 h-8 text-purple-500 mx-auto mb-2" />
           <div className="text-2xl font-bold text-purple-700">
             {analytics.rsvpStats.family_groups_count}
           </div>
@@ -261,7 +260,7 @@ export function RsvpAnalyticsDashboard({ guests, className = '' }: RsvpAnalytics
               <Mail className="w-5 h-5 mr-2" />
               Performance de Email
             </h3>
-            <Badge variant="secondary" className="text-xs">
+            <Badge variant="pending" className="text-xs">
               Últimos {selectedTimeRange === '7d' ? '7 dias' : selectedTimeRange === '30d' ? '30 dias' : 'todos'}
             </Badge>
           </div>
@@ -312,7 +311,7 @@ export function RsvpAnalyticsDashboard({ guests, className = '' }: RsvpAnalytics
               <Target className="w-5 h-5 mr-2" />
               Projeções
             </h3>
-            <Badge variant="outline" className="text-xs">
+            <Badge variant="pending" className="text-xs">
               Baseado nos últimos 7 dias
             </Badge>
           </div>
@@ -399,7 +398,7 @@ export function RsvpAnalyticsDashboard({ guests, className = '' }: RsvpAnalytics
 
           {/* Family Group Adoption */}
           <div className="text-center">
-            <Family className="w-8 h-8 text-purple-500 mx-auto mb-2" />
+            <Users className="w-8 h-8 text-purple-500 mx-auto mb-2" />
             <div className="text-xl font-bold text-burgundy-800">
               {Math.round((analytics.rsvpStats.family_groups_count / analytics.rsvpStats.total_guests) * 100)}%
             </div>

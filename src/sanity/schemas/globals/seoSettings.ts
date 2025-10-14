@@ -14,9 +14,6 @@ export default defineType({
   type: 'document',
   icon: Search,
 
-  // Singleton pattern
-  __experimental_actions: ['update', 'publish'],
-
   fields: [
     defineField({
       name: 'title',

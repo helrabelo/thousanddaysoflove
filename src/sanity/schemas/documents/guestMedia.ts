@@ -285,25 +285,27 @@ export default defineType({
       const { title, caption, mediaType, moderationStatus, uploadPhase, image, videoThumbnail } = selection
 
       // Status emoji
-      const statusEmoji = {
+      const statusEmoji: Record<string, string> = {
         pending: '⏳',
         approved: '✅',
         rejected: '❌',
-      }[moderationStatus] || '❓'
+      }
+      const status = (moderationStatus as string) || 'pending'
 
       // Phase emoji
-      const phaseEmoji = {
+      const phaseEmoji: Record<string, string> = {
         before: '📆',
         during: '💒',
         after: '🎉',
-      }[uploadPhase] || '📸'
+      }
+      const phase = (uploadPhase as string) || 'before'
 
       // Media type icon
       const mediaEmoji = mediaType === 'video' ? '🎥' : '📷'
 
       return {
-        title: `${statusEmoji} ${title}`,
-        subtitle: `${mediaEmoji} ${phaseEmoji} ${caption || 'No caption'}`,
+        title: `${statusEmoji[status] || '❓'} ${title}`,
+        subtitle: `${mediaEmoji} ${phaseEmoji[phase] || '📸'} ${caption || 'No caption'}`,
         media: mediaType === 'video' ? videoThumbnail || PlayIcon : image || ImageIcon,
       }
     },

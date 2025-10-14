@@ -32,7 +32,7 @@ import {
   getGuestReaction,
   getPostReactions,
   getPostComments,
-} from '@/lib/supabase/messages';
+} from '@/lib/supabase/messages/client';
 import type { GuestPost, PostReaction, PostComment } from '@/types/wedding';
 import CommentThread from './CommentThread';
 

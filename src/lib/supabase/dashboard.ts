@@ -14,9 +14,6 @@ import { createClient } from '@/lib/supabase/client';
 import type {
   Invitation,
   GuestProgress,
-  GuestPost,
-  PostReaction,
-  PostComment,
 } from '@/types/wedding';
 import { getInvitationByCode, calculateGuestProgress } from './invitations';
 
@@ -130,14 +127,16 @@ export async function getGuestActivity(
 
   if (posts) {
     activities.push(
-      ...posts.map((post) => ({
-        id: `post-${post.id}`,
-        type: 'post_created' as const,
-        description: getPostDescription(post.post_type),
-        icon: '📝',
-        timestamp: post.created_at,
-        metadata: { post_id: post.id, content: post.content },
-      }))
+      ...posts
+        .filter((post) => post.created_at !== null)
+        .map((post) => ({
+          id: `post-${post.id}`,
+          type: 'post_created' as const,
+          description: getPostDescription(post.post_type),
+          icon: '📝',
+          timestamp: post.created_at!,
+          metadata: { post_id: post.id, content: post.content },
+        }))
     );
   }
 
@@ -151,14 +150,16 @@ export async function getGuestActivity(
 
   if (comments) {
     activities.push(
-      ...comments.map((comment) => ({
-        id: `comment-${comment.id}`,
-        type: 'comment_made' as const,
-        description: 'Você comentou em um post',
-        icon: '💬',
-        timestamp: comment.created_at,
-        metadata: { comment_id: comment.id, post_id: comment.post_id },
-      }))
+      ...comments
+        .filter((comment) => comment.created_at !== null)
+        .map((comment) => ({
+          id: `comment-${comment.id}`,
+          type: 'comment_made' as const,
+          description: 'Você comentou em um post',
+          icon: '💬',
+          timestamp: comment.created_at!,
+          metadata: { comment_id: comment.id, post_id: comment.post_id },
+        }))
     );
   }
 
@@ -172,21 +173,23 @@ export async function getGuestActivity(
 
   if (reactions) {
     activities.push(
-      ...reactions.map((reaction) => ({
-        id: `reaction-${reaction.id}`,
-        type: 'reaction_given' as const,
-        description: `Você reagiu com ${getReactionEmoji(reaction.reaction_type)}`,
-        icon: getReactionEmoji(reaction.reaction_type),
-        timestamp: reaction.created_at,
-        metadata: { reaction_id: reaction.id, post_id: reaction.post_id },
-      }))
+      ...reactions
+        .filter((reaction) => reaction.created_at !== null)
+        .map((reaction) => ({
+          id: `reaction-${reaction.id}`,
+          type: 'reaction_given' as const,
+          description: `Você reagiu com ${getReactionEmoji(reaction.reaction_type)}`,
+          icon: getReactionEmoji(reaction.reaction_type),
+          timestamp: reaction.created_at!,
+          metadata: { reaction_id: reaction.id, post_id: reaction.post_id },
+        }))
     );
   }
 
   // Fetch photos uploaded by guest
   const { data: photos } = await supabase
     .from('guest_photos')
-    .select('id, created_at, phase')
+    .select('id, created_at')
     .eq('guest_name', guestName)
     .eq('status', 'approved')
     .order('created_at', { ascending: false })
@@ -194,14 +197,16 @@ export async function getGuestActivity(
 
   if (photos) {
     activities.push(
-      ...photos.map((photo) => ({
-        id: `photo-${photo.id}`,
-        type: 'photo_uploaded' as const,
-        description: `Você enviou uma foto (${photo.phase})`,
-        icon: '📸',
-        timestamp: photo.created_at,
-        metadata: { photo_id: photo.id, phase: photo.phase },
-      }))
+      ...photos
+        .filter((photo) => photo.created_at !== null)
+        .map((photo) => ({
+          id: `photo-${photo.id}`,
+          type: 'photo_uploaded' as const,
+          description: 'Você enviou uma foto',
+          icon: '📸',
+          timestamp: photo.created_at!,
+          metadata: { photo_id: photo.id },
+        }))
     );
   }
 

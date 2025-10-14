@@ -19,6 +19,26 @@ interface PageProps {
   }>
 }
 
+const VALID_UPLOAD_PHASES = ['before', 'during', 'after'] as const
+type UploadPhase = (typeof VALID_UPLOAD_PHASES)[number]
+
+const mapUploadPhase = (phase: string | null | undefined): UploadPhase => {
+  if (phase && VALID_UPLOAD_PHASES.includes(phase as UploadPhase)) {
+    return phase as UploadPhase
+  }
+  return 'during'
+}
+
+const VALID_MODERATION_STATUSES = ['pending', 'approved', 'rejected'] as const
+type ModerationStatus = (typeof VALID_MODERATION_STATUSES)[number]
+
+const mapModerationStatus = (status: string | null | undefined): ModerationStatus => {
+  if (status && VALID_MODERATION_STATUSES.includes(status as ModerationStatus)) {
+    return status as ModerationStatus
+  }
+  return 'pending'
+}
+
 export default async function AdminPhotosPage({ searchParams }: PageProps) {
   // Check admin authentication
   const cookieStore = await cookies()
@@ -71,10 +91,28 @@ export default async function AdminPhotosPage({ searchParams }: PageProps) {
     )
   }
 
-  // Add public URLs to photos
+  // Add public URLs to photos and transform for PhotoModerationGrid
   const photosWithUrls = (photos || []).map((photo) => ({
-    ...photo,
-    public_url: getPublicUrl(photo.storage_path, photo.storage_bucket),
+    id: photo.id,
+    guest_id: photo.guest_id || '',
+    guest_name: photo.guest_name || 'Anônimo',
+    caption: photo.caption,
+    title: photo.title,
+    upload_phase: mapUploadPhase(photo.upload_phase as string | null),
+    storage_path: photo.storage_path || '',
+    storage_bucket: photo.storage_bucket || 'wedding-photos',
+    public_url: photo.storage_path ? getPublicUrl(photo.storage_path, photo.storage_bucket) : '',
+    file_size_bytes: photo.file_size_bytes || 0,
+    mime_type: photo.mime_type || 'image/jpeg',
+    width: photo.width,
+    height: photo.height,
+    is_video: photo.mime_type?.startsWith('video/') || false,
+    moderation_status: mapModerationStatus(photo.moderation_status as string | null),
+    moderated_at: photo.moderated_at,
+    moderated_by: photo.moderated_by,
+    rejection_reason: photo.rejection_reason,
+    uploaded_at: photo.created_at,
+    guest: photo.guest,
   }))
 
   // Calculate stats
@@ -133,7 +171,7 @@ export default async function AdminPhotosPage({ searchParams }: PageProps) {
       {/* Moderation Grid (Client Component) */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <PhotoModerationGrid
-          photos={photosWithUrls}
+          photos={photosWithUrls as any}
           initialFilters={{
             status: statusFilter,
             phase: phaseFilter,

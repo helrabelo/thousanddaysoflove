@@ -46,7 +46,7 @@ async function setupStorageBucket() {
   if (bucketExists) {
     console.log('   ✓ Bucket already exists\n')
   } else {
-    const { data: bucket, error: createError } =
+    const { error: createError } =
       await supabase.storage.createBucket('wedding-photos', {
         public: true,
         fileSizeLimit: 524288000, // 500MB (for videos)
@@ -83,39 +83,6 @@ async function setupStorageBucket() {
   // The policies are already defined in migration 024
   // This is just a verification step
 
-  const policies = `
-    -- Guests can upload to their own folder (requires active session)
-    CREATE POLICY "Guests upload own photos"
-    ON storage.objects FOR INSERT
-    WITH CHECK (
-      bucket_id = 'wedding-photos' AND
-      auth.role() = 'authenticated' AND
-      (storage.foldername(name))[1] = auth.uid()::text
-    );
-
-    -- Everyone can view approved photos (public bucket)
-    CREATE POLICY "Public read approved"
-    ON storage.objects FOR SELECT
-    USING (bucket_id = 'wedding-photos');
-
-    -- Guests can update their own photos
-    CREATE POLICY "Guests update own photos"
-    ON storage.objects FOR UPDATE
-    USING (
-      bucket_id = 'wedding-photos' AND
-      auth.role() = 'authenticated' AND
-      (storage.foldername(name))[1] = auth.uid()::text
-    );
-
-    -- Guests can delete their own photos
-    CREATE POLICY "Guests delete own photos"
-    ON storage.objects FOR DELETE
-    USING (
-      bucket_id = 'wedding-photos' AND
-      auth.role() = 'authenticated' AND
-      (storage.foldername(name))[1] = auth.uid()::text
-    );
-  `
 
   console.log('   ✓ RLS policies defined in migration 024')
   console.log('   ℹ️  Run the migration to apply policies\n')
@@ -137,8 +104,11 @@ async function setupStorageBucket() {
   console.log('   Bucket Configuration:')
   console.log(`   - Name: ${bucketDetails.name}`)
   console.log(`   - Public: ${bucketDetails.public}`)
+  const fileSizeLimit = bucketDetails.file_size_limit
   console.log(
-    `   - File size limit: ${(bucketDetails.file_size_limit / 1024 / 1024).toFixed(0)}MB`
+    fileSizeLimit != null
+      ? `   - File size limit: ${(fileSizeLimit / 1024 / 1024).toFixed(0)}MB`
+      : '   - File size limit: unlimited'
   )
   console.log(
     `   - Allowed MIME types: ${bucketDetails.allowed_mime_types?.length || 'all'} types`
@@ -154,7 +124,7 @@ async function setupStorageBucket() {
   const testFilePath = `test/${Date.now()}_test.txt`
   const testFileContent = 'Test upload for wedding-photos bucket'
 
-  const { data: uploadData, error: uploadError } = await supabase.storage
+  const { error: uploadError } = await supabase.storage
     .from('wedding-photos')
     .upload(testFilePath, testFileContent, {
       contentType: 'text/plain',

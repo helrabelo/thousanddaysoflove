@@ -74,7 +74,7 @@ async function seedInvitations() {
   console.log('🌱 Starting invitation seeding...\n');
 
   // Check if table exists
-  const { data: tables, error: tablesError } = await supabase
+  const { error: tablesError } = await supabase
     .from('invitations')
     .select('code')
     .limit(1);
@@ -106,7 +106,7 @@ async function seedInvitations() {
   console.log('📝 Inserting sample invitations...\n');
 
   for (const invitation of SAMPLE_INVITATIONS) {
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('invitations')
       .insert(invitation)
       .select()

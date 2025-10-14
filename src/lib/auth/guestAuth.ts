@@ -3,7 +3,7 @@
  * Handles invitation code and shared password authentication
  */
 
-import { createClient } from '@/lib/supabase/client'
+import { createAdminClient, createServerClient } from '@/lib/supabase/server'
 
 export const GUEST_SESSION_COOKIE = 'guest_session_token'
 export const GUEST_SESSION_DURATION_HOURS = 72
@@ -29,30 +29,76 @@ export interface AuthResult {
   error?: string
 }
 
+function getServerSupabaseClient() {
+  if (typeof window !== 'undefined') {
+    throw new Error('Server Supabase client accessed from browser environment')
+  }
+
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return createAdminClient()
+  }
+
+  return createServerClient()
+}
+
 /**
  * Authenticate guest with invitation code
  */
 export async function authenticateWithInvitationCode(
   invitationCode: string
 ): Promise<AuthResult> {
-  const supabase = createClient()
+  const supabase = getServerSupabaseClient()
 
-  // Find guest by invitation code
-  const { data: guest, error: guestError } = await supabase
-    .from('simple_guests')
-    .select('id, name, invitation_code, attending')
-    .eq('invitation_code', invitationCode.toUpperCase())
+  // Find invitation by code
+  const { data: invitation, error: invitationError } = await supabase
+    .from('invitations')
+    .select('id, guest_name, code, relationship_type')
+    .eq('code', invitationCode.toUpperCase())
     .single()
 
-  if (guestError || !guest) {
+  if (invitationError || !invitation) {
     return {
       success: false,
       error: 'Código de convite inválido',
     }
   }
 
+  // Find or create guest in simple_guests table
+  let guestId: string
+
+  const { data: existingGuest } = await supabase
+    .from('simple_guests')
+    .select('id')
+    .eq('invitation_code', invitation.code)
+    .single()
+
+  if (existingGuest) {
+    guestId = existingGuest.id
+  } else {
+    // Create guest record
+    const { data: newGuest, error: createError } = await supabase
+      .from('simple_guests')
+      .insert({
+        name: invitation.guest_name,
+        invitation_code: invitation.code,
+        attending: false,
+      })
+      .select('id')
+      .single()
+
+    if (createError || !newGuest) {
+      console.error('Error creating guest:', createError)
+      return {
+        success: false,
+        error: 'Erro ao criar registro de convidado',
+      }
+    }
+
+    guestId = newGuest.id
+  }
+
   // Create session
-  const sessionResult = await createGuestSession(guest.id, 'invitation_code')
+  const sessionResult = await createGuestSession(guestId, 'invitation_code')
 
   if (!sessionResult.success || !sessionResult.session) {
     return {
@@ -61,20 +107,25 @@ export async function authenticateWithInvitationCode(
     }
   }
 
-  // Mark account as created
+  // Mark account as created and update last login
   await supabase
     .from('simple_guests')
     .update({
       account_created: true,
       last_login: new Date().toISOString(),
     })
-    .eq('id', guest.id)
+    .eq('id', guestId)
 
   return {
     success: true,
     session: {
       ...sessionResult.session,
-      guest,
+      guest: {
+        id: guestId,
+        name: invitation.guest_name,
+        invitation_code: invitation.code,
+        attending: false,
+      },
     },
   }
 }
@@ -86,7 +137,7 @@ export async function authenticateWithPassword(
   password: string,
   guestName?: string
 ): Promise<AuthResult> {
-  const supabase = createClient()
+  const supabase = getServerSupabaseClient()
 
   // Verify shared password
   const { data: isValid, error: verifyError } = await supabase.rpc(
@@ -195,13 +246,35 @@ async function createGuestSession(
   guestId: string,
   authMethod: 'invitation_code' | 'shared_password' | 'both'
 ): Promise<AuthResult> {
-  const supabase = createClient()
+  const supabase = getServerSupabaseClient()
+
+  // Reuse existing active session when available to avoid redundant creation
+  const { data: existingSession, error: existingError } = await supabase
+    .from('guest_sessions')
+    .select('*')
+    .eq('guest_id', guestId)
+    .eq('is_active', true)
+    .gt('expires_at', new Date().toISOString())
+    .order('expires_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (existingError) {
+    console.error('Error checking existing guest session:', existingError)
+  }
+
+  if (existingSession) {
+    return {
+      success: true,
+      session: existingSession as GuestSession,
+    }
+  }
 
   // Generate session token
   const sessionToken = generateSessionToken()
 
   // Create session in database
-  const { data: session, error } = await supabase.rpc('create_guest_session', {
+  const { error } = await supabase.rpc('create_guest_session', {
     p_guest_id: guestId,
     p_session_token: sessionToken,
     p_auth_method: authMethod,
@@ -232,7 +305,7 @@ async function createGuestSession(
 
   return {
     success: true,
-    session: sessionDetails,
+    session: sessionDetails as GuestSession,
   }
 }
 
@@ -242,7 +315,7 @@ async function createGuestSession(
 export async function verifyGuestSession(
   sessionToken: string
 ): Promise<GuestSession | null> {
-  const supabase = createClient()
+  const supabase = getServerSupabaseClient()
 
   const { data: session, error } = await supabase
     .from('guest_sessions')
@@ -279,7 +352,7 @@ export async function verifyGuestSession(
  * Logout guest session
  */
 export async function logoutGuestSession(sessionToken: string): Promise<void> {
-  const supabase = createClient()
+  const supabase = getServerSupabaseClient()
 
   await supabase
     .from('guest_sessions')
@@ -306,7 +379,7 @@ export async function canGuestUpload(guestId: string): Promise<{
   reason?: string
   remaining?: number
 }> {
-  const supabase = createClient()
+  const supabase = getServerSupabaseClient()
 
   // Get auth config
   const { data: config } = await supabase

@@ -2,24 +2,42 @@
  * Photo/Video Upload API Endpoint
  * Handles file uploads to Supabase Storage and creates database records
  */
-
 import { NextRequest, NextResponse } from 'next/server'
 import {
   verifyGuestSession,
   canGuestUpload,
   GUEST_SESSION_COOKIE,
+  type GuestSession,
 } from '@/lib/auth/guestAuth'
 import {
   uploadFile,
   validateFile,
   type UploadPhase,
+  type StorageResult,
 } from '@/lib/supabase/storage-server'
 import { createAdminClient } from '@/lib/supabase/server'
 
 export const runtime = 'nodejs' // Need Node runtime for file handling
 export const maxDuration = 60 // 1 minute timeout for large uploads
 
-export async function POST(request: NextRequest) {
+interface ErrorResponse {
+  error: string
+}
+
+interface SuccessResponse {
+  success: true
+  photo: {
+    id: string
+    storage_path: string
+    public_url: string
+    is_video: boolean
+    moderation_status: string
+    auto_approved: boolean
+  }
+  message: string
+}
+
+export async function POST(request: NextRequest): Promise<NextResponse<ErrorResponse | SuccessResponse>> {
   try {
     // Verify session
     const sessionToken = request.cookies.get(GUEST_SESSION_COOKIE)?.value
@@ -52,12 +70,12 @@ export async function POST(request: NextRequest) {
 
     // Parse form data
     const formData = await request.formData()
-    const file = formData.get('file') as File
-    const phase = formData.get('phase') as UploadPhase
+    const file = formData.get('file')
+    const phase = formData.get('phase') as string | null
     const caption = formData.get('caption') as string | null
     const title = formData.get('title') as string | null
 
-    if (!file) {
+    if (!file || !(file instanceof File)) {
       return NextResponse.json(
         { error: 'Arquivo é obrigatório' },
         { status: 400 }
@@ -71,19 +89,21 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    const uploadPhase = phase as UploadPhase
+
     // Validate file
     const validation = validateFile(file)
     if (!validation.valid) {
       return NextResponse.json(
-        { error: validation.error },
+        { error: validation.error || 'Arquivo inválido' },
         { status: 400 }
       )
     }
 
     // Upload to Supabase Storage
-    const storageResult = await uploadFile({
+    const storageResult: StorageResult = await uploadFile({
       guestId: session.guest_id,
-      phase,
+      phase: uploadPhase,
       file,
     })
 
@@ -101,15 +121,15 @@ export async function POST(request: NextRequest) {
         guest_name: session.guest?.name || 'Convidado',
         title: title || null,
         caption: caption || null,
-        upload_phase: phase,
+        upload_phase: uploadPhase,
         storage_path: storageResult.storage_path,
         storage_bucket: storageResult.storage_bucket,
         file_size_bytes: storageResult.file_size_bytes,
         mime_type: storageResult.mime_type,
-        width: storageResult.width,
-        height: storageResult.height,
+        width: storageResult.width || null,
+        height: storageResult.height || null,
         is_video: storageResult.is_video,
-        video_duration_seconds: storageResult.video_duration_seconds,
+        video_duration_seconds: storageResult.video_duration_seconds || null,
         moderation_status: moderationStatus,
       })
       .select()
@@ -127,11 +147,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Update session upload count
+    // Update session activity (uploads_count might not exist in older sessions)
     await supabase
       .from('guest_sessions')
       .update({
-        uploads_count: session.uploads_count + 1,
         last_activity_at: new Date().toISOString(),
       })
       .eq('id', session.id)
@@ -145,7 +164,7 @@ export async function POST(request: NextRequest) {
       target_id: photo.id,
       metadata: {
         is_video: storageResult.is_video,
-        phase,
+        phase: uploadPhase,
         file_size: storageResult.file_size_bytes,
         auto_approved: moderationStatus === 'approved',
       },
@@ -164,7 +183,7 @@ export async function POST(request: NextRequest) {
           storage_path: storageResult.storage_path,
           public_url: storageResult.public_url,
           is_video: storageResult.is_video,
-          moderation_status: photo.moderation_status,
+          moderation_status: photo.moderation_status || 'pending',
           auto_approved: moderationStatus === 'approved',
         },
         message: responseMessage,

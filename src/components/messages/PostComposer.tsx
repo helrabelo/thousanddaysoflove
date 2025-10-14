@@ -24,13 +24,12 @@ import {
   Send,
   Loader2,
 } from 'lucide-react';
-import { createGuestPost } from '@/lib/supabase/messages';
 import type { GuestPost } from '@/types/wedding';
 
 interface PostComposerProps {
   guestName: string;
   isAuthenticated?: boolean; // Whether guest is authenticated via invitation code
-  onPostCreated?: (post: GuestPost) => void;
+  onPostCreated?: (post: GuestPost, autoApproved: boolean) => void;
   onCancel?: () => void;
 }
 
@@ -130,36 +129,35 @@ export default function PostComposer({
     return 'text';
   };
 
-  // Upload files to Supabase Storage (placeholder - implement based on your setup)
+  // Upload files via API route (uses service role)
   const uploadFiles = async (files: File[]): Promise<string[]> => {
-    // TODO: Implement Supabase Storage upload
-    // For now, return placeholder URLs
-    // In production, upload to wedding-photos bucket or create a new bucket
+    console.log('📤 Starting upload for', files.length, 'file(s)');
 
-    // Example implementation:
-    // const supabase = createClient();
-    // const uploadPromises = files.map(async (file) => {
-    //   const fileExt = file.name.split('.').pop();
-    //   const fileName = `${Math.random()}.${fileExt}`;
-    //   const filePath = `posts/${fileName}`;
-    //
-    //   const { data, error } = await supabase.storage
-    //     .from('wedding-posts')
-    //     .upload(filePath, file);
-    //
-    //   if (error) throw error;
-    //   return data.path;
-    // });
-    //
-    // return await Promise.all(uploadPromises);
+    const formData = new FormData();
+    files.forEach((file) => {
+      formData.append('files', file);
+    });
 
-    return []; // Placeholder
+    const response = await fetch('/api/messages/upload', {
+      method: 'POST',
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      console.error('Upload failed:', data);
+      throw new Error(data.error || 'Erro ao fazer upload dos arquivos');
+    }
+
+    console.log('✅ Upload completed, received', data.urls.length, 'URL(s)');
+    return data.urls;
   };
 
   // Submit post
   const handleSubmit = async () => {
-    if (!content.trim() && mediaFiles.length === 0) {
-      setError('Escreva uma mensagem ou adicione uma foto/vídeo');
+    if (!content.trim()) {
+      setError('Escreva uma mensagem (você pode adicionar fotos/vídeos também)');
       return;
     }
 
@@ -178,17 +176,26 @@ export default function PostComposer({
         mediaUrls = await uploadFiles(mediaFiles);
       }
 
-      // Create post
-      const post = await createGuestPost({
-        guest_name: guestName,
+      const payload: Record<string, unknown> = {
+        guestName,
         content: content.trim(),
-        post_type: detectPostType(),
-        media_urls: mediaUrls.length > 0 ? mediaUrls : undefined,
-        isAuthenticated, // Pass authentication status for auto-approval
+        postType: detectPostType(),
+      };
+
+      if (mediaUrls.length > 0) {
+        payload.mediaUrls = mediaUrls;
+      }
+
+      const response = await fetch('/api/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
 
-      if (!post) {
-        throw new Error('Erro ao criar mensagem');
+      const data = await response.json();
+
+      if (!response.ok || !data?.success || !data?.post) {
+        throw new Error(data?.error || 'Erro ao criar mensagem');
       }
 
       // Success!
@@ -198,7 +205,7 @@ export default function PostComposer({
       setMediaPreviewUrls([]);
       setShowEmojiPicker(false);
 
-      onPostCreated?.(post);
+      onPostCreated?.(data.post as GuestPost, data.autoApproved === true);
     } catch (err) {
       console.error('Error creating post:', err);
       setError('Erro ao enviar mensagem. Tente novamente.');

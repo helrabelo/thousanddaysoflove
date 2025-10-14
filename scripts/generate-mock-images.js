@@ -33,7 +33,6 @@ const icons = {
  * Generate an elegant SVG placeholder
  */
 function generateSVG({ width, height, title, subtitle, icon, gradient = false }) {
-  const aspectRatio = width / height;
   const viewBox = `0 0 ${width} ${height}`;
 
   // Create gradient background if requested

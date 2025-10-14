@@ -219,7 +219,7 @@ export function RsvpForm({ initialGuest, onSuccess, onError }: RsvpFormProps) {
               />
 
               <div className="flex justify-end">
-                <Button type="button" onClick={handleNext} variant="primary">
+                <Button type="button" onClick={handleNext} variant="wedding">
                   Próximo →
                 </Button>
               </div>
@@ -289,7 +289,7 @@ export function RsvpForm({ initialGuest, onSuccess, onError }: RsvpFormProps) {
                 <Button type="button" onClick={handlePrevious} variant="outline">
                   ← Voltar
                 </Button>
-                <Button type="button" onClick={handleNext} variant="primary">
+                <Button type="button" onClick={handleNext} variant="wedding">
                   Próximo →
                 </Button>
               </div>

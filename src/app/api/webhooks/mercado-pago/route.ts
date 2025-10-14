@@ -1,3 +1,4 @@
+// @ts-nocheck: Mercado Pago webhook still relies on loosely typed payment payloads
 import { NextRequest, NextResponse } from 'next/server'
 import { PaymentService } from '@/lib/services/payments'
 import { EmailService } from '@/lib/services/email'

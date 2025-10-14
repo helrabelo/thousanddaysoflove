@@ -18,7 +18,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Send, User, Loader2, CornerDownRight } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { createComment, getCommentReplies } from '@/lib/supabase/messages';
+import { createComment, getCommentReplies } from '@/lib/supabase/messages/client';
 import type { PostComment } from '@/types/wedding';
 
 interface CommentThreadProps {

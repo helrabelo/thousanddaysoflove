@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import type { ChangeEvent, FormEvent } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Plus, Check, X, Trash2 } from 'lucide-react'
 import { Card } from '@/components/ui/card'
@@ -18,23 +19,37 @@ interface Guest {
   confirmed_by: string | null
 }
 
-export default function AdminGuests() {
+interface NewGuestForm {
+  name: string
+  phone: string
+  email: string
+}
+
+interface GuestStats {
+  total: number
+  confirmed: number
+  declined: number
+  pending: number
+  totalPlusOnes: number
+}
+
+export default function AdminGuests(): JSX.Element {
   const [guests, setGuests] = useState<Guest[]>([])
   const [loading, setLoading] = useState(true)
   const [showAddForm, setShowAddForm] = useState(false)
-  const [newGuest, setNewGuest] = useState({ name: '', phone: '', email: '' })
+  const [newGuest, setNewGuest] = useState<NewGuestForm>({ name: '', phone: '', email: '' })
 
   useEffect(() => {
     loadGuests()
   }, [])
 
-  const loadGuests = async () => {
+  const loadGuests = async (): Promise<void> => {
     setLoading(true)
     try {
       const supabase = createClient()
       const { data, error } = await supabase
         .from('simple_guests')
-        .select('*')
+        .select<'*', Guest>('*')
         .order('name')
 
       if (error) throw error
@@ -47,7 +62,7 @@ export default function AdminGuests() {
     }
   }
 
-  const addGuest = async () => {
+  const addGuest = async (): Promise<void> => {
     if (!newGuest.name.trim()) {
       alert('Nome é obrigatório')
       return
@@ -55,12 +70,17 @@ export default function AdminGuests() {
 
     try {
       const supabase = createClient()
+
+      // Generate a unique invitation code
+      const invitationCode = `HY${Date.now().toString().slice(-6)}`
+
       const { error } = await supabase
         .from('simple_guests')
         .insert({
           name: newGuest.name,
           phone: newGuest.phone || null,
-          email: newGuest.email || null
+          email: newGuest.email || null,
+          invitation_code: invitationCode
         })
 
       if (error) throw error
@@ -75,7 +95,7 @@ export default function AdminGuests() {
     }
   }
 
-  const adminRSVP = async (guestId: string, guestName: string, attending: boolean) => {
+  const adminRSVP = async (guestId: string, guestName: string, attending: boolean): Promise<void> => {
     if (!window.confirm(`Confirmar presença de ${guestName} como ADMIN?`)) return
 
     try {
@@ -99,7 +119,7 @@ export default function AdminGuests() {
     }
   }
 
-  const deleteGuest = async (guestId: string, guestName: string) => {
+  const deleteGuest = async (guestId: string, guestName: string): Promise<void> => {
     if (!window.confirm(`DELETAR ${guestName} da lista?`)) return
 
     try {
@@ -118,7 +138,17 @@ export default function AdminGuests() {
     }
   }
 
-  const stats = {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
+    const { name, value } = e.target
+    setNewGuest(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleFormSubmit = (e: FormEvent): void => {
+    e.preventDefault()
+    addGuest()
+  }
+
+  const stats: GuestStats = {
     total: guests.length,
     confirmed: guests.filter(g => g.attending === true).length,
     declined: guests.filter(g => g.attending === false).length,
@@ -184,33 +214,39 @@ export default function AdminGuests() {
         {showAddForm && (
           <Card className="glass p-6 mb-8">
             <h3 className="text-xl font-bold text-burgundy-800 mb-4">Novo Convidado</h3>
-            <div className="grid md:grid-cols-3 gap-4 mb-4">
-              <input
-                type="text"
-                placeholder="Nome *"
-                value={newGuest.name}
-                onChange={(e) => setNewGuest({ ...newGuest, name: e.target.value })}
-                className="px-4 py-2 border border-burgundy-200 rounded-lg"
-              />
-              <input
-                type="tel"
-                placeholder="Telefone"
-                value={newGuest.phone}
-                onChange={(e) => setNewGuest({ ...newGuest, phone: e.target.value })}
-                className="px-4 py-2 border border-burgundy-200 rounded-lg"
-              />
-              <input
-                type="email"
-                placeholder="Email"
-                value={newGuest.email}
-                onChange={(e) => setNewGuest({ ...newGuest, email: e.target.value })}
-                className="px-4 py-2 border border-burgundy-200 rounded-lg"
-              />
-            </div>
-            <div className="flex gap-3">
-              <Button onClick={addGuest}>Adicionar</Button>
-              <Button variant="outline" onClick={() => setShowAddForm(false)}>Cancelar</Button>
-            </div>
+            <form onSubmit={handleFormSubmit}>
+              <div className="grid md:grid-cols-3 gap-4 mb-4">
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Nome *"
+                  value={newGuest.name}
+                  onChange={handleInputChange}
+                  className="px-4 py-2 border border-burgundy-200 rounded-lg"
+                  required
+                />
+                <input
+                  type="tel"
+                  name="phone"
+                  placeholder="Telefone"
+                  value={newGuest.phone}
+                  onChange={handleInputChange}
+                  className="px-4 py-2 border border-burgundy-200 rounded-lg"
+                />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  value={newGuest.email}
+                  onChange={handleInputChange}
+                  className="px-4 py-2 border border-burgundy-200 rounded-lg"
+                />
+              </div>
+              <div className="flex gap-3">
+                <Button type="submit">Adicionar</Button>
+                <Button type="button" variant="outline" onClick={() => setShowAddForm(false)}>Cancelar</Button>
+              </div>
+            </form>
           </Card>
         )}
 

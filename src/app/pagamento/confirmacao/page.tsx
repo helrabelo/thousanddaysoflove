@@ -1,25 +1,39 @@
 'use client'
 
-import { useEffect, useState, Suspense } from 'react'
+import { useEffect, useState, Suspense, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Navigation from '@/components/ui/Navigation'
 import PaymentConfirmation from '@/components/payments/PaymentConfirmation'
-import { PaymentService } from '@/lib/services/payments'
+import type { PaymentConfirmationData } from '@/components/payments/PaymentConfirmation'
+
+type PaymentStatusSuccessResponse = {
+  success: true
+  payment: {
+    id: string
+    amount: number | string
+    created_at: string
+    guests?: { name?: string | null; email?: string | null } | null
+    gifts?: { name?: string | null } | null
+  }
+}
+
+type PaymentStatusErrorResponse = {
+  success: false
+  error?: string
+}
+
+type PaymentStatusResponse = PaymentStatusSuccessResponse | PaymentStatusErrorResponse
 
 function PaymentConfirmationContent() {
   const searchParams = useSearchParams()
-  const [paymentData, setPaymentData] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [paymentData, setPaymentData] = useState<PaymentConfirmationData | null>(null)
+  const [loading, setLoading] = useState<boolean>(true)
+  const [error, setError] = useState<string | null>(null)
 
   const paymentId = searchParams.get('payment')
   const mercadoPagoId = searchParams.get('mp')
 
-  useEffect(() => {
-    loadPaymentData()
-  }, [paymentId, mercadoPagoId])
-
-  const loadPaymentData = async () => {
+  const loadPaymentData = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
@@ -28,8 +42,12 @@ function PaymentConfirmationContent() {
         throw new Error('ID do pagamento não fornecido')
       }
 
-      const response = await fetch(`/api/payments/status?${paymentId ? `paymentId=${paymentId}` : `mercadoPagoId=${mercadoPagoId}`}`)
-      const result = await response.json()
+      const queryParam = paymentId
+        ? `paymentId=${encodeURIComponent(paymentId)}`
+        : `mercadoPagoId=${encodeURIComponent(mercadoPagoId ?? '')}`
+
+      const response = await fetch(`/api/payments/status?${queryParam}`)
+      const result: PaymentStatusResponse = await response.json()
 
       if (!result.success) {
         throw new Error(result.error || 'Erro ao carregar dados do pagamento')
@@ -37,25 +55,28 @@ function PaymentConfirmationContent() {
 
       const payment = result.payment
 
-      // Format payment data for the confirmation component
-      const formattedData = {
+      const formattedData: PaymentConfirmationData = {
         paymentId: payment.id,
-        giftName: payment.gifts?.name || 'Presente',
-        amount: payment.amount,
-        buyerName: payment.guests?.name || 'Convidado',
-        buyerEmail: payment.guests?.email || 'convidado@casamento.com',
+        giftName: payment.gifts?.name ?? 'Presente',
+        amount: Number(payment.amount),
+        buyerName: payment.guests?.name ?? 'Convidado',
+        buyerEmail: payment.guests?.email ?? 'convidado@casamento.com',
         paymentDate: payment.created_at
       }
 
       setPaymentData(formattedData)
-
-    } catch (error) {
-      console.error('Error loading payment data:', error)
-      setError(error.message)
+    } catch (loadError) {
+      console.error('Error loading payment data:', loadError)
+      const message = loadError instanceof Error ? loadError.message : 'Erro ao carregar dados do pagamento'
+      setError(message)
     } finally {
       setLoading(false)
     }
-  }
+  }, [mercadoPagoId, paymentId])
+
+  useEffect(() => {
+    void loadPaymentData()
+  }, [loadPaymentData])
 
   if (loading) {
     return (

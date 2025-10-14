@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Heart, Users, Calendar, Gift, CreditCard, BarChart3, ImageIcon } from 'lucide-react'
+import { Heart, Users, Calendar, CreditCard, BarChart3, ImageIcon } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 

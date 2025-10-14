@@ -111,7 +111,7 @@ interface TimeUnitProps {
   value: number;
   label: string;
   delay: number;
-  shouldReduceMotion?: boolean;
+  shouldReduceMotion?: boolean | null;
 }
 
 function TimeUnit({ value, label, delay, shouldReduceMotion }: TimeUnitProps) {

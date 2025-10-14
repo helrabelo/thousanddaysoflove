@@ -4,10 +4,17 @@ import FeatureHubSection from '@/components/sections/FeatureHubSection'
 import InvitationCTASection from '@/components/sections/InvitationCTASection'
 import { sanityFetch } from '@/sanity/lib/client'
 import { homePageQuery } from '@/sanity/queries/homepage'
+import type { SanityHomePage, SanityVideoHero } from '@/types/sanity'
+import Link from 'next/link'
 
-export default async function Home() {
+interface HomePageSections {
+  videoHero?: SanityVideoHero;
+  [key: string]: unknown;
+}
+
+export default async function Home(): Promise<JSX.Element> {
   // Fetch homepage data from Sanity (single query for entire page)
-  const homePage = await sanityFetch<any>({
+  const homePage = await sanityFetch<SanityHomePage>({
     query: homePageQuery,
     tags: ['homePage'],
   })
@@ -23,19 +30,19 @@ export default async function Home() {
           <p className="text-burgundy-600 mb-6">
             O conteúdo da página está sendo configurado no Sanity Studio.
           </p>
-          <a
+          <Link
             href="/studio"
             className="text-burgundy-700 hover:text-blush-600 underline"
           >
             Acessar Sanity Studio →
-          </a>
+          </Link>
         </div>
       </main>
     )
   }
 
   // Extract sections by type for easy prop passing
-  const sections = homePage.sections.reduce((acc: any, section: any) => {
+  const sections = homePage.sections.reduce<HomePageSections>((acc, section) => {
     acc[section._type] = section
     return acc
   }, {})
@@ -45,7 +52,7 @@ export default async function Home() {
       <Navigation />
 
       {/* Video Hero Section - SUPER IMPORTANT, unchanged */}
-      {sections.videoHero && <VideoHeroSection data={sections.videoHero} />}
+      {sections.videoHero && <VideoHeroSection data={sections.videoHero as any} />}
 
       {/* Feature Hub Section - NEW: 2x2 grid showcasing main features */}
       <FeatureHubSection />

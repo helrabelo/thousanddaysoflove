@@ -30,7 +30,7 @@ async function checkDatabase() {
 
   for (const fn of functions) {
     try {
-      const { data, error } = await supabase.rpc(fn as any)
+      const { error } = await supabase.rpc(fn as any)
       if (error && error.message.includes('not find')) {
         console.log(`  ❌ ${fn} - NOT FOUND`)
       } else {
@@ -53,6 +53,9 @@ async function checkDatabase() {
     'guest_sessions',
     'wedding_auth_config',
     'simple_guests',
+    'guest_posts',
+    'post_reactions',
+    'post_comments',
   ]
 
   for (const table of tables) {
@@ -95,12 +98,60 @@ async function checkDatabase() {
 
   if (buckets) {
     const weddingPhotos = buckets.find((b) => b.name === 'wedding-photos')
+    const weddingPosts = buckets.find((b) => b.name === 'wedding-posts')
+
     if (weddingPhotos) {
       console.log(`  ✅ wedding-photos bucket EXISTS (public: ${weddingPhotos.public})`)
     } else {
       console.log(`  ❌ wedding-photos bucket NOT FOUND`)
-      console.log(`     Available buckets: ${buckets.map((b) => b.name).join(', ')}`)
     }
+
+    if (weddingPosts) {
+      console.log(`  ✅ wedding-posts bucket EXISTS (public: ${weddingPosts.public})`)
+    } else {
+      console.log(`  ❌ wedding-posts bucket NOT FOUND`)
+    }
+
+    console.log(`     All buckets: ${buckets.map((b) => b.name).join(', ')}`)
+  }
+
+  // Check guest_posts RLS policies
+  console.log('\n📋 Checking guest_posts RLS policies:')
+  const { data: policies, error: policiesError } = await supabase.rpc(
+    'exec_sql' as any,
+    {
+      query: `
+        SELECT policyname, cmd, roles, qual, with_check
+        FROM pg_policies
+        WHERE tablename = 'guest_posts'
+        ORDER BY cmd, policyname;
+      `,
+    }
+  ).catch(() => ({ data: null, error: 'RPC not available' }))
+
+  if (policiesError || !policies) {
+    console.log('  ⚠️  Could not query policies (trying alternative method...)')
+
+    // Try direct SQL query
+    const { data: altPolicies, error: altError } = await supabase
+      .from('pg_policies' as any)
+      .select('policyname, cmd, roles')
+      .eq('tablename', 'guest_posts')
+      .catch(() => ({ data: null, error: 'Not accessible' }))
+
+    if (altError || !altPolicies) {
+      console.log('  ⚠️  Could not access RLS policies')
+      console.log('  💡 Try running this SQL in Supabase Dashboard:')
+      console.log(`     SELECT policyname, cmd, roles FROM pg_policies WHERE tablename = 'guest_posts';`)
+    } else {
+      altPolicies.forEach((p: any) => {
+        console.log(`  ✅ ${p.policyname} (${p.cmd}) - roles: ${p.roles || 'all'}`)
+      })
+    }
+  } else {
+    policies.forEach((p: any) => {
+      console.log(`  ✅ ${p.policyname} (${p.cmd}) - roles: ${p.roles || 'all'}`)
+    })
   }
 
   console.log('\n✨ Check complete!')

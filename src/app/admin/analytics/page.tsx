@@ -33,7 +33,30 @@ interface Analytics {
   }
 }
 
-export default function AdminAnalytics() {
+interface SimpleGuest {
+  id: string
+  attending: boolean | null
+  plus_ones: number | null
+}
+
+interface GiftItem {
+  id: string
+  price: number
+  quantity_desired: number | null
+  quantity_purchased: number | null
+}
+
+interface PaymentItem {
+  id: string
+  status: string
+  amount: number
+}
+
+interface TimelineEvent {
+  id: string
+}
+
+export default function AdminAnalytics(): JSX.Element {
   const [analytics, setAnalytics] = useState<Analytics>({
     guests: { total: 0, confirmed: 0, declined: 0, pending: 0, totalWithPlusOnes: 0 },
     gifts: { total: 0, purchased: 0, remaining: 0, totalValue: 0, purchasedValue: 0 },
@@ -46,32 +69,37 @@ export default function AdminAnalytics() {
     loadAnalytics()
   }, [])
 
-  const loadAnalytics = async () => {
+  const loadAnalytics = async (): Promise<void> => {
     setLoading(true)
     try {
       const supabase = createClient()
 
       // Load guests
-      const { data: guests } = await supabase.from('simple_guests').select('*')
+      const { data: guests } = await supabase.from('simple_guests').select<'*', SimpleGuest>('*')
       const confirmed = guests?.filter(g => g.attending === true) || []
       const declined = guests?.filter(g => g.attending === false) || []
       const pending = guests?.filter(g => g.attending === null) || []
       const totalWithPlusOnes = confirmed.reduce((sum, g) => sum + (g.plus_ones || 0) + 1, 0)
 
       // Load gifts
-      const { data: gifts } = await supabase.from('gifts').select('*')
-      const purchased = gifts?.filter(g => g.is_purchased) || []
-      const totalValue = gifts?.reduce((sum, g) => sum + g.price, 0) || 0
-      const purchasedValue = purchased.reduce((sum, g) => sum + g.price, 0)
+      const { data: gifts } = await supabase.from('gifts').select<'*', GiftItem>('*')
+      const purchased =
+        gifts?.filter((g) => (g.quantity_purchased ?? 0) > 0) || []
+      const totalValue =
+        gifts?.reduce((sum, g) => sum + g.price * (g.quantity_desired ?? 1), 0) || 0
+      const purchasedValue = purchased.reduce(
+        (sum, g) => sum + g.price * (g.quantity_purchased ?? 0),
+        0
+      )
 
       // Load payments
-      const { data: payments } = await supabase.from('payments').select('*')
+      const { data: payments } = await supabase.from('payments').select<'*', PaymentItem>('*')
       const completed = payments?.filter(p => p.status === 'completed') || []
       const pendingPayments = payments?.filter(p => p.status === 'pending') || []
       const totalAmount = completed.reduce((sum, p) => sum + p.amount, 0)
 
       // Load timeline
-      const { data: timeline } = await supabase.from('timeline_events').select('*')
+      const { data: timeline } = await supabase.from('timeline_events').select<'*', TimelineEvent>('*')
       const weddingDate = new Date('2025-11-20T00:00:00')
       const today = new Date()
       const daysToWedding = Math.ceil((weddingDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))

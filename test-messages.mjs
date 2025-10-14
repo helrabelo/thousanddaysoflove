@@ -5,7 +5,6 @@
 
 import { chromium } from 'playwright';
 
-const PRODUCTION_URL = 'https://thousanddaysof.love';
 const LOCAL_URL = 'http://localhost:3000';
 const BASE_URL = process.env.TEST_URL || LOCAL_URL;
 
@@ -57,6 +56,7 @@ async function testMessageSending() {
           console.log(`   Response: ${body.substring(0, 200)}`);
         } catch (e) {
           // Ignore if can't read body
+          console.log({e})
         }
       } else {
         console.log(`✅ API Success: ${status} - ${url.split('?')[0]}`);
@@ -204,6 +204,7 @@ async function testMessageSending() {
       console.log('📸 Error screenshot saved: debug-error.png');
     } catch (e) {
       // Ignore screenshot errors
+      console.log({e})
     }
 
     throw error;

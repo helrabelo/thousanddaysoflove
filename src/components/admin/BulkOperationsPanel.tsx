@@ -15,25 +15,21 @@
 import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  Users,
   Mail,
   Download,
   Upload,
   QrCode,
-  UserPlus,
   Send,
-  FileText,
   CheckCircle,
   AlertCircle,
   Loader2,
-  Heart,
-  Family,
+  Users,
   MessageSquare
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Guest, FamilyGroup } from '@/types/wedding'
+import { Guest } from '@/types/wedding'
 import EnhancedGuestService from '@/lib/services/enhanced-guests'
 import EmailAutomationService from '@/lib/services/email-automation'
 
@@ -111,9 +107,10 @@ export function BulkOperationsPanel({
     setActiveOperation('reminders')
     setOperationResult(null)
 
+    const pendingGuests = selectedGuests.filter(guest => guest.attending === null)
+
     try {
       const result: BulkOperationsResult = { success: 0, failed: 0, errors: [] }
-      const pendingGuests = selectedGuests.filter(guest => guest.attending === null)
 
       for (const guest of pendingGuests) {
         if (guest.rsvp_reminder_count < 3) {
@@ -468,7 +465,7 @@ export function BulkOperationsPanel({
       id: 'families',
       title: 'Grupos Familiares',
       description: 'Criar grupos familiares automaticamente',
-      icon: Family,
+      icon: Users,
       color: 'bg-pink-500',
       action: handleCreateFamilyGroups,
       disabled: selectedGuestIds.length < 2,
@@ -534,7 +531,7 @@ export function BulkOperationsPanel({
                       {operation.description}
                     </p>
                     {operation.count > 0 && (
-                      <Badge variant="secondary" className="text-xs">
+                      <Badge variant="pending" className="text-xs">
                         {operation.count} item(s)
                       </Badge>
                     )}

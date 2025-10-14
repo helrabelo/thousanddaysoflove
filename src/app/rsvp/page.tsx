@@ -10,6 +10,7 @@ import Navigation from '@/components/ui/Navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import confetti from 'canvas-confetti'
 import Image from 'next/image'
+import type { Database } from '@/types/supabase'
 
 interface Guest {
   id: string
@@ -23,6 +24,8 @@ interface Guest {
   song_requests: string | null
   special_message: string | null
 }
+
+type SimpleGuestRow = Database['public']['Tables']['simple_guests']['Row']
 
 // Loading Spinner Component
 const LoadingSpinner = () => (
@@ -153,7 +156,19 @@ export default function SimpleRSVP() {
         .order('name')
 
       if (error) throw error
-      setGuests(data || [])
+      const sanitizedGuests: Guest[] = (data ?? []).map((guest: SimpleGuestRow) => ({
+        id: guest.id,
+        name: guest.name,
+        phone: guest.phone,
+        email: guest.email,
+        attending: guest.attending,
+        plus_ones: guest.plus_ones ?? 0,
+        confirmed_by: guest.confirmed_by,
+        dietary_restrictions: guest.dietary_restrictions,
+        song_requests: guest.song_requests,
+        special_message: guest.special_message
+      }))
+      setGuests(sanitizedGuests)
     } catch (error) {
       console.error('Error searching:', error)
       alert('Erro ao buscar convidados')

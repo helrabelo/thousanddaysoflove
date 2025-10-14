@@ -40,6 +40,7 @@ async function testAdminAccess() {
           console.log(`   Response: ${body.substring(0, 200)}`);
         } catch (e) {
           // Ignore
+          console.log({ e });
         }
       }
     }

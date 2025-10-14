@@ -2,14 +2,17 @@ import Navigation from '@/components/ui/Navigation'
 import GalleryHero from '@/components/gallery/GalleryHero'
 import GalleryClient from '@/components/gallery/GalleryClient'
 import GuestPhotosSection from '@/components/gallery/GuestPhotosSection'
+import type { MediaItem } from '@/types/wedding'
 import { SanityGalleryService } from '@/sanity/queries/gallery'
 import { SupabaseGalleryService } from '@/lib/supabase/gallery'
 
 export default async function GaleriaPage() {
+  type GuestPhotosByPhase = Awaited<ReturnType<typeof SupabaseGalleryService.getApprovedPhotosByPhase>>
+
   // Fetch gallery data server-side (both Sanity and guest photos)
-  let sanityMediaItems
-  let guestPhotos
-  let guestPhotosByPhase
+  let sanityMediaItems: MediaItem[] = []
+  let guestPhotos: MediaItem[] = []
+  let guestPhotosByPhase: GuestPhotosByPhase = { before: [], during: [], after: [] }
 
   try {
     // Fetch Sanity CMS gallery photos
@@ -26,7 +29,7 @@ export default async function GaleriaPage() {
   } catch (error) {
     console.error('Error loading guest photos:', error)
     guestPhotos = []
-    guestPhotosByPhase = { before: [], during: [], after: [] }
+    guestPhotosByPhase = { before: [], during: [], after: [] } satisfies GuestPhotosByPhase
   }
 
   // Merge all photos for main gallery (Sanity photos first, then guest photos)

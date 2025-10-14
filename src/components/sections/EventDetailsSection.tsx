@@ -659,22 +659,20 @@ export default function EventDetailsSection({ data }: EventDetailsSectionProps) 
                             <motion.div
                               whileHover={{
                                 scale: 1.15,
-                                rotate: shouldReduceMotion ? 0 : [0, -5, 5, 0]
+                                rotate: shouldReduceMotion ? 0 : [0, -5, 5, 0],
+                                transition: {
+                                  type: 'spring',
+                                  stiffness: 400,
+                                  damping: 10
+                                }
                               }}
                               animate={shouldReduceMotion ? {} : {
                                 scale: [1, 1.02, 1]
                               }}
                               transition={{
-                                hover: {
-                                  type: 'spring',
-                                  stiffness: 400,
-                                  damping: 10
-                                },
-                                default: {
-                                  duration: 3,
-                                  repeat: Infinity,
-                                  ease: 'easeInOut'
-                                }
+                                duration: 3,
+                                repeat: Infinity,
+                                ease: 'easeInOut'
                               }}
                               className="w-10 h-10 flex items-center justify-center rounded-full mb-2.5"
                               style={{
@@ -771,22 +769,20 @@ export default function EventDetailsSection({ data }: EventDetailsSectionProps) 
                           <motion.div
                             whileHover={{
                               scale: 1.15,
-                              rotate: shouldReduceMotion ? 0 : [0, -5, 5, 0]
+                              rotate: shouldReduceMotion ? 0 : [0, -5, 5, 0],
+                              transition: {
+                                type: 'spring',
+                                stiffness: 400,
+                                damping: 10
+                              }
                             }}
                             animate={shouldReduceMotion ? {} : {
                               scale: [1, 1.02, 1]
                             }}
                             transition={{
-                              hover: {
-                                type: 'spring',
-                                stiffness: 400,
-                                damping: 10
-                              },
-                              default: {
-                                duration: 3,
-                                repeat: Infinity,
-                                ease: 'easeInOut'
-                              }
+                              duration: 3,
+                              repeat: Infinity,
+                              ease: 'easeInOut'
                             }}
                             className="w-10 h-10 flex items-center justify-center rounded-full mb-2.5"
                             style={{

@@ -15,37 +15,21 @@
  * - Mobile-optimized
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Check,
   X,
-  Clock,
-  Filter,
-  Pin,
   Search,
-  ChevronDown,
   AlertCircle,
   RefreshCw,
   Loader2,
 } from 'lucide-react';
-import {
-  getAllPosts,
-  moderatePost,
-  batchModeratePosts,
-  getPendingPostsCount,
-  getPostStats,
-  pinPost,
-  unpinPost,
-  isPostPinned,
-} from '@/lib/supabase/messages';
 import type { GuestPost } from '@/types/wedding';
 
 type StatusFilter = 'all' | 'pending' | 'approved' | 'rejected';
 
 export default function AdminPostsPage() {
-  const router = useRouter();
   const [posts, setPosts] = useState<GuestPost[]>([]);
   const [filter, setFilter] = useState<StatusFilter>('pending');
   const [selectedPosts, setSelectedPosts] = useState<Set<string>>(new Set());
@@ -136,7 +120,17 @@ export default function AdminPostsPage() {
     reason?: string
   ) => {
     try {
-      await moderatePost(postId, action, 'Admin', reason);
+      const response = await fetch(`/api/admin/posts/${postId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, reason }),
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.json().catch(() => null);
+        throw new Error(errorBody?.error || 'Failed to moderate post');
+      }
+
       setSelectedPosts(prev => {
         const next = new Set(prev);
         next.delete(postId);
@@ -159,7 +153,26 @@ export default function AdminPostsPage() {
     if (!confirmed) return;
 
     try {
-      await batchModeratePosts(Array.from(selectedPosts), action, 'Admin');
+      const payload: {
+        action: 'approve' | 'reject';
+        postIds: string[];
+        reason?: string;
+      } = {
+        action,
+        postIds: Array.from(selectedPosts),
+      };
+
+      const response = await fetch('/api/admin/posts/batch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.json().catch(() => null);
+        throw new Error(errorBody?.error || 'Failed to batch moderate posts');
+      }
+
       setSelectedPosts(new Set());
       await Promise.all([loadPosts(), loadStats()]);
     } catch (error) {

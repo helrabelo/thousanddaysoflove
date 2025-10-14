@@ -247,7 +247,7 @@ export function GuestManagementTab() {
             Ações em Lote
           </Button>
           <Button
-            variant="primary"
+            variant="wedding"
             size="sm"
             onClick={() => setShowAddGuest(true)}
             className="flex items-center gap-2"
@@ -341,7 +341,7 @@ export function GuestManagementTab() {
 
             <div className="flex gap-2">
               <Button
-                variant={filterStatus === 'all' ? 'primary' : 'outline'}
+                variant={filterStatus === 'all' ? 'wedding' : 'outline'}
                 size="sm"
                 onClick={() => setFilterStatus('all')}
               >
@@ -349,21 +349,21 @@ export function GuestManagementTab() {
                 Todos ({guests.length})
               </Button>
               <Button
-                variant={filterStatus === 'attending' ? 'primary' : 'outline'}
+                variant={filterStatus === 'attending' ? 'wedding' : 'outline'}
                 size="sm"
                 onClick={() => setFilterStatus('attending')}
               >
                 Confirmados ({stats.attending})
               </Button>
               <Button
-                variant={filterStatus === 'not-attending' ? 'primary' : 'outline'}
+                variant={filterStatus === 'not-attending' ? 'wedding' : 'outline'}
                 size="sm"
                 onClick={() => setFilterStatus('not-attending')}
               >
                 Não virão ({stats.notAttending})
               </Button>
               <Button
-                variant={filterStatus === 'pending' ? 'primary' : 'outline'}
+                variant={filterStatus === 'pending' ? 'wedding' : 'outline'}
                 size="sm"
                 onClick={() => setFilterStatus('pending')}
               >
@@ -383,7 +383,7 @@ export function GuestManagementTab() {
               Atualizar
             </Button>
             <Button
-              variant="secondary"
+              variant="outline"
               size="sm"
               onClick={exportToCSV}
               className="flex items-center gap-2"
@@ -417,7 +417,7 @@ export function GuestManagementTab() {
 
               {selectedGuests.length > 0 && (
                 <div className="flex items-center gap-2">
-                  <Button variant="primary" size="sm" onClick={handleBulkReminder}>
+                  <Button variant="wedding" size="sm" onClick={handleBulkReminder}>
                     <Send className="w-4 h-4 mr-2" />
                     Enviar Lembretes
                   </Button>
@@ -697,7 +697,7 @@ export function GuestManagementTab() {
                 </div>
                 <Button
                   onClick={() => setShowGuestDetail(false)}
-                  variant="primary"
+                  variant="wedding"
                 >
                   Fechar
                 </Button>

@@ -199,9 +199,9 @@ export function PaymentTrackingTab() {
       case 'failed':
         return <Badge variant="destructive">Falhou</Badge>
       case 'refunded':
-        return <Badge variant="secondary">Reembolsado</Badge>
+        return <Badge variant="warning">Reembolsado</Badge>
       default:
-        return <Badge variant="outline">Desconhecido</Badge>
+        return <Badge variant="warning">Desconhecido</Badge>
     }
   }
 
@@ -325,7 +325,7 @@ export function PaymentTrackingTab() {
             Atualizar
           </Button>
           <Button
-            variant="secondary"
+            variant="outline"
             size="sm"
             onClick={exportToCSV}
             className="flex items-center gap-2"
@@ -454,7 +454,7 @@ export function PaymentTrackingTab() {
 
             <div className="flex gap-2">
               <Button
-                variant={filterStatus === 'all' ? 'primary' : 'outline'}
+                variant={filterStatus === 'all' ? 'wedding' : 'outline'}
                 size="sm"
                 onClick={() => setFilterStatus('all')}
               >
@@ -462,21 +462,21 @@ export function PaymentTrackingTab() {
                 Todos ({stats.total})
               </Button>
               <Button
-                variant={filterStatus === 'completed' ? 'primary' : 'outline'}
+                variant={filterStatus === 'completed' ? 'wedding' : 'outline'}
                 size="sm"
                 onClick={() => setFilterStatus('completed')}
               >
                 Completos ({stats.completed})
               </Button>
               <Button
-                variant={filterStatus === 'pending' ? 'primary' : 'outline'}
+                variant={filterStatus === 'pending' ? 'wedding' : 'outline'}
                 size="sm"
                 onClick={() => setFilterStatus('pending')}
               >
                 Pendentes ({stats.pending})
               </Button>
               <Button
-                variant={filterStatus === 'failed' ? 'primary' : 'outline'}
+                variant={filterStatus === 'failed' ? 'wedding' : 'outline'}
                 size="sm"
                 onClick={() => setFilterStatus('failed')}
               >
@@ -487,21 +487,21 @@ export function PaymentTrackingTab() {
 
           <div className="flex gap-2">
             <Button
-              variant={filterMethod === 'all' ? 'primary' : 'outline'}
+              variant={filterMethod === 'all' ? 'wedding' : 'outline'}
               size="sm"
               onClick={() => setFilterMethod('all')}
             >
               Todos Métodos
             </Button>
             <Button
-              variant={filterMethod === 'pix' ? 'primary' : 'outline'}
+              variant={filterMethod === 'pix' ? 'wedding' : 'outline'}
               size="sm"
               onClick={() => setFilterMethod('pix')}
             >
               PIX ({stats.pixPayments})
             </Button>
             <Button
-              variant={filterMethod === 'credit_card' ? 'primary' : 'outline'}
+              variant={filterMethod === 'credit_card' ? 'wedding' : 'outline'}
               size="sm"
               onClick={() => setFilterMethod('credit_card')}
             >
@@ -727,7 +727,7 @@ export function PaymentTrackingTab() {
                 </div>
                 <Button
                   onClick={() => setShowPaymentDetail(false)}
-                  variant="primary"
+                  variant="wedding"
                 >
                   Fechar
                 </Button>

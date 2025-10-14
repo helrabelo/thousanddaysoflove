@@ -145,10 +145,7 @@ async function createGalleryImageDocument(
 async function findImageFile(imageUrl: string, imagesDir: string): Promise<string | null> {
   try {
     const fileName = path.basename(imageUrl)
-    const possiblePaths = [
-      path.join(imagesDir, fileName),
-      path.join(imagesDir, item.category, fileName), // Category subdirectories
-    ]
+    const possiblePaths = [path.join(imagesDir, fileName)]
 
     for (const filePath of possiblePaths) {
       try {
@@ -160,7 +157,7 @@ async function findImageFile(imageUrl: string, imagesDir: string): Promise<strin
     }
 
     return null
-  } catch (error) {
+  } catch {
     console.error(`  ⚠️  Could not find image file for ${imageUrl}`)
     return null
   }

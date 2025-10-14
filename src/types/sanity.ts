@@ -5,8 +5,6 @@
  * These types ensure type safety when fetching and using Sanity content.
  */
 
-import type { SanityImageSource } from '@sanity/image-url/lib/types/types'
-
 // =====================================================
 // Base Sanity Document Types
 // =====================================================

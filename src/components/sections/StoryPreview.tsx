@@ -9,24 +9,7 @@ import Image from 'next/image'
 import { sanityFetch } from '@/sanity/lib/client'
 import { storyPreviewMomentsQuery } from '@/sanity/queries/timeline'
 import { getPrimaryStoryMedia, hasMultipleMedia } from '@/lib/utils/sanity-media'
-import type { SanityStoryMoment } from '@/types/wedding'
-
-// Story Moment Interface (from Sanity storyMoment document)
-interface StoryMoment extends SanityStoryMoment {
-  _id: string
-  title: string
-  date?: string
-  icon?: string
-  description: string
-  dayNumber?: number
-  contentAlign?: 'left' | 'right' | 'center'
-  displayOrder: number
-  phase?: {
-    _id: string
-    title: string
-    dayRange: string
-  }
-}
+import type { SanityStoryMoment } from '@/types/sanity'
 
 // Helper function to truncate text
 const truncateText = (text: string, maxLength: number): string => {
@@ -49,7 +32,7 @@ const formatBrazilianDate = (dateString: string): string => {
 }
 
 export default function StoryPreview() {
-  const [storyMoments, setStoryMoments] = useState<StoryMoment[]>([])
+  const [storyMoments, setStoryMoments] = useState<SanityStoryMoment[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [hoveredItem, setHoveredItem] = useState<string | null>(null)
 
@@ -60,17 +43,17 @@ export default function StoryPreview() {
   const loadData = async () => {
     try {
       // Load story moments from Sanity CMS
-      const moments = await sanityFetch<StoryMoment[]>({
+      const moments = await sanityFetch<SanityStoryMoment[]>({
         query: storyPreviewMomentsQuery,
         tags: ['storyMoment', 'storyPhase'],
       })
 
       if (process.env.NODE_ENV === 'development') {
         console.log('📊 Story Preview - Loaded moments:', moments?.length || 0)
-        console.log('📸 Moments with images:', moments?.filter(m => getPrimaryStoryMedia(m)?.type === 'image').length || 0)
-        console.log('🎬 Moments with videos:', moments?.filter(m => getPrimaryStoryMedia(m)?.type === 'video').length || 0)
-        console.log('🎞️  Moments with multiple media:', moments?.filter(m => hasMultipleMedia(m)).length || 0)
-        console.log('❌ Moments without media:', moments?.filter(m => !getPrimaryStoryMedia(m)).length || 0)
+        console.log('📸 Moments with images:', moments?.filter(m => getPrimaryStoryMedia(m as any)?.type === 'image').length || 0)
+        console.log('🎬 Moments with videos:', moments?.filter(m => getPrimaryStoryMedia(m as any)?.type === 'video').length || 0)
+        console.log('🎞️  Moments with multiple media:', moments?.filter(m => hasMultipleMedia(m as any)).length || 0)
+        console.log('❌ Moments without media:', moments?.filter(m => !getPrimaryStoryMedia(m as any)).length || 0)
       }
 
       setStoryMoments(moments || [])
@@ -189,9 +172,9 @@ export default function StoryPreview() {
               const shouldSpanTwo = index % 3 === 0 || index % 5 === 0
 
               // Get primary media from the moment (first image or video)
-              const primaryMedia = getPrimaryStoryMedia(moment)
+              const primaryMedia = getPrimaryStoryMedia(moment as any)
               const imageUrl = primaryMedia?.url || '/images/hero-poster.jpg'
-              const hasMultiple = hasMultipleMedia(moment)
+              const hasMultiple = hasMultipleMedia(moment as any)
 
               return (
                 <motion.div
@@ -241,7 +224,7 @@ export default function StoryPreview() {
                         transition={{ delay: 0.2, duration: 0.3 }}
                       >
                         <Images className="w-3.5 h-3.5" strokeWidth={2.5} />
-                        <span>{getPrimaryStoryMedia(moment) ? '3+' : '2+'}</span>
+                        <span>{getPrimaryStoryMedia(moment as any) ? '3+' : '2+'}</span>
                       </motion.div>
                     )}
 

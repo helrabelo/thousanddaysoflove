@@ -25,7 +25,8 @@ export async function GET(req: NextRequest) {
     let mercadoPagoStatus = null
     if (mercadoPagoId || payment?.mercado_pago_payment_id) {
       try {
-        const mpId = mercadoPagoId || payment.mercado_pago_payment_id
+        const mpId = mercadoPagoId || payment?.mercado_pago_payment_id
+        if (!mpId) throw new Error('No Mercado Pago ID available')
         mercadoPagoStatus = await PaymentService.checkPaymentStatus(mpId)
 
         // Update our payment status if different

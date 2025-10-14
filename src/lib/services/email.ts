@@ -1,4 +1,4 @@
-// @ts-nocheck
+// @ts-nocheck: transactional email templates still await type-safe dynamic data contracts
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import sgMail from '@sendgrid/mail'
 

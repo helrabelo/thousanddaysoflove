@@ -9,6 +9,7 @@ import { groq } from 'next-sanity'
 import { client } from '@/sanity/lib/client'
 import imageUrlBuilder from '@sanity/image-url'
 import { SanityImageSource } from '@sanity/image-url/lib/types/types'
+import type { MediaItem } from '@/types/wedding'
 
 // Image URL Builder
 const builder = imageUrlBuilder(client)
@@ -255,7 +256,7 @@ export interface SanityGalleryStats {
  * Maintains compatibility with existing MediaItem interface
  * Returns the PRIMARY (first) media item from the album
  */
-export function sanityAlbumToMediaItem(sanityAlbum: SanityGalleryAlbum) {
+export function sanityAlbumToMediaItem(sanityAlbum: SanityGalleryAlbum): MediaItem {
   // Get first media item or fallback to legacy image
   const firstMedia = sanityAlbum.media?.[0]
   const imageUrl = firstMedia?.image?.asset?.url || sanityAlbum.legacyImage?.asset?.url || ''
@@ -281,7 +282,7 @@ export function sanityAlbumToMediaItem(sanityAlbum: SanityGalleryAlbum) {
     thumbnail_url: thumbnailUrl,
     media_type: mediaType,
     aspect_ratio: sanityAlbum.aspectRatio || 1.5,
-    category: sanityAlbum.category,
+    category: sanityAlbum.category as MediaItem['category'],
     tags: sanityAlbum.tags || [],
     date_taken: sanityAlbum.dateTaken,
     location: sanityAlbum.location,
@@ -290,9 +291,13 @@ export function sanityAlbumToMediaItem(sanityAlbum: SanityGalleryAlbum) {
     upload_date: sanityAlbum._createdAt,
     created_at: sanityAlbum._createdAt,
     updated_at: sanityAlbum._updatedAt,
-    // Additional Sanity-specific data
-    photographer: sanityAlbum.photographer,
-    camera_info: sanityAlbum.cameraInfo,
+    // Additional Sanity-specific data in metadata
+    metadata: {
+      photographer: sanityAlbum.photographer,
+      camera_make: sanityAlbum.cameraInfo?.make,
+      camera_model: sanityAlbum.cameraInfo?.model,
+      lens: sanityAlbum.cameraInfo?.lens,
+    },
   }
 }
 
@@ -309,10 +314,10 @@ export class SanityGalleryService {
     media_types?: ('photo' | 'video')[]
     is_featured?: boolean
     search_query?: string
-  }) {
+  }): Promise<MediaItem[]> {
     try {
       let query = galleryImagesQuery
-      let params: any = {}
+      const params: Record<string, unknown> = {}
 
       // Apply category filter
       if (filters?.categories && filters.categories.length > 0) {
@@ -380,7 +385,7 @@ export class SanityGalleryService {
   /**
    * Get featured albums
    */
-  static async getFeaturedImages() {
+  static async getFeaturedImages(): Promise<MediaItem[]> {
     try {
       const data: SanityGalleryAlbum[] = await client.fetch(featuredGalleryImagesQuery)
       return data.map(sanityAlbumToMediaItem)
@@ -393,7 +398,7 @@ export class SanityGalleryService {
   /**
    * Get albums by category
    */
-  static async getImagesByCategory(category: string) {
+  static async getImagesByCategory(category: string): Promise<MediaItem[]> {
     try {
       const query = getGalleryImagesByCategoryQuery(category)
       const data: SanityGalleryAlbum[] = await client.fetch(query, { category })
@@ -407,7 +412,7 @@ export class SanityGalleryService {
   /**
    * Search gallery albums
    */
-  static async searchImages(searchTerm: string) {
+  static async searchImages(searchTerm: string): Promise<MediaItem[]> {
     try {
       const query = searchGalleryImagesQuery(searchTerm)
       const data: SanityGalleryAlbum[] = await client.fetch(query, {

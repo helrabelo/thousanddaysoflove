@@ -9,7 +9,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Filter, RefreshCw, AlertCircle } from 'lucide-react';
-import { getApprovedPosts } from '@/lib/supabase/messages';
+import { getApprovedPosts } from '@/lib/supabase/messages/client';
 import type { GuestPost } from '@/types/wedding';
 import type { GuestSession } from '@/lib/auth/guestAuth';
 import PostComposer from '@/components/messages/PostComposer';
@@ -38,7 +38,9 @@ export default function MessagesFeed() {
 
       if (response.ok && data.success && data.session) {
         const session: GuestSession = data.session;
-        setGuestName(session.guest?.name || 'Convidado');
+        const resolvedName = session.guest?.name || 'Convidado';
+        setGuestName(resolvedName);
+        sessionStorage.setItem('guest_name', resolvedName);
         setIsAuthenticated(session.auth_method === 'invitation_code');
         setShowComposer(true);
       } else {
@@ -89,11 +91,9 @@ export default function MessagesFeed() {
     setIsRefreshing(false);
   };
 
-  const handlePostCreated = () => {
-    // Show success message based on authentication status
-    if (isAuthenticated) {
+  const handlePostCreated = (_post: GuestPost, autoApproved: boolean) => {
+    if (autoApproved) {
       alert('✅ Sua mensagem foi publicada imediatamente!');
-      // Refresh to show the newly posted message
       handleRefresh();
     } else {
       alert('✨ Sua mensagem foi enviada! Aguarde alguns minutos para aprovação.');

@@ -1,8 +1,9 @@
-// @ts-nocheck
+// @ts-nocheck: payments dashboard relies on Supabase RPC payloads not yet modelled in TypeScript
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createClient } from '@/lib/supabase/client'
 import { createAdminClient } from '@/lib/supabase/server'
 import { Payment } from '@/types/wedding'
+import QRCode from 'qrcode'
 
 export class PaymentService {
   // Create a new payment intent
@@ -423,7 +424,6 @@ export class PaymentService {
   // Generate QR Code for PIX payment
   static async generatePixQRCode(pixCode: string): Promise<string> {
     try {
-      const QRCode = require('qrcode')
       const qrCodeDataURL = await QRCode.toDataURL(pixCode, {
         errorCorrectionLevel: 'M',
         type: 'image/png',

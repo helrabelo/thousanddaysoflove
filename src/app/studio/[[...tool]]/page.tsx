@@ -12,14 +12,15 @@
 
 import { NextStudio } from 'next-sanity/studio'
 import { useEffect, useState } from 'react'
+import type { Config } from 'sanity'
 
 export default function StudioPage() {
-  const [config, setConfig] = useState(null)
+  const [config, setConfig] = useState<Config | null>(null)
 
   useEffect(() => {
     // Dynamically import config at runtime only
     import('../../../../sanity.config').then((mod) => {
-      setConfig(mod.default)
+      setConfig(mod.default as Config)
     })
   }, [])
 

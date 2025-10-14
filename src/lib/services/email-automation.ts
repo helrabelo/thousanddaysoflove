@@ -1,4 +1,4 @@
-// @ts-nocheck
+// @ts-nocheck: automated email scheduler still depends on loosely typed Supabase metadata blobs
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 /**

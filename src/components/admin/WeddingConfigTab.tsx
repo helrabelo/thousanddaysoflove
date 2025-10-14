@@ -3,28 +3,16 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import {
-  Settings,
-  Calendar,
-  MapPin,
-  Clock,
   Users,
   Mail,
   Smartphone,
   Globe,
-  Palette,
   Save,
   RefreshCw,
-  Upload,
-  Download,
-  Eye,
-  Edit,
   CheckCircle,
   AlertCircle,
   Info,
   Heart,
-  Camera,
-  Music,
-  Utensils
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -372,7 +360,7 @@ export function WeddingConfigTab() {
             Recarregar
           </Button>
           <Button
-            variant="primary"
+            variant="wedding"
             size="sm"
             onClick={saveConfiguration}
             disabled={!hasChanges || isSaving}
@@ -398,7 +386,7 @@ export function WeddingConfigTab() {
             return (
               <Button
                 key={section.id}
-                variant={isActive ? 'primary' : 'outline'}
+                variant={isActive ? 'wedding' : 'outline'}
                 onClick={() => setActiveSection(section.id)}
                 className={`flex items-center gap-2 transition-all duration-300 ${
                   isActive ? 'shadow-lg' : 'hover:shadow-md'

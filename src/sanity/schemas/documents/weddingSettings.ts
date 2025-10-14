@@ -14,9 +14,6 @@ export default defineType({
   type: 'document',
   icon: Church,
 
-  // Singleton pattern
-  __experimental_actions: ['update', 'publish'],
-
   fields: [
     // Couple Names
     defineField({

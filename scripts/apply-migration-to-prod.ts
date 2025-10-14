@@ -142,7 +142,7 @@ async function applyMigration() {
   const tables = ['invitations', 'guest_posts', 'post_reactions', 'post_comments', 'pinned_posts'];
 
   for (const table of tables) {
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from(table)
       .select('*')
       .limit(1);

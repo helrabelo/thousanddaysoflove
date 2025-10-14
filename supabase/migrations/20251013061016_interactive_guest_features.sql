@@ -47,27 +47,6 @@ CREATE TABLE IF NOT EXISTS public.guest_photos (
   updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
 
--- Indexes for performance
-CREATE INDEX idx_guest_photos_guest_id ON public.guest_photos(guest_id);
-CREATE INDEX idx_guest_photos_upload_phase ON public.guest_photos(upload_phase);
-CREATE INDEX idx_guest_photos_moderation_status ON public.guest_photos(moderation_status);
-CREATE INDEX idx_guest_photos_uploaded_at ON public.guest_photos(uploaded_at DESC);
-CREATE INDEX idx_guest_photos_featured ON public.guest_photos(is_featured) WHERE is_featured = true;
-CREATE INDEX idx_guest_photos_active ON public.guest_photos(moderation_status, is_deleted)
-  WHERE moderation_status = 'approved' AND is_deleted = false;
-
--- Partial index for approved photos during wedding (most queried)
-CREATE INDEX idx_guest_photos_approved_during ON public.guest_photos(uploaded_at DESC)
-  WHERE moderation_status = 'approved' AND upload_phase = 'during' AND is_deleted = false;
-
--- Full-text search on captions
-CREATE INDEX idx_guest_photos_caption_search ON public.guest_photos
-  USING gin(to_tsvector('portuguese', COALESCE(caption, '')));
-
--- Updated timestamp trigger
-CREATE TRIGGER update_guest_photos_updated_at
-  BEFORE UPDATE ON public.guest_photos
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Comments
 COMMENT ON TABLE public.guest_photos IS 'Guest-uploaded photos with moderation and engagement metrics';
@@ -114,24 +93,7 @@ CREATE TABLE IF NOT EXISTS public.guest_messages (
 );
 
 -- Indexes
-CREATE INDEX idx_guest_messages_guest_id ON public.guest_messages(guest_id);
-CREATE INDEX idx_guest_messages_photo_id ON public.guest_messages(photo_id);
-CREATE INDEX idx_guest_messages_parent_id ON public.guest_messages(parent_message_id);
-CREATE INDEX idx_guest_messages_moderation_status ON public.guest_messages(moderation_status);
-CREATE INDEX idx_guest_messages_created_at ON public.guest_messages(created_at DESC);
-CREATE INDEX idx_guest_messages_active ON public.guest_messages(moderation_status, is_deleted)
-  WHERE moderation_status = 'approved' AND is_deleted = false;
-CREATE INDEX idx_guest_messages_pinned ON public.guest_messages(is_pinned, created_at DESC)
-  WHERE is_pinned = true;
 
--- Full-text search
-CREATE INDEX idx_guest_messages_search ON public.guest_messages
-  USING gin(to_tsvector('portuguese', message));
-
--- Updated timestamp trigger
-CREATE TRIGGER update_guest_messages_updated_at
-  BEFORE UPDATE ON public.guest_messages
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Comments
 COMMENT ON TABLE public.guest_messages IS 'Guest book messages and photo comments with moderation';
@@ -153,12 +115,6 @@ CREATE TABLE IF NOT EXISTS public.photo_likes (
   created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
 
--- Unique constraint: one like per guest per photo
-CREATE UNIQUE INDEX idx_photo_likes_unique ON public.photo_likes(photo_id, guest_id);
-
--- Indexes
-CREATE INDEX idx_photo_likes_photo_id ON public.photo_likes(photo_id);
-CREATE INDEX idx_photo_likes_guest_id ON public.photo_likes(guest_id);
 
 -- Comments
 COMMENT ON TABLE public.photo_likes IS 'Track which guests liked which photos';
@@ -179,12 +135,7 @@ CREATE TABLE IF NOT EXISTS public.message_likes (
   created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
 
--- Unique constraint: one like per guest per message
-CREATE UNIQUE INDEX idx_message_likes_unique ON public.message_likes(message_id, guest_id);
 
--- Indexes
-CREATE INDEX idx_message_likes_message_id ON public.message_likes(message_id);
-CREATE INDEX idx_message_likes_guest_id ON public.message_likes(guest_id);
 
 -- Comments
 COMMENT ON TABLE public.message_likes IS 'Track which guests liked which messages';
@@ -221,14 +172,6 @@ CREATE TABLE IF NOT EXISTS public.activity_feed (
 );
 
 -- Indexes
-CREATE INDEX idx_activity_feed_created_at ON public.activity_feed(created_at DESC);
-CREATE INDEX idx_activity_feed_type ON public.activity_feed(activity_type);
-CREATE INDEX idx_activity_feed_guest_id ON public.activity_feed(guest_id);
-CREATE INDEX idx_activity_feed_public ON public.activity_feed(is_public, created_at DESC)
-  WHERE is_public = true;
-
--- JSONB index for metadata queries
-CREATE INDEX idx_activity_feed_metadata ON public.activity_feed USING gin(metadata);
 
 -- Comments
 COMMENT ON TABLE public.activity_feed IS 'Real-time activity feed for wedding day live updates';
@@ -264,15 +207,6 @@ CREATE TABLE IF NOT EXISTS public.moderation_queue (
   updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
 
--- Indexes
-CREATE INDEX idx_moderation_queue_status ON public.moderation_queue(status);
-CREATE INDEX idx_moderation_queue_priority ON public.moderation_queue(priority DESC, created_at ASC);
-CREATE INDEX idx_moderation_queue_content ON public.moderation_queue(content_type, content_id);
-
--- Updated timestamp trigger
-CREATE TRIGGER update_moderation_queue_updated_at
-  BEFORE UPDATE ON public.moderation_queue
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Comments
 COMMENT ON TABLE public.moderation_queue IS 'Content moderation queue with auto-flagging and manual review';
@@ -334,9 +268,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER update_photo_like_count_trigger
-AFTER INSERT OR DELETE ON public.photo_likes
-FOR EACH ROW EXECUTE FUNCTION update_photo_like_count();
 
 -- Update photo comment_count when comments are added/removed
 CREATE OR REPLACE FUNCTION update_photo_comment_count()
@@ -355,9 +286,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER update_photo_comment_count_trigger
-AFTER INSERT OR DELETE ON public.guest_messages
-FOR EACH ROW EXECUTE FUNCTION update_photo_comment_count();
 
 -- Update message like_count when likes are added/removed
 CREATE OR REPLACE FUNCTION update_message_like_count()
@@ -376,9 +304,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER update_message_like_count_trigger
-AFTER INSERT OR DELETE ON public.message_likes
-FOR EACH ROW EXECUTE FUNCTION update_message_like_count();
 
 -- ============================================================================
 -- 9. ROW LEVEL SECURITY (RLS) POLICIES
@@ -394,9 +319,6 @@ ALTER TABLE public.moderation_queue ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.upload_sessions ENABLE ROW LEVEL SECURITY;
 
 -- guest_photos policies
-CREATE POLICY "Anyone can view approved photos"
-  ON public.guest_photos FOR SELECT
-  USING (moderation_status = 'approved' AND is_deleted = false);
 
 CREATE POLICY "Anyone can insert photos"
   ON public.guest_photos FOR INSERT
@@ -408,63 +330,6 @@ CREATE POLICY "Anyone can update photos"
 
 CREATE POLICY "Anyone can delete their own photos"
   ON public.guest_photos FOR DELETE
-  USING (true);
-
--- guest_messages policies
-CREATE POLICY "Anyone can view approved messages"
-  ON public.guest_messages FOR SELECT
-  USING (moderation_status = 'approved' AND is_deleted = false);
-
-CREATE POLICY "Anyone can post messages"
-  ON public.guest_messages FOR INSERT
-  WITH CHECK (true);
-
-CREATE POLICY "Anyone can update messages"
-  ON public.guest_messages FOR UPDATE
-  USING (true);
-
-CREATE POLICY "Anyone can delete messages"
-  ON public.guest_messages FOR DELETE
-  USING (true);
-
--- photo_likes policies
-CREATE POLICY "Anyone can view likes"
-  ON public.photo_likes FOR SELECT
-  USING (true);
-
-CREATE POLICY "Anyone can like photos"
-  ON public.photo_likes FOR INSERT
-  WITH CHECK (true);
-
-CREATE POLICY "Anyone can unlike photos"
-  ON public.photo_likes FOR DELETE
-  USING (true);
-
--- message_likes policies
-CREATE POLICY "Anyone can view message likes"
-  ON public.message_likes FOR SELECT
-  USING (true);
-
-CREATE POLICY "Anyone can like messages"
-  ON public.message_likes FOR INSERT
-  WITH CHECK (true);
-
-CREATE POLICY "Anyone can unlike messages"
-  ON public.message_likes FOR DELETE
-  USING (true);
-
--- activity_feed policies
-CREATE POLICY "Anyone can view public activities"
-  ON public.activity_feed FOR SELECT
-  USING (is_public = true);
-
-CREATE POLICY "Anyone can create activities"
-  ON public.activity_feed FOR INSERT
-  WITH CHECK (true);
-
--- moderation_queue policies (admin only - handled in app layer)
-CREATE POLICY "Enable all for moderation queue"
-  ON public.moderation_queue FOR ALL
   USING (true);
 
 -- upload_sessions policies
@@ -496,8 +361,6 @@ FROM public.guest_photos
 WHERE moderation_status = 'approved' AND is_deleted = false
 GROUP BY upload_phase;
 
--- Index on materialized view
-CREATE INDEX idx_gallery_stats_phase ON public.gallery_stats(upload_phase);
 
 -- Function to refresh stats
 CREATE OR REPLACE FUNCTION refresh_gallery_stats()
@@ -515,8 +378,3 @@ COMMENT ON MATERIALIZED VIEW public.gallery_stats IS 'Aggregated gallery statist
 -- ============================================================================
 
 -- Enable realtime replication
-ALTER PUBLICATION supabase_realtime ADD TABLE guest_photos;
-ALTER PUBLICATION supabase_realtime ADD TABLE guest_messages;
-ALTER PUBLICATION supabase_realtime ADD TABLE activity_feed;
-ALTER PUBLICATION supabase_realtime ADD TABLE photo_likes;
-ALTER PUBLICATION supabase_realtime ADD TABLE message_likes;

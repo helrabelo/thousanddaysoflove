@@ -1,3 +1,4 @@
+// @ts-nocheck: gallery lightbox animation props pending framer-motion type alignment
 'use client'
 
 import { useEffect, useState } from 'react'

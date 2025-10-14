@@ -9,13 +9,49 @@ import {
   authenticateWithPassword,
   GUEST_SESSION_COOKIE,
   GUEST_SESSION_DURATION_HOURS,
+  type AuthResult,
 } from '@/lib/auth/guestAuth'
 
 export const runtime = 'edge'
 
-export async function POST(request: NextRequest) {
+interface LoginRequestBody {
+  authMethod?: string
+  invitationCode?: string
+  password?: string
+  guestName?: string
+}
+
+interface ErrorResponse {
+  error: string
+}
+
+interface SuccessResponse {
+  success: true
+  session: {
+    id: string
+    guest_id: string
+    auth_method: string
+    expires_at: string
+    guest?: {
+      id: string
+      name: string
+      invitation_code: string
+      attending: boolean
+    }
+  }
+}
+
+export async function POST(request: NextRequest): Promise<NextResponse<ErrorResponse | SuccessResponse>> {
   try {
-    const body = await request.json()
+    const body = await request.json().catch(() => null) as LoginRequestBody | null
+
+    if (!body) {
+      return NextResponse.json(
+        { error: 'Dados inválidos' },
+        { status: 400 }
+      )
+    }
+
     const { authMethod, invitationCode, password, guestName } = body
 
     // Validate input
@@ -26,7 +62,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    let result
+    let result: AuthResult | undefined
 
     // Authenticate based on method
     if (authMethod === 'invitation_code') {
@@ -72,6 +108,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!result || !result.success || !result.session) {
+      console.error('Guest authentication failed:', result?.error)
       return NextResponse.json(
         { error: result?.error || 'Falha na autenticação' },
         { status: 401 }
@@ -79,7 +116,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create response with session cookie
-    const response = NextResponse.json(
+    const response = NextResponse.json<SuccessResponse>(
       {
         success: true,
         session: {

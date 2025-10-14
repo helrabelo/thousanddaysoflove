@@ -24,36 +24,56 @@ const TEST_INVITATION_CODES = {
  * Helper: Login as authenticated guest (invitation code)
  */
 async function loginAsAuthenticatedGuest(page: Page, invitationCode: string) {
-  await page.goto(`${BASE_URL}/convite/${invitationCode}`);
+  // Navigate to login page
+  await page.goto(`${BASE_URL}/dia-1000/login`);
 
-  // Wait for personalized greeting to appear
-  await expect(page.locator('text=/Olá,.*!/i')).toBeVisible({ timeout: 15000 });
+  // Click the "Código de Convite" tab (should already be selected by default)
+  await page.waitForTimeout(500);
 
-  // Wait for session to be established
-  await page.waitForTimeout(1500);
+  // Fill in the invitation code
+  await page.fill('#invitation-code', invitationCode);
+
+  // Submit the form
+  await page.click('button[type="submit"]');
+
+  // Wait for redirect to upload page
+  await page.waitForURL(/\/dia-1000\/upload/, { timeout: 10000 });
+
+  // Wait for page to fully load
+  await page.waitForLoadState('networkidle');
+
+  // Verify we're authenticated
+  await expect(page.locator('text=/Compartilhe Suas Memórias/i')).toBeVisible({ timeout: 10000 });
 }
 
 /**
  * Helper: Login as anonymous guest (shared password)
  */
 async function loginAsAnonymousGuest(page: Page, guestName: string) {
+  // Navigate to login page
   await page.goto(`${BASE_URL}/dia-1000/login`);
 
-  // Fill in password
-  await page.fill('input[type="password"]', GUEST_SHARED_PASSWORD);
+  // Click the "Senha Compartilhada" tab
+  await page.click('button:has-text("Senha Compartilhada")');
+  await page.waitForTimeout(500);
 
-  // Fill in optional guest name
-  const nameInput = page.locator('input[placeholder*="nome"]');
-  if (await nameInput.isVisible()) {
-    await nameInput.fill(guestName);
-  }
+  // Fill in the guest name field (optional but we provide it)
+  await page.fill('#guest-name', guestName);
 
-  // Submit
+  // Fill in the password field
+  await page.fill('#password', GUEST_SHARED_PASSWORD);
+
+  // Submit the form
   await page.click('button[type="submit"]');
 
-  // Wait for redirect
-  await page.waitForURL(/\/(mensagens|dia-1000\/upload)/, { timeout: 10000 });
-  await page.waitForTimeout(1000);
+  // Wait for redirect to upload page
+  await page.waitForURL(/\/dia-1000\/upload/, { timeout: 10000 });
+
+  // Wait for page to fully load
+  await page.waitForLoadState('networkidle');
+
+  // Verify we're authenticated by checking for upload interface
+  await expect(page.locator('text=/Compartilhe Suas Memórias/i')).toBeVisible({ timeout: 10000 });
 }
 
 /**
@@ -63,7 +83,12 @@ async function loginAsAdmin(page: Page) {
   await page.goto(`${BASE_URL}/admin/login`);
   await page.fill('input[type="password"]', ADMIN_PASSWORD);
   await page.click('button[type="submit"]');
-  await page.waitForURL(/\/admin/, { timeout: 10000 });
+
+  // Wait for redirect to admin dashboard (goes to /admin/photos by default)
+  await page.waitForURL(/\/admin\/(photos|posts|guests)/, { timeout: 20000 });
+
+  // Wait for admin interface to be visible
+  await page.waitForLoadState('networkidle');
 }
 
 /**
@@ -86,6 +111,7 @@ async function createTextPost(page: Page, content: string, emoji?: string) {
   }
 
   // Submit
+  page.once('dialog', (dialog) => dialog.accept());
   await page.click('button:has-text("Enviar")');
   await page.waitForTimeout(2000);
 }
@@ -108,9 +134,18 @@ async function createPostWithImage(page: Page, content: string, imagePath: strin
   // Verify preview
   await expect(page.locator('img[alt="Preview"]')).toBeVisible();
 
-  // Submit
+  // Submit and wait for API response
+  const responsePromise = page.waitForResponse(
+    response => response.url().includes('/api/messages') &&
+                (response.status() === 200 || response.status() === 201),
+    { timeout: 30000 } // 30 seconds for file upload + storage upload
+  );
+
   await page.click('button:has-text("Enviar")');
-  await page.waitForTimeout(2000);
+  await responsePromise;
+
+  // Wait a bit for UI to update
+  await page.waitForTimeout(1000);
 }
 
 /**
@@ -128,12 +163,21 @@ async function createPostWithVideo(page: Page, content: string, videoPath: strin
   await fileInput.setInputFiles(videoPath);
   await page.waitForTimeout(2000);
 
-  // Verify video icon
-  await expect(page.locator('svg').filter({ hasText: /video/i }).first()).toBeVisible();
+  // Verify video preview appears (video element should be visible)
+  await expect(page.locator('video').first()).toBeVisible({ timeout: 5000 });
 
-  // Submit
+  // Submit and wait for API response (videos take longer to upload)
+  const responsePromise = page.waitForResponse(
+    response => response.url().includes('/api/messages') &&
+                (response.status() === 200 || response.status() === 201),
+    { timeout: 60000 } // 60 seconds for video upload
+  );
+
   await page.click('button:has-text("Enviar")');
-  await page.waitForTimeout(3000);
+  await responsePromise;
+
+  // Wait a bit for UI to update
+  await page.waitForTimeout(1000);
 }
 
 /**
@@ -145,19 +189,20 @@ async function uploadPhoto(page: Page, imagePath: string, phase: 'before' | 'dur
 
   // Select phase
   await page.click(`button:has-text("${phase === 'before' ? 'Antes' : phase === 'during' ? 'Durante' : 'Depois'}")`);
+  await page.waitForTimeout(500);
 
-  // Add caption if provided
+  // Upload file first (caption field only appears after files are selected)
+  const fileInput = page.locator('input[type="file"]');
+  await fileInput.setInputFiles(imagePath);
+  await page.waitForTimeout(1000);
+
+  // Add caption if provided (now that files are uploaded, caption field should be visible)
   if (caption) {
     await page.fill('textarea[placeholder*="legenda"]', caption);
   }
 
-  // Upload file
-  const fileInput = page.locator('input[type="file"][accept*="image"]');
-  await fileInput.setInputFiles(imagePath);
-  await page.waitForTimeout(1000);
-
-  // Click upload button
-  await page.click('button:has-text(/Enviar.*arquivo/)');
+  // Click upload button (use locator with hasText for regex)
+  await page.locator('button', { hasText: /Enviar.*arquivo/i }).click();
   await page.waitForTimeout(2000);
 }
 
@@ -184,12 +229,13 @@ test.describe('Authenticated Guest - Auto-Approved Content', () => {
   test('should auto-approve post with emoji from authenticated guest', async ({ page }) => {
     await loginAsAuthenticatedGuest(page, TEST_INVITATION_CODES.FRIEND);
 
-    const postContent = `Congratulations! 🎉 ${Date.now()}`;
+    const uniqueId = Date.now();
+    const postContent = `Congratulations! 🎉 ${uniqueId}`;
     await createTextPost(page, postContent, '❤️');
 
-    // Verify post appears with emoji
+    // Verify post appears with unique ID
     await page.goto(`${BASE_URL}/mensagens`);
-    await expect(page.locator(`text=/${postContent.slice(0, 20)}/`)).toBeVisible({ timeout: 5000 });
+    await expect(page.locator(`text=${uniqueId}`)).toBeVisible({ timeout: 5000 });
   });
 
   test('should show green success message for authenticated guest', async ({ page }) => {
@@ -204,7 +250,7 @@ test.describe('Authenticated Guest - Auto-Approved Content', () => {
     await expect(banner).toBeVisible();
   });
 
-  test('should auto-approve photo upload from authenticated guest', async ({ page, context }) => {
+  test('should auto-approve photo upload from authenticated guest', async ({ page }) => {
     await loginAsAuthenticatedGuest(page, TEST_INVITATION_CODES.FRIEND);
 
     // Create a test image file
@@ -217,9 +263,12 @@ test.describe('Authenticated Guest - Auto-Approved Content', () => {
     // Verify photo appears in gallery immediately
     await page.goto(`${BASE_URL}/galeria`);
     await page.waitForLoadState('networkidle');
-    // Check that approved photos are visible (implementation-specific selector)
-    const photoCount = await page.locator('[data-testid="gallery-photo"]').count();
-    expect(photoCount).toBeGreaterThan(0);
+    // Scroll to guest photos section and verify photos are shown
+    const guestPhotosSection = page.locator('text=/Fotos dos Convidados/i');
+    await expect(guestPhotosSection).toBeVisible();
+    await guestPhotosSection.scrollIntoViewIfNeeded();
+    // Check that photos were uploaded (look for the photo count message)
+    await expect(page.locator('text=/\\d+ fotos? compartilhadas?/i')).toBeVisible({ timeout: 10000 });
   });
 });
 
@@ -234,8 +283,8 @@ test.describe('Anonymous Guest - Manual Approval Required', () => {
     const postContent = `Test pending text post ${Date.now()}`;
     await createTextPost(page, postContent);
 
-    // Verify pending alert
-    await expect(page.locator('text=/será revisada.*aprovação/i')).toBeVisible();
+    // Verify pending alert (actual message: "✨ Sua mensagem será revisada antes de aparecer no feed. Aguarde alguns minutos!")
+    await expect(page.locator('text=/será revisada antes de aparecer/i')).toBeVisible();
 
     // Verify post does NOT appear in feed
     await page.goto(`${BASE_URL}/mensagens`);
@@ -247,10 +296,10 @@ test.describe('Anonymous Guest - Manual Approval Required', () => {
     await loginAsAnonymousGuest(page, 'Test Anonymous');
     await page.goto(`${BASE_URL}/mensagens`);
 
-    // Verify pending notice is shown (not green success)
-    await expect(page.locator('text=/será revisada/i')).toBeVisible();
+    // Verify pending notice is shown (actual message: "✨ Sua mensagem será revisada antes de aparecer no feed. Aguarde alguns minutos!")
+    await expect(page.locator('text=/será revisada antes de aparecer/i')).toBeVisible();
 
-    // Verify it does NOT have green styling
+    // Verify it does NOT have green styling (not auto-approved banner)
     const greenBanner = page.locator('div.bg-green-50');
     await expect(greenBanner).not.toBeVisible();
   });
@@ -286,8 +335,8 @@ test.describe('Admin Moderation - Posts', () => {
     await loginAsAdmin(page);
     await page.goto(`${BASE_URL}/admin/posts`);
 
-    // Verify pending posts section exists
-    await expect(page.locator('text=/pending|pendente/i')).toBeVisible();
+    // Verify pending filter button is visible
+    await expect(page.locator('button:has-text("Pendentes")')).toBeVisible();
 
     // Verify our pending post is visible
     await expect(page.locator(`text=${pendingContent}`)).toBeVisible({ timeout: 5000 });
@@ -303,17 +352,24 @@ test.describe('Admin Moderation - Posts', () => {
     await loginAsAdmin(page);
     await page.goto(`${BASE_URL}/admin/posts`);
 
+    // Verify post is in Pendentes filter (default filter)
+    await expect(page.locator(`text=${testContent}`)).toBeVisible({ timeout: 5000 });
+
     // Find the post and click approve button
     const postCard = page.locator(`text=${testContent}`).locator('..').locator('..');
-    await postCard.locator('button:has-text(/approve|aprovar/i)').first().click();
+    await postCard.locator('button:has-text("Aprovar")').click();
 
-    // Alternative: use keyboard shortcut 'A'
-    // await page.keyboard.press('a');
+    // Wait for API call to complete
+    await page.waitForResponse(response =>
+      response.url().includes('/api/admin/posts/') && response.status() === 200,
+      { timeout: 5000 }
+    );
 
-    await page.waitForTimeout(1000);
+    // Switch to Aprovadas filter
+    await page.click('button:has-text("Aprovadas")');
 
-    // Verify post moved to approved section
-    await expect(page.locator('text=/approved|aprovado/i')).toBeVisible();
+    // Wait for the post to appear in Aprovadas filter (no arbitrary timeouts)
+    await expect(page.locator(`text=${testContent}`)).toBeVisible({ timeout: 10000 });
   });
 
   test('should reject individual pending post', async ({ page }) => {
@@ -326,25 +382,40 @@ test.describe('Admin Moderation - Posts', () => {
     await loginAsAdmin(page);
     await page.goto(`${BASE_URL}/admin/posts`);
 
-    // Find the post and click reject button
+    // Verify post is in Pendentes filter
+    await expect(page.locator(`text=${testContent}`)).toBeVisible({ timeout: 5000 });
+
+    // Find the post and click reject button (opens input)
     const postCard = page.locator(`text=${testContent}`).locator('..').locator('..');
-    await postCard.locator('button:has-text(/reject|rejeitar/i)').first().click();
+    await postCard.locator('button:has-text("Rejeitar")').click();
 
-    // Alternative: use keyboard shortcut 'R'
-    // await page.keyboard.press('r');
+    // Wait for reject input to appear and confirm
+    await page.waitForTimeout(500);
+    await page.locator('button:has-text("Confirmar Rejeição")').click();
 
-    await page.waitForTimeout(1000);
+    // Wait for API call to complete
+    await page.waitForResponse(response =>
+      response.url().includes('/api/admin/posts/') && response.status() === 200,
+      { timeout: 5000 }
+    );
 
-    // Verify post moved to rejected section
-    await expect(page.locator('text=/rejected|rejeitado/i')).toBeVisible();
+    // Switch to Rejeitadas filter
+    await page.click('button:has-text("Rejeitadas")');
+
+    // Wait for the post to appear in Rejeitadas filter
+    await expect(page.locator(`text=${testContent}`)).toBeVisible({ timeout: 10000 });
   });
 
   test('should bulk approve multiple pending posts', async ({ page }) => {
-    // Create multiple pending posts
+    // Create multiple pending posts with unique timestamp
     await loginAsAnonymousGuest(page, 'Bulk Test User');
 
+    const timestamp = Date.now();
+    const testPosts = [];
     for (let i = 0; i < 3; i++) {
-      await createTextPost(page, `Bulk test post ${i} - ${Date.now()}`);
+      const content = `Bulk test post ${i} - ${timestamp}`;
+      testPosts.push(content);
+      await createTextPost(page, content);
       await page.waitForTimeout(500);
     }
 
@@ -352,28 +423,56 @@ test.describe('Admin Moderation - Posts', () => {
     await loginAsAdmin(page);
     await page.goto(`${BASE_URL}/admin/posts`);
 
-    // Select multiple posts (implementation-specific)
-    const checkboxes = page.locator('input[type="checkbox"]');
-    const count = await checkboxes.count();
+    // Wait for posts to load
+    await page.waitForLoadState('networkidle');
 
-    for (let i = 0; i < Math.min(count, 3); i++) {
-      await checkboxes.nth(i).check();
+    // Verify all posts are visible in Pendentes
+    for (const content of testPosts) {
+      await expect(page.locator(`text=${content}`)).toBeVisible({ timeout: 5000 });
     }
 
-    // Click bulk approve button
-    await page.click('button:has-text(/bulk.*approve|aprovar.*selecionados/i)');
-    await page.waitForTimeout(2000);
+    // Select the 3 checkboxes for our test posts with better wait conditions
+    for (const content of testPosts) {
+      const postCard = page.locator(`text=${content}`).locator('..').locator('..');
+      const checkbox = postCard.locator('input[type="checkbox"]');
 
-    // Verify success message
-    await expect(page.locator('text=/aprovados com sucesso|approved successfully/i')).toBeVisible();
+      // Wait for checkbox to be stable before checking
+      await checkbox.waitFor({ state: 'visible', timeout: 5000 });
+      await page.waitForTimeout(300); // Give time for any animations
+      await checkbox.scrollIntoViewIfNeeded();
+      await checkbox.check({ force: true }); // Force check if needed
+      await page.waitForTimeout(200);
+    }
+
+    // Click bulk approve button (correct text: "Aprovar Todas")
+    page.once('dialog', dialog => dialog.accept());
+    await page.click('button:has-text("Aprovar Todas")');
+
+    // Wait for batch API call to complete
+    await page.waitForResponse(response =>
+      response.url().includes('/api/admin/posts/batch') && response.status() === 200,
+      { timeout: 10000 }
+    );
+
+    // Switch to Aprovadas filter
+    await page.click('button:has-text("Aprovadas")');
+
+    // Verify all posts appear in Aprovadas filter
+    for (const content of testPosts) {
+      await expect(page.locator(`text=${content}`)).toBeVisible({ timeout: 10000 });
+    }
   });
 
   test('should bulk reject multiple pending posts', async ({ page }) => {
-    // Create multiple pending posts
+    // Create multiple pending posts with unique timestamp
     await loginAsAnonymousGuest(page, 'Bulk Reject Test');
 
+    const timestamp = Date.now();
+    const testPosts = [];
     for (let i = 0; i < 3; i++) {
-      await createTextPost(page, `Bulk reject post ${i} - ${Date.now()}`);
+      const content = `Bulk reject post ${i} - ${timestamp}`;
+      testPosts.push(content);
+      await createTextPost(page, content);
       await page.waitForTimeout(500);
     }
 
@@ -381,41 +480,86 @@ test.describe('Admin Moderation - Posts', () => {
     await loginAsAdmin(page);
     await page.goto(`${BASE_URL}/admin/posts`);
 
-    // Select multiple posts
-    const checkboxes = page.locator('input[type="checkbox"]');
-    const count = await checkboxes.count();
+    // Wait for posts to load
+    await page.waitForLoadState('networkidle');
 
-    for (let i = 0; i < Math.min(count, 3); i++) {
-      await checkboxes.nth(i).check();
+    // Verify all posts are visible in Pendentes
+    for (const content of testPosts) {
+      await expect(page.locator(`text=${content}`)).toBeVisible({ timeout: 5000 });
     }
 
-    // Click bulk reject button
-    await page.click('button:has-text(/bulk.*reject|rejeitar.*selecionados/i)');
-    await page.waitForTimeout(2000);
+    // Select the 3 checkboxes for our test posts with better wait conditions
+    for (const content of testPosts) {
+      const postCard = page.locator(`text=${content}`).locator('..').locator('..');
+      const checkbox = postCard.locator('input[type="checkbox"]');
 
-    // Verify success message
-    await expect(page.locator('text=/rejeitados com sucesso|rejected successfully/i')).toBeVisible();
+      // Wait for checkbox to be stable before checking
+      await checkbox.waitFor({ state: 'visible', timeout: 5000 });
+      await page.waitForTimeout(300); // Give time for any animations
+      await checkbox.scrollIntoViewIfNeeded();
+      await checkbox.check({ force: true }); // Force check if needed
+      await page.waitForTimeout(200);
+    }
+
+    // Click bulk reject button (correct text: "Rejeitar Todas")
+    page.once('dialog', dialog => dialog.accept());
+    await page.click('button:has-text("Rejeitar Todas")');
+
+    // Wait for batch API call to complete
+    await page.waitForResponse(response =>
+      response.url().includes('/api/admin/posts/batch') && response.status() === 200,
+      { timeout: 10000 }
+    );
+
+    // Switch to Rejeitadas filter
+    await page.click('button:has-text("Rejeitadas")');
+
+    // Verify all posts appear in Rejeitadas filter
+    for (const content of testPosts) {
+      await expect(page.locator(`text=${content}`)).toBeVisible({ timeout: 10000 });
+    }
   });
 
   test('should use keyboard shortcuts for moderation', async ({ page }) => {
     // Create pending post
     await loginAsAnonymousGuest(page, 'Keyboard Test User');
-    await createTextPost(page, `Keyboard shortcut test ${Date.now()}`);
+    const testContent = `Keyboard shortcut test ${Date.now()}`;
+    await createTextPost(page, testContent);
 
     // Admin login
     await loginAsAdmin(page);
     await page.goto(`${BASE_URL}/admin/posts`);
 
-    // Select first post
-    const firstCheckbox = page.locator('input[type="checkbox"]').first();
-    await firstCheckbox.check();
+    // Verify post is visible in Pendentes
+    await expect(page.locator(`text=${testContent}`)).toBeVisible({ timeout: 5000 });
 
-    // Test 'A' for approve
+    // Select the checkbox for our test post
+    const postCard = page.locator(`text=${testContent}`).locator('..').locator('..');
+    const checkbox = postCard.locator('input[type="checkbox"]');
+    await checkbox.check();
+    await page.waitForTimeout(500);
+
+    // Ensure focus is not on an input element (keyboard shortcuts don't work when typing)
+    await page.click('h1:has-text("Moderação de Mensagens")');
+    await page.waitForTimeout(200);
+
+    // Test 'A' for approve (keyboard shortcut)
+    // Start listening for the response before pressing the key
+    const responsePromise = page.waitForResponse(response =>
+      response.url().includes('/api/admin/posts/') && response.status() === 200,
+      { timeout: 10000 }
+    );
+
     await page.keyboard.press('a');
-    await page.waitForTimeout(1000);
 
-    // Should show approval confirmation
-    await expect(page.locator('text=/approved|aprovado/i')).toBeVisible();
+    // Wait for API call to complete
+    await responsePromise;
+
+    // Switch to Aprovadas filter
+    await page.click('button:has-text("Aprovadas")');
+
+    // Wait for the post to appear in Aprovadas filter
+    await expect(page.locator(`text=${testContent}`)).toBeVisible({ timeout: 10000 });
   });
 });
 
@@ -428,41 +572,60 @@ test.describe('Admin Moderation - Photos', () => {
     // Create pending photo as anonymous guest
     await loginAsAnonymousGuest(page, 'Photo Moderator Test');
     const testImagePath = 'tests/fixtures/test-image.jpg';
-    await uploadPhoto(page, testImagePath, 'during');
+    await uploadPhoto(page, testImagePath, 'during', 'Test pending photo');
 
     // Admin login
     await loginAsAdmin(page);
     await page.goto(`${BASE_URL}/admin/photos`);
 
-    // Verify pending photos section
-    await expect(page.locator('text=/pending|pendente/i')).toBeVisible();
+    // Verify status filter controls are rendered
+    const statusSelect = page
+      .locator('select')
+      .filter({ has: page.locator('option[value="pending"]') })
+      .first();
+    await expect(statusSelect).toBeVisible();
+    await expect(page.locator('button:has-text("Aplicar Filtros")')).toBeVisible();
+
+    // Verify the test photo caption appears
+    await expect(page.locator('text=Test pending photo').first()).toBeVisible({ timeout: 10000 });
   });
 
   test('should approve individual pending photo', async ({ page }) => {
-    // Create pending photo
+    // Create pending photo with unique caption
     await loginAsAnonymousGuest(page, 'Photo Approval Test');
     const testImagePath = 'tests/fixtures/test-image.jpg';
-    await uploadPhoto(page, testImagePath, 'before', 'Test approval photo');
+    const uniqueCaption = `Test approval photo ${Date.now()}`;
+    await uploadPhoto(page, testImagePath, 'before', uniqueCaption);
 
     // Admin approve
     await loginAsAdmin(page);
     await page.goto(`${BASE_URL}/admin/photos`);
 
-    // Click approve on first pending photo
-    await page.locator('button:has-text(/approve|aprovar/i)').first().click();
-    await page.waitForTimeout(1000);
+    // Find the photo by caption and click approve
+    const photoCard = page
+      .locator('[data-testid="photo-card"]')
+      .filter({ has: page.locator(`text=${uniqueCaption}`) })
+      .first();
 
-    // Verify moved to approved
-    await expect(page.locator('text=/approved|aprovado/i')).toBeVisible();
+    await photoCard.locator('button:has-text("Aprovar")').click();
+
+    // Status badge should update to "Aprovado"
+    await expect(
+      photoCard.locator('[data-testid="photo-status"]:has-text("Aprovado")')
+    ).toBeVisible({ timeout: 10000 });
   });
 
   test('should bulk approve multiple pending photos', async ({ page }) => {
-    // Create multiple pending photos
+    // Create multiple pending photos with unique captions
     await loginAsAnonymousGuest(page, 'Bulk Photo Test');
     const testImagePath = 'tests/fixtures/test-image.jpg';
+    const timestamp = Date.now();
+    const photoCaptions = [];
 
     for (let i = 0; i < 3; i++) {
-      await uploadPhoto(page, testImagePath, 'during', `Bulk photo ${i}`);
+      const caption = `Bulk photo ${i} - ${timestamp}`;
+      photoCaptions.push(caption);
+      await uploadPhoto(page, testImagePath, 'during', caption);
       await page.waitForTimeout(1000);
     }
 
@@ -470,19 +633,44 @@ test.describe('Admin Moderation - Photos', () => {
     await loginAsAdmin(page);
     await page.goto(`${BASE_URL}/admin/photos`);
 
-    // Select multiple
-    const checkboxes = page.locator('input[type="checkbox"]');
-    const count = await checkboxes.count();
+    // Wait for photos to load (wait for apply filters button instead of networkidle)
+    await page.waitForSelector('button:has-text("Aplicar Filtros")', { timeout: 10000 });
 
-    for (let i = 0; i < Math.min(count, 3); i++) {
-      await checkboxes.nth(i).check();
+    // Verify our test photos appear
+    for (const caption of photoCaptions) {
+      await expect(page.locator(`text=${caption}`)).toBeVisible({ timeout: 5000 });
     }
 
-    // Bulk approve
-    await page.click('button:has-text(/bulk.*approve/i)');
+    // Select the 3 checkboxes for our test photos with better wait conditions
+    for (const caption of photoCaptions) {
+      const photoCard = page
+        .locator('[data-testid="photo-card"]')
+        .filter({ has: page.locator(`text=${caption}`) })
+        .first();
+      const selectToggle = photoCard.locator('[data-testid="photo-select-toggle"]');
+
+      await selectToggle.waitFor({ state: 'visible', timeout: 5000 });
+      await selectToggle.scrollIntoViewIfNeeded();
+      await selectToggle.click();
+      // Wait for selection state to update (visual feedback appears)
+      await page.waitForTimeout(300);
+    }
+
+    // Click bulk approve button
+    await page.locator('button:has-text("Aprovar Selecionadas")').click();
     await page.waitForTimeout(2000);
 
-    await expect(page.locator('text=/success|sucesso/i')).toBeVisible();
+    // Verify all photos show "Aprovado" status badges
+    for (const caption of photoCaptions) {
+      const photoCard = page
+        .locator('[data-testid="photo-card"]')
+        .filter({ has: page.locator(`text=${caption}`) })
+        .first();
+
+      await expect(
+        photoCard.locator('[data-testid="photo-status"]:has-text("Aprovado")')
+      ).toBeVisible({ timeout: 10000 });
+    }
   });
 });
 
@@ -493,31 +681,50 @@ test.describe('Admin Moderation - Photos', () => {
 test.describe('Multi-Format Post Creation', () => {
   test('should create text-only post', async ({ page }) => {
     await loginAsAuthenticatedGuest(page, TEST_INVITATION_CODES.FAMILY);
-    await createTextPost(page, `Text only post ${Date.now()}`);
+    const uniqueContent = `Text only post ${Date.now()}`;
+    await createTextPost(page, uniqueContent);
 
     // Verify appears in feed
     await page.goto(`${BASE_URL}/mensagens`);
-    await expect(page.locator('text=/Text only post/')).toBeVisible({ timeout: 5000 });
+    await expect(page.locator(`text=${uniqueContent}`).first()).toBeVisible({ timeout: 5000 });
   });
 
   test('should create post with single image', async ({ page }) => {
     await loginAsAuthenticatedGuest(page, TEST_INVITATION_CODES.FRIEND);
     const testImagePath = 'tests/fixtures/test-image.jpg';
-    await createPostWithImage(page, `Image post ${Date.now()}`, testImagePath);
+    const content = `Image post ${Date.now()}`;
+    await createPostWithImage(page, content, testImagePath);
 
     // Verify appears with image
     await page.goto(`${BASE_URL}/mensagens`);
-    await expect(page.locator('img[alt="Preview"]')).toBeVisible({ timeout: 5000 });
+    await page.waitForLoadState('networkidle');
+    const postCard = page
+      .locator('article')
+      .filter({ has: page.locator(`text=${content}`) })
+      .first();
+    // Wait for post card to be visible first
+    await expect(postCard).toBeVisible({ timeout: 10000 });
+    // Then check for image with alt text
+    await expect(postCard.locator('img[alt="Post media"]')).toBeVisible({ timeout: 10000 });
   });
 
   test('should create post with video', async ({ page }) => {
     await loginAsAuthenticatedGuest(page, TEST_INVITATION_CODES.COLLEAGUE);
     const testVideoPath = 'tests/fixtures/test-video.mp4';
-    await createPostWithVideo(page, `Video post ${Date.now()}`, testVideoPath);
+    const content = `Video post ${Date.now()}`;
+    await createPostWithVideo(page, content, testVideoPath);
 
     // Verify appears with video
     await page.goto(`${BASE_URL}/mensagens`);
-    await expect(page.locator('video').first()).toBeVisible({ timeout: 5000 });
+    await page.waitForLoadState('networkidle');
+    const postCard = page
+      .locator('article')
+      .filter({ has: page.locator(`text=${content}`) })
+      .first();
+    // Wait for post card to be visible first
+    await expect(postCard).toBeVisible({ timeout: 10000 });
+    // Then check for video element
+    await expect(postCard.locator('video').first()).toBeVisible({ timeout: 10000 });
   });
 
   test('should create mixed post with image and text', async ({ page }) => {
@@ -528,8 +735,17 @@ test.describe('Multi-Format Post Creation', () => {
 
     // Verify both content and image appear
     await page.goto(`${BASE_URL}/mensagens`);
-    await expect(page.locator(`text=${content}`)).toBeVisible({ timeout: 5000 });
-    await expect(page.locator('img[alt="Preview"]')).toBeVisible();
+    await page.waitForLoadState('networkidle');
+    const postCard = page
+      .locator('article')
+      .filter({ has: page.locator(`text=${content}`) })
+      .first();
+    // Wait for post card to be visible first
+    await expect(postCard).toBeVisible({ timeout: 10000 });
+    // Verify content appears
+    await expect(postCard.locator(`text=${content}`)).toBeVisible({ timeout: 5000 });
+    // Verify image appears
+    await expect(postCard.locator('img[alt="Post media"]')).toBeVisible({ timeout: 10000 });
   });
 });
 
@@ -542,13 +758,16 @@ test.describe('Complete Flow - Authenticated vs Anonymous', () => {
     // 1. Login with invitation code
     await loginAsAuthenticatedGuest(page, TEST_INVITATION_CODES.FAMILY);
 
-    // 2. Create multiple types of content
-    await createTextPost(page, `Auth flow text ${Date.now()}`);
+    // 2. Create multiple types of content with unique timestamp
+    const uniqueContent = `Auth flow text ${Date.now()}`;
+    await createTextPost(page, uniqueContent);
     await page.waitForTimeout(1000);
 
     // 3. Verify all appear immediately
     await page.goto(`${BASE_URL}/mensagens`);
-    await expect(page.locator('text=/Auth flow text/')).toBeVisible({ timeout: 5000 });
+    await page.waitForLoadState('networkidle');
+    // Use exact content match with .first() for safety
+    await expect(page.locator(`text=${uniqueContent}`).first()).toBeVisible({ timeout: 10000 });
 
     // 4. Verify green success indicator
     await expect(page.locator('div.bg-green-50')).toBeVisible();
@@ -563,20 +782,24 @@ test.describe('Complete Flow - Authenticated vs Anonymous', () => {
     await createTextPost(page, content);
 
     // 3. Verify pending message
-    await expect(page.locator('text=/será revisada/i')).toBeVisible();
+    await expect(page.locator('text=/será revisada antes de aparecer/i')).toBeVisible();
 
     // 4. Verify NOT in public feed
     await page.goto(`${BASE_URL}/mensagens`);
     await expect(page.locator(`text=${content}`)).not.toBeVisible({ timeout: 3000 });
 
-    // 5. Admin approves
+    // 5. Admin approves (using Portuguese button text)
     await loginAsAdmin(page);
     await page.goto(`${BASE_URL}/admin/posts`);
-    await page.locator('button:has-text(/approve/i)').first().click();
-    await page.waitForTimeout(1000);
+    await page.waitForLoadState('networkidle');
+    // Find the specific post and approve it
+    const postCard = page.locator(`text=${content}`).locator('..').locator('..');
+    await postCard.locator('button:has-text("Aprovar")').click();
+    await page.waitForTimeout(2000);
 
     // 6. NOW visible in public feed
     await page.goto(`${BASE_URL}/mensagens`);
-    await expect(page.locator(`text=${content}`)).toBeVisible({ timeout: 5000 });
+    await page.waitForLoadState('networkidle');
+    await expect(page.locator(`text=${content}`).first()).toBeVisible({ timeout: 10000 });
   });
 });

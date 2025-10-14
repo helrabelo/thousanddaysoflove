@@ -31,7 +31,7 @@ export default function AnimatedTitle({ className = '', delay = 2 }: AnimatedTit
   }
 
   const characterVariants = {
-    initial: (custom: string) => ({
+    initial: () => ({
       opacity: 1,
       scale: 1,
       rotateY: 0,
@@ -44,7 +44,7 @@ export default function AnimatedTitle({ className = '', delay = 2 }: AnimatedTit
       color: custom === 'heart' ? '#f43f5e' : '#fef7f7', // rose-500 for heart, rose-50 for others
       transition: {
         duration: 0.8,
-        ease: 'easeInOut',
+        ease: [0.42, 0, 0.58, 1], // easeInOut as cubic bezier
         times: [0, 0.5, 1]
       }
     }),
@@ -68,7 +68,6 @@ export default function AnimatedTitle({ className = '', delay = 2 }: AnimatedTit
   }
 
   const getCustomType = (index: number) => {
-    const text = getDisplayText()
     if (currentState === 'final') {
       return index === 1 ? 'heart' : 'letter'
     }
@@ -87,7 +86,7 @@ export default function AnimatedTitle({ className = '', delay = 2 }: AnimatedTit
           <motion.span
             key={`${currentState}-${index}`}
             custom={getCustomType(index)}
-            variants={characterVariants}
+            variants={characterVariants as any}
             initial="initial"
             animate={currentState}
             className="inline-block text-center font-bold tracking-wider"

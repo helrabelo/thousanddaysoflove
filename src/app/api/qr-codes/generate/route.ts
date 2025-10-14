@@ -2,10 +2,10 @@
  * QR Code Generation API Route
  *
  * Features:
- * 📱 Generate QR codes for invitation codes
- * 🎨 Custom styling with wedding theme
- * 📊 Track QR code generation for analytics
- * 🔒 Secure API with invitation code validation
+ * - Generate QR codes for invitation codes
+ * - Custom styling with wedding theme
+ * - Track QR code generation for analytics
+ * - Secure API with invitation code validation
  */
 
 import { NextRequest, NextResponse } from 'next/server'
@@ -13,19 +13,72 @@ import { createServerClient } from '@/lib/supabase/server'
 import { generateQRCodeData } from '@/lib/utils/wedding'
 
 interface QRCodeRequest {
-  invitationCode: string
+  invitationCode?: string
   size?: number
   includeWeddingBranding?: boolean
   format?: 'png' | 'svg' | 'jpeg'
 }
 
-export async function POST(request: NextRequest) {
+interface ErrorResponse {
+  error: string
+}
+
+interface QRCodeSuccessResponse {
+  success: true
+  qrCodeUrl: string
+  downloadUrl: string
+  filename: string
+  guestName: string
+  invitationCode: string
+  rsvpUrl: string
+  metadata: {
+    size: number
+    format: string
+    generatedAt: string
+  }
+}
+
+interface BatchQRCodeItem {
+  invitationCode: string
+  success: boolean
+  qrCodeUrl?: string
+  guestName?: string
+  downloadFilename?: string
+  error?: string
+}
+
+interface BatchQRCodeResponse {
+  success: true
+  results: BatchQRCodeItem[]
+  summary: {
+    total: number
+    successful: number
+    failed: number
+  }
+}
+
+export async function POST(request: NextRequest): Promise<NextResponse<ErrorResponse | QRCodeSuccessResponse>> {
   try {
-    const body: QRCodeRequest = await request.json()
+    const body = await request.json().catch(() => null) as QRCodeRequest | null
+
+    if (!body) {
+      return NextResponse.json(
+        { error: 'Dados inválidos' },
+        { status: 400 }
+      )
+    }
+
     const { invitationCode, size = 300, includeWeddingBranding = true, format = 'png' } = body
 
+    if (!invitationCode) {
+      return NextResponse.json(
+        { error: 'Código de convite é obrigatório' },
+        { status: 400 }
+      )
+    }
+
     // Validate invitation code exists
-    const supabase = createServerClient()
+    const supabase = await createServerClient()
     const { data: guest, error } = await supabase
       .from('guests')
       .select('id, name, invitation_code')
@@ -43,8 +96,7 @@ export async function POST(request: NextRequest) {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://thousandaysof.love'
     const qrCodeData = generateQRCodeData(invitationCode, baseUrl)
 
-    // For now, return QR code URL using external service
-    // TODO: Replace with local qrcode library for production
+    // Generate QR code URL using external service
     const qrCodeUrl = generateQRCodeImageUrl(qrCodeData, size, includeWeddingBranding, format)
 
     // Track QR code generation
@@ -90,7 +142,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest): Promise<NextResponse<ErrorResponse | Omit<QRCodeSuccessResponse, 'downloadUrl' | 'filename' | 'metadata'>>> {
   try {
     const { searchParams } = new URL(request.url)
     const invitationCode = searchParams.get('code')
@@ -105,7 +157,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Validate invitation code
-    const supabase = createServerClient()
+    const supabase = await createServerClient()
     const { data: guest, error } = await supabase
       .from('guests')
       .select('id, name, invitation_code')
@@ -144,7 +196,8 @@ export async function GET(request: NextRequest) {
       success: true,
       qrCodeUrl,
       guestName: guest.name,
-      invitationCode: guest.invitation_code
+      invitationCode: guest.invitation_code,
+      rsvpUrl: `${baseUrl}/rsvp?code=${invitationCode}`
     })
 
   } catch (error) {
@@ -196,16 +249,24 @@ function getClientIP(request: NextRequest): string {
     return realIP
   }
 
-  return request.ip || 'unknown'
+  return 'unknown'
 }
 
 // Batch QR code generation endpoint
-export async function PUT(request: NextRequest) {
+export async function PUT(request: NextRequest): Promise<NextResponse<ErrorResponse | BatchQRCodeResponse>> {
   try {
-    const body: { invitationCodes: string[] } = await request.json()
+    const body = await request.json().catch(() => null) as { invitationCodes?: unknown } | null
+
+    if (!body || !Array.isArray(body.invitationCodes)) {
+      return NextResponse.json(
+        { error: 'Lista de códigos é obrigatória' },
+        { status: 400 }
+      )
+    }
+
     const { invitationCodes } = body
 
-    if (!invitationCodes || invitationCodes.length === 0) {
+    if (invitationCodes.length === 0) {
       return NextResponse.json(
         { error: 'Lista de códigos é obrigatória' },
         { status: 400 }
@@ -219,9 +280,17 @@ export async function PUT(request: NextRequest) {
       )
     }
 
-    const supabase = createServerClient()
+    // Validate all codes are strings
+    if (!invitationCodes.every((code): code is string => typeof code === 'string')) {
+      return NextResponse.json(
+        { error: 'Códigos inválidos' },
+        { status: 400 }
+      )
+    }
+
+    const supabase = await createServerClient()
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://thousandaysof.love'
-    const results = []
+    const results: BatchQRCodeItem[] = []
 
     for (const code of invitationCodes) {
       try {
@@ -268,6 +337,7 @@ export async function PUT(request: NextRequest) {
           })
 
       } catch (error) {
+        console.error(`Error generating QR for code ${code}:`, error)
         results.push({
           invitationCode: code,
           success: false,

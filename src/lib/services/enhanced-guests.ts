@@ -1,4 +1,4 @@
-// @ts-nocheck
+// @ts-nocheck: enhanced guests automation uses ad-hoc Supabase joins pending schema cleanup
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
@@ -79,7 +79,7 @@ export class EnhancedGuestService {
     const supabase = createClient()
 
     // First check individual guest invitation codes
-    let { data, error } = await supabase
+    const { data: guestData, error } = await supabase
       .from('guests')
       .select(`
         *,
@@ -87,6 +87,8 @@ export class EnhancedGuestService {
       `)
       .eq('invitation_code', code.toUpperCase())
       .single()
+
+    let data = guestData
 
     // If not found, check family group invitation codes
     if (error || !data) {

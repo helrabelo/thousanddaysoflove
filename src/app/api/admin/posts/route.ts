@@ -4,11 +4,18 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getAllPosts, getPostStats } from '@/lib/supabase/messages';
+import { getAllPosts, getPostStats } from '@/lib/supabase/messages/admin';
 
 export const runtime = 'edge';
 
-export async function GET(request: NextRequest) {
+interface GetResponse {
+  error?: string;
+}
+
+type StatsResponse = Awaited<ReturnType<typeof getPostStats>>;
+type PostsResponse = Awaited<ReturnType<typeof getAllPosts>>;
+
+export async function GET(request: NextRequest): Promise<NextResponse<GetResponse | StatsResponse | PostsResponse>> {
   try {
     // Check admin auth (middleware already verified, but double-check cookie)
     const adminSession = request.cookies.get('admin_session');

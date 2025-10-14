@@ -5,15 +5,17 @@ import { Check, Heart, Home, Gift, Share2, Download } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 
+export interface PaymentConfirmationData {
+  paymentId: string
+  giftName: string
+  amount: number
+  buyerName: string
+  buyerEmail: string
+  paymentDate: string
+}
+
 interface PaymentConfirmationProps {
-  paymentData: {
-    paymentId: string
-    giftName: string
-    amount: number
-    buyerName: string
-    buyerEmail: string
-    paymentDate: string
-  }
+  paymentData: PaymentConfirmationData
   onClose?: () => void
 }
 

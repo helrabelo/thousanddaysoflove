@@ -13,9 +13,6 @@ export default defineType({
   type: 'document',
   icon: PanelBottom,
 
-  // Singleton pattern
-  __experimental_actions: ['update', 'publish'],
-
   fields: [
     defineField({
       name: 'title',

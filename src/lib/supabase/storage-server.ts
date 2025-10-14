@@ -5,7 +5,6 @@
  */
 
 import { createClient } from '@supabase/supabase-js'
-import type { Database } from '@/types/supabase'
 
 export const STORAGE_BUCKET = 'wedding-photos'
 
@@ -57,7 +56,7 @@ export function getPublicUrl(
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
-  const supabase = createClient<Database>(supabaseUrl, supabaseKey)
+  const supabase = createClient(supabaseUrl, supabaseKey)
   const { data } = supabase.storage.from(bucket).getPublicUrl(storagePath)
   return data.publicUrl
 }
@@ -74,7 +73,7 @@ export async function uploadFile(
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
-  const supabase = createClient<Database>(supabaseUrl, supabaseKey)
+  const supabase = createClient(supabaseUrl, supabaseKey)
 
   // Validate file
   const isVideo = file.type.startsWith('video/')
@@ -127,7 +126,7 @@ export async function deleteFile(storagePath: string): Promise<void> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
-  const supabase = createClient<Database>(supabaseUrl, supabaseKey)
+  const supabase = createClient(supabaseUrl, supabaseKey)
 
   const { error } = await supabase.storage
     .from(STORAGE_BUCKET)

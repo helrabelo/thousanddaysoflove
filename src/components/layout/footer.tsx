@@ -15,7 +15,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { CountdownTimer } from "@/components/wedding/countdown-timer"
+import CountdownTimer from "@/components/ui/CountdownTimer"
 import { cn } from "@/lib/utils"
 
 export interface FooterProps {
@@ -105,7 +105,7 @@ const Footer: React.FC<FooterProps> = ({
                 Acompanhe a contagem regressiva para o momento mais especial das nossas vidas
               </p>
             </div>
-            <CountdownTimer variant="hero" className="max-w-4xl mx-auto" />
+            <CountdownTimer className="max-w-4xl mx-auto" />
           </motion.div>
         )}
 

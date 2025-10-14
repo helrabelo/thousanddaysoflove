@@ -1,4 +1,4 @@
-// @ts-nocheck
+// @ts-nocheck: gift registry sync makes unchecked Supabase admin calls pending type modelling
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createClient } from '@/lib/supabase/client'
 import { createAdminClient } from '@/lib/supabase/server'

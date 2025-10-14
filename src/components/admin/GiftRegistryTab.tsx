@@ -153,13 +153,13 @@ export function GiftRegistryTab() {
 
   const getStatusBadge = (gift: GiftType) => {
     if (!gift.is_available) {
-      return <Badge variant="secondary">Indisponível</Badge>
+      return <Badge variant="declined">Indisponível</Badge>
     } else if (gift.quantity_purchased >= gift.quantity_desired) {
       return <Badge variant="success">Completo</Badge>
     } else if (gift.quantity_purchased > 0) {
       return <Badge variant="warning">Parcial</Badge>
     }
-    return <Badge variant="outline">Disponível</Badge>
+    return <Badge variant="pending">Disponível</Badge>
   }
 
   const getStatusIcon = (gift: GiftType) => {
@@ -180,7 +180,7 @@ export function GiftRegistryTab() {
       case 'medium':
         return <Badge variant="warning" className="text-xs">Média</Badge>
       case 'low':
-        return <Badge variant="secondary" className="text-xs">Baixa</Badge>
+        return <Badge variant="destructive" className="text-xs">Baixa</Badge>
       default:
         return null
     }
@@ -225,7 +225,7 @@ export function GiftRegistryTab() {
             Editar Lista
           </Button>
           <Button
-            variant="primary"
+            variant="wedding"
             size="sm"
             onClick={() => setShowAddGift(true)}
             className="flex items-center gap-2"
@@ -319,7 +319,7 @@ export function GiftRegistryTab() {
 
             <div className="flex gap-2 flex-wrap">
               <Button
-                variant={filterCategory === 'all' ? 'primary' : 'outline'}
+                variant={filterCategory === 'all' ? 'wedding' : 'outline'}
                 size="sm"
                 onClick={() => setFilterCategory('all')}
               >
@@ -329,7 +329,7 @@ export function GiftRegistryTab() {
               {categories.map(category => (
                 <Button
                   key={category}
-                  variant={filterCategory === category ? 'primary' : 'outline'}
+                  variant={filterCategory === category ? 'wedding' : 'outline'}
                   size="sm"
                   onClick={() => setFilterCategory(category as FilterCategory)}
                 >
@@ -341,21 +341,21 @@ export function GiftRegistryTab() {
 
           <div className="flex gap-2">
             <Button
-              variant={filterStatus === 'all' ? 'primary' : 'outline'}
+              variant={filterStatus === 'all' ? 'wedding' : 'outline'}
               size="sm"
               onClick={() => setFilterStatus('all')}
             >
               Todos
             </Button>
             <Button
-              variant={filterStatus === 'available' ? 'primary' : 'outline'}
+              variant={filterStatus === 'available' ? 'wedding' : 'outline'}
               size="sm"
               onClick={() => setFilterStatus('available')}
             >
               Disponíveis
             </Button>
             <Button
-              variant={filterStatus === 'purchased' ? 'primary' : 'outline'}
+              variant={filterStatus === 'purchased' ? 'wedding' : 'outline'}
               size="sm"
               onClick={() => setFilterStatus('purchased')}
             >
@@ -379,7 +379,7 @@ export function GiftRegistryTab() {
               Atualizar
             </Button>
             <Button
-              variant="secondary"
+              variant="outline"
               size="sm"
               className="flex items-center gap-2"
             >
@@ -517,7 +517,7 @@ export function GiftRegistryTab() {
             }
           </p>
           <Button
-            variant="primary"
+            variant="wedding"
             onClick={() => setShowAddGift(true)}
             className="flex items-center gap-2"
           >
@@ -624,7 +624,7 @@ export function GiftRegistryTab() {
                 </div>
                 <Button
                   onClick={() => setShowGiftDetail(false)}
-                  variant="primary"
+                  variant="wedding"
                 >
                   Fechar
                 </Button>

@@ -48,6 +48,10 @@ export class GoogleMapsService {
       const config = await response.json();
       this.apiKey = config.apiKey;
 
+      if (!this.apiKey) {
+        throw new Error('Google Maps API key not available');
+      }
+
       return this.apiKey;
     } catch (error) {
       throw new Error('Google Maps API key not available');
