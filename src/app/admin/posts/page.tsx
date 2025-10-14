@@ -93,8 +93,14 @@ export default function AdminPostsPage() {
     setIsLoading(true);
 
     try {
-      const statusFilter = filter === 'all' ? undefined : filter;
-      const data = await getAllPosts(statusFilter);
+      const statusFilter = filter === 'all' ? '' : filter;
+      const response = await fetch(`/api/admin/posts?status=${statusFilter}`);
+
+      if (!response.ok) {
+        throw new Error('Failed to load posts');
+      }
+
+      const data = await response.json();
       setPosts(data);
     } catch (error) {
       console.error('Error loading posts:', error);
@@ -104,8 +110,18 @@ export default function AdminPostsPage() {
   };
 
   const loadStats = async () => {
-    const data = await getPostStats();
-    setStats(data);
+    try {
+      const response = await fetch('/api/admin/posts?action=stats');
+
+      if (!response.ok) {
+        throw new Error('Failed to load stats');
+      }
+
+      const data = await response.json();
+      setStats(data);
+    } catch (error) {
+      console.error('Error loading stats:', error);
+    }
   };
 
   const handleRefresh = async () => {
