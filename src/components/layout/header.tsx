@@ -31,7 +31,7 @@ const navigationItems = [
   { href: "/presentes", label: "Lista de Presentes", icon: Gift },
   { href: "/fotos", label: "Galeria", icon: Camera },
   { href: "/detalhes", label: "Detalhes do Evento", icon: Calendar },
-  { href: "/mensagens", label: "Mensagens", icon: MessageSquare }
+  { href: "/dia-1000", label: "Dia 1000", icon: MessageSquare }
 ]
 
 const Header: React.FC<HeaderProps> = ({

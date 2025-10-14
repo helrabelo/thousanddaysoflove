@@ -16,18 +16,22 @@ import {
   Loader2,
   AlertCircle,
   Share2,
+  RefreshCw,
 } from 'lucide-react';
 import Navigation from '@/components/ui/Navigation';
-import GuestProgressTracker from '@/components/invitations/GuestProgressTracker';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import {
-  getInvitationByCode,
   trackInvitationOpen,
-  calculateGuestProgress,
 } from '@/lib/supabase/invitations';
-import type { Invitation, GuestProgress } from '@/types/wedding';
+import { getGuestDashboardData } from '@/lib/supabase/dashboard';
+import type { GuestDashboardData } from '@/lib/supabase/dashboard';
 import QRCode from 'qrcode';
+
+// Dashboard Components
+import CountdownTimer from '@/components/dashboard/CountdownTimer';
+import ActivityFeed from '@/components/dashboard/ActivityFeed';
+import GuestProgressTracker from '@/components/invitations/GuestProgressTracker';
 
 const EVENT_DETAILS = [
   {
@@ -65,16 +69,9 @@ const QUICK_ACTIONS = [
   },
   {
     icon: Camera,
-    title: 'Enviar Fotos',
-    description: 'Compartilhe suas fotos',
-    href: '/dia-1000/upload',
-  },
-  {
-    icon: MessageSquare,
-    title: 'Enviar Mensagem',
-    description: 'Deixe uma mensagem (em breve)',
-    href: '/mensagens',
-    comingSoon: true,
+    title: 'Dia 1000',
+    description: 'Fotos e mensagens ao vivo',
+    href: '/dia-1000',
   },
 ];
 
@@ -82,38 +79,76 @@ export default function PersonalizedInvitePage() {
   const params = useParams();
   const code = params?.code as string;
 
-  const [invitation, setInvitation] = useState<Invitation | null>(null);
-  const [progress, setProgress] = useState<GuestProgress | null>(null);
+  const [dashboardData, setDashboardData] = useState<GuestDashboardData | null>(null);
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
   const [showQrCode, setShowQrCode] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
-    async function loadInvitation() {
-      if (!code) {
-        setError('Código de convite não fornecido');
+    loadDashboard();
+
+    // Auto-refresh every 60 seconds
+    const refreshInterval = setInterval(() => {
+      loadDashboard(true);
+    }, 60000);
+
+    return () => clearInterval(refreshInterval);
+  }, [code]);
+
+  async function loadDashboard(silent = false) {
+    if (!silent) setLoading(true);
+    if (!code) {
+      setError('Código de convite não fornecido');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      // Fetch complete dashboard data
+      const data = await getGuestDashboardData(code);
+
+      if (!data) {
+        setError(
+          'Convite não encontrado. Verifique o código e tente novamente.'
+        );
         setLoading(false);
         return;
       }
 
-      try {
-        // Fetch invitation
-        const inv = await getInvitationByCode(code);
+      setDashboardData(data);
 
-        if (!inv) {
-          setError(
-            'Convite não encontrado. Verifique o código e tente novamente.'
-          );
-          setLoading(false);
-          return;
+      // Auto-authenticate with invitation code
+      if (!silent) {
+        try {
+          console.log('🔐 Attempting auto-authentication with code:', code);
+          const authResponse = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+              authMethod: 'invitation_code',
+              invitationCode: code,
+            }),
+          });
+
+          if (authResponse.ok) {
+            const authData = await authResponse.json();
+            console.log('✅ Auto-authentication SUCCESS:', authData);
+
+            // Trigger a window event so FAB can update
+            window.dispatchEvent(new CustomEvent('auth-changed'));
+          } else {
+            const errorData = await authResponse.json();
+            console.warn('⚠️ Auto-authentication failed:', errorData);
+          }
+        } catch (authError) {
+          console.error('❌ Auto-authentication error:', authError);
+          // Continue anyway - auth is not critical for viewing invitation
         }
-
-        setInvitation(inv);
-
-        // Calculate progress
-        const prog = calculateGuestProgress(inv);
-        setProgress(prog);
 
         // Track invitation open
         await trackInvitationOpen(code);
@@ -129,23 +164,27 @@ export default function PersonalizedInvitePage() {
           },
         });
         setQrCodeUrl(qr);
-      } catch (err) {
-        console.error('Error loading invitation:', err);
-        setError('Erro ao carregar convite. Tente novamente mais tarde.');
-      } finally {
-        setLoading(false);
       }
+    } catch (err) {
+      console.error('Error loading dashboard:', err);
+      setError('Erro ao carregar convite. Tente novamente mais tarde.');
+    } finally {
+      setLoading(false);
     }
+  }
 
-    loadInvitation();
-  }, [code]);
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await loadDashboard(true);
+    setIsRefreshing(false);
+  };
 
   // Loading state
   if (loading) {
     return (
       <>
         <Navigation />
-        <div className="min-h-screen pt-20 flex items-center justify-center">
+        <div className="min-h-screen flex items-center justify-center">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -172,11 +211,11 @@ export default function PersonalizedInvitePage() {
   }
 
   // Error state
-  if (error || !invitation || !progress) {
+  if (error || !dashboardData) {
     return (
       <>
         <Navigation />
-        <div className="min-h-screen pt-20 flex items-center justify-center px-4">
+        <div className="min-h-screen flex items-center justify-center px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -221,12 +260,42 @@ export default function PersonalizedInvitePage() {
     );
   }
 
+  const { invitation, progress, recentActivity, stats } = dashboardData;
+
   return (
     <>
       <Navigation />
-      <div className="min-h-screen pt-20">
+      <div className="min-h-screen">
+        {/* Header with Refresh */}
+        <div className="bg-white border-b border-[#E8E6E3] shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="font-playfair text-2xl md:text-3xl text-[#2C2C2C]">
+                  Olá, {invitation.guest_name.split(' ')[0]}! 👋
+                </h1>
+                <p className="font-crimson text-sm text-[#4A4A4A] italic">
+                  Seu convite personalizado
+                </p>
+              </div>
+              <button
+                onClick={handleRefresh}
+                disabled={isRefreshing}
+                className="p-2 hover:bg-[#E8E6E3] rounded-lg transition-colors"
+                title="Atualizar"
+              >
+                <RefreshCw
+                  className={`w-5 h-5 text-[#4A4A4A] ${
+                    isRefreshing ? 'animate-spin' : ''
+                  }`}
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* Personalized Hero Section */}
-        <div className="text-center py-16">
+        <div className="text-center py-12">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -241,17 +310,6 @@ export default function PersonalizedInvitePage() {
                   style={{ color: 'var(--decorative)' }}
                 />
               </div>
-
-              {/* Personalized greeting */}
-              <h1
-                className="text-4xl sm:text-5xl md:text-6xl font-light mb-4"
-                style={{
-                  fontFamily: 'var(--font-playfair)',
-                  color: 'var(--primary-text)',
-                }}
-              >
-                Olá, {invitation.guest_name}! 👋
-              </h1>
 
               <div className="space-y-2">
                 <p
@@ -331,11 +389,20 @@ export default function PersonalizedInvitePage() {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
+          {/* Countdown Timer */}
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <CountdownTimer />
+          </motion.section>
+
           {/* Guest Progress Tracker */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
           >
             <h2
               className="text-3xl sm:text-4xl font-light text-center mb-12"
@@ -358,7 +425,7 @@ export default function PersonalizedInvitePage() {
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
           >
             <h2
               className="text-3xl sm:text-4xl font-light text-center mb-12"
@@ -378,32 +445,16 @@ export default function PersonalizedInvitePage() {
                     key={index}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.5 + index * 0.1 }}
+                    transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
                   >
                     <Link
                       href={action.href}
-                      className={`block h-full bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 ${
-                        action.comingSoon
-                          ? 'opacity-60 cursor-not-allowed'
-                          : 'transform hover:scale-105'
-                      }`}
-                      onClick={(e) => action.comingSoon && e.preventDefault()}
+                      className="block h-full bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
                     >
                       <div
                         className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl"
                         style={{ background: 'var(--decorative)' }}
                       />
-                      {action.comingSoon && (
-                        <div
-                          className="absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-medium"
-                          style={{
-                            background: 'var(--accent)',
-                            color: 'var(--secondary-text)',
-                          }}
-                        >
-                          Em breve
-                        </div>
-                      )}
                       <div className="flex items-center gap-4">
                         <div
                           className="flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center"
@@ -437,6 +488,34 @@ export default function PersonalizedInvitePage() {
                 );
               })}
             </div>
+          </motion.section>
+
+          {/* Stats Summary */}
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            className="bg-white rounded-2xl shadow-lg p-6"
+          >
+            <h2 className="font-playfair text-2xl text-[#2C2C2C] mb-6">
+              Suas Estatísticas
+            </h2>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <StatCard label="Posts" value={stats.posts_count} icon="📝" />
+              <StatCard label="Comentários" value={stats.comments_count} icon="💬" />
+              <StatCard label="Reações" value={stats.reactions_count} icon="❤️" />
+              <StatCard label="Fotos" value={stats.photos_count} icon="📸" />
+            </div>
+          </motion.section>
+
+          {/* Activity Feed */}
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.7 }}
+          >
+            <ActivityFeed activities={recentActivity} />
           </motion.section>
 
           {/* Event Details */}
@@ -587,5 +666,23 @@ export default function PersonalizedInvitePage() {
         </div>
       </div>
     </>
+  );
+}
+
+interface StatCardProps {
+  label: string;
+  value: number;
+  icon: string;
+}
+
+function StatCard({ label, value, icon }: StatCardProps) {
+  return (
+    <div className="bg-white rounded-xl p-4 text-center border border-[#E8E6E3]">
+      <p className="text-2xl mb-1">{icon}</p>
+      <p className="font-playfair text-3xl font-bold text-[#2C2C2C]">
+        {value}
+      </p>
+      <p className="font-crimson text-xs text-[#4A4A4A] mt-1">{label}</p>
+    </div>
   );
 }

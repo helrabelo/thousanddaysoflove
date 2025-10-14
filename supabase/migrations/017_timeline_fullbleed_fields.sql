@@ -27,8 +27,10 @@ CREATE INDEX IF NOT EXISTS idx_timeline_day_number ON public.timeline_events(day
 -- Create index on phase for filtering
 CREATE INDEX IF NOT EXISTS idx_timeline_phase ON public.timeline_events(phase);
 
+-- COMMENTED OUT: timeline_events will be dropped (moved to Sanity CMS)
 -- Insert/Update the 8 key timeline moments for full-bleed design
 -- PHASE 1: Os Primeiros Dias (Day 1-100)
+/*
 INSERT INTO public.timeline_events (
   day_number, date, title, description, image_url, image_alt, content_align, phase, milestone_type, display_order, is_visible
 ) VALUES
@@ -140,6 +142,7 @@ INSERT INTO public.timeline_events (
     true
   )
 ON CONFLICT (id) DO NOTHING;
+*/
 
 -- Comments for documentation
 COMMENT ON COLUMN public.timeline_events.day_number IS 'Day count in relationship (Day 1, Day 8, Day 434, etc.)';
@@ -153,6 +156,6 @@ DO $$
 BEGIN
     RAISE NOTICE '✅ Migration 017 complete: Full-bleed timeline fields added';
     RAISE NOTICE '   - Added day_number, content_align, phase, video_url, image_alt columns';
-    RAISE NOTICE '   - Inserted 8 key timeline moments';
+    RAISE NOTICE '   - ⏭️  Skipped INSERT (timeline_events will be dropped - moved to Sanity)';
     RAISE NOTICE '   - Created indexes for day_number and phase';
 END $$;

@@ -43,6 +43,7 @@ export async function getInvitationByCode(
  * Track invitation open event
  *
  * Updates the opened_at timestamp (first time) and increments open_count
+ * Uses server-side API to bypass RLS policies
  *
  * @param code - Invitation code
  * @returns Updated invitation or null on error
@@ -50,40 +51,34 @@ export async function getInvitationByCode(
 export async function trackInvitationOpen(
   code: string
 ): Promise<Invitation | null> {
-  const supabase = createClient();
+  try {
+    const response = await fetch('/api/invitations/track-open', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ code }),
+    })
 
-  // First, get the current invitation to check if it's the first open
-  const invitation = await getInvitationByCode(code);
-  if (!invitation) return null;
+    if (!response.ok) {
+      const error = await response.json()
+      console.error('Error tracking invitation open:', error)
+      return null
+    }
 
-  const updates: Partial<Invitation> = {
-    open_count: invitation.open_count + 1,
-  };
-
-  // Set opened_at only on first open
-  if (!invitation.opened_at) {
-    updates.opened_at = new Date().toISOString();
+    const { invitation } = await response.json()
+    return invitation as Invitation
+  } catch (error) {
+    console.error('Error tracking invitation open:', error)
+    return null
   }
-
-  const { data, error } = await supabase
-    .from('invitations')
-    .update(updates)
-    .eq('code', code.toUpperCase())
-    .select()
-    .single();
-
-  if (error) {
-    console.error('Error tracking invitation open:', error);
-    return null;
-  }
-
-  return data as Invitation;
 }
 
 /**
  * Update guest progress flags
  *
  * Updates the progress tracking fields for a guest's invitation
+ * Uses server-side API to bypass RLS policies
  *
  * @param code - Invitation code
  * @param progress - Progress fields to update
@@ -97,21 +92,27 @@ export async function updateGuestProgress(
     photos_uploaded?: boolean;
   }
 ): Promise<Invitation | null> {
-  const supabase = createClient();
+  try {
+    const response = await fetch('/api/invitations/update-progress', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ code, progress }),
+    })
 
-  const { data, error } = await supabase
-    .from('invitations')
-    .update(progress)
-    .eq('code', code.toUpperCase())
-    .select()
-    .single();
+    if (!response.ok) {
+      const error = await response.json()
+      console.error('Error updating guest progress:', error)
+      return null
+    }
 
-  if (error) {
-    console.error('Error updating guest progress:', error);
-    return null;
+    const { invitation } = await response.json()
+    return invitation as Invitation
+  } catch (error) {
+    console.error('Error updating guest progress:', error)
+    return null
   }
-
-  return data as Invitation;
 }
 
 /**

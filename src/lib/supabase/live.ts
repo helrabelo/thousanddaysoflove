@@ -24,7 +24,7 @@ import type {
 // ============================================================================
 
 /**
- * Subscribe to new approved posts in real-time
+ * Subscribe to new approved posts in real-time (posts + guest photos)
  * Returns cleanup function to unsubscribe
  */
 export function subscribeToNewPosts(
@@ -34,6 +34,7 @@ export function subscribeToNewPosts(
 
   const channel = supabase
     .channel('live-posts')
+    // Guest posts (text, images, videos)
     .on(
       'postgres_changes',
       {
@@ -56,6 +57,63 @@ export function subscribeToNewPosts(
       },
       (payload) => {
         callback(payload.new as GuestPost)
+      }
+    )
+    // Guest photos (uploaded via /dia-1000/upload)
+    .on(
+      'postgres_changes',
+      {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'guest_photos',
+        filter: 'moderation_status=eq.approved'
+      },
+      (payload) => {
+        // Transform guest_photo to GuestPost format
+        const photo = payload.new as any
+        const publicUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${photo.storage_bucket}/${photo.storage_path}`
+        const transformedPost: GuestPost = {
+          id: `photo-${photo.id}`,
+          guest_session_id: photo.guest_id,
+          guest_name: photo.guest_name || 'Convidado',
+          content: photo.caption || '',
+          post_type: photo.is_video ? 'video' : 'image',
+          media_urls: [publicUrl],
+          status: 'approved',
+          likes_count: 0,
+          comments_count: 0,
+          created_at: photo.uploaded_at,
+          updated_at: photo.uploaded_at
+        }
+        callback(transformedPost)
+      }
+    )
+    .on(
+      'postgres_changes',
+      {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'guest_photos',
+        filter: 'moderation_status=eq.approved'
+      },
+      (payload) => {
+        // Transform guest_photo to GuestPost format
+        const photo = payload.new as any
+        const publicUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${photo.storage_bucket}/${photo.storage_path}`
+        const transformedPost: GuestPost = {
+          id: `photo-${photo.id}`,
+          guest_session_id: photo.guest_id,
+          guest_name: photo.guest_name || 'Convidado',
+          content: photo.caption || '',
+          post_type: photo.is_video ? 'video' : 'image',
+          media_urls: [publicUrl],
+          status: 'approved',
+          likes_count: 0,
+          comments_count: 0,
+          created_at: photo.uploaded_at,
+          updated_at: photo.uploaded_at
+        }
+        callback(transformedPost)
       }
     )
     .subscribe()
@@ -324,8 +382,9 @@ export async function getLiveCelebrationStats(): Promise<LiveCelebrationStats> {
     supabase
       .from('guest_photos')
       .select('id', { count: 'exact', head: true })
-      .eq('status', 'approved')
-      .gte('created_at', todayStr),
+      .eq('moderation_status', 'approved')
+      .eq('is_deleted', false)
+      .gte('uploaded_at', todayStr),
 
     // Guests checked in (RSVP completed)
     supabase
@@ -400,19 +459,20 @@ export async function getRecentActivity(limit: number = 10): Promise<ActivityIte
   // Fetch recent approved photos
   const { data: photos } = await supabase
     .from('guest_photos')
-    .select('id, guest_name, created_at')
-    .eq('status', 'approved')
-    .order('created_at', { ascending: false })
+    .select('id, guest_name, uploaded_at')
+    .eq('moderation_status', 'approved')
+    .eq('is_deleted', false)
+    .order('uploaded_at', { ascending: false })
     .limit(limit)
 
   if (photos) {
     activities.push(
-      ...photos.map((photo) => ({
+      ...photos.map((photo: any) => ({
         id: photo.id,
         type: 'photo' as const,
         guest_name: photo.guest_name || 'Convidado',
         description: 'enviou uma foto',
-        created_at: photo.created_at
+        created_at: photo.uploaded_at
       }))
     )
   }
@@ -476,9 +536,10 @@ export async function getRecentApprovedPhotos(limit: number = 20): Promise<Recen
 
   const { data, error } = await supabase
     .from('guest_photos')
-    .select('id, photo_url, guest_name, phase, created_at')
-    .eq('status', 'approved')
-    .order('created_at', { ascending: false })
+    .select('id, storage_path, storage_bucket, guest_name, upload_phase, uploaded_at')
+    .eq('moderation_status', 'approved')
+    .eq('is_deleted', false)
+    .order('uploaded_at', { ascending: false })
     .limit(limit)
 
   if (error) {
@@ -486,7 +547,14 @@ export async function getRecentApprovedPhotos(limit: number = 20): Promise<Recen
     return []
   }
 
-  return data || []
+  // Transform storage_path to public URL
+  return (data || []).map((photo: any) => ({
+    id: photo.id,
+    photo_url: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${photo.storage_bucket}/${photo.storage_path}`,
+    guest_name: photo.guest_name,
+    phase: photo.upload_phase,
+    created_at: photo.uploaded_at
+  }))
 }
 
 // ============================================================================
@@ -494,7 +562,7 @@ export async function getRecentApprovedPhotos(limit: number = 20): Promise<Recen
 // ============================================================================
 
 /**
- * Get approved posts for live feed with pagination
+ * Get approved posts for live feed with pagination (posts + guest photos merged)
  */
 export async function getLivePosts(
   limit: number = 50,
@@ -502,19 +570,74 @@ export async function getLivePosts(
 ): Promise<GuestPost[]> {
   const supabase = await createServerClient()
 
-  const { data, error } = await supabase
-    .from('guest_posts')
-    .select('*')
-    .eq('status', 'approved')
-    .order('created_at', { ascending: false })
-    .range(offset, offset + limit - 1)
+  // Fetch both guest_posts and guest_photos in parallel
+  const [postsResult, photosResult] = await Promise.all([
+    supabase
+      .from('guest_posts')
+      .select('*')
+      .eq('status', 'approved')
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1),
 
-  if (error) {
-    console.error('Error fetching live posts:', error)
-    return []
+    supabase
+      .from('guest_photos')
+      .select('*')
+      .eq('moderation_status', 'approved')
+      .eq('is_deleted', false)
+      .order('uploaded_at', { ascending: false })
+      .range(offset, offset + limit - 1)
+  ])
+
+  console.log('🔍 [getLivePosts] Fetched from guest_posts:', postsResult.data?.length || 0, 'posts')
+  console.log('🔍 [getLivePosts] Fetched from guest_photos:', photosResult.data?.length || 0, 'photos')
+
+  if (postsResult.error) {
+    console.error('Error fetching live posts:', postsResult.error)
   }
 
-  return data || []
+  if (photosResult.error) {
+    console.error('Error fetching guest photos:', photosResult.error)
+  }
+
+  // Transform guest_photos to GuestPost format
+  const transformedPhotos: GuestPost[] = (photosResult.data || []).map((photo: any) => {
+    // Generate public URL using storage_path
+    const publicUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${photo.storage_bucket}/${photo.storage_path}`
+
+    console.log('🔍 [getLivePosts] Transforming photo:', {
+      id: photo.id,
+      guest_name: photo.guest_name,
+      storage_path: photo.storage_path,
+      caption: photo.caption,
+      moderation_status: photo.moderation_status
+    })
+    return {
+      id: `photo-${photo.id}`,
+      guest_session_id: photo.guest_id, // Note: table uses guest_id not guest_session_id
+      guest_name: photo.guest_name || 'Convidado',
+      content: photo.caption || '',
+      post_type: photo.is_video ? 'video' : 'image' as const,
+      media_urls: [publicUrl],
+      status: 'approved' as const,
+      likes_count: 0,
+      comments_count: 0,
+      created_at: photo.uploaded_at, // Note: table uses uploaded_at not created_at
+      updated_at: photo.uploaded_at
+    }
+  })
+
+  console.log('🔍 [getLivePosts] Transformed photos:', transformedPhotos.length)
+
+  // Merge both arrays and sort by created_at descending
+  const allPosts = [...(postsResult.data || []), ...transformedPhotos]
+  console.log('🔍 [getLivePosts] Merged posts before sort:', allPosts.length)
+
+  allPosts.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+
+  console.log('🔍 [getLivePosts] Final posts after slice:', allPosts.slice(0, limit).length)
+
+  // Return limited results
+  return allPosts.slice(0, limit)
 }
 
 /**

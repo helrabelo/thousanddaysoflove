@@ -134,15 +134,9 @@ CREATE TABLE IF NOT EXISTS pinned_posts (
   post_id UUID REFERENCES guest_posts(id) ON DELETE CASCADE UNIQUE,
   pinned_by TEXT NOT NULL,
   pinned_at TIMESTAMPTZ DEFAULT NOW(),
-  display_order INTEGER DEFAULT 0,
+  display_order INTEGER DEFAULT 0
 
-  -- Only allow approved posts to be pinned
-  CONSTRAINT pinned_posts_approved CHECK (
-    EXISTS (
-      SELECT 1 FROM guest_posts
-      WHERE id = post_id AND status = 'approved'
-    )
-  )
+  -- Note: Only approved posts should be pinned (enforced in application code)
 );
 
 -- Index for pinned_posts
@@ -161,16 +155,19 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS update_invitations_updated_at ON invitations;
 CREATE TRIGGER update_invitations_updated_at
   BEFORE UPDATE ON invitations
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_guest_posts_updated_at ON guest_posts;
 CREATE TRIGGER update_guest_posts_updated_at
   BEFORE UPDATE ON guest_posts
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_post_comments_updated_at ON post_comments;
 CREATE TRIGGER update_post_comments_updated_at
   BEFORE UPDATE ON post_comments
   FOR EACH ROW
@@ -193,6 +190,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS update_likes_count_on_reaction ON post_reactions;
 CREATE TRIGGER update_likes_count_on_reaction
   AFTER INSERT OR DELETE ON post_reactions
   FOR EACH ROW
@@ -215,6 +213,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS update_comments_count_on_comment ON post_comments;
 CREATE TRIGGER update_comments_count_on_comment
   AFTER INSERT OR DELETE ON post_comments
   FOR EACH ROW
@@ -230,6 +229,20 @@ ALTER TABLE guest_posts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE post_reactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE post_comments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE pinned_posts ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Anyone can read invitations by code" ON invitations;
+DROP POLICY IF EXISTS "Service role can manage invitations" ON invitations;
+DROP POLICY IF EXISTS "Anyone can view approved posts" ON guest_posts;
+DROP POLICY IF EXISTS "Guests can create posts" ON guest_posts;
+DROP POLICY IF EXISTS "Service role can manage all posts" ON guest_posts;
+DROP POLICY IF EXISTS "Anyone can view reactions" ON post_reactions;
+DROP POLICY IF EXISTS "Guests can manage their own reactions" ON post_reactions;
+DROP POLICY IF EXISTS "Anyone can view comments on approved posts" ON post_comments;
+DROP POLICY IF EXISTS "Guests can create comments" ON post_comments;
+DROP POLICY IF EXISTS "Service role can manage all comments" ON post_comments;
+DROP POLICY IF EXISTS "Anyone can view pinned posts" ON pinned_posts;
+DROP POLICY IF EXISTS "Service role can manage pinned posts" ON pinned_posts;
 
 -- Invitations policies
 CREATE POLICY "Anyone can read invitations by code"
@@ -304,7 +317,8 @@ INSERT INTO invitations (code, guest_name, guest_email, relationship_type, plus_
   ('FAMILY001', 'João Silva', 'joao@example.com', 'family', true, 'Estamos ansiosos para compartilhar este momento especial com você e sua família!'),
   ('FRIEND002', 'Maria Santos', 'maria@example.com', 'friend', true, 'Sua amizade significa muito para nós. Não perca!'),
   ('FRIEND003', 'Pedro Costa', 'pedro@example.com', 'friend', false, 'Será uma honra ter você conosco neste dia tão especial!'),
-  ('WORK004', 'Ana Oliveira', 'ana@example.com', 'colleague', false, 'Obrigado por fazer parte da nossa jornada profissional e pessoal!');
+  ('WORK004', 'Ana Oliveira', 'ana@example.com', 'colleague', false, 'Obrigado por fazer parte da nossa jornada profissional e pessoal!')
+ON CONFLICT (code) DO NOTHING;
 
 COMMENT ON TABLE invitations IS 'Personalized wedding invitations with unique codes for guest tracking';
 COMMENT ON TABLE guest_posts IS 'Social feed posts from wedding guests with moderation';

@@ -33,28 +33,19 @@ const drawerItems: DrawerItem[] = [
   // Guest Features
   {
     name: 'Meu Convite',
-    href: '/meu-convite',
+    href: '/convite',
     icon: <User className="w-5 h-5" />,
     description: 'Seu convite pessoal',
     category: 'guest',
   },
   {
-    name: 'Mensagens',
-    href: '/mensagens',
-    icon: <MessageCircle className="w-5 h-5" />,
-    description: 'Poste fotos e mensagens',
+    name: 'Dia 1000',
+    href: '/dia-1000',
+    icon: <Radio className="w-5 h-5" />,
+    description: 'Feed ao vivo com mensagens e fotos',
     category: 'guest',
     badge: 'Novo',
     badgeColor: 'var(--decorative)',
-  },
-  {
-    name: 'Ao Vivo',
-    href: '/dia-1000',
-    icon: <Radio className="w-5 h-5" />,
-    description: 'Feed do dia do casamento',
-    category: 'guest',
-    badge: '20 Nov',
-    badgeColor: 'var(--secondary-text)',
   },
   // Info Pages
   {

@@ -34,20 +34,12 @@ export default function QuickActions({ invitation }: QuickActionsProps) {
       bgColor: 'bg-[#E8E6E3]',
     },
     {
-      title: 'Fotos',
+      title: 'Dia 1000',
       icon: Camera,
-      href: '/dia-1000/upload',
+      href: '/dia-1000',
       completed: invitation.photos_uploaded,
-      description: 'Envie suas fotos',
+      description: 'Compartilhe fotos e mensagens',
       bgColor: '',
-    },
-    {
-      title: 'Mensagens',
-      icon: MessageSquare,
-      href: '/mensagens',
-      completed: false, // Always available
-      description: 'Deixe uma mensagem',
-      bgColor: 'bg-[#E8E6E3]',
     },
   ];
 

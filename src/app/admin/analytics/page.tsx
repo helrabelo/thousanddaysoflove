@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { BarChart3, Users, Gift, CreditCard, Calendar, TrendingUp, Heart } from 'lucide-react'
+import { Users, Gift, CreditCard, Calendar, TrendingUp, Heart } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import Link from 'next/link'
 
@@ -27,8 +27,7 @@ interface Analytics {
     pending: number
     totalAmount: number
   }
-  timeline: {
-    eventsCount: number
+  wedding: {
     daysToWedding: number
   }
 }
@@ -52,16 +51,12 @@ interface PaymentItem {
   amount: number
 }
 
-interface TimelineEvent {
-  id: string
-}
-
 export default function AdminAnalytics(): JSX.Element {
   const [analytics, setAnalytics] = useState<Analytics>({
     guests: { total: 0, confirmed: 0, declined: 0, pending: 0, totalWithPlusOnes: 0 },
     gifts: { total: 0, purchased: 0, remaining: 0, totalValue: 0, purchasedValue: 0 },
     payments: { total: 0, completed: 0, pending: 0, totalAmount: 0 },
-    timeline: { eventsCount: 0, daysToWedding: 0 }
+    wedding: { daysToWedding: 0 }
   })
   const [loading, setLoading] = useState(true)
 
@@ -98,8 +93,7 @@ export default function AdminAnalytics(): JSX.Element {
       const pendingPayments = payments?.filter(p => p.status === 'pending') || []
       const totalAmount = completed.reduce((sum, p) => sum + p.amount, 0)
 
-      // Load timeline
-      const { data: timeline } = await supabase.from('timeline_events').select<'*', TimelineEvent>('*')
+      // Calculate days to wedding
       const weddingDate = new Date('2025-11-20T00:00:00')
       const today = new Date()
       const daysToWedding = Math.ceil((weddingDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
@@ -125,8 +119,7 @@ export default function AdminAnalytics(): JSX.Element {
           pending: pendingPayments.length,
           totalAmount
         },
-        timeline: {
-          eventsCount: timeline?.length || 0,
+        wedding: {
           daysToWedding
         }
       })
@@ -163,7 +156,7 @@ export default function AdminAnalytics(): JSX.Element {
         <Card className="glass p-8 text-center mb-8">
           <Calendar className="w-12 h-12 text-blush-500 mx-auto mb-4" />
           <h2 className="text-5xl font-bold text-burgundy-800 mb-2">
-            {analytics.timeline.daysToWedding}
+            {analytics.wedding.daysToWedding}
           </h2>
           <p className="text-xl text-burgundy-600">
             Dias para a Casa HY
@@ -259,7 +252,7 @@ export default function AdminAnalytics(): JSX.Element {
           <h2 className="text-2xl font-bold text-burgundy-800 mb-4">
             Progresso do Casamento
           </h2>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 gap-6">
             <div>
               <TrendingUp className="w-8 h-8 text-green-500 mx-auto mb-2" />
               <p className="text-sm text-burgundy-600">Taxa de Confirmação</p>
@@ -276,13 +269,6 @@ export default function AdminAnalytics(): JSX.Element {
                 {analytics.gifts.total > 0
                   ? Math.round((analytics.gifts.purchased / analytics.gifts.total) * 100)
                   : 0}%
-              </p>
-            </div>
-            <div>
-              <BarChart3 className="w-8 h-8 text-blush-500 mx-auto mb-2" />
-              <p className="text-sm text-burgundy-600">Eventos na Timeline</p>
-              <p className="text-2xl font-bold text-burgundy-800">
-                {analytics.timeline.eventsCount}
               </p>
             </div>
           </div>

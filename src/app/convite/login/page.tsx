@@ -52,8 +52,8 @@ function LoginForm() {
         return;
       }
 
-      // Success! Redirect to dashboard
-      router.push('/meu-convite');
+      // Success! Redirect to personalized invitation page
+      router.push(`/convite/${cleanCode}`);
     } catch (err) {
       console.error('Login error:', err);
       setError('Erro ao fazer login. Tente novamente.');
@@ -81,10 +81,10 @@ function LoginForm() {
           </motion.div>
 
           <h1 className="font-playfair text-4xl md:text-5xl text-[#2C2C2C] mb-2">
-            Meu Convite
+            Acessar Convite
           </h1>
           <p className="font-crimson text-lg text-[#4A4A4A] italic">
-            Acesse seu dashboard personalizado
+            Digite seu código de convite personalizado
           </p>
         </div>
 
@@ -158,7 +158,7 @@ function LoginForm() {
               ) : (
                 <>
                   <LogIn className="w-5 h-5" />
-                  Acessar Dashboard
+                  Acessar Convite
                 </>
               )}
             </button>

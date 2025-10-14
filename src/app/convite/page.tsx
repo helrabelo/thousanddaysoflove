@@ -28,18 +28,10 @@ const WEBSITE_FEATURES = [
   },
   {
     icon: Camera,
-    title: 'Compartilhar Fotos',
-    description: 'Faça upload das suas fotos do casamento para nossa galeria',
-    action: 'Enviar Fotos',
-    href: '/dia-1000/upload',
-  },
-  {
-    icon: MessageSquare,
-    title: 'Enviar Mensagens',
-    description: 'Deixe uma mensagem especial para o casal (em breve)',
-    action: 'Escrever Mensagem',
-    href: '/mensagens',
-    comingSoon: true,
+    title: 'Dia 1000',
+    description: 'Compartilhe fotos e mensagens em tempo real durante o casamento',
+    action: 'Acessar Feed',
+    href: '/dia-1000',
   },
   {
     icon: Gift,
@@ -78,7 +70,7 @@ export default function ConvitePage() {
   const handleAccessInvite = (e: React.FormEvent) => {
     e.preventDefault();
     if (inviteCode.trim()) {
-      router.push(`/meu-convite/${inviteCode.trim().toUpperCase()}`);
+      router.push(`/convite/${inviteCode.trim().toUpperCase()}`);
     }
   };
 

@@ -262,7 +262,7 @@ export default function MediaLightbox({
                 ref={imageRef}
                 src={currentItem.url}
                 alt={currentItem.title}
-                className="max-w-full max-h-full object-contain select-none"
+                className="max-w-screen max-h-[75vh] object-contain select-none -mt-8"
                 style={{
                   transform: `scale(${zoom}) rotate(${rotation}deg) translate(${position.x}px, ${position.y}px)`,
                   transition: isDragging ? 'none' : 'transform 0.3s ease'

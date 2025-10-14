@@ -19,20 +19,12 @@ interface GuestMenuItem {
 const guestMenuItems: GuestMenuItem[] = [
   {
     name: 'Meu Convite',
-    href: '/meu-convite',
+    href: '/convite',
     icon: <Calendar className="w-5 h-5" />,
     description: 'Seu convite pessoal e progresso',
   },
   {
-    name: 'Mensagens',
-    href: '/mensagens',
-    icon: <MessageCircle className="w-5 h-5" />,
-    description: 'Compartilhe com outros convidados',
-    badge: 'Novo',
-    badgeColor: 'var(--decorative)',
-  },
-  {
-    name: 'Ao Vivo',
+    name: 'Dia 1000',
     href: '/dia-1000',
     icon: <Radio className="w-5 h-5" />,
     description: 'Acompanhe a festa em tempo real',

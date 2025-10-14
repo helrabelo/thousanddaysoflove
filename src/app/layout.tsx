@@ -4,6 +4,7 @@ import "./globals.css";
 import "../styles/wedding-theme.css";
 import { sanityFetch } from '@/sanity/lib/client'
 import { seoSettingsQuery } from '@/sanity/queries/seo'
+import { GlobalGuestActions } from '@/components/ui/GlobalGuestActions'
 
 const inter = Inter({
   variable: "--font-inter",
@@ -91,6 +92,7 @@ export default function RootLayout({
         className={`${inter.variable} ${playfair.variable} ${crimsonText.variable} ${cormorant.variable} font-serif antialiased`}
       >
         {children}
+        <GlobalGuestActions />
       </body>
     </html>
   );

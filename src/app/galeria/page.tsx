@@ -9,9 +9,8 @@ import { SupabaseGalleryService } from '@/lib/supabase/gallery'
 export default async function GaleriaPage() {
   type GuestPhotosByPhase = Awaited<ReturnType<typeof SupabaseGalleryService.getApprovedPhotosByPhase>>
 
-  // Fetch gallery data server-side (both Sanity and guest photos)
+  // Fetch gallery data server-side (Sanity only for main gallery)
   let sanityMediaItems: MediaItem[] = []
-  let guestPhotos: MediaItem[] = []
   let guestPhotosByPhase: GuestPhotosByPhase = { before: [], during: [], after: [] }
 
   try {
@@ -23,17 +22,15 @@ export default async function GaleriaPage() {
   }
 
   try {
-    // Fetch approved guest photos
-    guestPhotos = await SupabaseGalleryService.getApprovedGuestPhotos()
+    // Fetch approved guest photos for dedicated section only
     guestPhotosByPhase = await SupabaseGalleryService.getApprovedPhotosByPhase()
   } catch (error) {
     console.error('Error loading guest photos:', error)
-    guestPhotos = []
     guestPhotosByPhase = { before: [], during: [], after: [] } satisfies GuestPhotosByPhase
   }
 
-  // Merge all photos for main gallery (Sanity photos first, then guest photos)
-  const allMediaItems = [...sanityMediaItems, ...guestPhotos]
+  // Calculate total guest photos for conditional rendering
+  const totalGuestPhotos = guestPhotosByPhase.before.length + guestPhotosByPhase.during.length + guestPhotosByPhase.after.length
 
   return (
     <main className="min-h-screen">
@@ -42,13 +39,8 @@ export default async function GaleriaPage() {
       {/* Hero Section with Animations */}
       <GalleryHero />
 
-      {/* Main Gallery (Sanity CMS Photos + All Approved Guest Photos) */}
-      <GalleryClient mediaItems={allMediaItems} />
-
-      {/* Guest Photos Section (with Phase Tabs) */}
-      {guestPhotos.length > 0 && (
-        <GuestPhotosSection photosByPhase={guestPhotosByPhase} />
-      )}
+      {/* Main Gallery (Sanity CMS Only - Photos & Videos merged inside) */}
+      <GalleryClient mediaItems={sanityMediaItems} guestPhotosByPhase={guestPhotosByPhase} />
     </main>
   )
 }

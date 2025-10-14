@@ -79,20 +79,26 @@ export default function PostCard({
   const [showCommentInput, setShowCommentInput] = useState(false);
   const [isReacting, setIsReacting] = useState(false);
 
-  // Load reactions and comments
-  useEffect(() => {
-    loadReactions();
-    if (showComments) {
-      loadComments();
-    }
-  }, [post.id]);
+  // Check if this is a guest photo (not a regular post)
+  // Guest photos have IDs like "photo-{uuid}" and don't support reactions/comments
+  const isGuestPhoto = post.id.startsWith('photo-');
 
-  // Load user's reaction
+  // Load reactions and comments (skip for guest photos)
   useEffect(() => {
-    if (currentGuestName) {
+    if (!isGuestPhoto) {
+      loadReactions();
+      if (showComments) {
+        loadComments();
+      }
+    }
+  }, [post.id, isGuestPhoto]);
+
+  // Load user's reaction (skip for guest photos)
+  useEffect(() => {
+    if (!isGuestPhoto && currentGuestName) {
       loadUserReaction();
     }
-  }, [post.id, currentGuestName]);
+  }, [post.id, currentGuestName, isGuestPhoto]);
 
   const loadReactions = async () => {
     const data = await getPostReactions(post.id);
@@ -249,83 +255,87 @@ export default function PostCard({
         </div>
       )}
 
-      {/* Engagement Stats */}
-      <div className="flex items-center gap-4 mb-4 pb-4 border-b border-[#E8E6E3]">
-        {/* Reaction Summary */}
-        {post.likes_count > 0 && (
-          <div className="flex items-center gap-1 text-sm text-[#4A4A4A]">
-            <div className="flex -space-x-1">
-              {Object.entries(reactionCounts)
-                .slice(0, 3)
-                .map(([type]) => (
-                  <span
-                    key={type}
-                    className="inline-block text-base"
-                    title={REACTION_LABELS[type as keyof typeof REACTION_LABELS]}
-                  >
-                    {REACTION_EMOJIS[type as keyof typeof REACTION_EMOJIS]}
-                  </span>
-                ))}
+      {/* Engagement Stats - Hide for guest photos */}
+      {!isGuestPhoto && (
+        <div className="flex items-center gap-4 mb-4 pb-4 border-b border-[#E8E6E3]">
+          {/* Reaction Summary */}
+          {post.likes_count > 0 && (
+            <div className="flex items-center gap-1 text-sm text-[#4A4A4A]">
+              <div className="flex -space-x-1">
+                {Object.entries(reactionCounts)
+                  .slice(0, 3)
+                  .map(([type]) => (
+                    <span
+                      key={type}
+                      className="inline-block text-base"
+                      title={REACTION_LABELS[type as keyof typeof REACTION_LABELS]}
+                    >
+                      {REACTION_EMOJIS[type as keyof typeof REACTION_EMOJIS]}
+                    </span>
+                  ))}
+              </div>
+              <span>{post.likes_count}</span>
             </div>
-            <span>{post.likes_count}</span>
-          </div>
-        )}
+          )}
 
-        {/* Comment Count */}
-        {post.comments_count > 0 && (
-          <div className="flex items-center gap-1 text-sm text-[#4A4A4A]">
-            <MessageCircle className="w-4 h-4" />
-            <span>
-              {post.comments_count} comentário{post.comments_count !== 1 && 's'}
-            </span>
-          </div>
-        )}
-      </div>
+          {/* Comment Count */}
+          {post.comments_count > 0 && (
+            <div className="flex items-center gap-1 text-sm text-[#4A4A4A]">
+              <MessageCircle className="w-4 h-4" />
+              <span>
+                {post.comments_count} comentário{post.comments_count !== 1 && 's'}
+              </span>
+            </div>
+          )}
+        </div>
+      )}
 
-      {/* Actions */}
-      <div className="flex items-center gap-2 mb-4">
-        {/* Reaction Buttons */}
-        {(['heart', 'clap', 'laugh', 'celebrate'] as const).map((type) => {
-          const Icon = REACTION_ICONS[type];
-          const count = reactionCounts[type] || 0;
-          const isActive = userReaction?.reaction_type === type;
+      {/* Actions - Hide for guest photos */}
+      {!isGuestPhoto && (
+        <div className="flex items-center gap-2 mb-4">
+          {/* Reaction Buttons */}
+          {(['heart', 'clap', 'laugh', 'celebrate'] as const).map((type) => {
+            const Icon = REACTION_ICONS[type];
+            const count = reactionCounts[type] || 0;
+            const isActive = userReaction?.reaction_type === type;
 
-          return (
-            <motion.button
-              key={type}
+            return (
+              <motion.button
+                key={type}
+                type="button"
+                onClick={() => handleReaction(type)}
+                disabled={!currentGuestName || isReacting}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className={`flex items-center gap-1 px-3 py-2 rounded-full border transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                  isActive
+                    ? 'bg-[#2C2C2C] text-white border-[#2C2C2C]'
+                    : 'bg-white text-[#4A4A4A] border-[#E8E6E3] hover:'
+                }`}
+                title={REACTION_LABELS[type]}
+              >
+                <span className="text-base">{REACTION_EMOJIS[type]}</span>
+                {count > 0 && <span className="text-xs">{count}</span>}
+              </motion.button>
+            );
+          })}
+
+          {/* Comment Button */}
+          {currentGuestName && showComments && (
+            <button
               type="button"
-              onClick={() => handleReaction(type)}
-              disabled={!currentGuestName || isReacting}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              className={`flex items-center gap-1 px-3 py-2 rounded-full border transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
-                isActive
-                  ? 'bg-[#2C2C2C] text-white border-[#2C2C2C]'
-                  : 'bg-white text-[#4A4A4A] border-[#E8E6E3] hover:'
-              }`}
-              title={REACTION_LABELS[type]}
+              onClick={() => setShowCommentInput(!showCommentInput)}
+              className="flex items-center gap-1 px-3 py-2 rounded-full border border-[#E8E6E3] bg-white text-[#4A4A4A] hover: transition-all"
             >
-              <span className="text-base">{REACTION_EMOJIS[type]}</span>
-              {count > 0 && <span className="text-xs">{count}</span>}
-            </motion.button>
-          );
-        })}
+              <MessageCircle className="w-4 h-4" />
+              <span className="text-sm">Comentar</span>
+            </button>
+          )}
+        </div>
+      )}
 
-        {/* Comment Button */}
-        {currentGuestName && showComments && (
-          <button
-            type="button"
-            onClick={() => setShowCommentInput(!showCommentInput)}
-            className="flex items-center gap-1 px-3 py-2 rounded-full border border-[#E8E6E3] bg-white text-[#4A4A4A] hover: transition-all"
-          >
-            <MessageCircle className="w-4 h-4" />
-            <span className="text-sm">Comentar</span>
-          </button>
-        )}
-      </div>
-
-      {/* Comments Section */}
-      {showComments && (
+      {/* Comments Section - Hide for guest photos */}
+      {!isGuestPhoto && showComments && (
         <AnimatePresence>
           {(showCommentInput || comments.length > 0) && (
             <motion.div
