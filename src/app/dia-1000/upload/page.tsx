@@ -7,6 +7,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import Navigation from '@/components/ui/Navigation'
 import { validateFile, formatFileSize, type UploadPhase } from '@/lib/supabase/storage'
 
 interface UploadFile {
@@ -16,6 +17,7 @@ interface UploadFile {
   progress: number
   status: 'pending' | 'uploading' | 'success' | 'error'
   error?: string
+  autoApproved?: boolean
 }
 
 export default function GuestUploadPage() {
@@ -131,11 +133,11 @@ export default function GuestUploadPage() {
         throw new Error(data.error || 'Erro ao fazer upload')
       }
 
-      // Update status to success
+      // Update status to success with auto-approval info
       setFiles((prev) =>
         prev.map((f) =>
           f.id === uploadFile.id
-            ? { ...f, status: 'success', progress: 100 }
+            ? { ...f, status: 'success', progress: 100, autoApproved: data.photo?.auto_approved }
             : f
         )
       )
@@ -204,9 +206,12 @@ export default function GuestUploadPage() {
   const hasFiles = files.length > 0
   const hasPending = files.some((f) => f.status === 'pending')
   const hasSuccess = files.some((f) => f.status === 'success')
+  const allAutoApproved = files.filter((f) => f.status === 'success').every((f) => f.autoApproved === true)
 
   return (
-    <div className="min-h-screen bg-[#F8F6F3] px-4 py-8">
+    <>
+      <Navigation />
+      <div className="min-h-screen bg-[#F8F6F3] px-4 pt-32 pb-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -483,7 +488,9 @@ export default function GuestUploadPage() {
               Upload Completo!
             </h3>
             <p className="font-crimson text-[#4A4A4A] mb-6">
-              Suas fotos foram enviadas e estão aguardando aprovação
+              {allAutoApproved
+                ? 'Suas fotos foram aprovadas e já está visível na galeria!'
+                : 'Suas fotos foram enviadas e estão aguardando aprovação'}
             </p>
             <button
               onClick={clearSuccessful}
@@ -495,5 +502,6 @@ export default function GuestUploadPage() {
         )}
       </div>
     </div>
+    </>
   )
 }

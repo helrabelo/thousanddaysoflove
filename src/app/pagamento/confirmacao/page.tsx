@@ -2,6 +2,7 @@
 
 import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
+import Navigation from '@/components/ui/Navigation'
 import PaymentConfirmation from '@/components/payments/PaymentConfirmation'
 import { PaymentService } from '@/lib/services/payments'
 
@@ -58,69 +59,86 @@ function PaymentConfirmationContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-purple-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-purple-300 border-t-purple-600 rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-600 text-lg">Carregando dados do pagamento...</p>
+      <>
+        <Navigation />
+        <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-purple-50 flex items-center justify-center pt-20">
+          <div className="text-center">
+            <div className="w-16 h-16 border-4 border-purple-300 border-t-purple-600 rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-gray-600 text-lg">Carregando dados do pagamento...</p>
+          </div>
         </div>
-      </div>
+      </>
     )
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-rose-50 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-red-500 text-2xl">⚠️</span>
+      <>
+        <Navigation />
+        <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-rose-50 flex items-center justify-center p-4 pt-32">
+          <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-red-500 text-2xl">⚠️</span>
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Erro ao Carregar Pagamento</h1>
+            <p className="text-gray-600 mb-6">{error}</p>
+            <a
+              href="/presentes"
+              className="bg-gradient-to-r from-rose-500 to-purple-600 hover:from-rose-600 hover:to-purple-700 text-white py-3 px-6 rounded-lg font-medium transition-all duration-300 inline-block"
+            >
+              Voltar à Lista de Presentes
+            </a>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Erro ao Carregar Pagamento</h1>
-          <p className="text-gray-600 mb-6">{error}</p>
-          <a
-            href="/presentes"
-            className="bg-gradient-to-r from-rose-500 to-purple-600 hover:from-rose-600 hover:to-purple-700 text-white py-3 px-6 rounded-lg font-medium transition-all duration-300 inline-block"
-          >
-            Voltar à Lista de Presentes
-          </a>
         </div>
-      </div>
+      </>
     )
   }
 
   if (!paymentData) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
-          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-gray-500 text-2xl">❓</span>
+      <>
+        <Navigation />
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50 flex items-center justify-center p-4 pt-32">
+          <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-gray-500 text-2xl">❓</span>
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Pagamento Não Encontrado</h1>
+            <p className="text-gray-600 mb-6">
+              Não foi possível encontrar os dados deste pagamento.
+            </p>
+            <a
+              href="/presentes"
+              className="bg-gradient-to-r from-rose-500 to-purple-600 hover:from-rose-600 hover:to-purple-700 text-white py-3 px-6 rounded-lg font-medium transition-all duration-300 inline-block"
+            >
+              Ver Lista de Presentes
+            </a>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Pagamento Não Encontrado</h1>
-          <p className="text-gray-600 mb-6">
-            Não foi possível encontrar os dados deste pagamento.
-          </p>
-          <a
-            href="/presentes"
-            className="bg-gradient-to-r from-rose-500 to-purple-600 hover:from-rose-600 hover:to-purple-700 text-white py-3 px-6 rounded-lg font-medium transition-all duration-300 inline-block"
-          >
-            Ver Lista de Presentes
-          </a>
         </div>
-      </div>
+      </>
     )
   }
 
-  return <PaymentConfirmation paymentData={paymentData} />
+  return (
+    <>
+      <Navigation />
+      <PaymentConfirmation paymentData={paymentData} />
+    </>
+  )
 }
 
 export default function PaymentConfirmationPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-purple-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-purple-300 border-t-purple-600 rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-600 text-lg">Carregando confirmacao de pagamento...</p>
+      <>
+        <Navigation />
+        <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-purple-50 flex items-center justify-center pt-20">
+          <div className="text-center">
+            <div className="w-16 h-16 border-4 border-purple-300 border-t-purple-600 rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-gray-600 text-lg">Carregando confirmacao de pagamento...</p>
+          </div>
         </div>
-      </div>
+      </>
     }>
       <PaymentConfirmationContent />
     </Suspense>

@@ -14,6 +14,7 @@
 
 import { Suspense } from 'react';
 import MessagesFeed from './MessagesFeed';
+import Navigation from '@/components/ui/Navigation';
 
 export const metadata = {
   title: 'Mensagens | Mil Dias de Amor',
@@ -22,7 +23,9 @@ export const metadata = {
 
 export default function MessagesPage() {
   return (
-    <main className="min-h-screen bg-[#F8F6F3] py-12">
+    <>
+      <Navigation />
+      <main className="min-h-screen pt-32 pb-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
         {/* Header */}
         <div className="text-center mb-12">
@@ -41,6 +44,7 @@ export default function MessagesPage() {
         </Suspense>
       </div>
     </main>
+    </>
   );
 }
 

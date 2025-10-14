@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { LogOut, RefreshCw, Heart } from 'lucide-react';
+import Navigation from '@/components/ui/Navigation';
 import {
   getGuestSession,
   logoutGuest,
@@ -82,49 +83,57 @@ export default function GuestDashboardPage() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#F8F6F3] flex items-center justify-center px-4">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-center"
-        >
+      <>
+        <Navigation />
+        <div className="min-h-screen bg-[#F8F6F3] flex items-center justify-center px-4 pt-20">
           <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-            className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-pink-100 to-purple-100 rounded-full mb-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center"
           >
-            <Heart className="w-8 h-8 text-pink-600" />
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+              className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-pink-100 to-purple-100 rounded-full mb-4"
+            >
+              <Heart className="w-8 h-8 text-pink-600" />
+            </motion.div>
+            <p className="font-crimson text-lg text-[#4A4A4A] italic">
+              Carregando seu dashboard...
+            </p>
           </motion.div>
-          <p className="font-crimson text-lg text-[#4A4A4A] italic">
-            Carregando seu dashboard...
-          </p>
-        </motion.div>
-      </div>
+        </div>
+      </>
     );
   }
 
   // Error state
   if (error || !dashboardData) {
     return (
-      <div className="min-h-screen bg-[#F8F6F3] flex items-center justify-center px-4">
-        <div className="max-w-md text-center">
-          <p className="font-crimson text-lg text-[#2C2C2C] mb-4">{error}</p>
-          <button
-            onClick={() => loadDashboard()}
-            className="bg-gradient-to-r from-pink-500 to-purple-500 text-white font-crimson px-6 py-3 rounded-lg
-                     hover:from-pink-600 hover:to-purple-600 transition-all"
-          >
-            Tentar novamente
-          </button>
+      <>
+        <Navigation />
+        <div className="min-h-screen bg-[#F8F6F3] flex items-center justify-center px-4 pt-20">
+          <div className="max-w-md text-center">
+            <p className="font-crimson text-lg text-[#2C2C2C] mb-4">{error}</p>
+            <button
+              onClick={() => loadDashboard()}
+              className="bg-gradient-to-r from-pink-500 to-purple-500 text-white font-crimson px-6 py-3 rounded-lg
+                       hover:from-pink-600 hover:to-purple-600 transition-all"
+            >
+              Tentar novamente
+            </button>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F6F3]">
-      {/* Header */}
-      <header className="bg-white border-b border-[#E8E6E3] sticky top-0 z-10 shadow-sm">
+    <>
+      <Navigation />
+      <div className="min-h-screen bg-[#F8F6F3] pt-20">
+        {/* Header */}
+        <header className="bg-white border-b border-[#E8E6E3] shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div>
@@ -255,6 +264,7 @@ export default function GuestDashboardPage() {
         </div>
       </footer>
     </div>
+    </>
   );
 }
 
