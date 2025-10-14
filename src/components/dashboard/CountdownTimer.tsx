@@ -25,16 +25,16 @@ export default function CountdownTimer() {
   }, []);
 
   return (
-    <div className="bg-gradient-to-br from-pink-50 via-purple-50 to-pink-50 rounded-2xl shadow-lg p-8">
+    <div className="bg-white rounded-2xl shadow-lg p-8 border border-[#E8E6E3]">
       {/* Header */}
       <div className="text-center mb-6">
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: 'spring', stiffness: 200 }}
-          className="inline-flex items-center justify-center w-12 h-12 bg-white rounded-full mb-3 shadow-md"
+          className="inline-flex items-center justify-center w-12 h-12 bg-[#F8F6F3] rounded-full mb-3 shadow-md"
         >
-          <Calendar className="w-6 h-6 text-pink-600" />
+          <Calendar className="w-6 h-6 text-[#A8A8A8]" />
         </motion.div>
         <h2 className="font-playfair text-2xl md:text-3xl text-[#2C2C2C] mb-1">
           Contagem Regressiva
@@ -96,7 +96,7 @@ export default function CountdownTimer() {
             className="text-center font-crimson text-base text-[#4A4A4A] italic"
           >
             Faltam{' '}
-            <span className="font-semibold text-pink-600">
+            <span className="font-semibold text-[#2C2C2C]">
               {timeLeft.days} dias
             </span>{' '}
             para o grande dia! 💕
@@ -150,8 +150,8 @@ function TimeUnit({ value, label, delay, shouldReduceMotion }: TimeUnitProps) {
         <p className="font-crimson text-xs text-[#4A4A4A] mt-1">{label}</p>
       </div>
 
-      {/* Gradient glow effect */}
-      <div className="absolute inset-0 bg-gradient-to-br from-pink-200/20 to-purple-200/20 rounded-xl blur-sm -z-10" />
+      {/* Subtle glow effect */}
+      <div className="absolute inset-0 bg-[#E8E6E3]/20 rounded-xl blur-sm -z-10" />
     </motion.div>
   );
 }

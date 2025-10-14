@@ -73,7 +73,7 @@ export default function InvitationCard({ invitation }: InvitationCardProps) {
   };
 
   return (
-    <div className="bg-gradient-to-br from-pink-50 via-purple-50 to-pink-50 rounded-2xl shadow-lg p-6">
+    <div className="bg-white rounded-2xl shadow-lg p-6 border border-[#E8E6E3]">
       <h2 className="font-playfair text-2xl text-[#2C2C2C] mb-6 text-center">
         Seu Convite
       </h2>
@@ -121,8 +121,8 @@ export default function InvitationCard({ invitation }: InvitationCardProps) {
       <div className="space-y-3 mb-6">
         {/* Plus One */}
         {invitation.plus_one_allowed && (
-          <div className="bg-white rounded-lg p-3 flex items-center gap-3">
-            <Users className="w-5 h-5 text-pink-600 flex-shrink-0" />
+          <div className="bg-[#F8F6F3] rounded-lg p-3 flex items-center gap-3">
+            <Users className="w-5 h-5 text-[#A8A8A8] flex-shrink-0" />
             <div>
               <p className="font-crimson text-sm text-[#2C2C2C]">
                 Acompanhante permitido
@@ -138,8 +138,8 @@ export default function InvitationCard({ invitation }: InvitationCardProps) {
 
         {/* Table Number */}
         {invitation.table_number && (
-          <div className="bg-white rounded-lg p-3 flex items-center gap-3">
-            <Utensils className="w-5 h-5 text-purple-600 flex-shrink-0" />
+          <div className="bg-[#F8F6F3] rounded-lg p-3 flex items-center gap-3">
+            <Utensils className="w-5 h-5 text-[#A8A8A8] flex-shrink-0" />
             <div>
               <p className="font-crimson text-sm text-[#2C2C2C]">
                 Mesa {invitation.table_number}
@@ -150,7 +150,7 @@ export default function InvitationCard({ invitation }: InvitationCardProps) {
 
         {/* Custom Message */}
         {invitation.custom_message && (
-          <div className="bg-white rounded-lg p-4">
+          <div className="bg-[#F8F6F3] rounded-lg p-4">
             <p className="font-crimson text-sm text-[#2C2C2C] italic">
               &quot;{invitation.custom_message}&quot;
             </p>
@@ -170,7 +170,7 @@ export default function InvitationCard({ invitation }: InvitationCardProps) {
         >
           {copied ? (
             <>
-              <Check className="w-5 h-5 text-green-600" />
+              <Check className="w-5 h-5 text-[#2C2C2C]" />
               Link copiado!
             </>
           ) : (
@@ -195,8 +195,8 @@ export default function InvitationCard({ invitation }: InvitationCardProps) {
 
           <button
             onClick={handleShareWhatsApp}
-            className="bg-green-600 text-white font-crimson py-3 px-4 rounded-lg
-                     hover:bg-green-700 transition-colors flex items-center justify-center gap-2 shadow-sm"
+            className="bg-[#2C2C2C] text-white font-crimson py-3 px-4 rounded-lg
+                     hover:bg-[#4A4A4A] transition-colors flex items-center justify-center gap-2 shadow-sm"
           >
             <Share2 className="w-5 h-5" />
             WhatsApp

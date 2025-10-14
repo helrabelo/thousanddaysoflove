@@ -49,7 +49,7 @@ export default function ActivityFeed({ activities }: ActivityFeedProps) {
             className="flex items-start gap-4 p-4 rounded-xl hover:bg-[#F8F6F3] transition-colors"
           >
             {/* Icon */}
-            <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-pink-100 to-purple-100 rounded-full flex items-center justify-center">
+            <div className="flex-shrink-0 w-10 h-10 bg-[#E8E6E3] rounded-full flex items-center justify-center">
               <span className="text-lg">{activity.icon}</span>
             </div>
 

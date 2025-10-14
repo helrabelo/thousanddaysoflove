@@ -23,7 +23,7 @@ export default function QuickActions({ invitation }: QuickActionsProps) {
       href: '/rsvp',
       completed: invitation.rsvp_completed,
       description: 'Confirme sua presença',
-      color: 'from-green-500 to-emerald-500',
+      bgColor: 'bg-[#F8F6F3]',
     },
     {
       title: 'Presentes',
@@ -31,7 +31,7 @@ export default function QuickActions({ invitation }: QuickActionsProps) {
       href: '/presentes',
       completed: invitation.gift_selected,
       description: 'Escolha um presente',
-      color: 'from-pink-500 to-rose-500',
+      bgColor: 'bg-[#E8E6E3]',
     },
     {
       title: 'Fotos',
@@ -39,7 +39,7 @@ export default function QuickActions({ invitation }: QuickActionsProps) {
       href: '/dia-1000/upload',
       completed: invitation.photos_uploaded,
       description: 'Envie suas fotos',
-      color: 'from-blue-500 to-cyan-500',
+      bgColor: 'bg-[#F8F6F3]',
     },
     {
       title: 'Mensagens',
@@ -47,7 +47,7 @@ export default function QuickActions({ invitation }: QuickActionsProps) {
       href: '/mensagens',
       completed: false, // Always available
       description: 'Deixe uma mensagem',
-      color: 'from-purple-500 to-indigo-500',
+      bgColor: 'bg-[#E8E6E3]',
     },
   ];
 
@@ -73,8 +73,8 @@ export default function QuickActions({ invitation }: QuickActionsProps) {
                 className={`block bg-white rounded-xl shadow-md p-5 border-2 transition-all duration-300
                   ${
                     action.completed
-                      ? 'border-green-200 opacity-75'
-                      : 'border-transparent hover:border-pink-200 hover:shadow-lg hover:-translate-y-1'
+                      ? 'border-[#E8E6E3] opacity-75'
+                      : 'border-transparent hover:border-[#E8E6E3] hover:shadow-lg hover:-translate-y-1'
                   }
                   ${action.completed ? '' : 'group'}
                 `}
@@ -84,12 +84,12 @@ export default function QuickActions({ invitation }: QuickActionsProps) {
                     {/* Icon */}
                     <div
                       className={`flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center
-                      ${action.completed ? 'bg-green-100' : `bg-gradient-to-br ${action.color}`}`}
+                      ${action.completed ? 'bg-[#E8E6E3]' : action.bgColor}`}
                     >
                       {action.completed ? (
-                        <CheckCircle className="w-6 h-6 text-green-600" />
+                        <CheckCircle className="w-6 h-6 text-[#2C2C2C]" />
                       ) : (
-                        <Icon className="w-6 h-6 text-white" />
+                        <Icon className="w-6 h-6 text-[#4A4A4A]" />
                       )}
                     </div>
 
@@ -104,12 +104,12 @@ export default function QuickActions({ invitation }: QuickActionsProps) {
                       {/* Status badge */}
                       <div className="mt-2">
                         {action.completed ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs font-medium">
+                          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-[#E8E6E3] text-[#2C2C2C] text-xs font-medium">
                             <CheckCircle className="w-3 h-3" />
                             Completo
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-medium">
+                          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-[#F8F6F3] text-[#4A4A4A] text-xs font-medium">
                             Pendente
                           </span>
                         )}
@@ -124,7 +124,7 @@ export default function QuickActions({ invitation }: QuickActionsProps) {
                       initial={{ x: 0 }}
                       whileHover={{ x: 4 }}
                     >
-                      <ArrowRight className="w-5 h-5 text-[#A8A8A8] group-hover:text-pink-600 transition-colors" />
+                      <ArrowRight className="w-5 h-5 text-[#A8A8A8] group-hover:text-[#2C2C2C] transition-colors" />
                     </motion.div>
                   )}
                 </div>

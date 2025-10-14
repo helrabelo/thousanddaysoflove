@@ -75,9 +75,9 @@ function LoginForm() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-            className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-pink-100 to-purple-100 rounded-full mb-4"
+            className="inline-flex items-center justify-center w-16 h-16 bg-[#E8E6E3] rounded-full mb-4"
           >
-            <Heart className="w-8 h-8 text-pink-600" />
+            <Heart className="w-8 h-8 text-[#A8A8A8]" />
           </motion.div>
 
           <h1 className="font-playfair text-4xl md:text-5xl text-[#2C2C2C] mb-2">
@@ -111,7 +111,7 @@ function LoginForm() {
                 onChange={(e) => setCode(e.target.value)}
                 placeholder="Ex: FAMILY001"
                 className="w-full px-4 py-3 border-2 border-[#E8E6E3] rounded-lg font-mono text-lg uppercase tracking-wider
-                         focus:border-pink-300 focus:ring-4 focus:ring-pink-100 outline-none transition-all
+                         focus:border-[#A8A8A8] focus:ring-4 focus:ring-[#E8E6E3] outline-none transition-all
                          placeholder:normal-case placeholder:tracking-normal"
                 disabled={isLoading}
                 autoFocus
@@ -137,8 +137,8 @@ function LoginForm() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-gradient-to-r from-pink-500 to-purple-500 text-white font-crimson text-lg py-3 px-6 rounded-lg
-                       hover:from-pink-600 hover:to-purple-600 transform hover:scale-[1.02] active:scale-[0.98]
+              className="w-full bg-[#2C2C2C] text-white font-crimson text-lg py-3 px-6 rounded-lg
+                       hover:bg-[#4A4A4A] transform hover:scale-[1.02] active:scale-[0.98]
                        disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
                        transition-all duration-200 flex items-center justify-center gap-2 shadow-lg"
             >
@@ -170,7 +170,7 @@ function LoginForm() {
               Não tem um código?{' '}
               <a
                 href="mailto:contato@thousanddaysof.love"
-                className="text-pink-600 hover:text-pink-700 underline"
+                className="text-[#2C2C2C] hover:text-[#4A4A4A] underline"
               >
                 Entre em contato
               </a>
@@ -219,7 +219,7 @@ export default function GuestLoginPage() {
       fallback={
         <div className="min-h-screen bg-[#F8F6F3] flex items-center justify-center">
           <div className="text-center">
-            <Heart className="w-16 h-16 text-pink-600 mx-auto mb-4 animate-pulse" />
+            <Heart className="w-16 h-16 text-[#A8A8A8] mx-auto mb-4 animate-pulse" />
             <p className="font-crimson text-lg text-[#4A4A4A]">Carregando...</p>
           </div>
         </div>

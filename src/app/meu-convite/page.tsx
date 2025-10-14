@@ -94,9 +94,9 @@ export default function GuestDashboardPage() {
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-              className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-pink-100 to-purple-100 rounded-full mb-4"
+              className="inline-flex items-center justify-center w-16 h-16 bg-[#E8E6E3] rounded-full mb-4"
             >
-              <Heart className="w-8 h-8 text-pink-600" />
+              <Heart className="w-8 h-8 text-[#A8A8A8]" />
             </motion.div>
             <p className="font-crimson text-lg text-[#4A4A4A] italic">
               Carregando seu dashboard...
@@ -117,8 +117,8 @@ export default function GuestDashboardPage() {
             <p className="font-crimson text-lg text-[#2C2C2C] mb-4">{error}</p>
             <button
               onClick={() => loadDashboard()}
-              className="bg-gradient-to-r from-pink-500 to-purple-500 text-white font-crimson px-6 py-3 rounded-lg
-                       hover:from-pink-600 hover:to-purple-600 transition-all"
+              className="bg-[#2C2C2C] text-white font-crimson px-6 py-3 rounded-lg
+                       hover:bg-[#4A4A4A] transition-all"
             >
               Tentar novamente
             </button>
@@ -163,8 +163,8 @@ export default function GuestDashboardPage() {
               {/* Logout button */}
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg
-                         hover:bg-red-100 transition-colors font-crimson text-sm"
+                className="flex items-center gap-2 px-4 py-2 bg-[#E8E6E3] text-[#4A4A4A] rounded-lg
+                         hover:bg-[#A8A8A8] hover:text-white transition-colors font-crimson text-sm"
               >
                 <LogOut className="w-4 h-4" />
                 Sair
@@ -276,7 +276,7 @@ interface StatCardProps {
 
 function StatCard({ label, value, icon }: StatCardProps) {
   return (
-    <div className="bg-gradient-to-br from-pink-50 to-purple-50 rounded-xl p-4 text-center">
+    <div className="bg-white rounded-xl p-4 text-center border border-[#E8E6E3]">
       <p className="text-2xl mb-1">{icon}</p>
       <p className="font-playfair text-3xl font-bold text-[#2C2C2C]">
         {value}

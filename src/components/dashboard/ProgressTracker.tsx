@@ -62,8 +62,8 @@ export default function ProgressTracker({ progress }: ProgressTrackerProps) {
               x2="100%"
               y2="0%"
             >
-              <stop offset="0%" stopColor="#ec4899" />
-              <stop offset="100%" stopColor="#a855f7" />
+              <stop offset="0%" stopColor="#2C2C2C" />
+              <stop offset="100%" stopColor="#A8A8A8" />
             </linearGradient>
           </defs>
         </svg>
@@ -142,9 +142,9 @@ function ProgressItem({ label, completed, delay }: ProgressItemProps) {
       className="flex items-center gap-2"
     >
       {completed ? (
-        <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
+        <CheckCircle2 className="w-5 h-5 text-[#2C2C2C] flex-shrink-0" />
       ) : (
-        <Circle className="w-5 h-5 text-gray-300 flex-shrink-0" />
+        <Circle className="w-5 h-5 text-[#E8E6E3] flex-shrink-0" />
       )}
       <span
         className={`text-sm font-crimson ${

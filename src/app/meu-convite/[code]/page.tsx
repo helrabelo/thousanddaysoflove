@@ -56,9 +56,9 @@ export default function DirectDashboardAccessPage() {
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-          className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-pink-100 to-purple-100 rounded-full mb-4"
+          className="inline-flex items-center justify-center w-16 h-16 bg-[#E8E6E3] rounded-full mb-4"
         >
-          <Heart className="w-8 h-8 text-pink-600" />
+          <Heart className="w-8 h-8 text-[#A8A8A8]" />
         </motion.div>
         <p className="font-crimson text-lg text-[#4A4A4A] italic">
           Acessando seu convite...
