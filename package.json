@@ -29,7 +29,12 @@
     "migrate:timeline": "tsx scripts/migrate-timeline-to-sanity.ts",
     "setup:story-preview": "tsx scripts/setup-story-preview.ts",
     "migrate:prod": "tsx scripts/apply-migration-to-prod.ts",
-    "seed:invitations": "tsx scripts/seed-invitations.ts"
+    "seed:invitations": "tsx scripts/seed-invitations.ts",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:report": "playwright show-report",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.16.10",

@@ -29,6 +29,7 @@ import type { GuestPost } from '@/types/wedding';
 
 interface PostComposerProps {
   guestName: string;
+  isAuthenticated?: boolean; // Whether guest is authenticated via invitation code
   onPostCreated?: (post: GuestPost) => void;
   onCancel?: () => void;
 }
@@ -45,6 +46,7 @@ const WEDDING_EMOJIS = [
 
 export default function PostComposer({
   guestName,
+  isAuthenticated = false,
   onPostCreated,
   onCancel,
 }: PostComposerProps) {
@@ -182,6 +184,7 @@ export default function PostComposer({
         content: content.trim(),
         post_type: detectPostType(),
         media_urls: mediaUrls.length > 0 ? mediaUrls : undefined,
+        isAuthenticated, // Pass authentication status for auto-approval
       });
 
       if (!post) {
@@ -424,11 +427,20 @@ export default function PostComposer({
       </div>
 
       {/* Moderation Notice */}
-      <div className="mt-4 p-3 bg-[#F8F6F3] rounded-md border border-[#E8E6E3]">
-        <p className="text-xs text-[#4A4A4A] text-center">
-          ✨ Sua mensagem será revisada antes de aparecer no feed. Aguarde alguns minutos!
-        </p>
-      </div>
+      {!isAuthenticated && (
+        <div className="mt-4 p-3 bg-[#F8F6F3] rounded-md border border-[#E8E6E3]">
+          <p className="text-xs text-[#4A4A4A] text-center">
+            ✨ Sua mensagem será revisada antes de aparecer no feed. Aguarde alguns minutos!
+          </p>
+        </div>
+      )}
+      {isAuthenticated && (
+        <div className="mt-4 p-3 bg-green-50 rounded-md border border-green-200">
+          <p className="text-xs text-green-700 text-center">
+            ✅ Como convidado autenticado, sua mensagem será publicada imediatamente!
+          </p>
+        </div>
+      )}
     </motion.div>
   );
 }

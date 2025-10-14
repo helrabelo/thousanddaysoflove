@@ -90,6 +90,10 @@ export async function POST(request: NextRequest) {
     // Create database record (use admin client to bypass RLS)
     const supabase = createAdminClient()
 
+    // Auto-approve photos from authenticated guests (invitation code)
+    // Require approval for anonymous guests (shared password)
+    const moderationStatus = session.auth_method === 'invitation_code' ? 'approved' : 'pending'
+
     const { data: photo, error: dbError } = await supabase
       .from('guest_photos')
       .insert({
@@ -106,7 +110,7 @@ export async function POST(request: NextRequest) {
         height: storageResult.height,
         is_video: storageResult.is_video,
         video_duration_seconds: storageResult.video_duration_seconds,
-        moderation_status: 'pending', // Requires admin approval
+        moderation_status: moderationStatus,
       })
       .select()
       .single()
@@ -132,7 +136,7 @@ export async function POST(request: NextRequest) {
       })
       .eq('id', session.id)
 
-    // Create activity feed entry
+    // Create activity feed entry (public if auto-approved)
     await supabase.from('activity_feed').insert({
       activity_type: 'photo_uploaded',
       guest_id: session.guest_id,
@@ -143,9 +147,14 @@ export async function POST(request: NextRequest) {
         is_video: storageResult.is_video,
         phase,
         file_size: storageResult.file_size_bytes,
+        auto_approved: moderationStatus === 'approved',
       },
-      is_public: false, // Only show after moderation approval
+      is_public: moderationStatus === 'approved', // Show immediately if auto-approved
     })
+
+    const responseMessage = moderationStatus === 'approved'
+      ? 'Upload realizado com sucesso! Sua foto já está visível na galeria.'
+      : 'Upload realizado com sucesso! Aguardando aprovação.'
 
     return NextResponse.json(
       {
@@ -156,8 +165,9 @@ export async function POST(request: NextRequest) {
           public_url: storageResult.public_url,
           is_video: storageResult.is_video,
           moderation_status: photo.moderation_status,
+          auto_approved: moderationStatus === 'approved',
         },
-        message: 'Upload realizado com sucesso! Aguardando aprovação.',
+        message: responseMessage,
       },
       { status: 201 }
     )

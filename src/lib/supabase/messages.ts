@@ -27,9 +27,11 @@ import type {
 /**
  * Create a new guest post
  *
- * Posts are created with 'pending' status and require admin approval
+ * Auto-approves posts from authenticated guests (via invitation code)
+ * Requires manual approval for anonymous guests (via shared password)
  *
  * @param post - Post data
+ * @param isAuthenticated - Whether guest is authenticated via invitation code
  * @returns Created post or null on error
  */
 export async function createGuestPost(post: {
@@ -37,14 +39,22 @@ export async function createGuestPost(post: {
   content: string;
   post_type: 'text' | 'image' | 'video' | 'mixed';
   media_urls?: string[];
+  isAuthenticated?: boolean;
 }): Promise<GuestPost | null> {
   const supabase = createClient();
+
+  // Auto-approve for authenticated guests (invitation code)
+  // Require approval for anonymous guests (shared password)
+  const status = post.isAuthenticated ? 'approved' : 'pending';
 
   const { data, error } = await supabase
     .from('guest_posts')
     .insert({
-      ...post,
-      status: 'pending', // All posts start as pending
+      guest_name: post.guest_name,
+      content: post.content,
+      post_type: post.post_type,
+      media_urls: post.media_urls,
+      status,
     })
     .select()
     .single();

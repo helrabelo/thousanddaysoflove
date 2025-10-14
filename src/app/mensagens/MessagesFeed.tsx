@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Filter, RefreshCw, AlertCircle } from 'lucide-react';
 import { getApprovedPosts } from '@/lib/supabase/messages';
 import type { GuestPost } from '@/types/wedding';
+import type { GuestSession } from '@/lib/auth/guestAuth';
 import PostComposer from '@/components/messages/PostComposer';
 import PostCard from '@/components/messages/PostCard';
 
@@ -23,15 +24,43 @@ export default function MessagesFeed() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [guestName, setGuestName] = useState<string>('');
   const [showComposer, setShowComposer] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Load guest name from session storage (simplified - in production use proper auth)
+  // Check guest session to determine authentication status
   useEffect(() => {
-    const storedName = sessionStorage.getItem('guest_name');
-    if (storedName) {
-      setGuestName(storedName);
-      setShowComposer(true);
-    }
+    checkGuestSession();
   }, []);
+
+  const checkGuestSession = async () => {
+    try {
+      const response = await fetch('/api/auth/verify');
+      const data = await response.json();
+
+      if (response.ok && data.success && data.session) {
+        const session: GuestSession = data.session;
+        setGuestName(session.guest?.name || 'Convidado');
+        setIsAuthenticated(session.auth_method === 'invitation_code');
+        setShowComposer(true);
+      } else {
+        // Fallback to session storage for anonymous guests
+        const storedName = sessionStorage.getItem('guest_name');
+        if (storedName) {
+          setGuestName(storedName);
+          setIsAuthenticated(false); // Anonymous guest
+          setShowComposer(true);
+        }
+      }
+    } catch (error) {
+      console.error('Error checking guest session:', error);
+      // Fallback to session storage
+      const storedName = sessionStorage.getItem('guest_name');
+      if (storedName) {
+        setGuestName(storedName);
+        setIsAuthenticated(false);
+        setShowComposer(true);
+      }
+    }
+  };
 
   // Load posts
   useEffect(() => {
@@ -61,10 +90,14 @@ export default function MessagesFeed() {
   };
 
   const handlePostCreated = () => {
-    // Show success message
-    alert('✨ Sua mensagem foi enviada! Aguarde alguns minutos para aprovação.');
-    // Optionally refresh to show the post if instantly approved (in dev mode)
-    // handleRefresh();
+    // Show success message based on authentication status
+    if (isAuthenticated) {
+      alert('✅ Sua mensagem foi publicada imediatamente!');
+      // Refresh to show the newly posted message
+      handleRefresh();
+    } else {
+      alert('✨ Sua mensagem foi enviada! Aguarde alguns minutos para aprovação.');
+    }
   };
 
   const handleGuestNameSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -114,6 +147,7 @@ export default function MessagesFeed() {
         {showComposer && (
           <PostComposer
             guestName={guestName}
+            isAuthenticated={isAuthenticated}
             onPostCreated={handlePostCreated}
           />
         )}

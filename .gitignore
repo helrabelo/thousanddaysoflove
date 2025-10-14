@@ -58,3 +58,10 @@ src/types/supabase.ts
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Test fixtures
+tests/fixtures/*.jpg
+tests/fixtures/*.jpeg
+tests/fixtures/*.png
+tests/fixtures/*.mp4
+tests/fixtures/*.mov
