@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { ArrowRight, Calendar, MessageCircle, Radio } from 'lucide-react'
 import Image from 'next/image'
+import ElegantInvitation from './ElegantInvitation'
 
 const guestFeatures = [
   {
@@ -36,43 +37,9 @@ export default function InvitationCTASection() {
             transition={{ duration: 0.8, ease: 'easeOut' }}
             className="relative"
           >
-            <div className="relative aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl">
-              {/* Placeholder for invitation preview image */}
-              <div
-                className="absolute inset-0 flex items-center justify-center"
-                style={{
-                  background: 'linear-gradient(135deg, #E8B4B8 0%, #D4A5A5 100%)',
-                }}
-              >
-                <div className="text-center p-8">
-                  <div
-                    className="mb-4"
-                    style={{
-                      fontFamily: 'var(--font-cormorant)',
-                      fontSize: 'clamp(3rem, 8vw, 5rem)',
-                      fontWeight: '300',
-                      color: 'white',
-                      filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
-                    }}
-                  >
-                    H & Y
-                  </div>
-                  <div
-                    style={{
-                      fontFamily: 'var(--font-playfair)',
-                      fontSize: 'clamp(1rem, 2.5vw, 1.5rem)',
-                      color: 'white',
-                      letterSpacing: '0.1em',
-                    }}
-                  >
-                    SEU CONVITE PESSOAL
-                  </div>
-                </div>
-              </div>
-
-              {/* Decorative corner accents */}
-              <div className="absolute top-4 left-4 w-16 h-16 border-l-2 border-t-2 border-white opacity-40" />
-              <div className="absolute bottom-4 right-4 w-16 h-16 border-r-2 border-b-2 border-white opacity-40" />
+            <div className="relative aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl bg-white">
+              {/* Elegant invitation preview */}
+              <ElegantInvitation />
             </div>
 
             {/* Floating badge */}
@@ -80,8 +47,8 @@ export default function InvitationCTASection() {
               className="absolute -top-4 -right-4 px-4 py-2 rounded-full text-sm font-medium shadow-lg"
               style={{
                 fontFamily: 'var(--font-crimson)',
-                background: 'linear-gradient(135deg, #10B981, #059669)',
-                color: 'white',
+                background: 'var(--primary-text)',
+                color: 'var(--white-soft)',
               }}
               animate={{ y: [0, -8, 0] }}
               transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
@@ -151,7 +118,7 @@ export default function InvitationCTASection() {
                   key={feature.title}
                   className="flex items-start gap-4 p-4 rounded-xl"
                   style={{
-                    background: 'rgba(255, 255, 255, 0.6)',
+                    background: 'var(--accent)',
                     border: '1px solid var(--border-subtle)',
                   }}
                   initial={{ opacity: 0, x: -20 }}
@@ -163,8 +130,8 @@ export default function InvitationCTASection() {
                   <div
                     className="flex-shrink-0 p-2 rounded-lg"
                     style={{
-                      background: 'linear-gradient(135deg, #E8B4B8, #D4A5A5)',
-                      color: 'white',
+                      background: 'var(--decorative)',
+                      color: 'var(--white-soft)',
                     }}
                   >
                     {feature.icon}

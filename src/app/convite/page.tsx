@@ -23,7 +23,6 @@ const WEBSITE_FEATURES = [
     description: 'Confirme sua presença e nos conte se virá acompanhado',
     action: 'Fazer RSVP',
     href: '/rsvp',
-    color: 'from-rose-500 to-pink-500',
   },
   {
     icon: Camera,
@@ -31,7 +30,6 @@ const WEBSITE_FEATURES = [
     description: 'Faça upload das suas fotos do casamento para nossa galeria',
     action: 'Enviar Fotos',
     href: '/dia-1000/upload',
-    color: 'from-blue-500 to-cyan-500',
   },
   {
     icon: MessageSquare,
@@ -39,7 +37,6 @@ const WEBSITE_FEATURES = [
     description: 'Deixe uma mensagem especial para o casal (em breve)',
     action: 'Escrever Mensagem',
     href: '/mensagens',
-    color: 'from-purple-500 to-indigo-500',
     comingSoon: true,
   },
   {
@@ -48,7 +45,6 @@ const WEBSITE_FEATURES = [
     description: 'Veja nossa lista de presentes e escolha o seu',
     action: 'Ver Presentes',
     href: '/presentes',
-    color: 'from-amber-500 to-orange-500',
   },
 ];
 
@@ -132,7 +128,11 @@ export default function ConvitePage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.6, delay: 0.3 }}
-                className="mt-8 p-6 rounded-2xl bg-gradient-to-br from-rose-50 to-pink-50 border border-rose-100"
+                className="mt-8 p-6 rounded-2xl border"
+                style={{
+                  background: 'var(--accent)',
+                  borderColor: 'var(--decorative)',
+                }}
               >
                 <p
                   className="text-sm mb-3"
@@ -268,23 +268,34 @@ export default function ConvitePage() {
                     className="relative group"
                   >
                     <div className="h-full bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300">
-                      {/* Gradient accent line */}
+                      {/* Accent line */}
                       <div
-                        className={`absolute top-0 left-0 right-0 h-1 rounded-t-2xl bg-gradient-to-r ${feature.color}`}
+                        className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl"
+                        style={{ background: 'var(--decorative)' }}
                       />
 
                       {/* Coming soon badge */}
                       {feature.comingSoon && (
-                        <div className="absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
+                        <div
+                          className="absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-medium"
+                          style={{
+                            background: 'var(--accent)',
+                            color: 'var(--secondary-text)',
+                          }}
+                        >
                           Em breve
                         </div>
                       )}
 
                       <div className="flex items-start gap-4">
                         <div
-                          className={`flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center bg-gradient-to-br ${feature.color}`}
+                          className="flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center"
+                          style={{
+                            background: 'var(--decorative)',
+                            color: 'var(--white-soft)',
+                          }}
                         >
-                          <Icon className="w-7 h-7 text-white" />
+                          <Icon className="w-7 h-7" />
                         </div>
 
                         <div className="flex-1">

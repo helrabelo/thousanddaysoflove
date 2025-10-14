@@ -56,28 +56,24 @@ const QUICK_ACTIONS = [
     title: 'Confirmar Presença',
     description: 'Complete seu RSVP',
     href: '/rsvp',
-    color: 'from-green-500 to-emerald-500',
   },
   {
     icon: Gift,
     title: 'Ver Presentes',
     description: 'Escolha um presente',
     href: '/presentes',
-    color: 'from-rose-500 to-pink-500',
   },
   {
     icon: Camera,
     title: 'Enviar Fotos',
     description: 'Compartilhe suas fotos',
     href: '/dia-1000/upload',
-    color: 'from-blue-500 to-cyan-500',
   },
   {
     icon: MessageSquare,
     title: 'Enviar Mensagem',
     description: 'Deixe uma mensagem (em breve)',
     href: '/mensagens',
-    color: 'from-purple-500 to-indigo-500',
     comingSoon: true,
   },
 ];
@@ -285,7 +281,11 @@ export default function PersonalizedInvitePage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.6, delay: 0.3 }}
-                  className="mt-8 p-6 rounded-2xl bg-gradient-to-br from-rose-50 to-pink-50 border border-rose-100"
+                  className="mt-8 p-6 rounded-2xl border"
+                  style={{
+                    background: 'var(--accent)',
+                    borderColor: 'var(--decorative)',
+                  }}
                 >
                   <p
                     className="text-lg leading-relaxed"
@@ -306,7 +306,11 @@ export default function PersonalizedInvitePage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.6, delay: 0.4 }}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-100"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full border"
+                  style={{
+                    background: 'var(--accent)',
+                    borderColor: 'var(--decorative)',
+                  }}
                 >
                   <User
                     className="w-4 h-4"
@@ -386,18 +390,29 @@ export default function PersonalizedInvitePage() {
                       onClick={(e) => action.comingSoon && e.preventDefault()}
                     >
                       <div
-                        className={`absolute top-0 left-0 right-0 h-1 rounded-t-2xl bg-gradient-to-r ${action.color}`}
+                        className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl"
+                        style={{ background: 'var(--decorative)' }}
                       />
                       {action.comingSoon && (
-                        <div className="absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
+                        <div
+                          className="absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-medium"
+                          style={{
+                            background: 'var(--accent)',
+                            color: 'var(--secondary-text)',
+                          }}
+                        >
                           Em breve
                         </div>
                       )}
                       <div className="flex items-center gap-4">
                         <div
-                          className={`flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center bg-gradient-to-br ${action.color}`}
+                          className="flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center"
+                          style={{
+                            background: 'var(--decorative)',
+                            color: 'var(--white-soft)',
+                          }}
                         >
-                          <Icon className="w-7 h-7 text-white" />
+                          <Icon className="w-7 h-7" />
                         </div>
                         <div>
                           <h3

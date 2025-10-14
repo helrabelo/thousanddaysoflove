@@ -43,16 +43,25 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F6F3] flex items-center justify-center px-4">
+    <div
+      className="min-h-screen flex items-center justify-center px-4"
+      style={{ background: 'var(--background)' }}
+    >
       <div className="w-full max-w-md">
         {/* Card */}
         <div className="bg-white rounded-lg shadow-lg p-8">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-serif text-[#2C2C2C] mb-2">
+            <h1
+              className="text-3xl mb-2"
+              style={{
+                fontFamily: 'var(--font-playfair)',
+                color: 'var(--primary-text)',
+              }}
+            >
               Admin Login
             </h1>
-            <p className="text-[#4A4A4A]">
+            <p style={{ color: 'var(--secondary-text)' }}>
               Acesso restrito à área de administração
             </p>
           </div>
@@ -62,7 +71,8 @@ export default function AdminLoginPage() {
             <div className="mb-6">
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-[#2C2C2C] mb-2"
+                className="block text-sm font-medium mb-2"
+                style={{ color: 'var(--primary-text)' }}
               >
                 Senha
               </label>
@@ -72,7 +82,11 @@ export default function AdminLoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Digite a senha de administrador"
-                className="w-full px-4 py-3 border border-[#E8E6E3] rounded-md focus:ring-2 focus:ring-[#2C2C2C] focus:border-transparent"
+                className="w-full px-4 py-3 border rounded-md focus:ring-2 focus:border-transparent"
+                style={{
+                  borderColor: 'var(--accent)',
+                  outlineColor: 'var(--primary-text)',
+                }}
                 required
                 autoFocus
               />
@@ -89,7 +103,19 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={isLoading || !password}
-              className="w-full px-4 py-3 bg-[#2C2C2C] text-white rounded-md hover:bg-[#4A4A4A] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+              className="w-full px-4 py-3 rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+              style={{
+                background: 'var(--primary-text)',
+                color: 'var(--white-soft)',
+              }}
+              onMouseEnter={(e) =>
+                !isLoading &&
+                password &&
+                (e.currentTarget.style.background = 'var(--secondary-text)')
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.background = 'var(--primary-text)')
+              }
             >
               {isLoading ? 'Entrando...' : 'Entrar'}
             </button>
@@ -99,7 +125,14 @@ export default function AdminLoginPage() {
           <div className="mt-6 text-center">
             <a
               href="/"
-              className="text-sm text-[#4A4A4A] hover:text-[#2C2C2C] transition-colors"
+              className="text-sm transition-colors"
+              style={{ color: 'var(--secondary-text)' }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.color = 'var(--primary-text)')
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.color = 'var(--secondary-text)')
+              }
             >
               ← Voltar ao site
             </a>

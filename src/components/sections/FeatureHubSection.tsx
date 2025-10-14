@@ -20,21 +20,21 @@ const features: FeatureCard[] = [
     description: 'Do "oi" ao altar - Nossa jornada de mil dias de amor',
     href: '/historia',
     icon: <Heart className="w-8 h-8" />,
-    gradient: 'from-[#E8B4B8] to-[#F5D5D8]',
+    gradient: '',
   },
   {
     title: 'Galeria',
     description: '1000 dias em fotos - Momentos especiais capturados',
     href: '/galeria',
     icon: <Image className="w-8 h-8" />,
-    gradient: 'from-[#D4A5A5] to-[#E5C5C5]',
+    gradient: '',
   },
   {
     title: 'Confirmação',
     description: 'Confirme sua presença - Colabore com o TOC da Ylana!',
     href: '/rsvp',
     icon: <Calendar className="w-8 h-8" />,
-    gradient: 'from-[#C9ADA7] to-[#D9BDB7]',
+    gradient: '',
     badge: 'Urgente',
     badgeType: 'urgent',
   },
@@ -43,7 +43,7 @@ const features: FeatureCard[] = [
     description: 'Ajude a realizar nossos sonhos - Bora coçar os bolsos!',
     href: '/presentes',
     icon: <Gift className="w-8 h-8" />,
-    gradient: 'from-[#B8B8B8] to-[#D0D0D0]',
+    gradient: '',
   },
 ]
 
@@ -125,7 +125,7 @@ export default function FeatureHubSection() {
                 <motion.div
                   className="relative h-full p-8 md:p-10 rounded-2xl overflow-hidden"
                   style={{
-                    background: `linear-gradient(135deg, var(--white-soft) 0%, ${feature.gradient.split(' ')[1].replace('from-[', '').replace(']', '')} 100%)`,
+                    background: 'var(--accent)',
                     border: '1px solid var(--border-subtle)',
                     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.06)',
                   }}
@@ -140,10 +140,10 @@ export default function FeatureHubSection() {
                         fontFamily: 'var(--font-crimson)',
                         background:
                           feature.badgeType === 'urgent'
-                            ? 'linear-gradient(135deg, #EF4444, #DC2626)'
-                            : 'linear-gradient(135deg, #10B981, #059669)',
-                        color: 'white',
-                        boxShadow: '0 2px 8px rgba(239, 68, 68, 0.3)',
+                            ? 'var(--primary-text)'
+                            : 'var(--decorative)',
+                        color: 'var(--white-soft)',
+                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
                       }}
                       animate={
                         feature.badgeType === 'urgent'

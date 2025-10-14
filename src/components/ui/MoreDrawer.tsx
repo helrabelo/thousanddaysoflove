@@ -45,16 +45,16 @@ const drawerItems: DrawerItem[] = [
     description: 'Poste fotos e mensagens',
     category: 'guest',
     badge: 'Novo',
-    badgeColor: 'from-[#10B981] to-[#059669]',
+    badgeColor: 'var(--decorative)',
   },
   {
     name: 'Ao Vivo',
-    href: '/ao-vivo',
+    href: '/dia-1000',
     icon: <Radio className="w-5 h-5" />,
     description: 'Feed do dia do casamento',
     category: 'guest',
     badge: '20 Nov',
-    badgeColor: 'from-[#EF4444] to-[#DC2626]',
+    badgeColor: 'var(--secondary-text)',
   },
   // Info Pages
   {
@@ -231,8 +231,8 @@ export default function MoreDrawer({ isOpen, onClose }: MoreDrawerProps) {
                         <div
                           className="flex-shrink-0 p-2.5 rounded-lg"
                           style={{
-                            background: 'linear-gradient(135deg, #E8B4B8, #D4A5A5)',
-                            color: 'white',
+                            background: 'var(--decorative)',
+                            color: 'var(--white-soft)',
                           }}
                         >
                           {item.icon}
@@ -256,8 +256,8 @@ export default function MoreDrawer({ isOpen, onClose }: MoreDrawerProps) {
                                 className="px-2 py-0.5 rounded-full text-xs font-medium"
                                 style={{
                                   fontFamily: 'var(--font-crimson)',
-                                  background: `linear-gradient(135deg, ${item.badgeColor})`,
-                                  color: 'white',
+                                  background: item.badgeColor,
+                                  color: 'var(--white-soft)',
                                 }}
                               >
                                 {item.badge}
@@ -398,7 +398,7 @@ export default function MoreDrawer({ isOpen, onClose }: MoreDrawerProps) {
               <div
                 className="mt-6 p-4 rounded-xl text-center"
                 style={{
-                  background: 'linear-gradient(135deg, #E8B4B8, #D4A5A5)',
+                  background: 'var(--primary-text)',
                 }}
               >
                 <p
@@ -406,7 +406,7 @@ export default function MoreDrawer({ isOpen, onClose }: MoreDrawerProps) {
                     fontFamily: 'var(--font-crimson)',
                     fontStyle: 'italic',
                     fontSize: '0.875rem',
-                    color: 'white',
+                    color: 'var(--white-soft)',
                     lineHeight: '1.5',
                   }}
                 >

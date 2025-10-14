@@ -29,17 +29,17 @@ const guestMenuItems: GuestMenuItem[] = [
     icon: <MessageCircle className="w-5 h-5" />,
     description: 'Compartilhe com outros convidados',
     badge: 'Novo',
-    badgeColor: 'from-[#10B981] to-[#059669]',
+    badgeColor: 'var(--decorative)',
   },
   {
     name: 'Ao Vivo',
-    href: '/ao-vivo',
+    href: '/dia-1000',
     icon: <Radio className="w-5 h-5" />,
     description: 'Acompanhe a festa em tempo real',
     timeGated: true,
     availableDate: new Date('2025-11-20'),
     badge: '20 Nov',
-    badgeColor: 'from-[#EF4444] to-[#DC2626]',
+    badgeColor: 'var(--secondary-text)',
   },
 ]
 
@@ -137,7 +137,7 @@ export default function GuestMenu() {
             <div
               className="px-4 py-3 border-b"
               style={{
-                background: 'linear-gradient(135deg, #E8B4B8, #D4A5A5)',
+                background: 'var(--primary-text)',
                 borderColor: 'var(--border-subtle)',
               }}
             >
@@ -146,7 +146,7 @@ export default function GuestMenu() {
                   fontFamily: 'var(--font-playfair)',
                   fontSize: '1rem',
                   fontWeight: '600',
-                  color: 'white',
+                  color: 'var(--white-soft)',
                   letterSpacing: '0.02em',
                 }}
               >
@@ -158,7 +158,7 @@ export default function GuestMenu() {
                   fontFamily: 'var(--font-crimson)',
                   fontStyle: 'italic',
                   fontSize: '0.75rem',
-                  color: 'rgba(255, 255, 255, 0.9)',
+                  color: 'var(--accent)',
                 }}
               >
                 Acesse recursos exclusivos
@@ -188,8 +188,8 @@ export default function GuestMenu() {
                           <div
                             className="flex-shrink-0 p-2 rounded-lg"
                             style={{
-                              background: 'linear-gradient(135deg, #E8B4B8, #D4A5A5)',
-                              color: 'white',
+                              background: 'var(--decorative)',
+                              color: 'var(--white-soft)',
                             }}
                           >
                             {item.icon}
@@ -213,8 +213,8 @@ export default function GuestMenu() {
                                   className="px-2 py-0.5 rounded-full text-xs font-medium"
                                   style={{
                                     fontFamily: 'var(--font-crimson)',
-                                    background: `linear-gradient(135deg, ${item.badgeColor})`,
-                                    color: 'white',
+                                    background: item.badgeColor,
+                                    color: 'var(--white-soft)',
                                   }}
                                 >
                                   {item.badge}
