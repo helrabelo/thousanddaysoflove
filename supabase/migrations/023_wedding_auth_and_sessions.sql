@@ -4,7 +4,11 @@
 -- Note: guest_photos table created in migration 20251013061016
 
 -- Enable pgcrypto extension for password hashing
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
+-- In Supabase Cloud, pgcrypto is in the extensions schema
+CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA extensions;
+
+-- Add extensions schema to search_path for this migration
+SET search_path TO public, extensions;
 
 -- ============================================================================
 -- 1. WEDDING AUTH CONFIG TABLE
@@ -40,12 +44,13 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_wedding_auth_config_singleton
 ON public.wedding_auth_config ((true));
 
 -- Insert default config
+-- Use extensions schema prefix for Supabase Cloud compatibility
 INSERT INTO public.wedding_auth_config (
   shared_password_hash,
   shared_password_enabled,
   require_invitation_code
 ) VALUES (
-  crypt('1000dias', gen_salt('bf')),
+  extensions.crypt('1000dias', extensions.gen_salt('bf')),
   true,
   true
 ) ON CONFLICT DO NOTHING;
@@ -70,7 +75,8 @@ BEGIN
     RETURN false;
   END IF;
 
-  RETURN stored_hash = crypt(input_password, stored_hash);
+  -- Use extensions schema prefix for Supabase Cloud compatibility
+  RETURN stored_hash = extensions.crypt(input_password, stored_hash);
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
@@ -80,7 +86,8 @@ RETURNS BOOLEAN AS $$
 BEGIN
   UPDATE public.wedding_auth_config
   SET
-    shared_password_hash = crypt(new_password, gen_salt('bf')),
+    -- Use extensions schema prefix for Supabase Cloud compatibility
+    shared_password_hash = extensions.crypt(new_password, extensions.gen_salt('bf')),
     updated_at = NOW();
 
   RETURN true;

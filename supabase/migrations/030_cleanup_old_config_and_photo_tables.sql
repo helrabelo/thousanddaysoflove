@@ -27,13 +27,11 @@ DROP TABLE IF EXISTS public.wedding_config CASCADE;
 -- DROP OLD PHOTO/UPLOAD TRACKING TABLES
 -- =====================================================
 
--- Drop photo_likes if not used (check if activity_feed is handling this)
--- UNCOMMENT AFTER VERIFICATION:
--- DROP TABLE IF EXISTS public.photo_likes CASCADE;
+-- Drop photo_likes (verified: only in TypeScript types, not used in code)
+DROP TABLE IF EXISTS public.photo_likes CASCADE;
 
--- Drop upload_sessions if redundant with guest_sessions
--- UNCOMMENT AFTER VERIFICATION:
--- DROP TABLE IF EXISTS public.upload_sessions CASCADE;
+-- Drop upload_sessions (verified: replaced by guest_sessions)
+DROP TABLE IF EXISTS public.upload_sessions CASCADE;
 
 -- =====================================================
 -- VERIFICATION
@@ -41,15 +39,10 @@ DROP TABLE IF EXISTS public.wedding_config CASCADE;
 
 DO $$
 BEGIN
-  RAISE NOTICE '✅ Migration 030 complete: Dropped 1 old config table';
-  RAISE NOTICE '   Removed: wedding_config';
+  RAISE NOTICE '✅ Migration 030 complete: Dropped 3 old tables';
+  RAISE NOTICE '   Removed: wedding_config, photo_likes, upload_sessions';
   RAISE NOTICE '   Active config: wedding_settings';
-  RAISE NOTICE '';
-  RAISE NOTICE '⏸️  PAUSED cleanup for verification:';
-  RAISE NOTICE '   - photo_likes: Check if used in activity_feed or components';
-  RAISE NOTICE '   - upload_sessions: Check if redundant with guest_sessions';
-  RAISE NOTICE '';
-  RAISE NOTICE '   To complete cleanup, uncomment DROP statements in migration 030';
+  RAISE NOTICE '   Active sessions: guest_sessions';
 END $$;
 
 -- =====================================================
