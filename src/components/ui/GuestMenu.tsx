@@ -94,17 +94,29 @@ export default function GuestMenu() {
 
   return (
     <div className="relative" ref={menuRef}>
-      {/* Trigger Button */}
+      {/* Trigger Button - Matches Navigation Style */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 min-h-[44px]"
+        className="flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 min-h-[44px]"
         style={{
           fontFamily: 'var(--font-playfair)',
           color: isOpen ? 'var(--primary-text)' : 'var(--secondary-text)',
-          fontWeight: '400',
-          fontSize: '0.9rem',
-          letterSpacing: '0.1em',
+          fontWeight: isOpen ? '500' : '400',
+          fontSize: '1rem',
+          letterSpacing: '0.05em',
           background: isOpen ? 'var(--accent)' : 'transparent',
+        }}
+        onMouseEnter={(e) => {
+          if (!isOpen) {
+            e.currentTarget.style.color = 'var(--primary-text)'
+            e.currentTarget.style.background = 'var(--accent)'
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (!isOpen) {
+            e.currentTarget.style.color = 'var(--secondary-text)'
+            e.currentTarget.style.background = 'transparent'
+          }
         }}
         aria-label="Menu de convidados"
         aria-expanded={isOpen}

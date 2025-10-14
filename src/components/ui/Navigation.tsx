@@ -14,43 +14,42 @@ const navItems = [
     name: 'Nossa História',
     href: '/historia',
     icon: '♥',
-    hoverMessage: 'Do \'oi\' ao altar 💕',
-    easterEgg: 'primeiro oi no WhatsApp'
+    tooltip: 'Do \'oi\' ao altar 💕',
+    easterEgg: 'Do \'oi\' ao altar'
   },
   {
     name: 'Galeria',
     href: '/galeria',
     icon: '📸',
-    hoverMessage: '1000 dias em 📸',
-    easterEgg: 'nossos highlights'
+    tooltip: '1000 dias em 📸',
+    easterEgg: 'Nossos 1000 dias em fotos'
   },
   {
     name: 'Confirmação',
     href: '/rsvp',
     icon: '💌',
-    hoverMessage: 'Colabore com o TOC da Ylana, confirme!',
-    easterEgg: 'é serio, confirme por favor'
+    tooltip: 'Colabore com o TOC da Ylana, confirme!',
+    easterEgg: 'Por favor, confirme presença'
   },
   {
-    name: 'Lista de Presentes',
+    name: 'Presentes',
     href: '/presentes',
     icon: '🎁',
-    hoverMessage: 'Bora coçar os bolsos! 💸',
-    easterEgg: 'bancar nossa lua de mel de pobre premium+Max pro'
+    tooltip: 'Bora coçar os bolsos! 💸',
+    easterEgg: 'Ajude-nos a começar juntos'
   },
   {
     name: 'Detalhes',
     href: '/detalhes',
     icon: '📍',
-    hoverMessage: 'Tudo sobre o grande dia',
-    easterEgg: 'horários, traje, estacionamento e mais'
+    tooltip: 'Tudo sobre o grande dia',
+    easterEgg: 'Informações do grande dia'
   },
 ]
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [hoveredItem, setHoveredItem] = useState<string | null>(null)
-  const [showTooltip, setShowTooltip] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const pathname = usePathname()
   const isHomePage = pathname === '/'
@@ -93,63 +92,77 @@ export default function Navigation() {
         ease: 'easeInOut'
       }}
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-row justify-between items-center h-20">
-          {/* Elegant Logo */}
-          <Link href="/" className="flex flex-row items-center min-w-[44px] min-h-[44px] flex-shrink-0">
+          {/* Elegant Logo - Larger & More Prominent */}
+          <Link href="/" className="flex flex-row items-center min-w-[44px] min-h-[44px] flex-shrink-0 transition-transform duration-300 hover:scale-105">
             <Image
               src="/hy-logo.svg"
               alt="H & Y"
-              width={100}
-              height={34}
+              width={120}
+              height={41}
               className="h-auto"
               style={{
-                width: 'clamp(80px, 12vw, 100px)',
-                filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.1))'
+                width: 'clamp(100px, 14vw, 120px)',
+                filter: 'drop-shadow(0 1px 4px rgba(0,0,0,0.08))'
               }}
               priority
             />
           </Link>
 
-          {/* Elegant Desktop Navigation */}
-          <div className="hidden md:flex md:flex-row space-x-8 flex-1 justify-center items-center">
-            {navItems.map((item) => (
-              <motion.div key={item.name} className="relative group">
+          {/* Elegant Desktop Navigation - Clean & Spacious */}
+          <nav className="hidden md:flex md:flex-row items-center gap-2 flex-1 justify-center">
+            {navItems.map((item) => {
+              const isActive = pathname === item.href
+
+              return (
                 <Link
+                  key={item.name}
                   href={item.href}
-                  className="flex flex-row items-center gap-2 transition-all duration-300 relative min-h-[44px] px-2"
+                  className="relative px-4 py-2 transition-all duration-300 rounded-lg min-h-[44px] flex items-center"
                   style={{
                     fontFamily: 'var(--font-playfair)',
-                    color: 'var(--secondary-text)',
-                    fontWeight: '400',
-                    fontSize: '0.9rem',
-                    letterSpacing: '0.1em',
-                    textDecoration: 'none'
+                    color: isActive ? 'var(--primary-text)' : 'var(--secondary-text)',
+                    fontWeight: isActive ? '500' : '400',
+                    fontSize: '1rem',
+                    letterSpacing: '0.05em',
+                    textDecoration: 'none',
+                    background: isActive ? 'var(--accent)' : 'transparent',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.color = 'var(--primary-text)'
-                    e.currentTarget.style.transform = 'translateY(-1px)'
                     setHoveredItem(item.name)
-                    setShowTooltip(true)
+                    if (!isActive) {
+                      e.currentTarget.style.color = 'var(--primary-text)'
+                      e.currentTarget.style.background = 'var(--accent)'
+                    }
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.color = 'var(--secondary-text)'
-                    e.currentTarget.style.transform = 'translateY(0)'
                     setHoveredItem(null)
-                    setShowTooltip(false)
+                    if (!isActive) {
+                      e.currentTarget.style.color = 'var(--secondary-text)'
+                      e.currentTarget.style.background = 'transparent'
+                    }
                   }}
                 >
-                  <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-sm animate-gentle-bounce">
-                    {item.icon}
-                  </span>
                   {item.name}
 
-                  {/* Tooltip romântico */}
-                  {hoveredItem === item.name && showTooltip && (
+                  {/* Active indicator */}
+                  {isActive && (
                     <motion.div
-                      initial={{ opacity: 0, y: 10, scale: 0.8 }}
+                      layoutId="activeNavIndicator"
+                      className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 rounded-full"
+                      style={{ background: 'var(--primary-text)' }}
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+
+                  {/* Elegant Tooltip */}
+                  {hoveredItem === item.name && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.9 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
-                      className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-2 rounded-lg text-xs whitespace-nowrap z-50"
+                      exit={{ opacity: 0, y: 10, scale: 0.9 }}
+                      className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-2 rounded-lg text-xs whitespace-nowrap z-50 pointer-events-none"
                       style={{
                         background: 'var(--white-soft)',
                         color: 'var(--primary-text)',
@@ -159,23 +172,35 @@ export default function Navigation() {
                         fontStyle: 'italic'
                       }}
                     >
-                      {item.hoverMessage}
-                      <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 rotate-45" style={{ background: 'var(--white-soft)', border: '1px solid var(--border-subtle)' }}></div>
+                      {item.tooltip}
+                      <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 rotate-45" style={{ background: 'var(--white-soft)', border: '1px solid var(--border-subtle)', borderBottom: 'none', borderRight: 'none' }}></div>
                     </motion.div>
                   )}
                 </Link>
-              </motion.div>
-            ))}
+              )
+            })}
+
+            {/* Divider */}
+            <div className="h-6 w-px mx-2" style={{ background: 'var(--border-subtle)' }} />
 
             {/* Guest Menu Dropdown */}
             <GuestMenu />
-          </div>
+          </nav>
 
-          {/* Mobile menu button - Increased touch target */}
+          {/* Mobile menu button - Clean & Accessible */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden transition-colors lg:min-w-[44px] lg:min-h-[44px] lg:max-w-full flex flex-row items-end lg:items-center justify-end lg:justify-center lg:flex-shrink-0"
-            style={{ color: 'var(--primary-text)' }}
+            className="md:hidden min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg transition-all duration-200"
+            style={{
+              color: 'var(--primary-text)',
+              background: isOpen ? 'var(--accent)' : 'transparent'
+            }}
+            onMouseEnter={(e) => {
+              if (!isOpen) e.currentTarget.style.background = 'var(--accent)'
+            }}
+            onMouseLeave={(e) => {
+              if (!isOpen) e.currentTarget.style.background = 'transparent'
+            }}
             aria-label={isOpen ? 'Fechar menu' : 'Abrir menu'}
             aria-expanded={isOpen}
           >
