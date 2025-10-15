@@ -9,7 +9,6 @@ import {
   Clock,
   Gift,
   Camera,
-  MessageSquare,
   CheckCircle2,
   Heart,
   User,
@@ -17,6 +16,7 @@ import {
 } from 'lucide-react';
 import Navigation from '@/components/ui/Navigation';
 import Link from 'next/link';
+import HYBadge from '@/components/ui/HYBadge';
 
 const WEBSITE_FEATURES = [
   {
@@ -77,7 +77,7 @@ export default function ConvitePage() {
   return (
     <>
       <Navigation />
-      <div className="min-h-screen pt-20">
+      <div className="min-h-screen pt-12">
         {/* Hero Section */}
         <div className="text-center py-16">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -87,13 +87,8 @@ export default function ConvitePage() {
               transition={{ duration: 0.6 }}
               className="space-y-6"
             >
-              {/* Decorative top ornament */}
-              <div className="flex justify-center mb-6">
-                <Heart
-                  className="w-16 h-16 animate-pulse"
-                  style={{ color: 'var(--decorative)' }}
-                />
-              </div>
+              {/* Header with HY Logo */}
+              <HYBadge />
 
               <h1
                 className="text-4xl sm:text-5xl md:text-6xl font-light mb-4"
@@ -336,11 +331,10 @@ export default function ConvitePage() {
 
                           <Link
                             href={feature.href}
-                            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                              feature.comingSoon
-                                ? 'opacity-50 cursor-not-allowed'
-                                : 'hover:shadow-md transform hover:scale-105'
-                            }`}
+                            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${feature.comingSoon
+                              ? 'opacity-50 cursor-not-allowed'
+                              : 'hover:shadow-md transform hover:scale-105'
+                              }`}
                             style={{
                               background: feature.comingSoon
                                 ? 'var(--accent)'

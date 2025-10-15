@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import BotanicalCorners from '@/components/ui/BotanicalCorners'
+import HYBadge from '../ui/HYBadge'
 
 export default function GalleryHero() {
   return (
@@ -17,24 +18,7 @@ export default function GalleryHero() {
           transition={{ duration: 0.8 }}
         >
           {/* HY Monogram Logo */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex justify-center mb-6"
-          >
-            <Image
-              src="/HY.svg"
-              alt="Hel & Ylana"
-              width={80}
-              height={80}
-              className="opacity-80"
-              style={{
-                filter: 'brightness(0) saturate(100%)',
-                color: 'var(--decorative)'
-              }}
-            />
-          </motion.div>
+          <HYBadge />
 
           <h1 className="text-5xl md:text-7xl font-bold mb-8" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)', letterSpacing: '0.15em', lineHeight: '1.1' }}>
             Nossa Galeria

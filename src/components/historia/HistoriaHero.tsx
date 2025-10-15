@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Image from 'next/image'
+import HYBadge from '../ui/HYBadge'
 
 export default function HistoriaHero() {
   return (
@@ -30,22 +31,8 @@ export default function HistoriaHero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <div
-            className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-12"
-            style={{
-              background: 'var(--decorative)',
-              opacity: 0.9,
-            }}
-          >
-            <Image
-              src="/HY.svg"
-              alt="H & Y"
-              width={32}
-              height={32}
-              className="w-8 h-8"
-              style={{ filter: 'brightness(0) invert(1)' }}
-            />
-          </div>
+          {/* Header with HY Logo */}
+          <HYBadge />
 
           <h1
             className="mb-8"

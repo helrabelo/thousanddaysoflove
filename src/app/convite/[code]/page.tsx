@@ -8,7 +8,6 @@ import {
   Clock,
   Gift,
   Camera,
-  MessageSquare,
   CheckCircle2,
   Heart,
   User,

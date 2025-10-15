@@ -2,13 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import Image from 'next/image'
-import { Search, Filter, Heart, Gift as GiftIcon, Sparkles } from 'lucide-react'
+import { Search, Filter, Heart, Sparkles } from 'lucide-react'
 import Navigation from '@/components/ui/Navigation'
 import GiftCard from '@/components/gifts/GiftCard'
 import { GiftService, GiftWithProgress } from '@/lib/services/gifts'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import HYBadge from '@/components/ui/HYBadge'
 
 export default function PresentsPage() {
   const [gifts, setGifts] = useState<GiftWithProgress[]>([])
@@ -130,7 +129,7 @@ export default function PresentsPage() {
       <Navigation />
       <div className="container mx-auto px-4 py-8">
         {/* Header - Matching Gallery Style */}
-        <section className="relative pt-28 md:pt-24 pb-12 px-6 overflow-hidden">
+        <section className="relative pt-12 md:pt-24 pb-12 px-6 overflow-hidden">
           <div className="max-w-4xl mx-auto text-center relative z-10">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -138,24 +137,7 @@ export default function PresentsPage() {
               transition={{ duration: 0.8 }}
             >
               {/* HY Monogram Logo */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="flex justify-center mb-6"
-              >
-                <Image
-                  src="/HY.svg"
-                  alt="Hel & Ylana"
-                  width={80}
-                  height={80}
-                  className="opacity-80"
-                  style={{
-                    filter: 'brightness(0) saturate(100%)',
-                    color: 'var(--decorative)'
-                  }}
-                />
-              </motion.div>
+              <HYBadge />
 
               <h1 className="text-5xl md:text-7xl font-bold mb-8" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)', letterSpacing: '0.15em', lineHeight: '1.1' }}>
                 Ajudem a Construir Nosso Lar

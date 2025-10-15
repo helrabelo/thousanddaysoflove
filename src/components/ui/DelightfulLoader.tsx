@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { getRandomLoadingMessage } from '@/lib/utils/whimsy'
 import { petsPersonalities } from '@/lib/utils/wedding'
+import HYBadge from './HYBadge'
 
 interface DelightfulLoaderProps {
   category?: 'rsvp' | 'gifts' | 'gallery' | 'payment' | 'timeline'
@@ -40,26 +41,7 @@ export function DelightfulLoader({ category = 'rsvp', message, withPets = true }
         />
 
         {/* Inner HY logo */}
-        <motion.div
-          className="absolute inset-0 flex items-center justify-center"
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.6, 1, 0.6]
-          }}
-          transition={{
-            duration: 1.5,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        >
-          <Image
-            src="/HY.svg"
-            alt="H & Y"
-            width={32}
-            height={32}
-            className="w-8 h-8"
-          />
-        </motion.div>
+        <HYBadge />
       </motion.div>
 
       {/* Loading message */}

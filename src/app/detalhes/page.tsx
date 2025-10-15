@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import Navigation from '@/components/ui/Navigation';
 import WeddingLocation from '@/components/sections/WeddingLocation';
+import HYBadge from '@/components/ui/HYBadge';
 const TIMELINE = [
   { time: '10:30', event: 'Chegada dos Convidados', icon: Users },
   { time: '11:00', event: 'Cerimônia de Casamento', icon: Heart },
@@ -29,7 +30,7 @@ export default function DetalhesPage() {
       <Navigation />
       <div className="min-h-screen" >
         {/* Header - Matching Gallery Style */}
-        <section className="relative pt-28 md:pt-24 pb-20 px-6 overflow-hidden">
+        <section className="relative pt-12 md:pt-24 pb-20 px-6 overflow-hidden">
           <div className="max-w-4xl mx-auto text-center relative z-10">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -37,24 +38,7 @@ export default function DetalhesPage() {
               transition={{ duration: 0.8 }}
             >
               {/* HY Monogram Logo */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="flex justify-center mb-6"
-              >
-                <Image
-                  src="/HY.svg"
-                  alt="Hel & Ylana"
-                  width={80}
-                  height={80}
-                  className="opacity-80"
-                  style={{
-                    filter: 'brightness(0) saturate(100%)',
-                    color: 'var(--decorative)'
-                  }}
-                />
-              </motion.div>
+              <HYBadge />
 
               <h1 className="text-5xl md:text-7xl font-bold mb-8" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)', letterSpacing: '0.15em', lineHeight: '1.1' }}>
                 Detalhes do Casamento

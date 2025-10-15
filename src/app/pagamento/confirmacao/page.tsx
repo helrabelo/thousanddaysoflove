@@ -82,7 +82,7 @@ function PaymentConfirmationContent() {
     return (
       <>
         <Navigation />
-        <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-purple-50 flex items-center justify-center pt-20">
+        <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-purple-50 flex items-center justify-center pt-12">
           <div className="text-center">
             <div className="w-16 h-16 border-4 border-purple-300 border-t-purple-600 rounded-full animate-spin mx-auto mb-4" />
             <p className="text-gray-600 text-lg">Carregando dados do pagamento...</p>
@@ -153,7 +153,7 @@ export default function PaymentConfirmationPage() {
     <Suspense fallback={
       <>
         <Navigation />
-        <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-purple-50 flex items-center justify-center pt-20">
+        <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-purple-50 flex items-center justify-center pt-12">
           <div className="text-center">
             <div className="w-16 h-16 border-4 border-purple-300 border-t-purple-600 rounded-full animate-spin mx-auto mb-4" />
             <p className="text-gray-600 text-lg">Carregando confirmacao de pagamento...</p>
