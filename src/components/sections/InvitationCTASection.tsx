@@ -1,6 +1,8 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowRight, Calendar, MessageCircle, Radio } from 'lucide-react'
 import Image from 'next/image'
@@ -25,6 +27,16 @@ const guestFeatures = [
 ]
 
 export default function InvitationCTASection() {
+  const router = useRouter()
+  const [inviteCode, setInviteCode] = useState('')
+
+  const handleInviteCodeSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (inviteCode.trim()) {
+      router.push(`/convite/${inviteCode.trim().toUpperCase()}`)
+    }
+  }
+
   return (
     <section className="py-20 md:py-32 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
@@ -163,46 +175,88 @@ export default function InvitationCTASection() {
               ))}
             </div>
 
-            {/* CTA Button */}
+            {/* CTA with Invite Code Input */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.8 }}
             >
-              <Link href="/convite" className="inline-block group">
-                <motion.div
-                  className="flex items-center gap-3 px-8 py-4 rounded-full"
-                  style={{
-                    fontFamily: 'var(--font-playfair)',
-                    fontSize: '1.125rem',
-                    fontWeight: '600',
-                    background: 'linear-gradient(135deg, #2C2C2C, #4A4A4A)',
-                    color: 'white',
-                    letterSpacing: '0.02em',
-                    boxShadow: '0 4px 20px rgba(44, 44, 44, 0.3)',
-                  }}
-                  whileHover={{ scale: 1.05, boxShadow: '0 6px 24px rgba(44, 44, 44, 0.4)' }}
-                  whileTap={{ scale: 0.98 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <span>Acessar Meu Convite</span>
-                  <motion.div
-                    animate={{ x: [0, 4, 0] }}
-                    transition={{
-                      repeat: Infinity,
-                      duration: 1.5,
-                      ease: 'easeInOut',
+              {/* Quick Access with Code Input */}
+              <form onSubmit={handleInviteCodeSubmit} className="mb-4">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      placeholder="Digite seu código (ex: FAMILY001)"
+                      value={inviteCode}
+                      onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+                      className="w-full px-5 py-4 rounded-full border-2 transition-all duration-200 focus:outline-none focus:ring-2"
+                      style={{
+                        fontFamily: 'var(--font-crimson)',
+                        fontSize: '1rem',
+                        borderColor: 'var(--border-subtle)',
+                        background: 'var(--white-soft)',
+                        color: 'var(--primary-text)',
+                      }}
+                      onFocus={(e) => {
+                        e.currentTarget.style.borderColor = 'var(--decorative)'
+                        e.currentTarget.style.background = 'white'
+                      }}
+                      onBlur={(e) => {
+                        e.currentTarget.style.borderColor = 'var(--border-subtle)'
+                        e.currentTarget.style.background = 'var(--white-soft)'
+                      }}
+                    />
+                  </div>
+                  <motion.button
+                    type="submit"
+                    className="flex items-center justify-center gap-3 px-8 py-4 rounded-full whitespace-nowrap"
+                    style={{
+                      fontFamily: 'var(--font-playfair)',
+                      fontSize: '1.125rem',
+                      fontWeight: '600',
+                      background: 'linear-gradient(135deg, #2C2C2C, #4A4A4A)',
+                      color: 'white',
+                      letterSpacing: '0.02em',
+                      boxShadow: '0 4px 20px rgba(44, 44, 44, 0.3)',
                     }}
+                    whileHover={{ scale: 1.05, boxShadow: '0 6px 24px rgba(44, 44, 44, 0.4)' }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ duration: 0.2 }}
                   >
-                    <ArrowRight className="w-5 h-5" />
-                  </motion.div>
+                    <span>Acessar Convite</span>
+                    <motion.div
+                      animate={{ x: inviteCode ? [0, 4, 0] : 0 }}
+                      transition={{
+                        repeat: inviteCode ? Infinity : 0,
+                        duration: 1.5,
+                        ease: 'easeInOut',
+                      }}
+                    >
+                      <ArrowRight className="w-5 h-5" />
+                    </motion.div>
+                  </motion.button>
+                </div>
+              </form>
+
+              {/* Browse All Link */}
+              <Link href="/convite" className="inline-block group mb-3">
+                <motion.div
+                  className="text-sm underline decoration-1 underline-offset-4"
+                  style={{
+                    fontFamily: 'var(--font-crimson)',
+                    color: 'var(--decorative)',
+                  }}
+                  whileHover={{ x: 3 }}
+                >
+                  Ou navegue sem código →
                 </motion.div>
               </Link>
 
               {/* Helper text */}
               <p
-                className="mt-4 text-sm"
+                className="text-sm"
                 style={{
                   fontFamily: 'var(--font-crimson)',
                   fontStyle: 'italic',

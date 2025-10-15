@@ -169,98 +169,149 @@ export default function VideoHeroSection({ data }: VideoHeroProps) {
   }
 
   // Audio Toggle Button Component (reusable)
-  const AudioToggleButton = () => (
-    <motion.button
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: 1, duration: 0.5 }}
-      onClick={toggleAudio}
-      className="group"
-      aria-label={isMuted ? 'Ativar áudio' : 'Desativar áudio'}
-    >
-      <motion.div
-        className="relative flex items-center justify-center w-12 h-12 rounded-full backdrop-blur-md border-2 border-white/60 cursor-pointer"
-        style={{
-          background: 'rgba(255,255,255,0.2)',
-          boxShadow: '0 0 30px rgba(255,255,255,0.4), 0 0 60px rgba(255,255,255,0.2), 0 4px 20px rgba(0,0,0,0.3)'
-        }}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.95 }}
-        animate={{
-          boxShadow: isMuted
-            ? '0 0 30px rgba(255,255,255,0.4), 0 0 60px rgba(255,255,255,0.2), 0 4px 20px rgba(0,0,0,0.3)'
-            : ['0 0 40px rgba(255,255,255,0.6), 0 0 80px rgba(255,255,255,0.3), 0 0 0 0 rgba(255,255,255,0.8)',
-               '0 0 40px rgba(255,255,255,0.6), 0 0 80px rgba(255,255,255,0.3), 0 0 0 25px rgba(255,255,255,0)']
-        }}
-        transition={{
-          boxShadow: {
-            duration: 1.5,
-            repeat: isMuted ? 0 : Infinity,
-            ease: 'easeOut'
-          }
-        }}
+  const AudioToggleButton = () => {
+    const [showInitialTooltip, setShowInitialTooltip] = useState(true)
+
+    // Hide initial tooltip after 5 seconds
+    useEffect(() => {
+      const timer = setTimeout(() => setShowInitialTooltip(false), 5000)
+      return () => clearTimeout(timer)
+    }, [])
+
+    return (
+      <motion.button
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 1, duration: 0.5 }}
+        onClick={toggleAudio}
+        className="relative group"
+        aria-label={isMuted ? 'Ativar áudio' : 'Desativar áudio'}
       >
+        {/* Attention-grabbing pulse ring (only when muted) */}
+        {isMuted && (
+          <motion.div
+            className="absolute inset-0 rounded-full border-2 border-white/60"
+            animate={{
+              scale: [1, 1.4, 1],
+              opacity: [0.6, 0, 0.6]
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: 'easeOut',
+              delay: 2 // Start after initial load
+            }}
+          />
+        )}
+
         <motion.div
-          animate={{ rotate: isMuted ? 0 : 360 }}
-          transition={{ duration: 0.3 }}
+          className="relative flex items-center justify-center w-12 h-12 rounded-full backdrop-blur-md border-2 border-white/60 cursor-pointer"
+          style={{
+            background: 'rgba(255,255,255,0.2)',
+            boxShadow: '0 0 30px rgba(255,255,255,0.4), 0 0 60px rgba(255,255,255,0.2), 0 4px 20px rgba(0,0,0,0.3)'
+          }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          animate={{
+            boxShadow: isMuted
+              ? '0 0 30px rgba(255,255,255,0.4), 0 0 60px rgba(255,255,255,0.2), 0 4px 20px rgba(0,0,0,0.3)'
+              : ['0 0 40px rgba(255,255,255,0.6), 0 0 80px rgba(255,255,255,0.3), 0 0 0 0 rgba(255,255,255,0.8)',
+                 '0 0 40px rgba(255,255,255,0.6), 0 0 80px rgba(255,255,255,0.3), 0 0 0 25px rgba(255,255,255,0)']
+          }}
+          transition={{
+            boxShadow: {
+              duration: 1.5,
+              repeat: isMuted ? 0 : Infinity,
+              ease: 'easeOut'
+            }
+          }}
         >
-          {isMuted ? (
-            <VolumeX className="w-5 h-5 text-white" strokeWidth={1.5} />
-          ) : (
-            <Volume2 className="w-5 h-5 text-white" strokeWidth={1.5} />
+          <motion.div
+            animate={{ rotate: isMuted ? 0 : 360 }}
+            transition={{ duration: 0.3 }}
+          >
+            {isMuted ? (
+              <VolumeX className="w-5 h-5 text-white" strokeWidth={1.5} />
+            ) : (
+              <Volume2 className="w-5 h-5 text-white" strokeWidth={1.5} />
+            )}
+          </motion.div>
+
+          {/* Animated sound waves when audio is on */}
+          {!isMuted && (
+            <motion.div
+              className="absolute -right-1"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              {[0, 1, 2].map((i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-1 bg-white rounded-full"
+                  style={{
+                    height: '6px',
+                    right: `${-4 - i * 3}px`,
+                    top: '50%',
+                    transform: 'translateY(-50%)'
+                  }}
+                  animate={{
+                    scaleY: [1, 1.5, 1],
+                    opacity: [0.3, 0.7, 0.3]
+                  }}
+                  transition={{
+                    duration: 0.8,
+                    repeat: Infinity,
+                    delay: i * 0.15,
+                    ease: 'easeInOut'
+                  }}
+                />
+              ))}
+            </motion.div>
           )}
         </motion.div>
 
-        {/* Animated sound waves when audio is on */}
-        {!isMuted && (
-          <motion.div
-            className="absolute -right-1"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            {[0, 1, 2].map((i) => (
-              <motion.div
-                key={i}
-                className="absolute w-1 bg-white rounded-full"
-                style={{
-                  height: '6px',
-                  right: `${-4 - i * 3}px`,
-                  top: '50%',
-                  transform: 'translateY(-50%)'
-                }}
-                animate={{
-                  scaleY: [1, 1.5, 1],
-                  opacity: [0.3, 0.7, 0.3]
-                }}
-                transition={{
-                  duration: 0.8,
-                  repeat: Infinity,
-                  delay: i * 0.15,
-                  ease: 'easeInOut'
-                }}
-              />
-            ))}
-          </motion.div>
-        )}
-      </motion.div>
+        {/* Enhanced tooltip - shows initially, then on hover */}
+        <AnimatePresence>
+          {(showInitialTooltip || undefined) && (
+            <motion.div
+              className="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-md text-xs whitespace-nowrap pointer-events-none z-50"
+              style={{
+                background: 'rgba(255,255,255,0.95)',
+                color: 'var(--secondary-text)',
+                fontFamily: 'var(--font-crimson)',
+                fontStyle: 'italic',
+                fontSize: '0.7rem',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                fontWeight: '500'
+              }}
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -5 }}
+              transition={{ duration: 0.3 }}
+            >
+              🎵 Assista ao pedido!
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-      {/* Subtle tooltip in Portuguese */}
-      <motion.div
-        className="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-md text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
-        style={{
-          background: 'rgba(255,255,255,0.9)',
-          color: 'var(--secondary-text)',
-          fontFamily: 'var(--font-crimson)',
-          fontStyle: 'italic',
-          fontSize: '0.7rem',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-        }}
-      >
-        Assista ao pedido!
-      </motion.div>
-    </motion.button>
-  )
+        {/* Hover-only tooltip */}
+        <motion.div
+          className="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-md text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
+          style={{
+            background: 'rgba(255,255,255,0.9)',
+            color: 'var(--secondary-text)',
+            fontFamily: 'var(--font-crimson)',
+            fontStyle: 'italic',
+            fontSize: '0.7rem',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+          }}
+        >
+          {isMuted ? 'Ativar áudio' : 'Desativar áudio'}
+        </motion.div>
+      </motion.button>
+    )
+  }
 
   return (
     <section className="full-width relative h-screen overflow-hidden -mt-20">
