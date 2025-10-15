@@ -49,8 +49,8 @@ const EVENT_DETAILS = [
   {
     icon: MapPin,
     label: 'Local',
-    value: 'Casa de Mãe Nádia',
-    detail: 'R. Conselheiro Tristão, 1415 - Fortaleza, CE',
+    value: 'Casa HY',
+    detail: 'R. Coronel Francisco Flávio Carneiro, 200 - Fortaleza, CE',
   },
 ];
 

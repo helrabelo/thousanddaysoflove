@@ -140,6 +140,7 @@ export default function PostComposer({
 
     const response = await fetch('/api/messages/upload', {
       method: 'POST',
+      credentials: 'include', // Include cookies for authentication
       body: formData,
     });
 
@@ -189,6 +190,7 @@ export default function PostComposer({
       const response = await fetch('/api/messages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // Include cookies for authentication
         body: JSON.stringify(payload),
       });
 

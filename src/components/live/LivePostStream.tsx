@@ -31,7 +31,9 @@ export function LivePostStream() {
 
   const checkGuestSession = async () => {
     try {
-      const response = await fetch('/api/auth/verify')
+      const response = await fetch('/api/auth/verify', {
+        credentials: 'include', // Include cookies for authentication
+      })
       const data = await response.json()
 
       if (response.ok && data.success && data.session) {

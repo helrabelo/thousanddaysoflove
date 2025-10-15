@@ -12,7 +12,8 @@ import {
   type AuthResult,
 } from '@/lib/auth/guestAuth'
 
-export const runtime = 'edge'
+// Using Node.js runtime for better Supabase compatibility
+export const runtime = 'nodejs'
 
 interface LoginRequestBody {
   authMethod?: string

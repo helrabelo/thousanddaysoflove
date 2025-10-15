@@ -107,12 +107,11 @@ export async function authenticateWithInvitationCode(
     }
   }
 
-  // Mark account as created and update last login
+  // Mark account as created
   await supabase
     .from('simple_guests')
     .update({
       account_created: true,
-      last_login: new Date().toISOString(),
     })
     .eq('id', guestId)
 
@@ -222,13 +221,7 @@ export async function authenticateWithPassword(
     }
   }
 
-  // Update last login
-  await supabase
-    .from('simple_guests')
-    .update({
-      last_login: new Date().toISOString(),
-    })
-    .eq('id', guestId)
+  // Note: last_login tracking removed as column doesn't exist in current schema
 
   return {
     success: true,
@@ -274,7 +267,7 @@ async function createGuestSession(
   const sessionToken = generateSessionToken()
 
   // Create session in database
-  const { error } = await supabase.rpc('create_guest_session', {
+  const { data: rpcResult, error } = await supabase.rpc('create_guest_session', {
     p_guest_id: guestId,
     p_session_token: sessionToken,
     p_auth_method: authMethod,
@@ -282,12 +275,22 @@ async function createGuestSession(
   })
 
   if (error) {
-    console.error('Error creating guest session:', error)
+    console.error('Error creating guest session RPC call:', {
+      error,
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+      code: error.code,
+      guestId,
+      authMethod
+    })
     return {
       success: false,
-      error: 'Erro ao criar sessão',
+      error: `Erro ao criar sessão: ${error.message || 'Unknown error'}`,
     }
   }
+
+  console.log('✅ RPC create_guest_session succeeded:', { guestId, rpcResult })
 
   // Get full session details
   const { data: sessionDetails, error: sessionError } = await supabase

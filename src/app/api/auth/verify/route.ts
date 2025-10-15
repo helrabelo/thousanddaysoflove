@@ -9,7 +9,8 @@ import {
   GUEST_SESSION_COOKIE,
 } from '@/lib/auth/guestAuth'
 
-export const runtime = 'edge'
+// Using Node.js runtime for better Supabase compatibility
+export const runtime = 'nodejs'
 
 export async function GET(request: NextRequest) {
   try {

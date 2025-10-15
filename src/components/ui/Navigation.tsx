@@ -47,6 +47,23 @@ const navItems = [
   },
 ]
 
+const guestMenuItems = [
+  {
+    name: 'Meu Convite',
+    href: '/convite',
+    icon: '📋',
+    tooltip: 'Seu convite personalizado',
+    easterEgg: 'Acesse seu convite pessoal'
+  },
+  {
+    name: 'Dia 1000',
+    href: '/dia-1000',
+    icon: '📡',
+    tooltip: 'Feed ao vivo',
+    easterEgg: 'Acompanhe a festa em tempo real'
+  },
+]
+
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [hoveredItem, setHoveredItem] = useState<string | null>(null)
@@ -93,9 +110,9 @@ export default function Navigation() {
       }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-row justify-between items-center h-20">
+        <div className="flex flex-row items-center h-20">
           {/* Elegant Logo - Larger & More Prominent */}
-          <Link href="/" className="flex flex-row items-center min-w-[44px] min-h-[44px] flex-shrink-0 transition-transform duration-300 hover:scale-105">
+          <Link href="/" className="flex flex-row items-center min-w-[44px] min-h-[44px] flex-shrink-0 transition-transform duration-300 hover:scale-105 mr-auto md:mr-0">
             <Image
               src="/hy-logo.svg"
               alt="H & Y"
@@ -190,7 +207,7 @@ export default function Navigation() {
           {/* Mobile menu button - Clean & Accessible */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg transition-all duration-200"
+            className="md:hidden min-w-[44px] min-h-[44px] flex items-center justify-end lg:justify-center rounded-lg transition-all duration-200"
             style={{
               color: 'var(--primary-text)',
               background: isOpen ? 'var(--accent)' : 'transparent'
@@ -259,7 +276,103 @@ export default function Navigation() {
                 <div className="mt-4 mx-auto w-32 h-px bg-gradient-to-r from-transparent via-decorative to-transparent opacity-50" />
               </motion.div>
 
-              {/* Menu Items - Card-based Layout with Stagger Animation */}
+              {/* Guest Menu Items - Meu Espaço Section */}
+              <div className="mb-6">
+                <div
+                  className="text-xs tracking-widest uppercase mb-3 px-2"
+                  style={{
+                    fontFamily: 'var(--font-crimson)',
+                    fontStyle: 'italic',
+                    color: 'var(--text-muted)',
+                    letterSpacing: '0.15em'
+                  }}
+                >
+                  ✨ Meu Espaço
+                </div>
+                <div className="space-y-3">
+                  {guestMenuItems.map((item, index) => (
+                    <motion.div
+                      key={item.name}
+                      initial={{ opacity: 0, x: -30, scale: 0.95 }}
+                      animate={{ opacity: 1, x: 0, scale: 1 }}
+                      transition={{
+                        delay: index * 0.08 + 0.2,
+                        type: "spring",
+                        stiffness: 260,
+                        damping: 20
+                      }}
+                    >
+                      <Link
+                        href={item.href}
+                        onClick={() => setIsOpen(false)}
+                        className="block group"
+                      >
+                        <div
+                          className="flex flex-row items-center gap-4 py-4 px-2 transition-all duration-200 min-h-[68px]"
+                          style={{
+                            touchAction: 'manipulation'
+                          }}
+                          onTouchStart={(e) => {
+                            e.currentTarget.style.opacity = '0.7'
+                          }}
+                          onTouchEnd={(e) => {
+                            e.currentTarget.style.opacity = '1'
+                          }}
+                        >
+                          <motion.div
+                            className="flex flex-row items-center justify-center"
+                            style={{
+                              fontSize: '1.75rem'
+                            }}
+                            whileTap={{ scale: 1.1 }}
+                          >
+                            {item.icon}
+                          </motion.div>
+                          <div>
+                            <div
+                              style={{
+                                fontFamily: 'var(--font-playfair)',
+                                fontSize: '1.125rem',
+                                fontWeight: '500',
+                                letterSpacing: '0.05em',
+                                color: 'var(--primary-text)',
+                                marginBottom: '2px'
+                              }}
+                            >
+                              {item.name}
+                            </div>
+                            <div
+                              style={{
+                                fontFamily: 'var(--font-crimson)',
+                                fontStyle: 'italic',
+                                fontSize: '0.8125rem',
+                                color: 'var(--text-muted)',
+                                letterSpacing: '0.02em',
+                                lineHeight: '1.3',
+                                opacity: 0.85
+                              }}
+                            >
+                              {item.easterEgg}
+                            </div>
+                          </div>
+                          <div
+                            style={{ color: 'var(--decorative)' }}
+                          >
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M7 4L13 10L7 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          </div>
+                        </div>
+                      </Link>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="mx-auto w-32 h-px bg-gradient-to-r from-transparent via-decorative to-transparent opacity-50 mb-6" />
+
+              {/* Main Menu Items - Card-based Layout with Stagger Animation */}
               <div className="space-y-3">
                 {navItems.map((item, index) => (
                   <motion.div

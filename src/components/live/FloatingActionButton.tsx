@@ -50,7 +50,13 @@ export function FloatingActionButton({
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+    <div
+      className="fixed z-50 flex flex-col items-end gap-3"
+      style={{
+        bottom: 'calc(24px + env(safe-area-inset-bottom))',
+        right: 'calc(24px + env(safe-area-inset-right))'
+      }}
+    >
       {/* Action Menu Items */}
       <AnimatePresence>
         {isMenuOpen && (

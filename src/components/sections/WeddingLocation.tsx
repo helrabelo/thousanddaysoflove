@@ -5,7 +5,6 @@ import { motion } from 'framer-motion'
 import { MapPin, Clock, Car, Info, Navigation, Share2 } from 'lucide-react'
 import GoogleMap from '@/components/ui/GoogleMap'
 import GoogleMapsService from '@/lib/utils/maps'
-import BotanicalCorners from '@/components/ui/BotanicalCorners'
 
 interface VenueLocation {
   lat: number
@@ -85,9 +84,6 @@ export default function WeddingLocation({ data }: WeddingLocationProps) {
     <section
       className="min-h-screen md:h-[calc(100vh-80px)] flex items-center py-12 md:py-0 px-4 md:px-8 relative overflow-hidden"
     >
-      {/* Botanical Corner Decorations */}
-      <BotanicalCorners pattern="diagonal-right" />
-
       <div className="max-w-7xl mx-auto relative z-10 w-full">
         {/* Compact Section Header */}
         <motion.div

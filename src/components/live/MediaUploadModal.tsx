@@ -151,6 +151,7 @@ export function MediaUploadModal({
 
       const response = await fetch('/api/photos/upload', {
         method: 'POST',
+        credentials: 'include', // Include cookies for authentication
         body: formData
       })
 

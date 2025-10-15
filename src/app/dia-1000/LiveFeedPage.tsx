@@ -189,7 +189,7 @@ export function LiveFeedPage() {
       </div>
 
       {/* Main content */}
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-4 lg:px-6 py-8">
         {/* Main grid - Live feed takes 9/12, sidebar takes 3/12 */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* LEFT: LIVE FEED - 9 columns (75% width) */}

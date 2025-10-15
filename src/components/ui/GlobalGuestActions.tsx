@@ -64,7 +64,9 @@ export function GlobalGuestActions() {
     try {
       // Verify with API - it can read the httpOnly cookie
       // Note: guest_session_token is an httpOnly cookie, so we can't check it client-side
-      const response = await fetch('/api/auth/verify')
+      const response = await fetch('/api/auth/verify', {
+        credentials: 'include', // IMPORTANT: Include cookies in the request
+      })
       const data = await response.json()
 
       console.log('[GlobalGuestActions] Auth verification response:', {

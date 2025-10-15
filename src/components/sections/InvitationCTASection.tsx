@@ -37,7 +37,7 @@ export default function InvitationCTASection() {
             transition={{ duration: 0.8, ease: 'easeOut' }}
             className="relative"
           >
-            <div className="relative aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl bg-white">
+            <div className="relative aspect-[3/4] sm:aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl bg-white">
               {/* Elegant invitation preview */}
               <ElegantInvitation />
             </div>

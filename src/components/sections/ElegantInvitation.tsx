@@ -10,19 +10,19 @@ export default function ElegantInvitation() {
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.8, ease: 'easeOut' }}
-      className="relative w-full h-full flex items-center justify-center p-8"
+      className="relative w-full h-full flex items-center justify-center p-4 sm:p-6 md:p-8"
     >
       {/* Botanical corner decorations */}
       <BotanicalCorners pattern="diagonal-right" opacity={0.15} />
 
       {/* Main invitation content */}
-      <div className="text-center max-w-xl space-y-6">
+      <div className="text-center max-w-xl space-y-3 sm:space-y-4 md:space-y-6">
         {/* Logo */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.8 }}
-          className="mb-6 flex justify-center"
+          className="mb-2 sm:mb-4 md:mb-6 flex justify-center"
         >
           <Image
             src="/hy-logo.svg"
@@ -31,7 +31,7 @@ export default function ElegantInvitation() {
             height={48}
             className="h-auto"
             style={{
-              width: 'clamp(100px, 20vw, 140px)',
+              width: 'clamp(80px, 18vw, 140px)',
               filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.08))',
             }}
             priority
@@ -61,26 +61,26 @@ export default function ElegantInvitation() {
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
           transition={{ delay: 0.6, duration: 0.8 }}
-          className="flex items-center justify-center gap-3 my-4 mt-16"
+          className="flex items-center justify-center gap-2 my-2 sm:my-3 md:my-4 mt-6 sm:mt-10 md:mt-16"
         >
           <div
             style={{
-              width: '60px',
+              width: 'clamp(30px, 10vw, 60px)',
               height: '1px',
               background: 'var(--decorative)',
             }}
           />
           <div
             style={{
-              width: '4px',
-              height: '4px',
+              width: 'clamp(3px, 0.8vw, 4px)',
+              height: 'clamp(3px, 0.8vw, 4px)',
               borderRadius: '50%',
               background: 'var(--decorative)',
             }}
           />
           <div
             style={{
-              width: '60px',
+              width: 'clamp(30px, 10vw, 60px)',
               height: '1px',
               background: 'var(--decorative)',
             }}
@@ -92,12 +92,13 @@ export default function ElegantInvitation() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8, duration: 0.8 }}
+          className="px-2"
           style={{
             fontFamily: 'var(--font-crimson)',
-            fontSize: '1rem',
+            fontSize: 'clamp(0.8125rem, 2.5vw, 1rem)',
             color: 'var(--secondary-text)',
-            lineHeight: '1.7',
-            marginBottom: '1.5rem',
+            lineHeight: '1.5',
+            marginBottom: 'clamp(0.75rem, 2vw, 1.5rem)',
           }}
         >
           Convidamos você para testemunhar nosso dia mais especial.
@@ -112,16 +113,16 @@ export default function ElegantInvitation() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.0, duration: 0.8 }}
-          className="my-8"
+          className="my-3 sm:my-5 md:my-8"
         >
           <div
             style={{
               fontFamily: 'var(--font-playfair)',
-              fontSize: '1.125rem',
+              fontSize: 'clamp(0.6875rem, 2vw, 1.125rem)',
               fontWeight: '600',
               color: 'var(--primary-text)',
               textTransform: 'uppercase',
-              letterSpacing: '0.15em',
+              letterSpacing: 'clamp(0.05em, 1vw, 0.15em)',
               marginBottom: '0.25rem',
             }}
           >
@@ -130,10 +131,10 @@ export default function ElegantInvitation() {
           <div
             style={{
               fontFamily: 'var(--font-playfair)',
-              fontSize: '1.125rem',
+              fontSize: 'clamp(0.875rem, 2.5vw, 1.125rem)',
               fontWeight: '600',
               color: 'var(--primary-text)',
-              letterSpacing: '0.2em',
+              letterSpacing: 'clamp(0.1em, 1.5vw, 0.2em)',
             }}
           >
             11H.00
@@ -145,26 +146,26 @@ export default function ElegantInvitation() {
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
           transition={{ delay: 1.2, duration: 0.8 }}
-          className="flex items-center justify-center gap-3 my-4"
+          className="flex items-center justify-center gap-2 my-2 sm:my-3 md:my-4"
         >
           <div
             style={{
-              width: '40px',
+              width: 'clamp(25px, 8vw, 40px)',
               height: '1px',
               background: 'var(--decorative)',
             }}
           />
           <div
             style={{
-              width: '3px',
-              height: '3px',
+              width: 'clamp(2px, 0.6vw, 3px)',
+              height: 'clamp(2px, 0.6vw, 3px)',
               borderRadius: '50%',
               background: 'var(--decorative)',
             }}
           />
           <div
             style={{
-              width: '40px',
+              width: 'clamp(25px, 8vw, 40px)',
               height: '1px',
               background: 'var(--decorative)',
             }}
@@ -176,14 +177,14 @@ export default function ElegantInvitation() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.4, duration: 0.8 }}
-          className="space-y-2"
+          className="space-y-1 sm:space-y-2 px-2"
         >
           <p
             style={{
               fontFamily: 'var(--font-crimson)',
-              fontSize: '0.875rem',
+              fontSize: 'clamp(0.6875rem, 2vw, 0.875rem)',
               color: 'var(--secondary-text)',
-              lineHeight: '1.5',
+              lineHeight: '1.4',
             }}
           >
             <span style={{ fontWeight: '600' }}>Rua:</span> Coronel Francisco Flávio Carneiro 200
@@ -191,11 +192,12 @@ export default function ElegantInvitation() {
             Luciano Cavalcante
           </p>
           <p
+            className="hidden sm:block"
             style={{
               fontFamily: 'var(--font-crimson)',
-              fontSize: '0.875rem',
+              fontSize: 'clamp(0.6875rem, 2vw, 0.875rem)',
               color: 'var(--secondary-text)',
-              lineHeight: '1.5',
+              lineHeight: '1.4',
             }}
           >
             <span style={{ fontWeight: '600' }}>Local:</span> Nosso Salão de Festas, onde celebraremos juntos este dia inesquecível.
@@ -207,9 +209,16 @@ export default function ElegantInvitation() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.6, duration: 0.8 }}
-          className="mt-8 flex justify-center"
+          className="mt-3 sm:mt-6 md:mt-8 flex justify-center"
         >
-          <svg width="80" height="20" viewBox="0 0 80 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg
+            width="80"
+            height="20"
+            viewBox="0 0 80 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-16 sm:w-20"
+          >
             <path
               d="M10 10 Q15 5, 20 10 T30 10"
               stroke="var(--decorative)"
