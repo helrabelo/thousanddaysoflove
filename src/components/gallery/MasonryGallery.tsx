@@ -87,8 +87,8 @@ function hasMultipleMedia(item: any): boolean {
 
 export default function MasonryGallery({
   items,
-  title = "Nossa Galeria de Memórias",
-  description = "Cada foto conta uma parte da nossa história",
+  title,
+  description,
   showFilters = true,
   initialCategory = 'all',
   onItemClick
@@ -175,7 +175,7 @@ export default function MasonryGallery({
       <section className="py-20">
         {/* Header with padding */}
         <div className="container-padding max-w-8xl mx-auto">
-          <motion.div
+          {title && <motion.div
             className="text-center mb-12"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -189,7 +189,7 @@ export default function MasonryGallery({
             <p className="text-xl max-w-2xl mx-auto leading-relaxed" style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)', fontStyle: 'italic' }}>
               {description}
             </p>
-          </motion.div>
+          </motion.div>}
 
           {/* Filters */}
           {showFilters && (

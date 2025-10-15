@@ -167,7 +167,7 @@ export default function HeroSection() {
                   fontStyle: 'italic'
                 }}
               >
-                10h30 da manhã<br />
+                11h00 da manhã<br />
                 <span style={{ color: 'var(--decorative)' }}>60 pessoas. Pra quem é introvertido, isso é muita gente.</span>
               </p>
             </div>

@@ -52,7 +52,7 @@ const EVENT_DETAILS = [
   {
     icon: Clock,
     label: 'Horário',
-    value: '10h30',
+    value: '11h00',
     detail: 'Chegada dos convidados',
   },
   {
@@ -97,30 +97,8 @@ export default function ConvitePage() {
                   color: 'var(--primary-text)',
                 }}
               >
-                Você está convidado!
+                Você está convidado?
               </h1>
-
-              <div className="space-y-2">
-                <p
-                  className="text-2xl sm:text-3xl font-light"
-                  style={{
-                    fontFamily: 'var(--font-playfair)',
-                    color: 'var(--decorative)',
-                  }}
-                >
-                  Hel & Ylana
-                </p>
-                <p
-                  className="text-lg opacity-90 max-w-2xl mx-auto"
-                  style={{
-                    fontFamily: 'var(--font-crimson)',
-                    fontStyle: 'italic',
-                    color: 'var(--secondary-text)',
-                  }}
-                >
-                  Celebrando 1000 dias de amor
-                </p>
-              </div>
 
               {/* Call to action for personalized invite */}
               <motion.div
@@ -270,7 +248,7 @@ export default function ConvitePage() {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-3 gap-6">
               {WEBSITE_FEATURES.map((feature, index) => {
                 const Icon = feature.icon;
                 return (
@@ -386,7 +364,7 @@ export default function ConvitePage() {
                 }}
               >
                 Estamos muito felizes em compartilhar este momento especial com
-                você!
+                você!<br /> ( mas só se você tiver sido convidado 😄 )
               </p>
 
               <Link

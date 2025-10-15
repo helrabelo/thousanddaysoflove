@@ -40,11 +40,11 @@ export default function WeddingLocation({ data }: WeddingLocationProps) {
   const showDirections = data?.showDirections !== false // default true
 
   // Wedding settings with fallbacks
-  const venueName = data?.weddingSettings?.venueName || 'Constable Galerie'
-  const venueAddress = data?.weddingSettings?.venueAddress || 'Rua Osvaldo Cruz, 2001'
+  const venueName = data?.weddingSettings?.venueName || 'Casa HY'
+  const venueAddress = data?.weddingSettings?.venueAddress || 'Rua Coronel Francisco Flávio Carneiro, 200'
   const venueCity = data?.weddingSettings?.venueCity || 'Fortaleza'
   const venueState = data?.weddingSettings?.venueState || 'CE'
-  const venueZip = data?.weddingSettings?.venueZip || '60125-151'
+  const venueZip = data?.weddingSettings?.venueZip || '60813-690'
   const venueLocation = data?.weddingSettings?.venueLocation || {
     lat: -3.7480656,
     lng: -38.5099456
@@ -76,8 +76,8 @@ export default function WeddingLocation({ data }: WeddingLocationProps) {
 
   const nearbyLandmarks = [
     '📍 Próximo ao Shopping Iguatemi',
-    '📍 Região nobre de Eng. Luciano Cavalcante',
-    '📍 Fácil acesso pela Washington Soares'
+    '📍 Fácil acesso pela Washington Soares',
+    '📍 Região nobre de Eng. Luciano Cavalcante'
   ]
 
   return (

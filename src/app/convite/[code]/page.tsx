@@ -31,6 +31,7 @@ import QRCode from 'qrcode';
 import CountdownTimer from '@/components/dashboard/CountdownTimer';
 import ActivityFeed from '@/components/dashboard/ActivityFeed';
 import GuestProgressTracker from '@/components/invitations/GuestProgressTracker';
+import HYBadge from '@/components/ui/HYBadge';
 
 const EVENT_DETAILS = [
   {
@@ -42,7 +43,7 @@ const EVENT_DETAILS = [
   {
     icon: Clock,
     label: 'Horário',
-    value: '10h30',
+    value: '11h00',
     detail: 'Chegada dos convidados',
   },
   {
@@ -303,19 +304,13 @@ export default function PersonalizedInvitePage() {
               className="space-y-6"
             >
               {/* Decorative top ornament */}
-              <div className="flex justify-center mb-6">
-                <Heart
-                  className="w-16 h-16 animate-pulse"
-                  style={{ color: 'var(--decorative)' }}
-                />
-              </div>
+              <HYBadge />
 
               <div className="space-y-2">
                 <p
                   className="text-2xl sm:text-3xl font-light"
                   style={{
                     fontFamily: 'var(--font-playfair)',
-                    color: 'var(--decorative)',
                   }}
                 >
                   Hel & Ylana

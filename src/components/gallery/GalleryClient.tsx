@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { motion } from 'framer-motion'
 import MasonryGallery from '@/components/gallery/MasonryGallery'
 import MediaLightbox from '@/components/gallery/MediaLightbox'
 import GuestPhotosSection from '@/components/gallery/GuestPhotosSection'
@@ -51,8 +50,6 @@ export default function GalleryClient({ mediaItems, guestPhotosByPhase }: Galler
       {/* Unified Media Gallery (Photos & Videos) */}
       <MasonryGallery
         items={mediaItems}
-        title="Momentos Eternizados"
-        description="Nossa jornada capturada em fotos e vídeos que contam a história dos nossos mil dias de amor"
         showFilters={true}
         onItemClick={(item, index) => {
           openLightbox(item, mediaItems)

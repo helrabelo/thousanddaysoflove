@@ -41,7 +41,7 @@ export default function DetalhesPage() {
               <HYBadge />
 
               <h1 className="text-5xl md:text-7xl font-bold mb-8" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)', letterSpacing: '0.15em', lineHeight: '1.1' }}>
-                Detalhes do Casamento
+                Detalhes do Dia 1000
               </h1>
               <div className="w-24 h-px mx-auto mb-8" style={{ background: 'var(--decorative)' }} />
               <p className="text-xl md:text-2xl max-w-2xl mx-auto leading-relaxed" style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)', fontStyle: 'italic' }}>
@@ -78,7 +78,7 @@ export default function DetalhesPage() {
                 20 de Novembro de 2025
               </p>
               <p className="text-sm mt-1" style={{ color: 'var(--secondary-text)' }}>
-                Início às 10h30
+                Início às 11h00
               </p>
             </div>
 

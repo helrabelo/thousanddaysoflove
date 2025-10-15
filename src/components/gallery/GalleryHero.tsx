@@ -1,7 +1,6 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import Image from 'next/image'
 import BotanicalCorners from '@/components/ui/BotanicalCorners'
 import HYBadge from '../ui/HYBadge'
 
@@ -21,12 +20,11 @@ export default function GalleryHero() {
           <HYBadge />
 
           <h1 className="text-5xl md:text-7xl font-bold mb-8" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)', letterSpacing: '0.15em', lineHeight: '1.1' }}>
-            Nossa Galeria
+            Galeria HY
           </h1>
           <div className="w-24 h-px mx-auto mb-8" style={{ background: 'var(--decorative)' }} />
           <p className="text-xl md:text-2xl max-w-2xl mx-auto leading-relaxed" style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)', fontStyle: 'italic' }}>
-            Mil dias de amor capturados em momentos eternos.
-            Cada foto conta uma parte da nossa jornada até o altar.
+            Um compilado de momentos especiais capturados em fotos.
           </p>
         </motion.div>
       </div>
