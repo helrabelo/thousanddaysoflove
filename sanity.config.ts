@@ -4,7 +4,7 @@
  * This file configures the Sanity Studio interface for managing
  * wedding website content. Inspired by Din Tai Fung's modular approach.
  */
-
+import {BulkDelete} from 'sanity-plugin-bulk-delete'
 import { defineConfig } from 'sanity'
 import { structureTool } from 'sanity/structure'
 import { visionTool } from '@sanity/vision'
@@ -28,6 +28,10 @@ export default defineConfig({
       structure: deskStructure,
     }),
     visionTool(),
+    BulkDelete({
+      schemaTypes: schemaTypes, // Pass your schema types here
+      // roles: ['administrator', 'editor'], // Optionally restrict to specific roles
+    }),
   ],
 
   schema: {
