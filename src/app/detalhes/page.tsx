@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import {
   Clock,
   Shirt,
@@ -26,24 +27,45 @@ export default function DetalhesPage() {
   return (
     <>
       <Navigation />
-      <div className="min-h-screen pt-20" >
-        {/* Header */}
-        <div className="text-center py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen" >
+        {/* Header - Matching Gallery Style */}
+        <section className="relative pt-28 md:pt-24 pb-20 px-6 overflow-hidden">
+          <div className="max-w-4xl mx-auto text-center relative z-10">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.8 }}
             >
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-light text-center mb-4" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)' }}>
+              {/* HY Monogram Logo */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="flex justify-center mb-6"
+              >
+                <Image
+                  src="/HY.svg"
+                  alt="Hel & Ylana"
+                  width={80}
+                  height={80}
+                  className="opacity-80"
+                  style={{
+                    filter: 'brightness(0) saturate(100%)',
+                    color: 'var(--decorative)'
+                  }}
+                />
+              </motion.div>
+
+              <h1 className="text-5xl md:text-7xl font-bold mb-8" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)', letterSpacing: '0.15em', lineHeight: '1.1' }}>
                 Detalhes do Casamento
               </h1>
-              <p className="text-center opacity-90 text-lg max-w-2xl mx-auto" style={{ fontFamily: 'var(--font-crimson)', fontStyle: 'italic', color: 'var(--secondary-text)' }}>
+              <div className="w-24 h-px mx-auto mb-8" style={{ background: 'var(--decorative)' }} />
+              <p className="text-xl md:text-2xl max-w-2xl mx-auto leading-relaxed" style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)', fontStyle: 'italic' }}>
                 Tudo que você precisa saber sobre o grande dia
               </p>
             </motion.div>
           </div>
-        </div>
+        </section>
 
       {/* Wedding Location Section */}
       <WeddingLocation />

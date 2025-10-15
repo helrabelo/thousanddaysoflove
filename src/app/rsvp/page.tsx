@@ -256,8 +256,28 @@ export default function SimpleRSVP() {
   return (
     <div className="min-h-screen bg-hero-gradient">
       <Navigation />
-      <div className="py-16 px-4 pt-32">
+      <div className="py-16 px-4 pt-28 md:pt-24">
         <div className="max-w-4xl mx-auto">
+          {/* Header with HY Logo */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="flex justify-center mb-8"
+          >
+            <Image
+              src="/HY.svg"
+              alt="Hel & Ylana"
+              width={80}
+              height={80}
+              className="opacity-80"
+              style={{
+                filter: 'brightness(0) saturate(100%)',
+                color: 'var(--decorative)'
+              }}
+            />
+          </motion.div>
+
           {/* Back Link */}
           <div className="text-center mb-8">
             <Link href="/" className="inline-block" style={{ color: 'var(--decorative)' }}>
@@ -279,9 +299,8 @@ export default function SimpleRSVP() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 1, delay: 0.2 }}
-              className="mb-8 rounded-2xl overflow-hidden shadow-2xl relative"
+              className="mb-8 rounded-2xl overflow-hidden shadow-2xl relative bg-white aspect-[3/4] sm:aspect-[4/5]"
               style={{
-                aspectRatio: '3/2',
                 boxShadow: '0 20px 60px rgba(0,0,0,0.15)'
               }}
             >

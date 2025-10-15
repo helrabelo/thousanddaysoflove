@@ -33,7 +33,7 @@ export default async function GaleriaPage() {
   const totalGuestPhotos = guestPhotosByPhase.before.length + guestPhotosByPhase.during.length + guestPhotosByPhase.after.length
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen pt-20 md:pt-0">
       <Navigation />
 
       {/* Hero Section with Animations */}

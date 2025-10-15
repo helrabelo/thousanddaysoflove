@@ -6,7 +6,7 @@ import BotanicalCorners from '@/components/ui/BotanicalCorners'
 
 export default function GalleryHero() {
   return (
-    <section className="relative pt-24 pb-20 px-6 overflow-hidden">
+    <section className="relative pt-8 md:pt-24 pb-20 px-6 overflow-hidden">
       {/* Botanical Corner Decorations */}
       <BotanicalCorners pattern="diagonal-right" opacity={0.15} />
 

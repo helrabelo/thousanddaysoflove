@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import { Search, Filter, Heart, Gift as GiftIcon, Sparkles } from 'lucide-react'
 import Navigation from '@/components/ui/Navigation'
 import GiftCard from '@/components/gifts/GiftCard'
@@ -127,25 +128,45 @@ export default function PresentsPage() {
   return (
     <div className="min-h-screen" >
       <Navigation />
-      <div className="container mx-auto px-4 py-8 pt-24">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
-        >
-          <div className="flex flex-row items-center justify-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-full flex flex-row items-center justify-center" style={{ background: 'var(--decorative)' }}>
-              <GiftIcon className="w-6 h-6" style={{ color: 'var(--white-soft)' }} />
-            </div>
-            <h1 className="text-4xl font-bold" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)', letterSpacing: '0.15em' }}>
-              Ajudem a Construir Nosso Lar
-            </h1>
+      <div className="container mx-auto px-4 py-8">
+        {/* Header - Matching Gallery Style */}
+        <section className="relative pt-28 md:pt-24 pb-12 px-6 overflow-hidden">
+          <div className="max-w-4xl mx-auto text-center relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              {/* HY Monogram Logo */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="flex justify-center mb-6"
+              >
+                <Image
+                  src="/HY.svg"
+                  alt="Hel & Ylana"
+                  width={80}
+                  height={80}
+                  className="opacity-80"
+                  style={{
+                    filter: 'brightness(0) saturate(100%)',
+                    color: 'var(--decorative)'
+                  }}
+                />
+              </motion.div>
+
+              <h1 className="text-5xl md:text-7xl font-bold mb-8" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)', letterSpacing: '0.15em', lineHeight: '1.1' }}>
+                Ajudem a Construir Nosso Lar
+              </h1>
+              <div className="w-24 h-px mx-auto mb-8" style={{ background: 'var(--decorative)' }} />
+              <p className="text-xl md:text-2xl max-w-2xl mx-auto leading-relaxed" style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)', fontStyle: 'italic' }}>
+                Esse apartamento que o Hel passava de bicicleta sonhando? Agora é nosso. Casa própria depois de anos de trabalho. Família de 6 (contando Linda 👑, Cacao 🍫, Olivia 🌸 e Oliver ⚡). Se quiser ajudar a fazer dela um lar de verdade, a gente agradece demais.
+              </p>
+            </motion.div>
           </div>
-          <p className="text-lg max-w-2xl mx-auto" style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)', fontStyle: 'italic', lineHeight: '1.8' }}>
-            Esse apartamento que o Hel passava de bicicleta sonhando? Agora é nosso. Casa própria depois de anos de trabalho. Família de 6 (contando Linda 👑, Cacao 🍫, Olivia 🌸 e Oliver ⚡). Se quiser ajudar a fazer dela um lar de verdade, a gente agradece demais.
-          </p>
-        </motion.div>
+        </section>
 
         {/* Stats */}
         <motion.div
