@@ -54,7 +54,7 @@ export default function GuestPhotosSection({
   }
 
   return (
-    <section className="py-20">
+    <section className="py-12">
       <div className="max-w-7xl mx-auto px-6">
         {/* Section Header */}
         <motion.div

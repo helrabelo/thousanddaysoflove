@@ -75,7 +75,7 @@ const cardVariants = {
 
 export default function FeatureHubSection() {
   return (
-    <section className="py-20 md:py-32 px-4 sm:px-6 lg:px-8 bg-[var(--white-soft)]">
+    <section className="py-12 md:py-32 px-4 sm:px-6 lg:px-8 bg-[var(--white-soft)]">
       <div className="max-w-6xl mx-auto">
         {/* Section Header */}
         <motion.div

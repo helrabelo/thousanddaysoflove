@@ -386,7 +386,7 @@ export default function VideoGallery({
   }
 
   return (
-    <section className="py-20 bg-gradient-to-br from-gray-50 to-rose-50">
+    <section className="py-12 bg-gradient-to-br from-gray-50 to-rose-50">
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
         <motion.div
@@ -468,7 +468,7 @@ export default function VideoGallery({
         {/* Empty State */}
         {videoItems.length === 0 && (
           <motion.div
-            className="text-center py-20"
+            className="text-center py-12"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}

@@ -161,7 +161,7 @@ export default function StoryPreview() {
         <div className="w-full overflow-hidden">
           <div className="story-grid">
             {storyMoments.length === 0 && (
-              <div className="col-span-full text-center py-20">
+              <div className="col-span-full text-center py-12">
                 <p style={{ fontFamily: 'var(--font-crimson)', fontSize: '1.25rem', color: 'var(--secondary-text)', fontStyle: 'italic' }}>
                   Nenhum momento cadastrado ainda. Adicione momentos especiais no Sanity Studio!
                 </p>

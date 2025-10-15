@@ -131,7 +131,7 @@ export default function ElegantInvitation({ variant = 'default' }: { variant?: '
       <BotanicalCorners pattern="diagonal-right" opacity={0.15} />
 
       {/* Main invitation content */}
-      <div className="text-center max-w-xl space-y-3 sm:space-y-4 md:space-y-6">
+      <div className="text-center max-w-xl space-y-3 sm:space-y-4 md:space-y-6 h-full max-h-[80%] flex flex-col justify-center gap-4">
         {/* Logo */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -170,37 +170,6 @@ export default function ElegantInvitation({ variant = 'default' }: { variant?: '
         >
           HEL & YLANA
         </motion.h3> */}
-
-        {/* Divider */}
-        <motion.div
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={{ delay: 0.6, duration: 0.8 }}
-          className="flex items-center justify-center gap-2 my-2 sm:my-3 md:my-4 mt-6 sm:mt-10 md:mt-16"
-        >
-          <div
-            style={{
-              width: 'clamp(30px, 10vw, 60px)',
-              height: '1px',
-              background: 'var(--decorative)',
-            }}
-          />
-          <div
-            style={{
-              width: 'clamp(3px, 0.8vw, 4px)',
-              height: 'clamp(3px, 0.8vw, 4px)',
-              borderRadius: '50%',
-              background: 'var(--decorative)',
-            }}
-          />
-          <div
-            style={{
-              width: 'clamp(30px, 10vw, 60px)',
-              height: '1px',
-              background: 'var(--decorative)',
-            }}
-          />
-        </motion.div>
 
         {/* Invitation text - Subtitle Style */}
         <motion.p
@@ -256,37 +225,6 @@ export default function ElegantInvitation({ variant = 'default' }: { variant?: '
           </div>
         </motion.div>
 
-        {/* Divider */}
-        <motion.div
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={{ delay: 1.2, duration: 0.8 }}
-          className="flex items-center justify-center gap-2 my-2 sm:my-3 md:my-4"
-        >
-          <div
-            style={{
-              width: 'clamp(25px, 8vw, 40px)',
-              height: '1px',
-              background: 'var(--decorative)',
-            }}
-          />
-          <div
-            style={{
-              width: 'clamp(2px, 0.6vw, 3px)',
-              height: 'clamp(2px, 0.6vw, 3px)',
-              borderRadius: '50%',
-              background: 'var(--decorative)',
-            }}
-          />
-          <div
-            style={{
-              width: 'clamp(25px, 8vw, 40px)',
-              height: '1px',
-              background: 'var(--decorative)',
-            }}
-          />
-        </motion.div>
-
         {/* Address & Venue - Card Description Style */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -317,37 +255,6 @@ export default function ElegantInvitation({ variant = 'default' }: { variant?: '
           >
             <span style={{ fontWeight: '600' }}>Local:</span> Nosso Salão de Festas, onde celebraremos juntos este dia inesquecível.
           </p>
-        </motion.div>
-
-        {/* Bottom floral decoration */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.6, duration: 0.8 }}
-          className="mt-3 sm:mt-6 md:mt-8 flex justify-center"
-        >
-          <svg
-            width="80"
-            height="20"
-            viewBox="0 0 80 20"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-16 sm:w-20"
-          >
-            <path
-              d="M10 10 Q15 5, 20 10 T30 10"
-              stroke="var(--decorative)"
-              strokeWidth="0.5"
-              fill="none"
-            />
-            <circle cx="40" cy="10" r="2" fill="var(--decorative)" opacity="0.6" />
-            <path
-              d="M50 10 Q55 5, 60 10 T70 10"
-              stroke="var(--decorative)"
-              strokeWidth="0.5"
-              fill="none"
-            />
-          </svg>
         </motion.div>
       </div>
     </motion.div>

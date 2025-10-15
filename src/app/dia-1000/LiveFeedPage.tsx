@@ -57,31 +57,6 @@ export function LiveFeedPage() {
     <div className="min-h-screen bg-[#F8F6F3]">
       {/* Hero section with monochromatic elegance */}
       <div className="bg-[#2C2C2C] text-[#F8F6F3] py-12 px-6 relative overflow-hidden border-b-2 border-[#A8A8A8]">
-        {/* Floating sound toggle button */}
-        <motion.button
-          onClick={toggleSound}
-          className="absolute top-4 right-4 z-10 p-3 rounded-full bg-[#F8F6F3]/20 backdrop-blur-sm hover:bg-[#F8F6F3]/30 transition-all duration-300 border border-[#A8A8A8]/30"
-          whileHover={shouldReduceMotion ? {} : { scale: 1.05, rotate: 5 }}
-          whileTap={{ scale: 0.95 }}
-          title={isMuted ? 'Ativar sons' : 'Silenciar sons'}
-        >
-          <motion.div
-            animate={!isMuted && !shouldReduceMotion ? {
-              scale: [1, 1.2, 1]
-            } : {}}
-            transition={{
-              duration: 0.6,
-              repeat: Infinity,
-              repeatDelay: 2
-            }}
-          >
-            {isMuted ? (
-              <VolumeX className="w-5 h-5 text-[#F8F6F3]" />
-            ) : (
-              <Volume2 className="w-5 h-5 text-[#F8F6F3]" />
-            )}
-          </motion.div>
-        </motion.button>
 
         <div className="max-w-7xl mx-auto">
           <motion.div
@@ -154,9 +129,8 @@ export function LiveFeedPage() {
                   ease: 'easeInOut'
                 }}
               >
-                <div className={`w-2 h-2 rounded-full ${
-                  connectionStatus === 'live' ? 'bg-[#A8A8A8]' : 'bg-[#E8E6E3]'
-                }`} />
+                <div className={`w-2 h-2 rounded-full ${connectionStatus === 'live' ? 'bg-[#A8A8A8]' : 'bg-[#E8E6E3]'
+                  }`} />
               </motion.div>
               <span className="text-sm font-medium font-crimson italic">
                 {connectionStatus === 'live' ? 'Ao Vivo' : 'Atualizando...'}
@@ -198,7 +172,7 @@ export function LiveFeedPage() {
             <PinnedMomentsSection />
 
             {/* Live Feed Section */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-[#E8E6E3]">
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-[#E8E6E3] relative">
               <div className="flex items-center gap-3 mb-6">
                 <div className="relative">
                   <Radio className="w-6 h-6 text-[#2C2C2C]" />
@@ -221,6 +195,31 @@ export function LiveFeedPage() {
               </div>
 
               {/* Live posts and photos stream with refresh key (merged feed) */}
+              {/* Floating sound toggle button */}
+              <motion.button
+                onClick={toggleSound}
+                className="absolute top-4 right-4 z-10 p-3 rounded-full bg-[#F8F6F3]/20 backdrop-blur-sm hover:bg-[#F8F6F3]/30 transition-all duration-300 border border-[#A8A8A8]/30 !w-fit"
+                whileHover={shouldReduceMotion ? {} : { scale: 1.05, rotate: 5 }}
+                whileTap={{ scale: 0.95 }}
+                title={isMuted ? 'Ativar sons' : 'Silenciar sons'}
+              >
+                <motion.div
+                  animate={!isMuted && !shouldReduceMotion ? {
+                    scale: [1, 1.2, 1]
+                  } : {}}
+                  transition={{
+                    duration: 0.6,
+                    repeat: Infinity,
+                    repeatDelay: 2
+                  }}
+                >
+                  {isMuted ? (
+                    <VolumeX className="w-5 h-5 text-[#text-3xl font-playfair font-bold text-[#2C2C2C]]" />
+                  ) : (
+                    <Volume2 className="w-5 h-5 text-[#text-3xl font-playfair font-bold text-[#2C2C2C]]" />
+                  )}
+                </motion.div>
+              </motion.button>
               <LivePostStream key={feedRefreshKey} />
             </div>
           </div>

@@ -292,7 +292,7 @@ export default function PostCard({
 
       {/* Actions - Hide for guest photos */}
       {!isGuestPhoto && (
-        <div className="flex items-center gap-2 mb-4">
+        <div className="flex items-center gap-2 mb-4 flex-wrap">
           {/* Reaction Buttons */}
           {(['heart', 'clap', 'laugh', 'celebrate'] as const).map((type) => {
             const Icon = REACTION_ICONS[type];
@@ -307,7 +307,7 @@ export default function PostCard({
                 disabled={!currentGuestName || isReacting}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
-                className={`flex items-center gap-1 px-3 py-2 rounded-full border transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                className={`flex items-center gap-1 px-3 py-2 rounded-full border transition-all disabled:opacity-50 disabled:cursor-not-allowed !w-fit ${
                   isActive
                     ? 'bg-[#2C2C2C] text-white border-[#2C2C2C]'
                     : 'bg-white text-[#4A4A4A] border-[#E8E6E3] hover:'
@@ -325,7 +325,7 @@ export default function PostCard({
             <button
               type="button"
               onClick={() => setShowCommentInput(!showCommentInput)}
-              className="flex items-center gap-1 px-3 py-2 rounded-full border border-[#E8E6E3] bg-white text-[#4A4A4A] hover: transition-all"
+              className="flex items-center gap-1 px-3 py-2 rounded-full border border-[#E8E6E3] bg-white text-[#4A4A4A] hover: transition-all !w-fit"
             >
               <MessageCircle className="w-4 h-4" />
               <span className="text-sm">Comentar</span>

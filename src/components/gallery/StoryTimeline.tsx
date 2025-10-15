@@ -48,7 +48,7 @@ export default function StoryTimeline({
   }
 
   return (
-    <section className="py-20" >
+    <section className="py-12" >
       <div className="max-w-6xl mx-auto px-6">
         {/* Header */}
         <motion.div

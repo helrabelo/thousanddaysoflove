@@ -172,7 +172,7 @@ export default function MasonryGallery({
 
   return (
     <>
-      <section className="py-20">
+      <section className="py-12">
         {/* Header with padding */}
         <div className="container-padding max-w-8xl mx-auto">
           {title && <motion.div
@@ -572,7 +572,7 @@ export default function MasonryGallery({
         <div className="container-padding">
           {filteredItems.length === 0 && (
             <motion.div
-              className="text-center py-20"
+              className="text-center py-12"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
