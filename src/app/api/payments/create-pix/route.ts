@@ -24,12 +24,12 @@ export async function POST(req: NextRequest) {
     }
 
     // Validate minimum amount (R$50 as per requirements)
-    if (amount < 50) {
-      return NextResponse.json(
-        { error: 'Valor mínimo de contribuição é R$ 50,00' },
-        { status: 400 }
-      )
-    }
+    // if (amount < 50) {
+    //   return NextResponse.json(
+    //     { error: 'Valor mínimo de contribuição é R$ 50,00' },
+    //     { status: 400 }
+    //   )
+    // }
 
     // Get gift information from Sanity CMS
     const gift = await GiftService.getGiftFromSanity(sanityGiftId)
