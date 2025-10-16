@@ -21,11 +21,21 @@ export async function GET(req: NextRequest) {
     // Get payment by our internal ID
     if (paymentId) {
       payment = await PaymentService.getPaymentById(paymentId)
-      console.log('📋 Payment found in database:', {
+      console.log('📋 Payment found by internal ID:', {
         id: payment?.id,
         status: payment?.status,
         mercadoPagoId: payment?.mercado_pago_payment_id,
         hasMercadoPagoId: !!payment?.mercado_pago_payment_id
+      })
+    }
+
+    // Get payment by Mercado Pago ID if not found yet
+    if (!payment && mercadoPagoId) {
+      payment = await PaymentService.getPaymentByMercadoPagoId(mercadoPagoId)
+      console.log('📋 Payment found by Mercado Pago ID:', {
+        id: payment?.id,
+        status: payment?.status,
+        mercadoPagoId: payment?.mercado_pago_payment_id
       })
     }
 

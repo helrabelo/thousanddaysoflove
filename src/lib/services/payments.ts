@@ -104,6 +104,20 @@ export class PaymentService {
     return data
   }
 
+  // Get payment by Mercado Pago ID
+  static async getPaymentByMercadoPagoId(mercadoPagoId: string): Promise<Payment | null> {
+    const supabase = createClient()
+
+    const { data, error } = await supabase
+      .from('payments')
+      .select('*')
+      .eq('mercado_pago_payment_id', mercadoPagoId)
+      .single()
+
+    if (error || !data) return null
+    return data
+  }
+
   // Get payments by gift ID
   static async getPaymentsByGift(giftId: string): Promise<Payment[]> {
     const supabase = createClient()
