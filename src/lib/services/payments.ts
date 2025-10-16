@@ -364,6 +364,18 @@ export class PaymentService {
       requestBody.notification_url = `${siteUrl}/api/webhooks/mercado-pago`
     }
 
+    // Log the exact request we're sending
+    console.log('📤 Mercado Pago API Request:', {
+      url: 'https://api.mercadopago.com/v1/payments',
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken.substring(0, 20)}...`,
+        'Content-Type': 'application/json',
+        'X-Idempotency-Key': `wedding-${paymentData.paymentId}-${Date.now()}`
+      },
+      body: requestBody
+    })
+
     try {
       const response = await fetch('https://api.mercadopago.com/v1/payments', {
         method: 'POST',
@@ -377,7 +389,12 @@ export class PaymentService {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
-        console.error('Mercado Pago API error:', response.status, errorData)
+        console.error('❌ Mercado Pago API error:', {
+          status: response.status,
+          statusText: response.statusText,
+          error: errorData,
+          requestBody: requestBody
+        })
         throw new Error(`Mercado Pago API error: ${response.status} - ${JSON.stringify(errorData)}`)
       }
 
