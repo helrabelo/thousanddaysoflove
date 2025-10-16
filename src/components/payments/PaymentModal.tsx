@@ -49,7 +49,7 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
       const interval = setInterval(async () => {
         try {
           setStatusChecking(true)
-          const response = await fetch(`/api/payments/status?paymentId=${paymentData.payment.id}`)
+          const response = await fetch(`/api/payments/status?paymentId=${paymentData.payment.mercado_pago_payment_id}`)
           const result = await response.json()
 
           if (result.success && result.payment.status === 'completed') {
