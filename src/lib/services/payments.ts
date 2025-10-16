@@ -321,7 +321,12 @@ export class PaymentService {
       throw new Error('Mercado Pago access token not configured')
     }
 
-    const requestBody = {
+    // Only include notification_url if we have a valid production URL
+    // (Mercado Pago rejects localhost URLs)
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
+    const hasValidWebhookUrl = siteUrl && siteUrl.startsWith('https://')
+
+    const requestBody: any = {
       transaction_amount: paymentData.amount,
       description: `${paymentData.description} - ${paymentData.giftName || 'Presente'}`,
       payment_method_id: paymentData.paymentMethod,
@@ -331,7 +336,6 @@ export class PaymentService {
         last_name: paymentData.buyerName?.split(' ').slice(1).join(' ') || 'Casamento'
       },
       external_reference: paymentData.paymentId,
-      notification_url: `${process.env.NEXT_PUBLIC_SITE_URL}/api/webhooks/mercado-pago`,
       metadata: {
         payment_id: paymentData.paymentId,
         gift_name: paymentData.giftName,
@@ -339,6 +343,11 @@ export class PaymentService {
         wedding_couple: 'Hel & Ylana',
         wedding_date: '2025-11-20'
       }
+    }
+
+    // Add notification_url only for production (https)
+    if (hasValidWebhookUrl) {
+      requestBody.notification_url = `${siteUrl}/api/webhooks/mercado-pago`
     }
 
     try {

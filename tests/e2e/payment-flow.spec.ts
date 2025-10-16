@@ -25,9 +25,9 @@ test.describe('Payment Flow', () => {
   test('should create PIX payment successfully', async ({ page, browser }) => {
     test.setTimeout(60000) // 60 seconds for full flow
 
-    // Step 1: Find and click first gift card "Contribuir" button
+    // Step 1: Find and click first gift card "Presentear" button
     console.log('Step 1: Finding gift card...')
-    const contributeButton = page.locator('button:has-text("Contribuir")').first()
+    const contributeButton = page.locator('button:has-text("Presentear")').first()
     await expect(contributeButton).toBeVisible({ timeout: 10000 })
     await contributeButton.click()
 
@@ -89,8 +89,8 @@ test.describe('Payment Flow', () => {
   test('should show error for invalid payment', async ({ page }) => {
     test.setTimeout(30000)
 
-    // Click contribute button
-    const contributeButton = page.locator('button:has-text("Contribuir")').first()
+    // Click Presentear button
+    const contributeButton = page.locator('button:has-text("Presentear")').first()
     await contributeButton.click()
 
     // Try to submit with empty email
@@ -104,7 +104,7 @@ test.describe('Payment Flow', () => {
 
   test('should close modal on X button click', async ({ page }) => {
     // Open modal
-    await page.click('button:has-text("Contribuir")')
+    await page.click('button:has-text("Presentear")')
     await expect(page.locator('text=Comprar com PIX')).toBeVisible()
 
     // Click X button
@@ -129,7 +129,7 @@ test.describe('Payment Status Polling', () => {
 
     // Create payment (reuse steps from above)
     await page.goto('http://localhost:3000/presentes')
-    await page.click('button:has-text("Contribuir")')
+    await page.click('button:has-text("Presentear")')
 
     await page.fill('input[type="text"]', 'Status Test')
     await page.fill('input[type="email"]', 'status@test.com')
