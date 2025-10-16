@@ -1,7 +1,7 @@
 'use client'
 
 import { motion, useReducedMotion } from 'framer-motion'
-import { ReactNode, useMemo } from 'react'
+import { ReactNode, useMemo, useState, useEffect } from 'react'
 import MediaCarousel, { MediaItem } from '@/components/ui/MediaCarousel'
 
 interface TimelineMomentCardProps {
@@ -22,6 +22,54 @@ interface TimelineMomentCardProps {
 }
 
 /**
+ * Extract dimensions from Sanity CDN URL
+ * Sanity encodes dimensions in the filename like: {assetId}-{width}x{height}.{ext}
+ */
+function extractDimensionsFromSanityUrl(url: string): { width: number; height: number } | null {
+  try {
+    // Match pattern like: abc123-1920x1080.jpg or abc123-1080x1920.mp4
+    const match = url.match(/-(\d+)x(\d+)\.(jpg|jpeg|png|gif|webp|mp4|mov)/i)
+    if (match) {
+      const width = parseInt(match[1], 10)
+      const height = parseInt(match[2], 10)
+      if (width > 0 && height > 0) {
+        return { width, height }
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to parse Sanity URL dimensions:', error)
+  }
+  return null
+}
+
+/**
+ * Calculate the best aspect ratio for the polaroid frame
+ * More precise buckets for different media types
+ */
+function calculateAspectRatioBucket(ratio: number): string {
+  // Ultra-wide landscape (21:9 or wider)
+  if (ratio >= 2.2) return '21/9'
+
+  // Wide landscape (16:9)
+  if (ratio >= 1.6) return '16/9'
+
+  // Standard landscape (4:3)
+  if (ratio >= 1.2) return '4/3'
+
+  // Square-ish (1:1)
+  if (ratio >= 0.85) return '1/1'
+
+  // Standard portrait (3:4)
+  if (ratio >= 0.6) return '3/4'
+
+  // Tall portrait (9:16) - mobile screenshots
+  if (ratio >= 0.45) return '9/16'
+
+  // Ultra-tall (e.g., 1179x2556 = 0.46)
+  return '9/16'
+}
+
+/**
  * Calculate the best aspect ratio for the polaroid frame
  * based on the first media item's dimensions
  */
@@ -32,21 +80,30 @@ function getPolaroidAspectRatio(media: MediaItem[]): string {
 
   // Use explicit aspect ratio if provided
   if (firstMedia.aspectRatio) {
-    const ratio = firstMedia.aspectRatio
-    if (ratio > 1.3) return '4/3'      // Landscape
-    if (ratio > 0.9) return '1/1'      // Square-ish
-    return '3/4'                        // Portrait
+    const result = calculateAspectRatioBucket(firstMedia.aspectRatio)
+    console.log('✅ Using aspectRatio:', firstMedia.aspectRatio, '→', result)
+    return result
   }
 
   // Calculate from width/height if available
   if (firstMedia.width && firstMedia.height) {
     const ratio = firstMedia.width / firstMedia.height
-    if (ratio > 1.3) return '4/3'      // Landscape
-    if (ratio > 0.9) return '1/1'      // Square-ish
-    return '3/4'                        // Portrait
+    const result = calculateAspectRatioBucket(ratio)
+    console.log('✅ Calculated from w/h:', ratio, '→', result)
+    return result
+  }
+
+  // FALLBACK: Extract dimensions from Sanity CDN URL
+  const urlDimensions = extractDimensionsFromSanityUrl(firstMedia.url)
+  if (urlDimensions) {
+    const ratio = urlDimensions.width / urlDimensions.height
+    const result = calculateAspectRatioBucket(ratio)
+    console.log('✅ Extracted from URL:', urlDimensions, 'ratio:', ratio, '→', result)
+    return result
   }
 
   // Default to portrait for vertical iPhone photos
+  console.log('⚠️ No dimensions found, using default: 3/4')
   return '3/4'
 }
 
@@ -62,8 +119,41 @@ export default function TimelineMomentCard({
   const isLeft = contentAlign === 'left'
   const shouldReduceMotion = useReducedMotion()
 
-  // Calculate aspect ratio based on first media item
-  const aspectRatio = useMemo(() => getPolaroidAspectRatio(media), [media])
+  // State for dynamically detected aspect ratio (for videos)
+  const [detectedAspectRatio, setDetectedAspectRatio] = useState<string | null>(null)
+
+  // Calculate initial aspect ratio based on first media item
+  const initialAspectRatio = useMemo(() => getPolaroidAspectRatio(media), [media])
+
+  // Use detected aspect ratio if available, otherwise use initial
+  const aspectRatio = detectedAspectRatio || initialAspectRatio
+
+  // Detect video dimensions client-side
+  useEffect(() => {
+    if (!media || media.length === 0) return
+    const firstMedia = media[0]
+
+    // Only detect for videos without dimensions
+    if (firstMedia.mediaType === 'video' && !firstMedia.width && !firstMedia.height) {
+      const video = document.createElement('video')
+      video.src = firstMedia.url
+      video.preload = 'metadata'
+
+      video.addEventListener('loadedmetadata', () => {
+        if (video.videoWidth && video.videoHeight) {
+          const ratio = video.videoWidth / video.videoHeight
+          const bucket = calculateAspectRatioBucket(ratio)
+          console.log('🎥 Video dimensions detected:', {
+            width: video.videoWidth,
+            height: video.videoHeight,
+            ratio,
+            bucket
+          })
+          setDetectedAspectRatio(bucket)
+        }
+      })
+    }
+  }, [media])
 
   return (
     <motion.section
@@ -224,7 +314,8 @@ export default function TimelineMomentCard({
                       autoplayInterval={6000}
                       showControls={media.length > 1}
                       fillMode="contain"
-                      className="!rounded-none !min-h-0 !h-full !bg-white [&>div]:!aspect-auto"
+                      backgroundColor="white"
+                      className="!rounded-none !min-h-0 !h-full !max-h-full [&>div]:!aspect-auto [&>div]:!min-h-0"
                     />
                   </div>
                 </div>
