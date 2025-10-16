@@ -21,6 +21,7 @@ interface MediaCarouselProps {
   autoplayInterval?: number // milliseconds for images (default: 5000ms)
   showControls?: boolean // show prev/next navigation controls
   fillMode?: 'contain' | 'cover' // object-fit mode (default: contain)
+  backgroundColor?: string // background color (default: var(--primary-text))
 }
 
 export default function MediaCarousel({
@@ -28,7 +29,8 @@ export default function MediaCarousel({
   className = '',
   autoplayInterval = 5000,
   showControls = true,
-  fillMode = 'contain'
+  fillMode = 'contain',
+  backgroundColor = 'var(--primary-text)'
 }: MediaCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(true)
@@ -216,7 +218,7 @@ export default function MediaCarousel({
       onMouseEnter={() => !isSingleItem && setIsPlaying(false)}
       onMouseLeave={() => !isSingleItem && setIsPlaying(true)}
       style={{
-        background: 'var(--primary-text)',
+        background: backgroundColor,
         minHeight: isBackgroundMode ? '100%' : '400px',
         height: isBackgroundMode ? '100%' : 'auto'
       }}
@@ -278,7 +280,7 @@ export default function MediaCarousel({
                 onEnded={handleVideoEnded}
                 onError={handleVideoError}
                 className={`w-full h-full ${objectFitClass}`}
-                style={{ background: 'var(--primary-text)' }}
+                style={{ background: backgroundColor }}
               >
                 <source src={currentMedia?.url} type="video/mp4" />
                 <p style={{ color: 'white', padding: '20px' }}>
