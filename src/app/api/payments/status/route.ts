@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PaymentService } from '@/lib/services/payments'
+import { createAdminClient } from '@/lib/supabase/server'
 
 export async function GET(req: NextRequest) {
   try {
@@ -16,11 +17,20 @@ export async function GET(req: NextRequest) {
       )
     }
 
+    const adminClient = createAdminClient()
     let payment = null
 
     // Get payment by our internal ID
     if (paymentId) {
-      payment = await PaymentService.getPaymentById(paymentId)
+      const { data, error } = await adminClient
+        .from('payments')
+        .select('*')
+        .eq('id', paymentId)
+        .single()
+
+      if (!error && data) {
+        payment = data
+      }
       console.log('📋 Payment found by internal ID:', {
         id: payment?.id,
         status: payment?.status,
@@ -31,7 +41,15 @@ export async function GET(req: NextRequest) {
 
     // Get payment by Mercado Pago ID if not found yet
     if (!payment && mercadoPagoId) {
-      payment = await PaymentService.getPaymentByMercadoPagoId(mercadoPagoId)
+      const { data, error } = await adminClient
+        .from('payments')
+        .select('*')
+        .eq('mercado_pago_payment_id', mercadoPagoId)
+        .single()
+
+      if (!error && data) {
+        payment = data
+      }
       console.log('📋 Payment found by Mercado Pago ID:', {
         id: payment?.id,
         status: payment?.status,
