@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { ChevronDown, Calendar, MessageCircle, Radio, Sparkles } from 'lucide-react'
+import { useGuestSession } from '@/hooks/useGuestSession'
 
 interface GuestMenuItem {
   name: string
@@ -16,10 +17,10 @@ interface GuestMenuItem {
   availableDate?: Date
 }
 
-const guestMenuItems: GuestMenuItem[] = [
+const getGuestMenuItems = (inviteCode?: string): GuestMenuItem[] => [
   {
     name: 'Meu Convite',
-    href: '/convite',
+    href: inviteCode ? `/convite/${inviteCode}` : '/convite',
     icon: <Calendar className="w-5 h-5" />,
     description: 'Seu convite pessoal e progresso',
   },
@@ -38,6 +39,7 @@ const guestMenuItems: GuestMenuItem[] = [
 export default function GuestMenu() {
   const [isOpen, setIsOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
+  const { session, loading } = useGuestSession()
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -84,6 +86,11 @@ export default function GuestMenu() {
     return new Date() >= item.availableDate || isWeddingDay()
   }
 
+  // Get guest name from session, or use default
+  const guestName = session?.guest?.name || 'Meu Espaço'
+  const isLoggedIn = !!session?.guest
+  const guestMenuItems = getGuestMenuItems(session?.guest?.invitation_code)
+
   return (
     <div className="relative" ref={menuRef}>
       {/* Trigger Button - Matches Navigation Style */}
@@ -114,7 +121,7 @@ export default function GuestMenu() {
         aria-expanded={isOpen}
       >
         <Sparkles className="w-4 h-4" />
-        <span>Meu Espaço</span>
+        <span className="max-w-[150px] truncate">{loading ? 'Meu Espaço' : guestName}</span>
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}
@@ -298,26 +305,28 @@ export default function GuestMenu() {
             </div>
 
             {/* Footer */}
-            <div
-              className="px-4 py-3 text-center border-t"
-              style={{
-                borderColor: 'var(--border-subtle)',
-                background: 'var(--accent)',
-              }}
-            >
-              <Link
-                href="/convite"
-                onClick={() => setIsOpen(false)}
-                className="text-sm transition-colors"
+            {!isLoggedIn && (
+              <div
+                className="px-4 py-3 text-center border-t"
                 style={{
-                  fontFamily: 'var(--font-crimson)',
-                  fontStyle: 'italic',
-                  color: 'var(--secondary-text)',
+                  borderColor: 'var(--border-subtle)',
+                  background: 'var(--accent)',
                 }}
               >
-                Não tem código? <span className="font-semibold underline">Obter convite →</span>
-              </Link>
-            </div>
+                <Link
+                  href="/convite"
+                  onClick={() => setIsOpen(false)}
+                  className="text-sm transition-colors"
+                  style={{
+                    fontFamily: 'var(--font-crimson)',
+                    fontStyle: 'italic',
+                    color: 'var(--secondary-text)',
+                  }}
+                >
+                  Não tem código? <span className="font-semibold underline">Obter convite →</span>
+                </Link>
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

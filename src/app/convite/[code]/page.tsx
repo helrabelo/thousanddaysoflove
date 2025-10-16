@@ -1,207 +1,79 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import {
-  Calendar,
-  MapPin,
-  Clock,
-  Gift,
-  Camera,
-  CheckCircle2,
-  Heart,
-  User,
-  ArrowRight,
-  Loader2,
-  AlertCircle,
-  Share2,
-  RefreshCw,
-} from 'lucide-react';
+import { Loader2, AlertCircle } from 'lucide-react';
 import Navigation from '@/components/ui/Navigation';
-import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import ElegantInvitation from '@/components/sections/ElegantInvitation';
+import RSVPPromptCard from '@/components/invitations/RSVPPromptCard';
+import WebsiteGuide from '@/components/invitations/WebsiteGuide';
+import EventTimeline from '@/components/invitations/EventTimeline';
+import VenueMap from '@/components/invitations/VenueMap';
+import DressCodeGuide from '@/components/invitations/DressCodeGuide';
+import GeneralOrientations from '@/components/invitations/GeneralOrientations';
+import type { Invitation } from '@/types/wedding';
 import {
+  getInvitationByCode,
   trackInvitationOpen,
 } from '@/lib/supabase/invitations';
-import { getGuestDashboardData } from '@/lib/supabase/dashboard';
-import type { GuestDashboardData } from '@/lib/supabase/dashboard';
-import QRCode from 'qrcode';
 
-// Dashboard Components
-import CountdownTimer from '@/components/dashboard/CountdownTimer';
-import ActivityFeed from '@/components/dashboard/ActivityFeed';
-import GuestProgressTracker from '@/components/invitations/GuestProgressTracker';
-import HYBadge from '@/components/ui/HYBadge';
-
-const EVENT_DETAILS = [
-  {
-    icon: Calendar,
-    label: 'Data',
-    value: '20 de Novembro de 2025',
-    detail: 'Quinta-feira',
-  },
-  {
-    icon: Clock,
-    label: 'Horário',
-    value: '11h00',
-    detail: 'Chegada dos convidados',
-  },
-  {
-    icon: MapPin,
-    label: 'Local',
-    value: 'Casa HY',
-    detail: 'R. Coronel Francisco Flávio Carneiro, 200 - Fortaleza, CE',
-  },
-];
-
-const QUICK_ACTIONS = [
-  {
-    icon: CheckCircle2,
-    title: 'Confirmar Presença',
-    description: 'Complete seu RSVP',
-    href: '/rsvp',
-  },
-  {
-    icon: Gift,
-    title: 'Ver Presentes',
-    description: 'Escolha um presente',
-    href: '/presentes',
-  },
-  {
-    icon: Camera,
-    title: 'Dia 1000',
-    description: 'Fotos e mensagens ao vivo',
-    href: '/dia-1000',
-  },
-];
-
-export default function PersonalizedInvitePage() {
+export default function PersonalizedInvitationPage() {
   const params = useParams();
+  const router = useRouter();
   const code = params?.code as string;
 
-  const [dashboardData, setDashboardData] = useState<GuestDashboardData | null>(null);
-  const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
+  const [invitation, setInvitation] = useState<Invitation | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
-  const [showQrCode, setShowQrCode] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
-    loadDashboard();
-
-    // Auto-refresh every 60 seconds
-    const refreshInterval = setInterval(() => {
-      loadDashboard(true);
-    }, 60000);
-
-    return () => clearInterval(refreshInterval);
-  }, [code]);
-
-  async function loadDashboard(silent = false) {
-    if (!silent) setLoading(true);
     if (!code) {
       setError('Código de convite não fornecido');
       setLoading(false);
       return;
     }
 
+    loadInvitation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [code]);
+
+  async function loadInvitation() {
     try {
-      // Fetch complete dashboard data
-      const data = await getGuestDashboardData(code);
+      // Fetch invitation data
+      const data = await getInvitationByCode(code.toUpperCase());
 
       if (!data) {
-        setError(
-          'Convite não encontrado. Verifique o código e tente novamente.'
-        );
+        setError('Convite não encontrado. Verifique o código e tente novamente.');
         setLoading(false);
         return;
       }
 
-      setDashboardData(data);
+      setInvitation(data);
 
-      // Auto-authenticate with invitation code
-      if (!silent) {
-        try {
-          console.log('🔐 Attempting auto-authentication with code:', code);
-          const authResponse = await fetch('/api/auth/login', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-            body: JSON.stringify({
-              authMethod: 'invitation_code',
-              invitationCode: code,
-            }),
-          });
-
-          if (authResponse.ok) {
-            const authData = await authResponse.json();
-            console.log('✅ Auto-authentication SUCCESS:', authData);
-
-            // Trigger a window event so FAB can update
-            window.dispatchEvent(new CustomEvent('auth-changed'));
-          } else {
-            const errorData = await authResponse.json();
-            console.warn('⚠️ Auto-authentication failed:', errorData);
-          }
-        } catch (authError) {
-          console.error('❌ Auto-authentication error:', authError);
-          // Continue anyway - auth is not critical for viewing invitation
-        }
-
-        // Track invitation open
-        await trackInvitationOpen(code);
-
-        // Generate QR code
-        const inviteUrl = `${window.location.origin}/convite/${code}`;
-        const qr = await QRCode.toDataURL(inviteUrl, {
-          width: 300,
-          margin: 2,
-          color: {
-            dark: '#2C2C2C', // primary-text
-            light: '#F8F6F3', // background
-          },
-        });
-        setQrCodeUrl(qr);
-      }
+      // Track invitation open (first time + view count)
+      await trackInvitationOpen(code);
     } catch (err) {
-      console.error('Error loading dashboard:', err);
+      console.error('Error loading invitation:', err);
       setError('Erro ao carregar convite. Tente novamente mais tarde.');
     } finally {
       setLoading(false);
     }
   }
 
-  const handleRefresh = async () => {
-    setIsRefreshing(true);
-    await loadDashboard(true);
-    setIsRefreshing(false);
-  };
-
   // Loading state
   if (loading) {
     return (
       <>
         <Navigation />
-        <div className="min-h-screen flex items-center justify-center">
+        <div className="min-h-screen flex items-center justify-center px-4">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="text-center space-y-4"
           >
-            <Loader2
-              className="w-12 h-12 animate-spin mx-auto"
-              style={{ color: 'var(--decorative)' }}
-            />
-            <p
-              className="text-lg"
-              style={{
-                fontFamily: 'var(--font-crimson)',
-                fontStyle: 'italic',
-                color: 'var(--secondary-text)',
-              }}
-            >
+            <Loader2 className="w-12 h-12 animate-spin mx-auto text-[#A8A8A8]" />
+            <p className="font-crimson text-lg text-[#4A4A4A] italic">
               Carregando seu convite personalizado...
             </p>
           </motion.div>
@@ -211,7 +83,7 @@ export default function PersonalizedInvitePage() {
   }
 
   // Error state
-  if (error || !dashboardData) {
+  if (error || !invitation) {
     return (
       <>
         <Navigation />
@@ -221,462 +93,166 @@ export default function PersonalizedInvitePage() {
             animate={{ opacity: 1, y: 0 }}
             className="max-w-md text-center space-y-6"
           >
-            <AlertCircle
-              className="w-16 h-16 mx-auto"
-              style={{ color: 'var(--decorative)' }}
-            />
-            <h1
-              className="text-2xl font-light"
-              style={{
-                fontFamily: 'var(--font-playfair)',
-                color: 'var(--primary-text)',
-              }}
-            >
+            <AlertCircle className="w-16 h-16 mx-auto text-[#A8A8A8]" />
+            <h1 className="font-playfair text-3xl text-[#2C2C2C]">
               Ops! Algo deu errado
             </h1>
-            <p
-              className="text-lg"
-              style={{
-                fontFamily: 'var(--font-crimson)',
-                color: 'var(--secondary-text)',
-              }}
-            >
-              {error}
-            </p>
-            <Link
-              href="/convite"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all hover:shadow-lg transform hover:scale-105"
-              style={{
-                background: 'var(--decorative)',
-                color: 'var(--white-soft)',
-              }}
+            <p className="font-crimson text-lg text-[#4A4A4A]">{error}</p>
+            <button
+              onClick={() => router.push('/convite')}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-[#4A7C59] text-white rounded-xl font-playfair text-lg hover:bg-[#5A8C69] transition-colors"
             >
               Voltar ao Convite
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+            </button>
           </motion.div>
         </div>
       </>
     );
   }
 
-  const { invitation, progress, recentActivity, stats } = dashboardData;
-
   return (
     <>
       <Navigation />
       <div className="min-h-screen">
-        {/* Header with Refresh */}
-        <div className="bg-white border-b border-[#E8E6E3] shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="font-playfair text-2xl md:text-3xl text-[#2C2C2C]">
-                  Olá, {invitation.guest_name.split(' ')[0]}! 👋
-                </h1>
-                <p className="font-crimson text-sm text-[#4A4A4A] italic">
-                  Seu convite personalizado
-                </p>
-              </div>
-              <button
-                onClick={handleRefresh}
-                disabled={isRefreshing}
-                className="p-2 hover:bg-[#E8E6E3] rounded-lg transition-colors"
-                title="Atualizar"
-              >
-                <RefreshCw
-                  className={`w-5 h-5 text-[#4A4A4A] ${
-                    isRefreshing ? 'animate-spin' : ''
-                  }`}
-                />
-              </button>
-            </div>
+        {/* 1. Elegant Invitation Hero */}
+        <section className="py-16 px-4">
+          <div className="max-w-4xl mx-auto">
+            <ElegantInvitation guestName={invitation.guest_name} />
           </div>
-        </div>
+        </section>
 
-        {/* Personalized Hero Section */}
-        <div className="text-center py-12">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* 2. RSVP Prompt Section */}
+        <section className="py-16">
+          <RSVPPromptCard invitation={invitation} />
+        </section>
+
+        {/* 3. Event Timeline */}
+        <section className="py-16 px-4">
+          <div className="max-w-5xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="text-center mb-16"
+            >
+              <h2 className="font-playfair text-4xl md:text-5xl text-[#2C2C2C] mb-4">
+                Programação do Dia
+              </h2>
+              <p className="font-crimson text-xl text-[#4A4A4A] italic">
+                Saiba o que acontecerá em cada momento especial
+              </p>
+            </motion.div>
+
+            <EventTimeline />
+          </div>
+        </section>
+
+        {/* 4. Venue Map */}
+        <section className="py-16 px-4">
+          <div className="max-w-5xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="text-center mb-12"
+            >
+              <h2 className="font-playfair text-4xl md:text-5xl text-[#2C2C2C] mb-4">
+                Como Chegar
+              </h2>
+              <p className="font-crimson text-xl text-[#4A4A4A] italic">
+                Encontre facilmente o local da celebração
+              </p>
+            </motion.div>
+
+            <VenueMap />
+          </div>
+        </section>
+
+        {/* 5. Dress Code Guide */}
+        <section className="py-16 px-4">
+          <div className="max-w-5xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="text-center mb-12"
+            >
+              <h2 className="font-playfair text-4xl md:text-5xl text-[#2C2C2C] mb-4">
+                Dress Code
+              </h2>
+              <p className="font-crimson text-xl text-[#4A4A4A] italic">
+                Guia completo para você se vestir com elegância
+              </p>
+            </motion.div>
+
+            <DressCodeGuide />
+          </div>
+        </section>
+
+        {/* 6. Website Guide Section */}
+        <section className="py-16 px-4">
+          <div className="max-w-6xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="text-center mb-12"
+            >
+              <h2 className="font-playfair text-4xl md:text-5xl text-[#2C2C2C] mb-4">
+                Explore o Site
+              </h2>
+              <p className="font-crimson text-xl text-[#4A4A4A] italic">
+                Descubra tudo sobre nossa celebração
+              </p>
+            </motion.div>
+
+            <WebsiteGuide rsvpCompleted={invitation.rsvp_completed} />
+          </div>
+        </section>
+
+        {/* 7. General Orientations */}
+        <section className="py-16 px-4">
+          <div className="max-w-6xl mx-auto">
+            <GeneralOrientations />
+          </div>
+        </section>
+
+        {/* 8. Footer CTA */}
+        <section className="py-16 px-4 bg-gradient-to-b from-[#F8F6F3] to-[#E8E6E3]">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
               transition={{ duration: 0.6 }}
               className="space-y-6"
             >
-              {/* Decorative top ornament */}
-              <HYBadge />
+              <h2 className="font-playfair text-4xl md:text-5xl text-[#2C2C2C]">
+                Mal podemos esperar!
+              </h2>
+              <p className="font-crimson text-xl text-[#4A4A4A] italic">
+                Sua presença tornará nosso dia ainda mais especial ✨
+              </p>
 
-              <div className="space-y-2">
-                <p
-                  className="text-2xl sm:text-3xl font-light"
-                  style={{
-                    fontFamily: 'var(--font-playfair)',
+              {!invitation.rsvp_completed && (
+                <button
+                  onClick={() => {
+                    const rsvpSection = document.querySelector('[data-rsvp-section]');
+                    rsvpSection?.scrollIntoView({ behavior: 'smooth' });
                   }}
+                  className="inline-block px-8 py-4 bg-gradient-to-r from-[#4A7C59] to-[#5A8C69] text-white rounded-xl font-playfair text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all"
                 >
-                  Hel & Ylana
-                </p>
-                <p
-                  className="text-lg opacity-90 max-w-2xl mx-auto"
-                  style={{
-                    fontFamily: 'var(--font-crimson)',
-                    fontStyle: 'italic',
-                    color: 'var(--secondary-text)',
-                  }}
-                >
-                  Celebrando 1000 dias de amor
-                </p>
-              </div>
-
-              {/* Custom message if available */}
-              {invitation.custom_message && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.6, delay: 0.3 }}
-                  className="mt-8 p-6 rounded-2xl border"
-                  style={{
-                    background: 'var(--accent)',
-                    borderColor: 'var(--decorative)',
-                  }}
-                >
-                  <p
-                    className="text-lg leading-relaxed"
-                    style={{
-                      fontFamily: 'var(--font-crimson)',
-                      fontStyle: 'italic',
-                      color: 'var(--secondary-text)',
-                    }}
-                  >
-                    "{invitation.custom_message}"
-                  </p>
-                </motion.div>
-              )}
-
-              {/* Plus one indicator */}
-              {invitation.plus_one_allowed && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.6, delay: 0.4 }}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full border"
-                  style={{
-                    background: 'var(--accent)',
-                    borderColor: 'var(--decorative)',
-                  }}
-                >
-                  <User
-                    className="w-4 h-4"
-                    style={{ color: 'var(--decorative)' }}
-                  />
-                  <span
-                    className="text-sm"
-                    style={{ color: 'var(--secondary-text)' }}
-                  >
-                    {invitation.plus_one_name
-                      ? `Você e ${invitation.plus_one_name}`
-                      : 'Você pode trazer um acompanhante'}
-                  </span>
-                </motion.div>
+                  Confirmar Presença Agora
+                </button>
               )}
             </motion.div>
           </div>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
-          {/* Countdown Timer */}
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <CountdownTimer />
-          </motion.section>
-
-          {/* Guest Progress Tracker */}
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-          >
-            <h2
-              className="text-3xl sm:text-4xl font-light text-center mb-12"
-              style={{
-                fontFamily: 'var(--font-playfair)',
-                color: 'var(--primary-text)',
-              }}
-            >
-              Seu Progresso
-            </h2>
-            <div className="max-w-3xl mx-auto">
-              <GuestProgressTracker
-                progress={progress}
-                guestName={invitation.guest_name.split(' ')[0]}
-              />
-            </div>
-          </motion.section>
-
-          {/* Quick Actions */}
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <h2
-              className="text-3xl sm:text-4xl font-light text-center mb-12"
-              style={{
-                fontFamily: 'var(--font-playfair)',
-                color: 'var(--primary-text)',
-              }}
-            >
-              Ações Rápidas
-            </h2>
-
-            <div className="grid md:grid-cols-2 gap-6">
-              {QUICK_ACTIONS.map((action, index) => {
-                const Icon = action.icon;
-                return (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
-                  >
-                    <Link
-                      href={action.href}
-                      className="block h-full bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
-                    >
-                      <div
-                        className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl"
-                        style={{ background: 'var(--decorative)' }}
-                      />
-                      <div className="flex items-center gap-4">
-                        <div
-                          className="flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center"
-                          style={{
-                            background: 'var(--decorative)',
-                            color: 'var(--white-soft)',
-                          }}
-                        >
-                          <Icon className="w-7 h-7" />
-                        </div>
-                        <div>
-                          <h3
-                            className="text-xl font-semibold mb-1"
-                            style={{
-                              color: 'var(--primary-text)',
-                              fontFamily: 'var(--font-playfair)',
-                            }}
-                          >
-                            {action.title}
-                          </h3>
-                          <p
-                            className="text-sm"
-                            style={{ color: 'var(--secondary-text)' }}
-                          >
-                            {action.description}
-                          </p>
-                        </div>
-                      </div>
-                    </Link>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </motion.section>
-
-          {/* Stats Summary */}
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-            className="bg-white rounded-2xl shadow-lg p-6"
-          >
-            <h2 className="font-playfair text-2xl text-[#2C2C2C] mb-6">
-              Suas Estatísticas
-            </h2>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <StatCard label="Posts" value={stats.posts_count} icon="📝" />
-              <StatCard label="Comentários" value={stats.comments_count} icon="💬" />
-              <StatCard label="Reações" value={stats.reactions_count} icon="❤️" />
-              <StatCard label="Fotos" value={stats.photos_count} icon="📸" />
-            </div>
-          </motion.section>
-
-          {/* Activity Feed */}
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.7 }}
-          >
-            <ActivityFeed activities={recentActivity} />
-          </motion.section>
-
-          {/* Event Details */}
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
-          >
-            <h2
-              className="text-3xl sm:text-4xl font-light text-center mb-12"
-              style={{
-                fontFamily: 'var(--font-playfair)',
-                color: 'var(--primary-text)',
-              }}
-            >
-              Detalhes do Evento
-            </h2>
-
-            <div className="grid md:grid-cols-3 gap-6">
-              {EVENT_DETAILS.map((detail, index) => {
-                const Icon = detail.icon;
-                return (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.9 + index * 0.1 }}
-                    className="bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-gray-100 text-center"
-                  >
-                    <div
-                      className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
-                      style={{ background: 'var(--accent)' }}
-                    >
-                      <Icon
-                        className="w-8 h-8"
-                        style={{ color: 'var(--decorative)' }}
-                      />
-                    </div>
-                    <h3
-                      className="text-sm uppercase tracking-wider mb-2"
-                      style={{
-                        color: 'var(--decorative)',
-                        fontFamily: 'var(--font-crimson)',
-                      }}
-                    >
-                      {detail.label}
-                    </h3>
-                    <p
-                      className="text-xl font-semibold mb-1"
-                      style={{
-                        color: 'var(--primary-text)',
-                        fontFamily: 'var(--font-playfair)',
-                      }}
-                    >
-                      {detail.value}
-                    </p>
-                    <p
-                      className="text-sm"
-                      style={{
-                        color: 'var(--secondary-text)',
-                        fontFamily: 'var(--font-crimson)',
-                        fontStyle: 'italic',
-                      }}
-                    >
-                      {detail.detail}
-                    </p>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </motion.section>
-
-          {/* QR Code Section */}
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 1.2 }}
-            className="text-center"
-          >
-            <div
-              className="rounded-3xl p-12"
-              style={{
-                background: 'var(--accent)',
-                border: '1px solid var(--decorative)',
-              }}
-            >
-              <Share2
-                className="w-12 h-12 mx-auto mb-6"
-                style={{ color: 'var(--decorative)' }}
-              />
-              <h2
-                className="text-3xl font-light mb-4"
-                style={{
-                  fontFamily: 'var(--font-playfair)',
-                  color: 'var(--primary-text)',
-                }}
-              >
-                Compartilhe Seu Convite
-              </h2>
-              <p
-                className="text-lg opacity-90 max-w-2xl mx-auto mb-8"
-                style={{
-                  fontFamily: 'var(--font-crimson)',
-                  fontStyle: 'italic',
-                  color: 'var(--secondary-text)',
-                }}
-              >
-                Mostre seu convite personalizado para amigos e familiares
-              </p>
-
-              <button
-                onClick={() => setShowQrCode(!showQrCode)}
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-medium transition-all hover:shadow-xl transform hover:scale-105"
-                style={{
-                  background: 'var(--decorative)',
-                  color: 'var(--white-soft)',
-                }}
-              >
-                {showQrCode ? 'Ocultar' : 'Mostrar'} QR Code
-                <ArrowRight className="w-5 h-5" />
-              </button>
-
-              {showQrCode && qrCodeUrl && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3 }}
-                  className="mt-8 inline-block p-6 bg-white rounded-2xl shadow-xl"
-                >
-                  <img
-                    src={qrCodeUrl}
-                    alt="QR Code do Convite"
-                    className="w-64 h-64 mx-auto"
-                  />
-                  <p
-                    className="mt-4 text-sm"
-                    style={{
-                      color: 'var(--secondary-text)',
-                      fontFamily: 'var(--font-crimson)',
-                    }}
-                  >
-                    Código: {invitation.code}
-                  </p>
-                </motion.div>
-              )}
-            </div>
-          </motion.section>
-        </div>
+        </section>
       </div>
     </>
-  );
-}
-
-interface StatCardProps {
-  label: string;
-  value: number;
-  icon: string;
-}
-
-function StatCard({ label, value, icon }: StatCardProps) {
-  return (
-    <div className="bg-white rounded-xl p-4 text-center border border-[#E8E6E3]">
-      <p className="text-2xl mb-1">{icon}</p>
-      <p className="font-playfair text-3xl font-bold text-[#2C2C2C]">
-        {value}
-      </p>
-      <p className="font-crimson text-xs text-[#4A4A4A] mt-1">{label}</p>
-    </div>
   );
 }

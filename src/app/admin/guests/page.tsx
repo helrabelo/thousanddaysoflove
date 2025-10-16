@@ -270,14 +270,14 @@ export default function AdminGuests(): JSX.Element {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F8F6F3] flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <p className="text-[#4A4A4A]">Carregando...</p>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F6F3] py-8 px-4">
+    <div className="min-h-screen py-8 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">

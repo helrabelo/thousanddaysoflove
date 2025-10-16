@@ -482,6 +482,7 @@ export interface Invitation {
   opened_at?: string;
   open_count: number;
   rsvp_completed: boolean;
+  rsvp_confirmed?: boolean; // NULL = no response, TRUE = attending, FALSE = not attending
   gift_selected: boolean;
   photos_uploaded: boolean;
 

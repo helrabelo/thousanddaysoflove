@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import {
   CheckCircle2,
   Circle,
@@ -8,8 +8,96 @@ import {
   Camera,
   MessageSquare,
   UserCheck,
+  ArrowRight,
+  Sparkles,
 } from 'lucide-react';
+import Link from 'next/link';
 import type { GuestProgress } from '@/types/wedding';
+
+interface GuestProgressTrackerProps {
+  progress: GuestProgress;
+  guestName: string;
+}
+
+interface ContextualMessage {
+  title: string;
+  emoji: string;
+  message: string;
+  nextAction?: {
+    label: string;
+    href: string;
+    description: string;
+  };
+}
+
+function getContextualMessage(
+  percentage: number,
+  progress: GuestProgress,
+  guestName: string
+): ContextualMessage {
+  // 0% Complete (Nothing Done)
+  if (percentage === 0) {
+    return {
+      title: `Seu Progresso: ${percentage}%`,
+      emoji: '🎯',
+      message: 'Primeira Ação Sugerida:',
+      nextAction: {
+        label: 'Confirmar Presença',
+        href: '/rsvp',
+        description: 'Confirme sua presença e ganhe 25% de progresso!',
+      },
+    };
+  }
+
+  // 25% Complete (RSVP Done)
+  if (percentage === 25 || (progress.rsvp_completed && percentage < 50)) {
+    return {
+      title: `Seu Progresso: ${percentage}%`,
+      emoji: '🎊',
+      message: 'Ótimo começo!',
+      nextAction: {
+        label: 'Ver Presentes',
+        href: '/presentes',
+        description: 'Próximo passo: Escolha um presente da nossa lista',
+      },
+    };
+  }
+
+  // 50% Complete (RSVP + Gift)
+  if (percentage === 50 || (progress.rsvp_completed && progress.gift_selected && percentage < 75)) {
+    return {
+      title: `Seu Progresso: ${percentage}%`,
+      emoji: '🌟',
+      message: 'Você está na metade!',
+      nextAction: {
+        label: 'Upload de Fotos',
+        href: '/dia-1000/upload',
+        description: 'Próximo passo: Compartilhe fotos ou vídeos',
+      },
+    };
+  }
+
+  // 75% Complete (RSVP + Gift + Photos)
+  if (percentage === 75 || (progress.rsvp_completed && progress.gift_selected && progress.photos_uploaded && percentage < 100)) {
+    return {
+      title: `Seu Progresso: ${percentage}%`,
+      emoji: '💕',
+      message: 'Quase lá!',
+      nextAction: {
+        label: 'Escrever Mensagem',
+        href: '/mensagens',
+        description: 'Última ação: Deixe uma mensagem especial',
+      },
+    };
+  }
+
+  // 100% Complete (All Done)
+  return {
+    title: `Parabéns, ${guestName}!`,
+    emoji: '🎉',
+    message: 'Você completou tudo!',
+  };
+}
 
 interface GuestProgressTrackerProps {
   progress: GuestProgress;
@@ -53,17 +141,41 @@ export default function GuestProgressTracker({
   guestName,
 }: GuestProgressTrackerProps) {
   const { completion_percentage, completed_count, total_count } = progress;
+  const shouldReduceMotion = useReducedMotion();
+
+  // Get contextual message based on completion
+  const contextualMsg = getContextualMessage(
+    completion_percentage,
+    progress,
+    guestName
+  );
 
   return (
-    <div className="space-y-6">
-      {/* Header with circular progress */}
-      <div className="text-center">
+    <div className="space-y-8">
+      {/* Header with circular progress and contextual messaging */}
+      <div className="flex flex-col lg:flex-row items-center justify-center gap-8">
+        {/* Circular Progress */}
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ duration: 0.5, type: 'spring' }}
-          className="relative inline-block"
+          className="relative"
         >
+          {/* Confetti animation at 100% */}
+          {completion_percentage === 100 && !shouldReduceMotion && (
+            <motion.div
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: [0, 1.2, 1], opacity: [0, 1, 1] }}
+              transition={{ duration: 0.6, times: [0, 0.6, 1] }}
+              className="absolute inset-0 flex items-center justify-center pointer-events-none"
+            >
+              <Sparkles
+                className="w-40 h-40 text-yellow-400 animate-pulse"
+                style={{ filter: 'drop-shadow(0 0 10px rgba(251, 191, 36, 0.5))' }}
+              />
+            </motion.div>
+          )}
+
           {/* Circular progress background */}
           <svg className="w-32 h-32 transform -rotate-90">
             {/* Background circle */}
@@ -80,7 +192,11 @@ export default function GuestProgressTracker({
               cx="64"
               cy="64"
               r="56"
-              stroke="var(--decorative)"
+              stroke={
+                completion_percentage === 100
+                  ? 'var(--success)'
+                  : 'var(--decorative)'
+              }
               strokeWidth="8"
               fill="none"
               strokeLinecap="round"
@@ -119,21 +235,111 @@ export default function GuestProgressTracker({
           </div>
         </motion.div>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+        {/* Contextual Messaging */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, delay: 1 }}
-          className="mt-4 text-lg"
-          style={{
-            fontFamily: 'var(--font-crimson)',
-            fontStyle: 'italic',
-            color: 'var(--secondary-text)',
-          }}
+          className="text-center lg:text-left"
         >
-          {completion_percentage === 100
-            ? `Parabéns, ${guestName}! Você completou tudo! 🎉`
-            : `Continue explorando, ${guestName}!`}
-        </motion.p>
+          <h3
+            className="text-xl font-semibold mb-2"
+            style={{
+              fontFamily: 'var(--font-playfair)',
+              color: 'var(--primary-text)',
+            }}
+          >
+            {contextualMsg.title}
+          </h3>
+          <p
+            className="text-lg mb-1"
+            style={{
+              fontFamily: 'var(--font-crimson)',
+              fontStyle: 'italic',
+              color: 'var(--secondary-text)',
+            }}
+          >
+            {contextualMsg.message} {contextualMsg.emoji}
+          </p>
+
+          {/* Next Action (if not 100%) */}
+          {contextualMsg.nextAction && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 1.2 }}
+              className="mt-4"
+            >
+              <p
+                className="text-sm font-medium mb-2"
+                style={{
+                  color: 'var(--decorative)',
+                  fontFamily: 'var(--font-crimson)',
+                }}
+              >
+                🎯 Próximo Passo:
+              </p>
+              <p
+                className="text-sm mb-3"
+                style={{ color: 'var(--secondary-text)' }}
+              >
+                {contextualMsg.nextAction.description}
+              </p>
+              <Link
+                href={contextualMsg.nextAction.href}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all transform hover:scale-105 hover:shadow-lg"
+                style={{
+                  background:
+                    'linear-gradient(135deg, var(--decorative), var(--secondary-text))',
+                  color: 'var(--white-soft)',
+                }}
+              >
+                {contextualMsg.nextAction.label}
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </motion.div>
+          )}
+
+          {/* 100% Completion Message */}
+          {completion_percentage === 100 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 1.2 }}
+              className="mt-4 p-4 rounded-xl"
+              style={{
+                background: 'var(--accent)',
+                border: '1px solid var(--decorative)',
+              }}
+            >
+              <p
+                className="text-sm font-bold mb-2"
+                style={{ color: 'var(--success)' }}
+              >
+                ✅ Você é um convidado 5 estrelas!
+              </p>
+              <p
+                className="text-sm mb-2"
+                style={{
+                  fontFamily: 'var(--font-crimson)',
+                  fontStyle: 'italic',
+                  color: 'var(--secondary-text)',
+                }}
+              >
+                No dia 20 de novembro, volte para acompanhar a celebração ao
+                vivo e ver suas fotos na galeria!
+              </p>
+              <Link
+                href="/convite"
+                className="inline-flex items-center gap-2 text-sm font-medium"
+                style={{ color: 'var(--decorative)' }}
+              >
+                Compartilhar Convite
+                <ArrowRight className="w-3 h-3" />
+              </Link>
+            </motion.div>
+          )}
+        </motion.div>
       </div>
 
       {/* Progress items grid */}
@@ -237,37 +443,6 @@ export default function GuestProgressTracker({
         })}
       </div>
 
-      {/* Motivational message */}
-      {completion_percentage < 100 && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 1.2 }}
-          className="text-center p-4 rounded-xl"
-          style={{
-            background: 'var(--accent)',
-            border: '1px solid var(--decorative)',
-          }}
-        >
-          <p
-            className="text-sm"
-            style={{
-              fontFamily: 'var(--font-crimson)',
-              fontStyle: 'italic',
-              color: 'var(--secondary-text)',
-            }}
-          >
-            {completion_percentage === 0 &&
-              'Comece confirmando sua presença! ✨'}
-            {completion_percentage > 0 &&
-              completion_percentage < 50 &&
-              'Você está progredindo! Continue assim! 🎊'}
-            {completion_percentage >= 50 &&
-              completion_percentage < 100 &&
-              'Quase lá! Falta pouco para completar tudo! 🌟'}
-          </p>
-        </motion.div>
-      )}
     </div>
   );
 }

@@ -4,7 +4,12 @@ import { motion } from 'framer-motion'
 import Image from 'next/image'
 import BotanicalCorners from '../ui/BotanicalCorners'
 
-export default function ElegantInvitation({ variant = 'default' }: { variant?: 'default' | 'compact' }) {
+interface ElegantInvitationProps {
+  variant?: 'default' | 'compact';
+  guestName?: string;
+}
+
+export default function ElegantInvitation({ variant = 'default', guestName }: ElegantInvitationProps) {
   if (variant === 'compact') {
     return (
       <motion.div
@@ -153,23 +158,25 @@ export default function ElegantInvitation({ variant = 'default' }: { variant?: '
           />
         </motion.div>
 
-        {/* Names - Title Style */}
-        {/* <motion.h3
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4, duration: 0.8 }}
-          style={{
-            fontFamily: 'var(--font-playfair)',
-            fontSize: 'clamp(2rem, 5vw, 3rem)',
-            fontWeight: '600',
-            color: 'var(--primary-text)',
-            letterSpacing: '-0.02em',
-            lineHeight: '1.2',
-            marginBottom: '1.5rem',
-          }}
-        >
-          HEL & YLANA
-        </motion.h3> */}
+        {/* Guest Name */}
+        {guestName && (
+          <motion.h3
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+            style={{
+              fontFamily: 'var(--font-playfair)',
+              fontSize: 'clamp(1.5rem, 4vw, 2rem)',
+              fontWeight: '600',
+              color: 'var(--primary-text)',
+              letterSpacing: '-0.02em',
+              lineHeight: '1.2',
+              marginBottom: '1rem',
+            }}
+          >
+            {guestName}
+          </motion.h3>
+        )}
 
         {/* Invitation text - Subtitle Style */}
         <motion.p

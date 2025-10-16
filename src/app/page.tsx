@@ -6,6 +6,7 @@ import { sanityFetch } from '@/sanity/lib/client'
 import { homePageQuery } from '@/sanity/queries/homepage'
 import type { SanityHomePage, SanityVideoHero } from '@/types/sanity'
 import Link from 'next/link'
+import { getCurrentGuestSession } from '@/lib/auth/guestAuth.server'
 
 interface HomePageSections {
   videoHero?: SanityVideoHero;
@@ -13,6 +14,9 @@ interface HomePageSections {
 }
 
 export default async function Home(): Promise<JSX.Element> {
+  // Get current guest session (if logged in)
+  const guestSession = await getCurrentGuestSession()
+
   // Fetch homepage data from Sanity (single query for entire page)
   const homePage = await sanityFetch<SanityHomePage>({
     query: homePageQuery,
@@ -58,7 +62,7 @@ export default async function Home(): Promise<JSX.Element> {
       <FeatureHubSection />
 
       {/* Invitation CTA Section - NEW: Introduces personalized guest experience */}
-      <InvitationCTASection />
+      <InvitationCTASection guestSession={guestSession} />
     </main>
   )
 }

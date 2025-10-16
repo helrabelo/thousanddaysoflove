@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { ArrowRight, Calendar, MessageCircle, Radio } from 'lucide-react'
 import Image from 'next/image'
 import ElegantInvitation from './ElegantInvitation'
+import type { GuestSession } from '@/lib/auth/guestAuth'
 
 const guestFeatures = [
   {
@@ -26,7 +27,11 @@ const guestFeatures = [
   },
 ]
 
-export default function InvitationCTASection() {
+interface InvitationCTASectionProps {
+  guestSession?: GuestSession | null
+}
+
+export default function InvitationCTASection({ guestSession }: InvitationCTASectionProps) {
   const router = useRouter()
   const [inviteCode, setInviteCode] = useState('')
 
@@ -36,6 +41,10 @@ export default function InvitationCTASection() {
       router.push(`/convite/${inviteCode.trim().toUpperCase()}`)
     }
   }
+
+  // If user is logged in, get their invite code
+  const userInviteCode = guestSession?.guest?.invitation_code
+  const inviteHref = userInviteCode ? `/convite/${userInviteCode}` : '/convite'
 
   return (
     <section className="py-12 md:py-32 px-4 sm:px-6 lg:px-8">
@@ -240,19 +249,34 @@ export default function InvitationCTASection() {
                 </div>
               </form>
 
-              {/* Browse All Link */}
-              <Link href="/convite" className="inline-block group mb-3">
-                <motion.div
-                  className="text-sm underline decoration-1 underline-offset-4"
-                  style={{
-                    fontFamily: 'var(--font-crimson)',
-                    color: 'var(--decorative)',
-                  }}
-                  whileHover={{ x: 3 }}
-                >
-                  Ou navegue sem código →
-                </motion.div>
-              </Link>
+              {/* Browse All Link or Direct Access for Logged In Users */}
+              {userInviteCode ? (
+                <Link href={inviteHref} className="inline-block group mb-3">
+                  <motion.div
+                    className="text-sm underline decoration-1 underline-offset-4"
+                    style={{
+                      fontFamily: 'var(--font-crimson)',
+                      color: 'var(--decorative)',
+                    }}
+                    whileHover={{ x: 3 }}
+                  >
+                    Ir direto para meu convite →
+                  </motion.div>
+                </Link>
+              ) : (
+                <Link href="/convite" className="inline-block group mb-3">
+                  <motion.div
+                    className="text-sm underline decoration-1 underline-offset-4"
+                    style={{
+                      fontFamily: 'var(--font-crimson)',
+                      color: 'var(--decorative)',
+                    }}
+                    whileHover={{ x: 3 }}
+                  >
+                    Ou navegue sem código →
+                  </motion.div>
+                </Link>
+              )}
 
               {/* Helper text */}
               <p

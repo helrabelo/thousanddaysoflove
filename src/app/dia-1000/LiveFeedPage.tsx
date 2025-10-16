@@ -54,7 +54,7 @@ export function LiveFeedPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F6F3]">
+    <div className="min-h-screen">
       {/* Hero section with monochromatic elegance */}
       <div className="bg-[#2C2C2C] text-[#F8F6F3] py-12 px-6 relative overflow-hidden border-b-2 border-[#A8A8A8]">
 
