@@ -359,6 +359,17 @@ export class PaymentService {
       }
 
       const result = await response.json()
+      console.log('🔍 Full Mercado Pago API response:', {
+        id: result.id,
+        idType: typeof result.id,
+        status: result.status,
+        statusDetail: result.status_detail,
+        paymentMethodId: result.payment_method_id,
+        transactionAmount: result.transaction_amount,
+        externalReference: result.external_reference,
+        qrCodeExists: !!result.point_of_interaction?.transaction_data?.qr_code,
+        qrCodeBase64Exists: !!result.point_of_interaction?.transaction_data?.qr_code_base64
+      })
       console.log('Mercado Pago payment created:', result.id, result.status)
       return result
     } catch (error) {
@@ -379,6 +390,7 @@ export class PaymentService {
     buyerName?: string
   }) {
     try {
+      console.log('🎯 [1/4] Creating payment record in database...')
       // Create payment record
       const payment = await this.createPayment({
         sanityGiftId: paymentData.sanityGiftId, // Now using Sanity reference
@@ -391,7 +403,13 @@ export class PaymentService {
       if (!payment) {
         throw new Error('Failed to create payment record')
       }
+      console.log('✅ [1/4] Payment record created:', {
+        internalId: payment.id,
+        amount: payment.amount,
+        status: payment.status
+      })
 
+      console.log('🎯 [2/4] Calling Mercado Pago API...')
       // Process with Mercado Pago (no changes - this is external API)
       const mercadoPagoResult = await this.processMercadoPagoPayment({
         paymentId: payment.id,
@@ -403,10 +421,40 @@ export class PaymentService {
         buyerName: paymentData.buyerName
       })
 
+      console.log('✅ [2/4] Mercado Pago response received:', {
+        mercadoPagoId: mercadoPagoResult.id,
+        mercadoPagoIdType: typeof mercadoPagoResult.id,
+        status: mercadoPagoResult.status,
+        statusDetail: mercadoPagoResult.status_detail,
+        hasQrCode: !!mercadoPagoResult.point_of_interaction?.transaction_data?.qr_code
+      })
+
+      console.log('🎯 [3/4] Updating payment with Mercado Pago ID...')
       // Update payment with Mercado Pago ID
+      // Convert to string to handle both string and number IDs from Mercado Pago
+      const mercadoPagoIdString = String(mercadoPagoResult.id)
+
       if (mercadoPagoResult.id) {
-        await this.updatePaymentStatus(payment.id, 'pending', mercadoPagoResult.id.toString())
+        const updatedPayment = await this.updatePaymentStatus(
+          payment.id,
+          'pending',
+          mercadoPagoIdString
+        )
+
+        console.log('✅ [3/4] Payment updated with Mercado Pago ID:', {
+          internalId: updatedPayment?.id,
+          mercadoPagoIdSaved: updatedPayment?.mercado_pago_payment_id,
+          idMatches: updatedPayment?.mercado_pago_payment_id === mercadoPagoIdString
+        })
+
+        if (!updatedPayment?.mercado_pago_payment_id) {
+          console.error('⚠️ WARNING: Mercado Pago ID was NOT saved to database!')
+        }
+      } else {
+        console.error('⚠️ WARNING: No Mercado Pago ID in response!')
       }
+
+      console.log('✅ [4/4] Payment creation complete. Returning QR code data.')
 
       return {
         payment,
@@ -416,7 +464,7 @@ export class PaymentService {
         pixCode: mercadoPagoResult.point_of_interaction?.transaction_data?.qr_code
       }
     } catch (error) {
-      console.error('Error creating PIX payment:', error)
+      console.error('❌ Error creating PIX payment:', error)
       throw error
     }
   }

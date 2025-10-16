@@ -7,6 +7,8 @@ export async function GET(req: NextRequest) {
     const paymentId = searchParams.get('paymentId')
     const mercadoPagoId = searchParams.get('mercadoPagoId')
 
+    console.log('🔍 Status check requested:', { paymentId, mercadoPagoId })
+
     if (!paymentId && !mercadoPagoId) {
       return NextResponse.json(
         { error: 'Payment ID or Mercado Pago ID is required' },
@@ -19,6 +21,12 @@ export async function GET(req: NextRequest) {
     // Get payment by our internal ID
     if (paymentId) {
       payment = await PaymentService.getPaymentById(paymentId)
+      console.log('📋 Payment found in database:', {
+        id: payment?.id,
+        status: payment?.status,
+        mercadoPagoId: payment?.mercado_pago_payment_id,
+        hasMercadoPagoId: !!payment?.mercado_pago_payment_id
+      })
     }
 
     // Check status with Mercado Pago if we have the MP ID
@@ -27,7 +35,13 @@ export async function GET(req: NextRequest) {
       try {
         const mpId = mercadoPagoId || payment?.mercado_pago_payment_id
         if (!mpId) throw new Error('No Mercado Pago ID available')
+        console.log('🎯 Checking Mercado Pago status for ID:', mpId)
         mercadoPagoStatus = await PaymentService.checkPaymentStatus(mpId)
+        console.log('✅ Mercado Pago status received:', {
+          id: mercadoPagoStatus.id,
+          status: mercadoPagoStatus.status,
+          statusDetail: mercadoPagoStatus.status_detail
+        })
 
         // Update our payment status if different
         if (payment && mercadoPagoStatus.status) {
@@ -64,11 +78,14 @@ export async function GET(req: NextRequest) {
     }
 
     if (!payment) {
+      console.error('❌ Payment not found in database:', { paymentId, mercadoPagoId })
       return NextResponse.json(
         { error: 'Payment not found' },
         { status: 404 }
       )
     }
+
+    console.log('✅ Status check complete. Returning payment data.')
 
     return NextResponse.json({
       success: true,
