@@ -49,6 +49,12 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
       const interval = setInterval(async () => {
         try {
           setStatusChecking(true)
+          console.log('🔍 Status polling - paymentData:', {
+            internalId: paymentData.payment?.id,
+            mercadoPagoId: paymentData.payment?.mercado_pago_payment_id,
+            mercadoPagoIdFromMercadoPago: paymentData.mercadoPago?.paymentId,
+            fullPaymentObject: paymentData.payment
+          })
           const response = await fetch(`/api/payments/status?paymentId=${paymentData.payment.id}`)
           const result = await response.json()
 
