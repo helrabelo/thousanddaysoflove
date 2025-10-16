@@ -37,14 +37,14 @@ export const giftItem = defineType({
     }),
     defineField({
       name: 'image',
-      title: 'Foto do Presente',
+      title: 'Foto do Presente (opcional para testes)',
       type: 'image',
       options: {
         hotspot: true,
         metadata: ['lqip', 'palette'],
       },
-      validation: (Rule) => Rule.required(),
-      description: 'Foto do presente (será otimizada automaticamente)',
+      // validation: (Rule) => Rule.required(), // Temporarily optional for testing
+      description: 'Foto do presente (será otimizada automaticamente) - Opcional durante testes',
     }),
     defineField({
       name: 'category',

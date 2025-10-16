@@ -331,7 +331,7 @@ export class PaymentService {
         last_name: paymentData.buyerName?.split(' ').slice(1).join(' ') || 'Casamento'
       },
       external_reference: paymentData.paymentId,
-      // notification_url: `${process.env.NEXT_PUBLIC_SITE_URL}/api/webhooks/mercado-pago`, // Comentado para testes locais - usar ngrok em produção
+      notification_url: `${process.env.NEXT_PUBLIC_SITE_URL}/api/webhooks/mercado-pago`,
       metadata: {
         payment_id: paymentData.paymentId,
         gift_name: paymentData.giftName,
