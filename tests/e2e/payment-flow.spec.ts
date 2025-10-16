@@ -37,8 +37,8 @@ test.describe('Payment Flow', () => {
 
     // Step 3: Fill in payment form
     console.log('Step 3: Filling payment form...')
-    await page.fill('input[type="text"]', 'Teste Playwright')
-    await page.fill('input[type="email"]', 'playwright@test.com')
+    await page.fill('input[placeholder="Digite seu nome completo"]', 'Teste Playwright')
+    await page.fill('input[placeholder="seu@email.com"]', 'playwright@test.com')
 
     // Find amount input and set to minimum R$50
     const amountInput = page.locator('input[type="number"]')
@@ -46,7 +46,7 @@ test.describe('Payment Flow', () => {
     await amountInput.fill('50')
 
     // Optional: Add a message
-    await page.fill('textarea', 'Teste automatizado com Playwright')
+    await page.fill('textarea[placeholder*="Deixe uma mensagem"]', 'Teste automatizado com Playwright')
 
     // Step 4: Click "Gerar PIX" button
     console.log('Step 4: Generating PIX payment...')
@@ -54,20 +54,19 @@ test.describe('Payment Flow', () => {
 
     // Step 5: Wait for QR code to appear (this confirms payment was created)
     console.log('Step 5: Waiting for QR code...')
-    await expect(page.locator('text=Pagamento PIX')).toBeVisible({ timeout: 15000 })
+    await expect(page.locator('text=Como pagar:')).toBeVisible({ timeout: 15000 })
 
-    // Verify QR code image or PIX code is present
+    // Verify QR code image is present
     const qrCodeImage = page.locator('img[alt="QR Code PIX"]')
-    const pixCode = page.locator('text=/^[0-9a-f-]{36,}/')
+    await expect(qrCodeImage).toBeVisible({ timeout: 5000 })
 
-    await expect(
-      qrCodeImage.or(pixCode).first()
-    ).toBeVisible({ timeout: 5000 })
+    // Verify "Aguardando pagamento" status is shown
+    await expect(page.locator('text=Aguardando pagamento')).toBeVisible()
 
-    // Step 6: Verify copy button exists
+    // Step 6: Verify copy button exists (icon button next to PIX code)
     console.log('Step 6: Verifying copy PIX code button...')
-    const copyButton = page.locator('button:has-text("Copiar")')
-    await expect(copyButton).toBeVisible()
+    const copyButton = page.locator('button[title*="Copiar"], button:has(.lucide-copy), button:has(svg):near(:text("codigo PIX"))')
+    await expect(copyButton.first()).toBeVisible()
 
     // Step 7: Check console logs for payment creation steps
     console.log('✅ Payment creation successful!')
@@ -93,8 +92,11 @@ test.describe('Payment Flow', () => {
     const contributeButton = page.locator('button:has-text("Presentear")').first()
     await contributeButton.click()
 
+    // Wait for modal
+    await expect(page.locator('text=Comprar com PIX')).toBeVisible({ timeout: 5000 })
+
     // Try to submit with empty email
-    await page.fill('input[type="text"]', 'Test User')
+    await page.fill('input[placeholder="Digite seu nome completo"]', 'Test User')
     // Leave email empty
 
     // Button should be disabled
@@ -107,8 +109,8 @@ test.describe('Payment Flow', () => {
     await page.click('button:has-text("Presentear")')
     await expect(page.locator('text=Comprar com PIX')).toBeVisible()
 
-    // Click X button
-    await page.click('button[aria-label="Close"], button:has-text("×")')
+    // Click X button (button with lucide-x icon in modal header)
+    await page.locator('.lucide-x').click()
 
     // Modal should close
     await expect(page.locator('text=Comprar com PIX')).not.toBeVisible({ timeout: 2000 })
@@ -131,8 +133,11 @@ test.describe('Payment Status Polling', () => {
     await page.goto('http://localhost:3000/presentes')
     await page.click('button:has-text("Presentear")')
 
-    await page.fill('input[type="text"]', 'Status Test')
-    await page.fill('input[type="email"]', 'status@test.com')
+    // Wait for modal
+    await expect(page.locator('text=Comprar com PIX')).toBeVisible({ timeout: 5000 })
+
+    await page.fill('input[placeholder="Digite seu nome completo"]', 'Status Test')
+    await page.fill('input[placeholder="seu@email.com"]', 'status@test.com')
     await page.fill('input[type="number"]', '50')
     await page.click('button:has-text("Gerar PIX")')
 
@@ -147,8 +152,7 @@ test.describe('Payment Status Polling', () => {
     console.log('Console messages captured:', consoleMessages.length)
 
     // Should see "Aguardando pagamento" or "Verificando pagamento..."
-    await expect(
-      page.locator('text=Aguardando pagamento, text=Verificando pagamento')
-    ).toBeVisible()
+    const statusText = page.locator('text=Aguardando pagamento').or(page.locator('text=Verificando pagamento'))
+    await expect(statusText).toBeVisible()
   })
 })
