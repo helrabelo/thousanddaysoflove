@@ -39,23 +39,44 @@ interface SuccessResponse {
 
 export async function POST(request: NextRequest): Promise<NextResponse<ErrorResponse | SuccessResponse>> {
   try {
-    // Verify session
-    const sessionToken = request.cookies.get(GUEST_SESSION_COOKIE)?.value
+    // Parse form data first to check for invitation_code
+    const formData = await request.formData()
+    const invitationCode = formData.get('invitation_code') as string | null
 
-    if (!sessionToken) {
-      return NextResponse.json(
-        { error: 'Autenticação necessária' },
-        { status: 401 }
-      )
-    }
+    let session: any
 
-    const session = await verifyGuestSession(sessionToken)
+    if (invitationCode) {
+      // Authenticate with invitation code
+      const { authenticateWithInvitationCode } = await import('@/lib/auth/guestAuth')
+      const authResult = await authenticateWithInvitationCode(invitationCode)
 
-    if (!session) {
-      return NextResponse.json(
-        { error: 'Sessão inválida ou expirada' },
-        { status: 401 }
-      )
+      if (!authResult.success || !authResult.session) {
+        return NextResponse.json(
+          { error: 'Código de convite inválido' },
+          { status: 401 }
+        )
+      }
+
+      session = authResult.session
+    } else {
+      // Check for existing session cookie
+      const sessionToken = request.cookies.get(GUEST_SESSION_COOKIE)?.value
+
+      if (!sessionToken) {
+        return NextResponse.json(
+          { error: 'Autenticação necessária' },
+          { status: 401 }
+        )
+      }
+
+      session = await verifyGuestSession(sessionToken)
+
+      if (!session) {
+        return NextResponse.json(
+          { error: 'Sessão inválida ou expirada' },
+          { status: 401 }
+        )
+      }
     }
 
     // Check upload permissions
@@ -68,8 +89,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ErrorResp
       )
     }
 
-    // Parse form data
-    const formData = await request.formData()
+    // Get file from formData (already parsed above)
     const file = formData.get('file')
     const phase = formData.get('phase') as string | null
     const caption = formData.get('caption') as string | null

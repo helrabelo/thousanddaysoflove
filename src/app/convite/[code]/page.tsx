@@ -11,6 +11,7 @@ import WebsiteGuide from '@/components/invitations/WebsiteGuide';
 import EventTimeline from '@/components/invitations/EventTimeline';
 import VenueMap from '@/components/invitations/VenueMap';
 import DressCodeGuide from '@/components/invitations/DressCodeGuide';
+import PhotoUploadSection from '@/components/invitations/PhotoUploadSection';
 import GeneralOrientations from '@/components/invitations/GeneralOrientations';
 import type { Invitation } from '@/types/wedding';
 import {
@@ -214,15 +215,45 @@ export default function PersonalizedInvitationPage() {
           </div>
         </section>
 
-        {/* 7. General Orientations */}
+        {/* 7. Photo Upload */}
+        <section className="py-16 px-4">
+          <div className="max-w-3xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="text-center mb-12"
+            >
+              <h2 className="font-playfair text-4xl md:text-5xl text-[#2C2C2C] mb-4">
+                Compartilhe Seus Momentos
+              </h2>
+              <p className="font-crimson text-xl text-[#4A4A4A] italic">
+                Envie suas fotos e vídeos da nossa celebração
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="bg-white rounded-2xl p-8 shadow-lg border border-[#E8E6E3]"
+            >
+              <PhotoUploadSection invitationCode={invitation.code} />
+            </motion.div>
+          </div>
+        </section>
+
+        {/* 8. General Orientations */}
         <section className="py-16 px-4">
           <div className="max-w-6xl mx-auto">
             <GeneralOrientations />
           </div>
         </section>
 
-        {/* 8. Footer CTA */}
-        <section className="py-16 px-4 bg-gradient-to-b from-[#F8F6F3] to-[#E8E6E3]">
+        {/* 9. Footer CTA */}
+        <section className="py-16 px-4">
           <div className="max-w-4xl mx-auto text-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
