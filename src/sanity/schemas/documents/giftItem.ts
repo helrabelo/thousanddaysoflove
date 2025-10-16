@@ -27,7 +27,7 @@ export const giftItem = defineType({
       title: 'Preço Total (R$)',
       type: 'number',
       validation: (Rule) =>
-        Rule.required().positive().min(50).custom((value) => {
+        Rule.required().positive().min(1).custom((value) => {
           if (value && value % 1 !== 0) {
             return 'Use valores inteiros (sem centavos)'
           }
