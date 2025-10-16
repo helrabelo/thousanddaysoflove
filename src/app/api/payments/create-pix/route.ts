@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Get current contribution progress from Supabase
-    const contributions = await GiftService.getGiftContributions(sanityGiftId)
+    const contributions = await GiftService.getGiftContributionsAdmin(sanityGiftId)
     const remainingAmount = gift.fullPrice - contributions.totalContributed
 
     // Validate amount doesn't exceed remaining gift value

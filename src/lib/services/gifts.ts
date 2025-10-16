@@ -127,6 +127,47 @@ export class GiftService {
     }
   }
 
+  static async getGiftContributionsAdmin(sanityGiftId: string) {
+    try {
+      const supabase = createAdminClient()
+
+      const { data, error } = await supabase
+        .from('gift_contributions')
+        .select('*')
+        .eq('sanity_gift_id', sanityGiftId)
+        .single()
+
+      if (error) {
+        if (error.code === 'PGRST116') {
+          return {
+            totalContributed: 0,
+            contributionCount: 0,
+            contributors: []
+          }
+        }
+        console.error('Error fetching gift contributions (admin):', error)
+        return {
+          totalContributed: 0,
+          contributionCount: 0,
+          contributors: []
+        }
+      }
+
+      return {
+        totalContributed: parseFloat(data.total_contributed || '0'),
+        contributionCount: parseInt(data.contribution_count || '0'),
+        contributors: data.contributors || []
+      }
+    } catch (error) {
+      console.error('Error in getGiftContributionsAdmin:', error)
+      return {
+        totalContributed: 0,
+        contributionCount: 0,
+        contributors: []
+      }
+    }
+  }
+
   /**
    * Get all active gifts from Sanity with contribution progress from Supabase
    * Combines Sanity CMS content with real-time payment data

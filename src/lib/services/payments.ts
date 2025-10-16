@@ -78,8 +78,11 @@ export class PaymentService {
   }
 
   // Get payment by ID
-  static async getPaymentById(id: string): Promise<Payment | null> {
-    const supabase = createClient()
+  static async getPaymentById(
+    id: string,
+    options: { useAdmin?: boolean } = {}
+  ): Promise<Payment | null> {
+    const supabase = options.useAdmin ? createAdminClient() : createClient()
 
     const { data, error } = await supabase
       .from('payments')
@@ -105,8 +108,11 @@ export class PaymentService {
   }
 
   // Get payment by Mercado Pago ID
-  static async getPaymentByMercadoPagoId(mercadoPagoId: string): Promise<Payment | null> {
-    const supabase = createClient()
+  static async getPaymentByMercadoPagoId(
+    mercadoPagoId: string,
+    options: { useAdmin?: boolean } = {}
+  ): Promise<Payment | null> {
+    const supabase = options.useAdmin ? createAdminClient() : createClient()
 
     const { data, error } = await supabase
       .from('payments')
@@ -364,6 +370,8 @@ export class PaymentService {
       requestBody.notification_url = `${siteUrl}/api/webhooks/mercado-pago`
     }
 
+    const idempotencyKey = `wedding-${paymentData.paymentId}-${Date.now()}`
+
     // Log the exact request we're sending
     console.log('📤 Mercado Pago API Request:', {
       url: 'https://api.mercadopago.com/v1/payments',
@@ -371,51 +379,78 @@ export class PaymentService {
       headers: {
         'Authorization': `Bearer ${accessToken.substring(0, 20)}...`,
         'Content-Type': 'application/json',
-        'X-Idempotency-Key': `wedding-${paymentData.paymentId}-${Date.now()}`
+        'X-Idempotency-Key': idempotencyKey
       },
       body: requestBody
     })
 
-    try {
-      const response = await fetch('https://api.mercadopago.com/v1/payments', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-          'X-Idempotency-Key': `wedding-${paymentData.paymentId}-${Date.now()}`
-        },
-        body: JSON.stringify(requestBody)
-      })
+    const maxAttempts = 3
+    let lastError: unknown = null
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        console.error('❌ Mercado Pago API error:', {
-          status: response.status,
-          statusText: response.statusText,
-          error: errorData,
-          requestBody: requestBody
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        const response = await fetch('https://api.mercadopago.com/v1/payments', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+            'X-Idempotency-Key': idempotencyKey
+          },
+          body: JSON.stringify(requestBody)
         })
-        throw new Error(`Mercado Pago API error: ${response.status} - ${JSON.stringify(errorData)}`)
-      }
 
-      const result = await response.json()
-      console.log('🔍 Full Mercado Pago API response:', {
-        id: result.id,
-        idType: typeof result.id,
-        status: result.status,
-        statusDetail: result.status_detail,
-        paymentMethodId: result.payment_method_id,
-        transactionAmount: result.transaction_amount,
-        externalReference: result.external_reference,
-        qrCodeExists: !!result.point_of_interaction?.transaction_data?.qr_code,
-        qrCodeBase64Exists: !!result.point_of_interaction?.transaction_data?.qr_code_base64
-      })
-      console.log('Mercado Pago payment created:', result.id, result.status)
-      return result
-    } catch (error) {
-      console.error('Error processing Mercado Pago payment:', error)
-      throw error
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}))
+          const errorPayload = {
+            status: response.status,
+            statusText: response.statusText,
+            error: errorData,
+            requestBody,
+            attempt,
+            maxAttempts
+          }
+
+          if (response.status >= 500 && attempt < maxAttempts) {
+            lastError = new Error(`Mercado Pago API error: ${response.status}`)
+            console.warn('⚠️ Mercado Pago API 5xx error, will retry:', errorPayload)
+            await new Promise((resolve) => setTimeout(resolve, 500 * Math.pow(2, attempt - 1)))
+            continue
+          }
+
+          console.error('❌ Mercado Pago API error:', errorPayload)
+          throw new Error(`Mercado Pago API error: ${response.status} - ${JSON.stringify(errorData)}`)
+        }
+
+        const result = await response.json()
+        console.log('🔍 Full Mercado Pago API response:', {
+          id: result.id,
+          idType: typeof result.id,
+          status: result.status,
+          statusDetail: result.status_detail,
+          paymentMethodId: result.payment_method_id,
+          transactionAmount: result.transaction_amount,
+          externalReference: result.external_reference,
+          qrCodeExists: !!result.point_of_interaction?.transaction_data?.qr_code,
+          qrCodeBase64Exists: !!result.point_of_interaction?.transaction_data?.qr_code_base64
+        })
+        console.log('Mercado Pago payment created:', result.id, result.status)
+        return result
+      } catch (error) {
+        lastError = error
+        if (attempt >= maxAttempts) {
+          console.error('Error processing Mercado Pago payment (final attempt):', error)
+          throw error
+        }
+        console.warn('Error processing Mercado Pago payment, retrying...', {
+          attempt,
+          maxAttempts,
+          error: error instanceof Error ? error.message : error
+        })
+        await new Promise((resolve) => setTimeout(resolve, 500 * Math.pow(2, attempt - 1)))
+      }
     }
+
+    throw lastError instanceof Error ? lastError : new Error('Unknown Mercado Pago error')
   }
 
   // Create PIX payment with QR code

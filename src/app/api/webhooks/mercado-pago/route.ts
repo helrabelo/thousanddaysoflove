@@ -4,21 +4,74 @@ import { PaymentService } from '@/lib/services/payments'
 import { EmailService } from '@/lib/services/email'
 import crypto from 'crypto'
 
-// Verify Mercado Pago webhook signature
-function verifyWebhookSignature(
-  body: string,
-  signature: string,
-  secret: string
-): boolean {
-  try {
-    const hmac = crypto.createHmac('sha256', secret)
-    hmac.update(body)
-    const expectedSignature = hmac.digest('hex')
+const SIGNATURE_HASH_KEYS = ['sha256', 'hash', 'v1', 'v2']
 
-    return crypto.timingSafeEqual(
-      Buffer.from(signature),
-      Buffer.from(expectedSignature)
-    )
+function parseSignatureHeader(header: string) {
+  return header
+    .split(/[;,]/)
+    .map((segment) => segment.trim())
+    .filter(Boolean)
+    .reduce<Record<string, string>>((acc, segment) => {
+      const [key, ...valueParts] = segment.split('=')
+      const value = valueParts.join('=').trim()
+      if (key && value) {
+        acc[key.trim()] = value
+      }
+      return acc
+    }, {})
+}
+
+// Verify Mercado Pago webhook signature
+function verifyWebhookSignature(params: {
+  body: string
+  signatureHeader: string
+  secret: string
+  requestUrl: string
+}): boolean {
+  try {
+    const parsed = parseSignatureHeader(params.signatureHeader)
+    const id = parsed.id
+    const ts = parsed.ts
+    const hashKey = SIGNATURE_HASH_KEYS.find((key) => parsed[key])
+    const providedHash = hashKey ? parsed[hashKey] : null
+
+    if (!id || !ts || !providedHash) {
+      console.error('Webhook signature header missing required fields:', parsed)
+      return false
+    }
+
+    const url = new URL(params.requestUrl)
+    const normalizedUrl = `${url.origin}${url.pathname}`
+
+    const payloadCandidates = [
+      `${id}${ts}${normalizedUrl}`,
+      `${id}${ts}${normalizedUrl}${params.body}`,
+      params.body
+    ]
+
+    const providedBuffer = Buffer.from(providedHash.toLowerCase(), 'hex')
+
+    for (const payload of payloadCandidates) {
+      const computed = crypto
+        .createHmac('sha256', params.secret)
+        .update(payload)
+        .digest('hex')
+
+      const computedBuffer = Buffer.from(computed, 'hex')
+
+      if (
+        providedBuffer.length === computedBuffer.length &&
+        crypto.timingSafeEqual(providedBuffer, computedBuffer)
+      ) {
+        return true
+      }
+    }
+
+    console.error('Webhook signature mismatch for payload candidates', {
+      parsed,
+      normalizedUrl
+    })
+    return false
   } catch (error) {
     console.error('Error verifying webhook signature:', error)
     return false
@@ -32,14 +85,27 @@ export async function POST(req: NextRequest) {
     const webhookSecret = process.env.MERCADO_PAGO_WEBHOOK_SECRET
 
     // Verify webhook signature if secret is configured
-    if (webhookSecret) {
-      if (!verifyWebhookSignature(body, signature, webhookSecret)) {
+    if (webhookSecret && signature) {
+      const signatureValid = verifyWebhookSignature({
+        body,
+        signatureHeader: signature,
+        secret: webhookSecret,
+        requestUrl: req.url
+      })
+
+      if (!signatureValid) {
         console.error('Invalid webhook signature')
         return NextResponse.json(
           { error: 'Invalid signature' },
           { status: 401 }
         )
       }
+    } else if (webhookSecret && !signature) {
+      console.error('Webhook secret configured, but no x-signature header present')
+      return NextResponse.json(
+        { error: 'Missing signature header' },
+        { status: 401 }
+      )
     }
 
     // Parse webhook data
@@ -67,7 +133,9 @@ export async function POST(req: NextRequest) {
         const paymentStatus = await PaymentService.checkPaymentStatus(webhookData.data.id)
 
         if (paymentStatus.status === 'approved' && paymentStatus.external_reference) {
-          const payment = await PaymentService.getPaymentById(paymentStatus.external_reference)
+          const payment = await PaymentService.getPaymentById(paymentStatus.external_reference, {
+            useAdmin: true
+          })
 
           if (payment) {
             // Send payment confirmation email
