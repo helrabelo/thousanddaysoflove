@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display, Crimson_Text, Cormorant } from "next/font/google";
+import { Inter, Playfair_Display, Crimson_Text, Cormorant, Shadows_Into_Light } from "next/font/google";
 import "./globals.css";
 import "../styles/wedding-theme.css";
 import { sanityFetch } from '@/sanity/lib/client'
@@ -32,6 +32,13 @@ const cormorant = Cormorant({
   subsets: ["latin"],
   display: 'swap',
   weight: ['300', '400', '500', '600'],
+});
+
+const shadowsIntoLight = Shadows_Into_Light({
+  variable: "--font-shadows",
+  subsets: ["latin"],
+  display: 'swap',
+  weight: ['400'],
 });
 
 // Generate metadata from Sanity
@@ -89,7 +96,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body
-        className={`${inter.variable} ${playfair.variable} ${crimsonText.variable} ${cormorant.variable} font-serif antialiased`}
+        className={`${inter.variable} ${playfair.variable} ${crimsonText.variable} ${cormorant.variable} ${shadowsIntoLight.variable} font-serif antialiased`}
       >
         {children}
         <GlobalGuestActions />

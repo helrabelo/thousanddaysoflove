@@ -358,6 +358,13 @@ export interface SanityStoryMomentMediaItem {
   image?: {
     asset: {
       url: string;
+      metadata?: {
+        dimensions?: {
+          width: number;
+          height: number;
+          aspectRatio: number;
+        };
+      };
     };
     alt?: string;
     hotspot?: {
@@ -376,6 +383,13 @@ export interface SanityStoryMomentMediaItem {
   video?: {
     asset: {
       url: string;
+      metadata?: {
+        dimensions?: {
+          width: number;
+          height: number;
+          aspectRatio: number;
+        };
+      };
     };
   };
   alt?: string;
@@ -455,6 +469,9 @@ export interface RenderedStoryMediaItem {
     height: number;
     width: number;
   };
+  width?: number;
+  height?: number;
+  aspectRatio?: number;
 }
 
 // =====================================================

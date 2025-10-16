@@ -10,6 +10,9 @@ export interface MediaItem {
   url: string
   alt?: string
   caption?: string
+  width?: number
+  height?: number
+  aspectRatio?: number // width / height
 }
 
 interface MediaCarouselProps {

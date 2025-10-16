@@ -82,7 +82,10 @@ export default async function HistoriaPage() {
                 mediaType: item.type as 'image' | 'video',
                 url: item.url,
                 alt: item.alt,
-                caption: item.caption
+                caption: item.caption,
+                width: item.width,
+                height: item.height,
+                aspectRatio: item.aspectRatio,
               }))
 
               return (

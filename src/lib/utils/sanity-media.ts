@@ -66,6 +66,7 @@ function transformMediaItem(
   item: SanityStoryMomentMediaItem
 ): RenderedStoryMediaItem | null {
   if (item.mediaType === 'image' && item.image?.asset?.url) {
+    const dimensions = item.image.asset.metadata?.dimensions
     return {
       type: 'image',
       url: item.image.asset.url,
@@ -73,16 +74,23 @@ function transformMediaItem(
       caption: item.caption,
       order: item.displayOrder,
       hotspot: item.image.hotspot,
+      width: dimensions?.width,
+      height: dimensions?.height,
+      aspectRatio: dimensions?.aspectRatio,
     }
   }
 
   if (item.mediaType === 'video' && item.video?.asset?.url) {
+    const dimensions = item.video.asset.metadata?.dimensions
     return {
       type: 'video',
       url: item.video.asset.url,
       alt: item.alt || item.caption || 'Story moment video',
       caption: item.caption,
       order: item.displayOrder,
+      width: dimensions?.width,
+      height: dimensions?.height,
+      aspectRatio: dimensions?.aspectRatio,
     }
   }
 

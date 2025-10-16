@@ -9,13 +9,23 @@ import { groq } from 'next-sanity'
 /**
  * Media Fragment
  * Fetches media array with proper asset resolution for both images and videos
+ * Includes dimensions for aspect ratio calculation
  */
 const mediaFragment = groq`
   media[] {
     mediaType,
     "image": select(
       mediaType == "image" => image {
-        asset-> { url },
+        asset-> {
+          url,
+          metadata {
+            dimensions {
+              width,
+              height,
+              aspectRatio
+            }
+          }
+        },
         alt,
         hotspot,
         crop
@@ -23,7 +33,16 @@ const mediaFragment = groq`
     ),
     "video": select(
       mediaType == "video" => video {
-        asset-> { url }
+        asset-> {
+          url,
+          metadata {
+            dimensions {
+              width,
+              height,
+              aspectRatio
+            }
+          }
+        }
       }
     ),
     alt,
