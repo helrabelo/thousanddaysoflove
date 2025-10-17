@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { ChangeEvent } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import {
@@ -16,9 +16,12 @@ import {
   Download,
   Mail,
   Phone,
-  Users
+  Users,
+  Zap
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { InlineEditableText } from '@/components/admin/InlineEditableField'
+import { useToast } from '@/components/ui/Toast'
 
 interface Guest {
   id: string
@@ -51,15 +54,26 @@ interface GuestStats {
   totalPlusOnes: number
 }
 
+interface NewGuestEntry {
+  tempId: string
+  name: string
+  email: string
+  phone: string
+  invitation_code: string
+}
+
 export default function AdminGuests(): JSX.Element {
+  const { showToast, ToastRenderer } = useToast()
   const [guests, setGuests] = useState<Guest[]>([])
   const [filteredGuests, setFilteredGuests] = useState<Guest[]>([])
   const [loading, setLoading] = useState(true)
   const [showAddForm, setShowAddForm] = useState(false)
+  const [newGuestQueue, setNewGuestQueue] = useState<NewGuestEntry[]>([])
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editForm, setEditForm] = useState<EditingGuest | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [filterStatus, setFilterStatus] = useState<'all' | 'confirmed' | 'declined' | 'pending'>('all')
+  const [quickEditMode, setQuickEditMode] = useState(false)
 
   useEffect(() => {
     loadGuests()
@@ -82,7 +96,7 @@ export default function AdminGuests(): JSX.Element {
       setGuests(data || [])
     } catch (error) {
       console.error('Error loading guests:', error)
-      alert('Erro ao carregar convidados')
+      showToast({ title: 'Erro ao carregar convidados', type: 'error' })
     } finally {
       setLoading(false)
     }
@@ -156,48 +170,107 @@ export default function AdminGuests(): JSX.Element {
 
       await loadGuests()
       cancelEditing()
-      alert('Convidado atualizado!')
+      showToast({ title: 'Convidado atualizado!', type: 'success' })
     } catch (error) {
       console.error('Error updating guest:', error)
-      alert('Erro ao atualizar convidado')
+      showToast({ title: 'Erro ao atualizar convidado', type: 'error' })
     }
   }
 
-  const addGuest = async (name: string, phone: string, email: string): Promise<void> => {
-    if (!name.trim()) {
-      alert('Nome é obrigatório')
+  const handleQuickGuestUpdate = async (
+    guestId: string,
+    updates: Partial<Omit<Guest, 'id'>>
+  ): Promise<void> => {
+    try {
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('simple_guests')
+        .update(updates)
+        .eq('id', guestId)
+        .select('*')
+        .single()
+
+      if (error) throw error
+      if (!data) throw new Error('Nenhum convidado retornado')
+
+      setGuests((prev) =>
+        prev.map((guest) => (guest.id === guestId ? (data as Guest) : guest))
+      )
+    } catch (error) {
+      console.error('Error updating guest inline:', error)
+      showToast({ title: 'Erro ao atualizar convidado', type: 'error' })
+      throw error
+    }
+  }
+
+  const addGuestToQueue = (): void => {
+    const newEntry: NewGuestEntry = {
+      tempId: `temp-${Date.now()}-${Math.random()}`,
+      name: '',
+      email: '',
+      phone: '',
+      invitation_code: ''
+    }
+    setNewGuestQueue(prev => [...prev, newEntry])
+  }
+
+  const removeFromQueue = (tempId: string): void => {
+    setNewGuestQueue(prev => prev.filter(entry => entry.tempId !== tempId))
+  }
+
+  const updateQueueEntry = (tempId: string, field: keyof Omit<NewGuestEntry, 'tempId'>, value: string): void => {
+    setNewGuestQueue(prev => prev.map(entry =>
+      entry.tempId === tempId ? { ...entry, [field]: value } : entry
+    ))
+  }
+
+  const saveBulkGuests = async (): Promise<void> => {
+    // Filter out entries without names
+    const validEntries = newGuestQueue.filter(entry => entry.name.trim())
+
+    if (validEntries.length === 0) {
+      showToast({ title: 'Adicione pelo menos um nome', type: 'error' })
       return
     }
 
     try {
       const supabase = createClient()
 
-      // Generate a unique invitation code
-      const invitationCode = `HY${Date.now().toString().slice(-6)}`
+      // Prepare bulk insert - use custom code if provided, otherwise generate one
+      const guestsToInsert = validEntries.map(entry => ({
+        name: entry.name.trim(),
+        phone: entry.phone.trim() || null,
+        email: entry.email.trim() || null,
+        invitation_code: entry.invitation_code.trim()
+          ? entry.invitation_code.trim().toUpperCase()
+          : `HY${Date.now().toString().slice(-6)}${Math.random().toString(36).substring(2, 4).toUpperCase()}`
+      }))
 
       const { error } = await supabase
         .from('simple_guests')
-        .insert({
-          name,
-          phone: phone || null,
-          email: email || null,
-          invitation_code: invitationCode
-        })
+        .insert(guestsToInsert)
 
       if (error) throw error
 
       setShowAddForm(false)
+      setNewGuestQueue([])
       await loadGuests()
-      alert('Convidado adicionado!')
+      showToast({
+        title: `${validEntries.length} convidado${validEntries.length > 1 ? 's' : ''} adicionado${validEntries.length > 1 ? 's' : ''}!`,
+        type: 'success'
+      })
     } catch (error) {
-      console.error('Error adding guest:', error)
-      alert('Erro ao adicionar convidado')
+      console.error('Error adding guests:', error)
+      showToast({ title: 'Erro ao adicionar convidados', type: 'error' })
     }
   }
 
-  const deleteGuest = async (guestId: string, guestName: string): Promise<void> => {
-    if (!window.confirm(`DELETAR ${guestName} da lista?`)) return
+  const cancelBulkAdd = (): void => {
+    setNewGuestQueue([])
+    setShowAddForm(false)
+  }
 
+  const deleteGuest = async (guestId: string): Promise<void> => {
     try {
       const supabase = createClient()
       const { error } = await supabase
@@ -206,11 +279,15 @@ export default function AdminGuests(): JSX.Element {
         .eq('id', guestId)
 
       if (error) throw error
-      await loadGuests()
-      alert('Convidado removido')
+
+      setGuests((prev) => prev.filter((guest) => guest.id !== guestId))
+      if (editingId === guestId) {
+        cancelEditing()
+      }
+      showToast({ title: 'Convidado removido', type: 'success' })
     } catch (error) {
       console.error('Error deleting guest:', error)
-      alert('Erro ao deletar convidado')
+      showToast({ title: 'Erro ao deletar convidado', type: 'error' })
     }
   }
 
@@ -230,7 +307,7 @@ export default function AdminGuests(): JSX.Element {
       await loadGuests()
     } catch (error) {
       console.error('Error updating RSVP:', error)
-      alert('Erro ao atualizar RSVP')
+      showToast({ title: 'Erro ao atualizar RSVP', type: 'error' })
     }
   }
 
@@ -286,6 +363,18 @@ export default function AdminGuests(): JSX.Element {
           </h1>
           <div className="flex gap-2">
             <Button
+              onClick={() => {
+                cancelEditing()
+                setQuickEditMode((prev) => !prev)
+              }}
+              variant={quickEditMode ? 'wedding' : 'outline'}
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <Zap className="w-4 h-4" />
+              {quickEditMode ? 'Sair modo rápido' : 'Edição rápida'}
+            </Button>
+            <Button
               onClick={exportToCSV}
               variant="outline"
               size="sm"
@@ -295,7 +384,21 @@ export default function AdminGuests(): JSX.Element {
               Exportar CSV
             </Button>
             <Button
-              onClick={() => setShowAddForm(!showAddForm)}
+              onClick={() => {
+                setShowAddForm(!showAddForm)
+                if (!showAddForm) {
+                  // Initialize with one empty entry
+                  setNewGuestQueue([{
+                    tempId: `temp-${Date.now()}`,
+                    name: '',
+                    email: '',
+                    phone: '',
+                    invitation_code: ''
+                  }])
+                } else {
+                  setNewGuestQueue([])
+                }
+              }}
               size="sm"
               className="flex items-center gap-2"
             >
@@ -393,47 +496,79 @@ export default function AdminGuests(): JSX.Element {
           </div>
         </div>
 
-        {/* Add Form */}
+        {/* Bulk Add Form */}
         {showAddForm && (
           <div className="bg-white rounded-lg border border-[#E8E6E3] p-4 mb-4">
-            <h3 className="text-lg font-bold text-[#2C2C2C] mb-3">Novo Convidado</h3>
-            <form onSubmit={(e) => {
-              e.preventDefault()
-              const formData = new FormData(e.currentTarget)
-              addGuest(
-                formData.get('name') as string,
-                formData.get('phone') as string,
-                formData.get('email') as string
-              )
-            }}>
-              <div className="grid md:grid-cols-3 gap-3 mb-3">
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Nome *"
-                  className="px-3 py-2 border border-[#E8E6E3] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#A8A8A8]"
-                  required
-                />
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Email"
-                  className="px-3 py-2 border border-[#E8E6E3] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#A8A8A8]"
-                />
-                <input
-                  type="tel"
-                  name="phone"
-                  placeholder="Telefone"
-                  className="px-3 py-2 border border-[#E8E6E3] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#A8A8A8]"
-                />
-              </div>
-              <div className="flex gap-2">
-                <Button type="submit" size="sm">Adicionar</Button>
-                <Button type="button" variant="outline" size="sm" onClick={() => setShowAddForm(false)}>
-                  Cancelar
-                </Button>
-              </div>
-            </form>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-[#2C2C2C]">
+                Adicionar Convidados ({newGuestQueue.length})
+              </h3>
+              <Button
+                onClick={addGuestToQueue}
+                size="sm"
+                variant="outline"
+                className="flex items-center gap-1"
+              >
+                <Plus className="w-4 h-4" />
+                Adicionar Mais
+              </Button>
+            </div>
+
+            <div className="space-y-3 mb-4">
+              {newGuestQueue.map((entry, index) => (
+                <div key={entry.tempId} className="flex gap-2 items-start">
+                  <div className="flex-shrink-0 w-8 h-9 flex items-center justify-center text-sm text-[#A8A8A8] font-medium">
+                    {index + 1}.
+                  </div>
+                  <div className="flex-1 grid md:grid-cols-4 gap-2">
+                    <input
+                      type="text"
+                      placeholder="Nome *"
+                      value={entry.name}
+                      onChange={(e) => updateQueueEntry(entry.tempId, 'name', e.target.value)}
+                      className="px-3 py-2 border border-[#E8E6E3] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#A8A8A8]"
+                    />
+                    <input
+                      type="email"
+                      placeholder="Email"
+                      value={entry.email}
+                      onChange={(e) => updateQueueEntry(entry.tempId, 'email', e.target.value)}
+                      className="px-3 py-2 border border-[#E8E6E3] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#A8A8A8]"
+                    />
+                    <input
+                      type="tel"
+                      placeholder="Telefone"
+                      value={entry.phone}
+                      onChange={(e) => updateQueueEntry(entry.tempId, 'phone', e.target.value)}
+                      className="px-3 py-2 border border-[#E8E6E3] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#A8A8A8]"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Código (auto)"
+                      value={entry.invitation_code}
+                      onChange={(e) => updateQueueEntry(entry.tempId, 'invitation_code', e.target.value)}
+                      className="px-3 py-2 border border-[#E8E6E3] rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#A8A8A8]"
+                    />
+                  </div>
+                  <button
+                    onClick={() => removeFromQueue(entry.tempId)}
+                    className="flex-shrink-0 p-2 text-red-600 hover:bg-red-50 rounded"
+                    title="Remover"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex gap-2">
+              <Button onClick={saveBulkGuests} size="sm">
+                Salvar Todos ({newGuestQueue.filter(e => e.name.trim()).length})
+              </Button>
+              <Button type="button" variant="outline" size="sm" onClick={cancelBulkAdd}>
+                Cancelar
+              </Button>
+            </div>
           </div>
         )}
 
@@ -455,7 +590,159 @@ export default function AdminGuests(): JSX.Element {
               </thead>
               <tbody>
                 {filteredGuests.map((guest) => {
-                  const isEditing = editingId === guest.id
+                  const isEditing = !quickEditMode && editingId === guest.id
+
+                  if (quickEditMode) {
+                    return (
+                      <tr
+                        key={guest.id}
+                        className="border-b border-burgundy-100 bg-burgundy-50/30"
+                      >
+                        <td className="p-3 align-top">
+                          <InlineEditableText
+                            active={quickEditMode}
+                            value={guest.name}
+                            onSave={async (next) => {
+                              await handleQuickGuestUpdate(guest.id, { name: next })
+                            }}
+                            placeholder="Nome completo"
+                            className="max-w-[220px]"
+                            inputClassName="text-sm font-medium text-burgundy-800"
+                            maxLength={120}
+                          />
+                          {guest.confirmed_by === 'admin' && (
+                            <span className="mt-1 block text-xs text-blue-600">Admin</span>
+                          )}
+                        </td>
+                        <td className="p-3 align-top">
+                          <InlineEditableText
+                            active={quickEditMode}
+                            value={guest.email ?? ''}
+                            onSave={async (next) => {
+                              await handleQuickGuestUpdate(guest.id, {
+                                email: next ? next : null,
+                              })
+                            }}
+                            placeholder="email@exemplo.com"
+                            type="email"
+                            className="max-w-[220px]"
+                            inputClassName="text-sm"
+                          />
+                        </td>
+                        <td className="p-3 align-top">
+                          <InlineEditableText
+                            active={quickEditMode}
+                            value={guest.phone ?? ''}
+                            onSave={async (next) => {
+                              await handleQuickGuestUpdate(guest.id, {
+                                phone: next ? next : null,
+                              })
+                            }}
+                            placeholder="(11) 99999-9999"
+                            type="tel"
+                            className="max-w-[160px]"
+                            inputClassName="text-sm"
+                          />
+                        </td>
+                        <td className="p-3 align-top">
+                          <InlineEditableText
+                            active={quickEditMode}
+                            value={guest.invitation_code ?? ''}
+                            onSave={async (next) => {
+                              await handleQuickGuestUpdate(guest.id, {
+                                invitation_code: next ? next.toUpperCase() : null,
+                              })
+                            }}
+                            placeholder="Código"
+                            className="max-w-[140px]"
+                            inputClassName="text-sm font-mono"
+                            maxLength={24}
+                          />
+                        </td>
+                        <td className="p-3 text-center">
+                          <div className="flex justify-center gap-1">
+                            <button
+                              onClick={() => updateRSVP(guest.id, true)}
+                              className={`p-1 rounded ${
+                                guest.attending === true
+                                  ? 'bg-green-100 text-green-700'
+                                  : 'text-burgundy-300 hover:bg-green-50 hover:text-green-600'
+                              }`}
+                              title="Confirmar"
+                            >
+                              <Check className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => updateRSVP(guest.id, false)}
+                              className={`p-1 rounded ${
+                                guest.attending === false
+                                  ? 'bg-red-100 text-red-700'
+                                  : 'text-burgundy-300 hover:bg-red-50 hover:text-red-600'
+                              }`}
+                              title="Não Vai"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => updateRSVP(guest.id, null)}
+                              className={`p-1 rounded ${
+                                guest.attending === null
+                                  ? 'bg-yellow-100 text-yellow-700'
+                                  : 'text-burgundy-300 hover:bg-yellow-50 hover:text-yellow-600'
+                              }`}
+                              title="Pendente"
+                            >
+                              <Users className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                        <td className="p-3 text-center align-top">
+                          <InlineEditableText
+                            active={quickEditMode}
+                            value={(guest.plus_ones ?? 0).toString()}
+                            onSave={async (next) => {
+                              const sanitized = next.trim()
+                              const parsed = sanitized === '' ? 0 : Number.parseInt(sanitized, 10)
+                              const normalized = Number.isNaN(parsed)
+                                ? 0
+                                : Math.min(5, Math.max(0, parsed))
+                              await handleQuickGuestUpdate(guest.id, { plus_ones: normalized })
+                            }}
+                            placeholder="0"
+                            type="number"
+                            className="mx-auto max-w-[70px]"
+                            inputClassName="text-center text-sm"
+                          />
+                        </td>
+                        <td className="p-3 align-top">
+                          <InlineEditableText
+                            active={quickEditMode}
+                            value={guest.notes ?? ''}
+                            onSave={async (next) => {
+                              await handleQuickGuestUpdate(guest.id, {
+                                notes: next ? next : null,
+                              })
+                            }}
+                            placeholder="Observações..."
+                            className="max-w-[260px]"
+                            inputClassName="text-sm"
+                            trim={false}
+                          />
+                        </td>
+                        <td className="p-3">
+                          <div className="flex justify-end gap-1">
+                            <button
+                              onClick={async () => await deleteGuest(guest.id)}
+                              className="p-1 text-red-600 hover:bg-red-50 rounded"
+                              title="Deletar"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  }
 
                   return (
                     <tr key={guest.id} className="border-b border-burgundy-100 hover:bg-burgundy-50/50">
@@ -646,7 +933,7 @@ export default function AdminGuests(): JSX.Element {
                                 <Edit2 className="w-4 h-4" />
                               </button>
                               <button
-                                onClick={() => deleteGuest(guest.id, guest.name)}
+                                onClick={async () => await deleteGuest(guest.id)}
                                 className="p-1 text-red-600 hover:bg-red-50 rounded"
                                 title="Deletar"
                               >
@@ -675,6 +962,9 @@ export default function AdminGuests(): JSX.Element {
           Mostrando {filteredGuests.length} de {guests.length} convidados
         </div>
       </div>
+      
+      {/* Toast Notifications */}
+      <ToastRenderer />
     </div>
   )
 }

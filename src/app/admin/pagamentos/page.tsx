@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { CreditCard, DollarSign, CheckCircle, Clock, XCircle } from 'lucide-react'
+import { useToast } from '@/components/ui/Toast'
 import { Card } from '@/components/ui/card'
 import Link from 'next/link'
 
@@ -75,7 +76,7 @@ export default function AdminPagamentos() {
       })
     } catch (error) {
       console.error('Error loading payments:', error)
-      alert('Erro ao carregar pagamentos')
+      showToast({ title: 'Erro ao carregar pagamentos', type: 'error' })
     } finally {
       setLoading(false)
     }
@@ -198,6 +199,7 @@ export default function AdminPagamentos() {
             <p className="text-burgundy-600">Nenhum pagamento registrado ainda</p>
           </Card>
         )}
+        <ToastRenderer />
       </div>
     </div>
   )

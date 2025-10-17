@@ -26,10 +26,12 @@ import {
   Loader2,
 } from 'lucide-react';
 import type { GuestPost } from '@/types/wedding';
+import { useToast } from '@/components/ui/Toast';
 
 type StatusFilter = 'all' | 'pending' | 'approved' | 'rejected';
 
 export default function AdminPostsPage() {
+  const { showToast, ToastRenderer } = useToast()
   const [posts, setPosts] = useState<GuestPost[]>([]);
   const [filter, setFilter] = useState<StatusFilter>('pending');
   const [selectedPosts, setSelectedPosts] = useState<Set<string>>(new Set());
@@ -139,7 +141,7 @@ export default function AdminPostsPage() {
       await Promise.all([loadPosts(), loadStats()]);
     } catch (error) {
       console.error('Error moderating post:', error);
-      alert('Erro ao moderar mensagem');
+      showToast({ title: 'Erro ao moderar mensagem', type: 'error' });
     }
   };
 
@@ -177,7 +179,7 @@ export default function AdminPostsPage() {
       await Promise.all([loadPosts(), loadStats()]);
     } catch (error) {
       console.error('Error batch moderating:', error);
-      alert('Erro ao moderar mensagens em lote');
+      showToast({ title: 'Erro ao moderar mensagens em lote', type: 'error' });
     }
   };
 
@@ -397,6 +399,9 @@ export default function AdminPostsPage() {
           </div>
         </div>
       </div>
+
+      {/* Toast Notifications */}
+      <ToastRenderer />
     </div>
   );
 }

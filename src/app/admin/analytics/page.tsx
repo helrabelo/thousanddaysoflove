@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Users, Gift, CreditCard, Calendar, TrendingUp, Heart } from 'lucide-react'
+import { useToast } from '@/components/ui/Toast'
 import { Card } from '@/components/ui/card'
 import Link from 'next/link'
 
@@ -125,7 +126,7 @@ export default function AdminAnalytics(): JSX.Element {
       })
     } catch (error) {
       console.error('Error loading analytics:', error)
-      alert('Erro ao carregar estatísticas')
+      showToast({ title: 'Erro ao carregar estatísticas', type: 'error' })
     } finally {
       setLoading(false)
     }
@@ -273,6 +274,7 @@ export default function AdminAnalytics(): JSX.Element {
             </div>
           </div>
         </Card>
+        <ToastRenderer />
       </div>
     </div>
   )

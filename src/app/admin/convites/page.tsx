@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Mail,
@@ -24,12 +24,15 @@ import {
   MessageSquare,
   UserPlus,
   ExternalLink,
+  Zap,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
+import { useToast } from '@/components/ui/Toast'
 import type { Invitation } from '@/types/wedding'
+import { InlineEditableSelect, InlineEditableText } from '@/components/admin/InlineEditableField'
 import {
   getAllInvitations,
   deleteInvitation,
@@ -46,6 +49,7 @@ type FilterStatus = 'all' | 'opened' | 'rsvp' | 'gift' | 'photos'
 type RelationshipFilter = 'all' | 'family' | 'friend' | 'colleague' | 'other'
 
 export default function AdminInvitationsPage() {
+  const { showToast, ToastRenderer } = useToast()
   const [invitations, setInvitations] = useState<Invitation[]>([])
   const [filteredInvitations, setFilteredInvitations] = useState<Invitation[]>([])
   const [analytics, setAnalytics] = useState<any>(null)
@@ -59,11 +63,121 @@ export default function AdminInvitationsPage() {
   const [showEditModal, setShowEditModal] = useState(false)
   const [sortBy, setSortBy] = useState<'created_at' | 'guest_name' | 'opened_at' | 'open_count'>('created_at')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+  const [quickEditMode, setQuickEditMode] = useState(false)
+  const [quickSaving, setQuickSaving] = useState<Record<string, boolean>>({})
+  const [deletePromptId, setDeletePromptId] = useState<string | null>(null)
+  const deletePromptTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const setFieldSaving = (id: string, field: string, value: boolean) => {
+    const key = `${id}:${field}`
+    setQuickSaving((prev) => {
+      if (value) {
+        return { ...prev, [key]: true }
+      }
+      const next = { ...prev }
+      delete next[key]
+      return next
+    })
+  }
+
+  const isFieldSaving = (id: string, field: string) => quickSaving[`${id}:${field}`] === true
+
+  const handleInvitationQuickUpdate = async (
+    id: string,
+    updates: Partial<Invitation>,
+    fieldKey?: string
+  ) => {
+    if (fieldKey) {
+      setFieldSaving(id, fieldKey, true)
+    }
+
+    try {
+      const updated = await updateInvitation(id, updates)
+      if (!updated) {
+        throw new Error('Nenhum convite retornado pela atualização')
+      }
+
+      setInvitations((prev) =>
+        prev.map((invitation) => (invitation.id === id ? { ...invitation, ...updated } : invitation))
+      )
+
+      setSelectedInvitation((prev) =>
+        prev && prev.id === id ? { ...prev, ...updated } : prev
+      )
+    } catch (error) {
+      console.error('Error updating invitation inline:', error)
+      showToast({ title: 'Erro ao atualizar convite', message: 'Tente novamente.', type: 'error' })
+      throw error
+    } finally {
+      if (fieldKey) {
+        setFieldSaving(id, fieldKey, false)
+      }
+    }
+  }
+
+  const renderBooleanQuickToggle = (
+    invitationId: string,
+    label: string,
+    field: 'rsvp_completed' | 'gift_selected' | 'photos_uploaded',
+    value: boolean
+  ) => {
+    const saving = isFieldSaving(invitationId, field)
+
+    return (
+      <div className="flex items-center justify-between gap-3 rounded-md border border-[#E8E6E3] px-3 py-2">
+        <span className="text-xs font-medium uppercase tracking-wide text-[#4A4A4A]">
+          {label}
+        </span>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={async () => {
+              if (value || saving) return
+              const updates: Partial<Invitation> = { [field]: true } as Partial<Invitation>
+              try {
+                await handleInvitationQuickUpdate(invitationId, updates, field)
+              } catch {
+                // handled via alert in handler
+              }
+            }}
+            className={`rounded-md border px-2 py-1 text-xs font-medium transition ${
+              value
+                ? 'border-green-500 bg-green-50 text-green-700'
+                : 'border-gray-200 bg-white text-[#4A4A4A] hover:border-gray-300'
+            }`}
+            disabled={saving}
+          >
+            Sim
+          </button>
+          <button
+            type="button"
+            onClick={async () => {
+              if (!value || saving) return
+              const updates: Partial<Invitation> = { [field]: false } as Partial<Invitation>
+              try {
+                await handleInvitationQuickUpdate(invitationId, updates, field)
+              } catch {
+                // handled via alert in handler
+              }
+            }}
+            className={`rounded-md border px-2 py-1 text-xs font-medium transition ${
+              !value
+                ? 'border-red-500 bg-red-50 text-red-700'
+                : 'border-gray-200 bg-white text-[#4A4A4A] hover:border-gray-300'
+            }`}
+            disabled={saving}
+          >
+            Não
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   // Load data
   useEffect(() => {
-    loadData()
-  }, [sortBy, sortOrder])
+    void loadData()
+  }, [loadData])
 
   // Filter invitations
   useEffect(() => {
@@ -105,32 +219,82 @@ export default function AdminInvitationsPage() {
     setFilteredInvitations(filtered)
   }, [invitations, searchTerm, filterStatus, relationshipFilter])
 
-  const loadData = async () => {
-    setIsLoading(true)
+  const loadData = useCallback(
+    async ({ showSpinner = true }: { showSpinner?: boolean } = {}) => {
+      if (showSpinner) {
+        setIsLoading(true)
+      }
+      try {
+        const [invitationsList, analyticsData] = await Promise.all([
+          getAllInvitations(undefined, sortBy, sortOrder),
+          getInvitationAnalytics(),
+        ])
+        setInvitations(invitationsList)
+        setAnalytics(analyticsData)
+      } catch (error) {
+        console.error('Error loading data:', error)
+      } finally {
+        if (showSpinner) {
+          setIsLoading(false)
+        }
+      }
+    },
+    [sortBy, sortOrder]
+  )
+
+  useEffect(() => {
+    return () => {
+      if (deletePromptTimeout.current) {
+        clearTimeout(deletePromptTimeout.current)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    setDeletePromptId(null)
+    if (deletePromptTimeout.current) {
+      clearTimeout(deletePromptTimeout.current)
+      deletePromptTimeout.current = null
+    }
+  }, [quickEditMode])
+
+  const handleDeleteInvitation = async (id: string) => {
     try {
-      const [invitationsList, analyticsData] = await Promise.all([
-        getAllInvitations(undefined, sortBy, sortOrder),
-        getInvitationAnalytics(),
-      ])
-      setInvitations(invitationsList)
-      setAnalytics(analyticsData)
+      const success = await deleteInvitation(id)
+      if (!success) {
+        throw new Error('Falha ao remover convite')
+      }
+
+      setInvitations((prev) => prev.filter((inv) => inv.id !== id))
+      setSelectedInvitation((prev) => (prev && prev.id === id ? null : prev))
+      setDeletePromptId(null)
+
+      void loadData({ showSpinner: false })
     } catch (error) {
-      console.error('Error loading data:', error)
-    } finally {
-      setIsLoading(false)
+      console.error('Error deleting invitation:', error)
+      showToast({ title: 'Erro ao excluir convite', type: 'error' })
     }
   }
 
-  const handleDeleteInvitation = async (id: string) => {
-    if (!confirm('Tem certeza que deseja excluir este convite?')) return
-
-    try {
-      await deleteInvitation(id)
-      loadData()
-    } catch (error) {
-      console.error('Error deleting invitation:', error)
-      alert('Erro ao excluir convite')
+  const requestDeleteInvitation = (id: string) => {
+    if (deletePromptId === id) {
+      if (deletePromptTimeout.current) {
+        clearTimeout(deletePromptTimeout.current)
+        deletePromptTimeout.current = null
+      }
+      void handleDeleteInvitation(id)
+      return
     }
+
+    if (deletePromptTimeout.current) {
+      clearTimeout(deletePromptTimeout.current)
+    }
+
+    setDeletePromptId(id)
+    deletePromptTimeout.current = setTimeout(() => {
+      setDeletePromptId(null)
+      deletePromptTimeout.current = null
+    }, 4000)
   }
 
   const handleExportCSV = async () => {
@@ -147,7 +311,7 @@ export default function AdminInvitationsPage() {
       document.body.removeChild(link)
     } catch (error) {
       console.error('Error exporting CSV:', error)
-      alert('Erro ao exportar CSV')
+      showToast({ title: 'Erro ao exportar CSV', type: 'error' })
     }
   }
 
@@ -155,10 +319,10 @@ export default function AdminInvitationsPage() {
     const url = `${window.location.origin}/convite/${code}`
     try {
       await navigator.clipboard.writeText(url)
-      alert('Link copiado para a área de transferência!')
+      showToast({ title: 'Link copiado!', message: 'Link copiado para a área de transferência', type: 'success' })
     } catch (error) {
       console.error('Error copying link:', error)
-      alert('Erro ao copiar link')
+      showToast({ title: 'Erro ao copiar link', type: 'error' })
     }
   }
 
@@ -181,7 +345,7 @@ export default function AdminInvitationsPage() {
       link.click()
     } catch (error) {
       console.error('Error generating QR code:', error)
-      alert('Erro ao gerar QR code')
+      showToast({ title: 'Erro ao gerar QR code', type: 'error' })
     }
   }
 
@@ -371,9 +535,18 @@ export default function AdminInvitationsPage() {
 
           <div className="flex gap-2">
             <Button
+              variant={quickEditMode ? 'wedding' : 'outline'}
+              size="sm"
+              onClick={() => setQuickEditMode((prev) => !prev)}
+              className="flex items-center gap-2"
+            >
+              <Zap className="w-4 h-4" />
+              {quickEditMode ? 'Sair do modo rápido' : 'Edição rápida'}
+            </Button>
+            <Button
               variant="outline"
               size="sm"
-              onClick={loadData}
+              onClick={() => void loadData()}
               className="flex items-center gap-2"
             >
               <RefreshCw className="w-4 h-4" />
@@ -443,45 +616,229 @@ export default function AdminInvitationsPage() {
                       </span>
                     </td>
 
-                    <td className="px-6 py-4">
-                      <div>
-                        <div className="font-semibold text-[#2C2C2C]">
-                          {invitation.guest_name}
+                    <td className="px-6 py-4 align-top">
+                      {quickEditMode ? (
+                        <div className="space-y-3">
+                          <InlineEditableText
+                            active={quickEditMode}
+                            value={invitation.guest_name}
+                            onSave={async (next) => {
+                              await handleInvitationQuickUpdate(invitation.id, { guest_name: next })
+                            }}
+                            placeholder="Nome do convidado"
+                            className="max-w-xs"
+                            displayClassName="font-semibold text-[#2C2C2C]"
+                            inputClassName="font-semibold text-[#2C2C2C]"
+                            maxLength={120}
+                          />
+
+                          <div className="flex flex-wrap items-center gap-2 text-xs text-[#4A4A4A]">
+                            <span className="font-semibold uppercase tracking-wide text-[11px] text-[#707070]">
+                              Acompanhante
+                            </span>
+                            <div className="flex items-center gap-1">
+                              <button
+                                type="button"
+                                onClick={async () => {
+                                  if (invitation.plus_one_allowed) return
+                                  try {
+                                    await handleInvitationQuickUpdate(
+                                      invitation.id,
+                                      { plus_one_allowed: true },
+                                      'plus_one_allowed'
+                                    )
+                                  } catch {
+                                    // handled via alert in handler
+                                  }
+                                }}
+                                className={`rounded-md border px-2 py-1 text-xs font-medium transition ${
+                                  invitation.plus_one_allowed
+                                    ? 'border-green-500 bg-green-50 text-green-700'
+                                    : 'border-gray-200 bg-white text-[#4A4A4A] hover:border-gray-300'
+                                }`}
+                                disabled={isFieldSaving(invitation.id, 'plus_one_allowed') || invitation.plus_one_allowed}
+                              >
+                                Sim
+                              </button>
+                              <button
+                                type="button"
+                                onClick={async () => {
+                                  if (!invitation.plus_one_allowed) return
+                                  try {
+                                    await handleInvitationQuickUpdate(
+                                      invitation.id,
+                                      { plus_one_allowed: false, plus_one_name: null },
+                                      'plus_one_allowed'
+                                    )
+                                  } catch {
+                                    // handled via alert in handler
+                                  }
+                                }}
+                                className={`rounded-md border px-2 py-1 text-xs font-medium transition ${
+                                  !invitation.plus_one_allowed
+                                    ? 'border-red-500 bg-red-50 text-red-700'
+                                    : 'border-gray-200 bg-white text-[#4A4A4A] hover:border-gray-300'
+                                }`}
+                                disabled={isFieldSaving(invitation.id, 'plus_one_allowed') || !invitation.plus_one_allowed}
+                              >
+                                Não
+                              </button>
+                            </div>
+                          </div>
+
+                          {invitation.plus_one_allowed && (
+                            <InlineEditableText
+                              active={quickEditMode}
+                              value={invitation.plus_one_name ?? ''}
+                              onSave={async (next) => {
+                                await handleInvitationQuickUpdate(invitation.id, {
+                                  plus_one_name: next ? next : null,
+                                })
+                              }}
+                              placeholder="Nome do acompanhante"
+                              className="max-w-xs"
+                              inputClassName="text-sm"
+                              emptyDisplay={
+                                <span className="text-sm text-[#A8A8A8]">Informe o nome do acompanhante</span>
+                              }
+                              maxLength={120}
+                            />
+                          )}
+
+                          <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+                            <InlineEditableText
+                              active={quickEditMode}
+                              value={invitation.table_number?.toString() ?? ''}
+                              onSave={async (next) => {
+                                const sanitized = next.trim()
+                                const parsed = sanitized === '' ? null : Number.parseInt(sanitized, 10)
+                                const tableNumber = parsed !== null && !Number.isNaN(parsed) ? parsed : null
+                                await handleInvitationQuickUpdate(invitation.id, { table_number: tableNumber })
+                              }}
+                              placeholder="Mesa"
+                              type="number"
+                              className="max-w-[140px]"
+                              inputClassName="text-sm"
+                              emptyDisplay={<span className="text-sm text-[#A8A8A8]">Sem mesa</span>}
+                            />
+                            <InlineEditableText
+                              active={quickEditMode}
+                              value={invitation.dietary_restrictions ?? ''}
+                              onSave={async (next) => {
+                                await handleInvitationQuickUpdate(invitation.id, {
+                                  dietary_restrictions: next ? next : null,
+                                })
+                              }}
+                              placeholder="Restrições alimentares"
+                              inputClassName="text-sm"
+                              emptyDisplay={<span className="text-sm text-[#A8A8A8]">Sem restrições</span>}
+                            />
+                          </div>
                         </div>
-                        {invitation.plus_one_allowed && (
-                          <div className="text-sm text-[#4A4A4A] flex items-center gap-1 mt-1">
-                            <UserPlus className="w-3 h-3" />
-                            {invitation.plus_one_name || 'Acompanhante permitido'}
-                          </div>
-                        )}
-                      </div>
+                      ) : (
+                        <div>
+                          <div className="font-semibold text-[#2C2C2C]">{invitation.guest_name}</div>
+                          {invitation.plus_one_allowed && (
+                            <div className="mt-1 flex items-center gap-1 text-sm text-[#4A4A4A]">
+                              <UserPlus className="w-3 h-3" />
+                              {invitation.plus_one_name || 'Acompanhante permitido'}
+                            </div>
+                          )}
+                          {invitation.table_number && (
+                            <div className="mt-1 text-sm text-[#4A4A4A]">
+                              Mesa{' '}
+                              <span className="font-semibold text-[#2C2C2C]">{invitation.table_number}</span>
+                            </div>
+                          )}
+                          {invitation.dietary_restrictions && (
+                            <div className="mt-1 text-xs text-[#4A4A4A]">
+                              {invitation.dietary_restrictions}
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </td>
 
-                    <td className="px-6 py-4">
-                      <div className="space-y-1">
-                        {invitation.guest_email && (
-                          <div className="flex items-center text-sm text-[#4A4A4A]">
-                            <Mail className="w-4 h-4 mr-2 text-[#A8A8A8]" />
-                            {invitation.guest_email}
-                          </div>
-                        )}
-                        {invitation.guest_phone && (
-                          <div className="flex items-center text-sm text-[#4A4A4A]">
-                            <Phone className="w-4 h-4 mr-2 text-[#A8A8A8]" />
-                            {invitation.guest_phone}
-                          </div>
-                        )}
-                      </div>
+                    <td className="px-6 py-4 align-top">
+                      {quickEditMode ? (
+                        <div className="space-y-2">
+                          <InlineEditableText
+                            active={quickEditMode}
+                            value={invitation.guest_email ?? ''}
+                            onSave={async (next) => {
+                              await handleInvitationQuickUpdate(invitation.id, {
+                                guest_email: next ? next : null,
+                              })
+                            }}
+                            placeholder="email@exemplo.com"
+                            type="email"
+                            className="max-w-xs"
+                            inputClassName="text-sm"
+                            emptyDisplay={<span className="text-sm text-[#A8A8A8]">Sem e-mail</span>}
+                          />
+                          <InlineEditableText
+                            active={quickEditMode}
+                            value={invitation.guest_phone ?? ''}
+                            onSave={async (next) => {
+                              await handleInvitationQuickUpdate(invitation.id, {
+                                guest_phone: next ? next : null,
+                              })
+                            }}
+                            placeholder="(11) 99999-9999"
+                            type="tel"
+                            className="max-w-xs"
+                            inputClassName="text-sm"
+                            emptyDisplay={<span className="text-sm text-[#A8A8A8]">Sem telefone</span>}
+                          />
+                        </div>
+                      ) : (
+                        <div className="space-y-1">
+                          {invitation.guest_email ? (
+                            <div className="flex items-center text-sm text-[#4A4A4A]">
+                              <Mail className="mr-2 h-4 w-4 text-[#A8A8A8]" />
+                              {invitation.guest_email}
+                            </div>
+                          ) : (
+                            <div className="text-xs text-[#A8A8A8]">Sem e-mail</div>
+                          )}
+                          {invitation.guest_phone ? (
+                            <div className="flex items-center text-sm text-[#4A4A4A]">
+                              <Phone className="mr-2 h-4 w-4 text-[#A8A8A8]" />
+                              {invitation.guest_phone}
+                            </div>
+                          ) : (
+                            <div className="text-xs text-[#A8A8A8]">Sem telefone</div>
+                          )}
+                        </div>
+                      )}
                     </td>
 
-                    <td className="px-6 py-4">
-                      {getRelationshipBadge(invitation.relationship_type)}
+                    <td className="px-6 py-4 align-top">
+                      <InlineEditableSelect
+                        active={quickEditMode}
+                        value={invitation.relationship_type}
+                        options={[
+                          { value: 'family', label: 'Família' },
+                          { value: 'friend', label: 'Amigo' },
+                          { value: 'colleague', label: 'Colega' },
+                          { value: 'other', label: 'Outro' },
+                        ]}
+                        onSave={async (next) => {
+                          await handleInvitationQuickUpdate(
+                            invitation.id,
+                            { relationship_type: next as Invitation['relationship_type'] }
+                          )
+                        }}
+                        placeholder="Selecione"
+                        className="max-w-[160px]"
+                        displayValue={getRelationshipBadge(invitation.relationship_type)}
+                      />
                     </td>
 
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 align-top">
                       <div className="flex items-center gap-3">
                         <div className="flex-1">
-                          <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div className="h-2 w-full rounded-full bg-gray-200">
                             <div
                               className={`h-2 rounded-full transition-all ${
                                 progress >= 75
@@ -500,17 +857,41 @@ export default function AdminInvitationsPage() {
                           {progress}%
                         </span>
                       </div>
-                      <div className="flex items-center gap-2 mt-2">
-                        {invitation.rsvp_completed && (
-                          <UserCheck className="w-4 h-4 text-green-500" aria-label="RSVP completo" />
-                        )}
-                        {invitation.gift_selected && (
-                          <Gift className="w-4 h-4 text-blue-500" aria-label="Presente selecionado" />
-                        )}
-                        {invitation.photos_uploaded && (
-                          <Camera className="w-4 h-4 text-gray-500" aria-label="Fotos enviadas" />
-                        )}
-                      </div>
+
+                      {quickEditMode ? (
+                        <div className="mt-3 space-y-2">
+                          {renderBooleanQuickToggle(
+                            invitation.id,
+                            'RSVP',
+                            'rsvp_completed',
+                            invitation.rsvp_completed
+                          )}
+                          {renderBooleanQuickToggle(
+                            invitation.id,
+                            'Presente',
+                            'gift_selected',
+                            invitation.gift_selected
+                          )}
+                          {renderBooleanQuickToggle(
+                            invitation.id,
+                            'Fotos',
+                            'photos_uploaded',
+                            invitation.photos_uploaded
+                          )}
+                        </div>
+                      ) : (
+                        <div className="mt-2 flex items-center gap-2">
+                          {invitation.rsvp_completed && (
+                            <UserCheck className="h-4 w-4 text-green-500" aria-label="RSVP completo" />
+                          )}
+                          {invitation.gift_selected && (
+                            <Gift className="h-4 w-4 text-blue-500" aria-label="Presente selecionado" />
+                          )}
+                          {invitation.photos_uploaded && (
+                            <Camera className="h-4 w-4 text-gray-500" aria-label="Fotos enviadas" />
+                          )}
+                        </div>
+                      )}
                     </td>
 
                     <td className="px-6 py-4">
@@ -554,6 +935,7 @@ export default function AdminInvitationsPage() {
                           }}
                           className="p-2"
                           title="Editar"
+                          disabled={quickEditMode}
                         >
                           <Edit2 className="w-4 h-4" />
                         </Button>
@@ -575,15 +957,22 @@ export default function AdminInvitationsPage() {
                         >
                           <QrCode className="w-4 h-4" />
                         </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => handleDeleteInvitation(invitation.id)}
-                          className="p-2 text-red-600 hover:text-red-800"
-                          title="Excluir"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                        <div className="relative">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => requestDeleteInvitation(invitation.id)}
+                            className="p-2 text-red-600 hover:text-red-800"
+                            title="Excluir"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                          {deletePromptId === invitation.id && (
+                            <div className="pointer-events-none absolute right-0 top-full mt-2 w-48 rounded-md border border-red-200 bg-white p-2 text-xs text-[#4A4A4A] shadow-lg">
+                              Clique novamente para excluir.
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </td>
                   </motion.tr>
@@ -610,9 +999,10 @@ export default function AdminInvitationsPage() {
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         onSuccess={() => {
-          loadData()
+          void loadData()
           setShowCreateModal(false)
         }}
+        showToast={showToast}
       />
 
       {/* Edit Invitation Modal */}
@@ -624,10 +1014,11 @@ export default function AdminInvitationsPage() {
           setSelectedInvitation(null)
         }}
         onSuccess={() => {
-          loadData()
+          void loadData()
           setShowEditModal(false)
           setSelectedInvitation(null)
         }}
+        showToast={showToast}
       />
 
       {/* Detail View Modal */}
@@ -648,7 +1039,11 @@ export default function AdminInvitationsPage() {
           setShowDetailModal(false)
           setSelectedInvitation(null)
         }}
+        showToast={showToast}
       />
+
+      {/* Toast Notifications */}
+      <ToastRenderer />
     </div>
   )
 }
@@ -658,10 +1053,12 @@ function CreateInvitationModal({
   isOpen,
   onClose,
   onSuccess,
+  showToast,
 }: {
   isOpen: boolean
   onClose: () => void
   onSuccess: () => void
+  showToast: (toast: { title: string; message?: string; type?: 'success' | 'error' | 'info' }) => void
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState({
@@ -717,7 +1114,7 @@ function CreateInvitationModal({
         dietary_restrictions: formData.dietary_restrictions || undefined,
       })
 
-      alert('Convite criado com sucesso!')
+      showToast({ title: 'Convite criado!', message: 'Convite criado com sucesso', type: 'success' })
       onSuccess()
 
       // Reset form
@@ -734,7 +1131,7 @@ function CreateInvitationModal({
       })
     } catch (error) {
       console.error('Error creating invitation:', error)
-      alert('Erro ao criar convite. Por favor, tente novamente.')
+      showToast({ title: 'Erro ao criar convite', message: 'Por favor, tente novamente', type: 'error' })
     } finally {
       setIsSubmitting(false)
     }
@@ -984,11 +1381,13 @@ function EditInvitationModal({
   invitation,
   onClose,
   onSuccess,
+  showToast,
 }: {
   isOpen: boolean
   invitation: Invitation | null
   onClose: () => void
   onSuccess: () => void
+  showToast: (toast: { title: string; message?: string; type?: 'success' | 'error' | 'info' }) => void
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState({
@@ -1039,11 +1438,11 @@ function EditInvitationModal({
         dietary_restrictions: formData.dietary_restrictions || undefined,
       })
 
-      alert('Convite atualizado com sucesso!')
+      showToast({ title: 'Convite atualizado!', message: 'Convite atualizado com sucesso', type: 'success' })
       onSuccess()
     } catch (error) {
       console.error('Error updating invitation:', error)
-      alert('Erro ao atualizar convite. Por favor, tente novamente.')
+      showToast({ title: 'Erro ao atualizar convite', message: 'Por favor, tente novamente', type: 'error' })
     } finally {
       setIsSubmitting(false)
     }
@@ -1285,14 +1684,18 @@ function DetailViewModal({
   onClose,
   onEdit,
   onDelete,
+  showToast,
 }: {
   isOpen: boolean
   invitation: Invitation | null
   onClose: () => void
   onEdit: (invitation: Invitation) => void
-  onDelete: (id: string) => void
+  onDelete: (id: string) => Promise<void> | void
+  showToast: (toast: { title: string; message?: string; type?: 'success' | 'error' | 'info' }) => void
 }) {
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('')
+  const [deletePromptVisible, setDeletePromptVisible] = useState(false)
+  const deletePromptTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     if (invitation && isOpen) {
@@ -1309,14 +1712,40 @@ function DetailViewModal({
     }
   }, [invitation, isOpen])
 
+  useEffect(() => {
+    setDeletePromptVisible(false)
+    if (deletePromptTimeout.current) {
+      clearTimeout(deletePromptTimeout.current)
+      deletePromptTimeout.current = null
+    }
+  }, [invitation?.id])
+
+  useEffect(() => {
+    if (!isOpen) {
+      setDeletePromptVisible(false)
+      if (deletePromptTimeout.current) {
+        clearTimeout(deletePromptTimeout.current)
+        deletePromptTimeout.current = null
+      }
+    }
+
+    return () => {
+      if (deletePromptTimeout.current) {
+        clearTimeout(deletePromptTimeout.current)
+        deletePromptTimeout.current = null
+      }
+    }
+  }, [isOpen])
+
   const handleCopyLink = async () => {
     if (!invitation) return
     const url = `${window.location.origin}/convite/${invitation.code}`
     try {
       await navigator.clipboard.writeText(url)
-      alert('Link copiado!')
+      showToast({ title: 'Link copiado!', type: 'success' })
     } catch (error) {
       console.error('Error copying link:', error)
+      showToast({ title: 'Erro ao copiar link', type: 'error' })
     }
   }
 
@@ -1633,12 +2062,26 @@ function DetailViewModal({
               </Button>
               <Button
                 variant="outline"
-                onClick={() => {
-                  if (
-                    confirm('Tem certeza que deseja excluir este convite? Esta ação não pode ser desfeita.')
-                  ) {
-                    onDelete(invitation.id)
+                onClick={async () => {
+                  if (deletePromptVisible) {
+                    if (deletePromptTimeout.current) {
+                      clearTimeout(deletePromptTimeout.current)
+                      deletePromptTimeout.current = null
+                    }
+                    setDeletePromptVisible(false)
+                    await onDelete(invitation.id)
+                    return
                   }
+
+                  if (deletePromptTimeout.current) {
+                    clearTimeout(deletePromptTimeout.current)
+                  }
+
+                  setDeletePromptVisible(true)
+                  deletePromptTimeout.current = setTimeout(() => {
+                    setDeletePromptVisible(false)
+                    deletePromptTimeout.current = null
+                  }, 4000)
                 }}
                 size="sm"
                 className="text-red-600 hover:text-red-800 border-red-200 hover:border-red-300"
@@ -1646,6 +2089,11 @@ function DetailViewModal({
                 <Trash2 className="w-4 h-4 mr-2" />
                 Excluir
               </Button>
+              {deletePromptVisible && (
+                <div className="w-full text-right text-xs text-red-600">
+                  Clique novamente para excluir.
+                </div>
+              )}
             </div>
           </div>
         </motion.div>
