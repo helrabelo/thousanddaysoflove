@@ -49,12 +49,24 @@ export default function PhotoUploadSection({ invitationCode }: PhotoUploadSectio
           body: formData,
         });
 
+        const data = await response.json();
+
         if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.error || 'Erro ao fazer upload');
+          throw new Error(data.error || 'Erro ao fazer upload');
         }
 
-        return response.json();
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(
+            new CustomEvent('media-uploaded', {
+              detail: {
+                photo: data.photo,
+                timelineEventId: data.photo?.timeline_event_id ?? null,
+              },
+            })
+          );
+        }
+
+        return data;
       });
 
       await Promise.all(uploadPromises);

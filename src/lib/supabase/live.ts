@@ -44,7 +44,11 @@ export function subscribeToNewPosts(
         filter: 'status=eq.approved'
       },
       (payload) => {
-        callback(payload.new as GuestPost)
+        const newPost = payload.new as GuestPost & { timeline_event_id?: string | null }
+        callback({
+          ...newPost,
+          timeline_event_id: newPost.timeline_event_id ?? null
+        })
       }
     )
     .on(
@@ -56,7 +60,11 @@ export function subscribeToNewPosts(
         filter: 'status=eq.approved'
       },
       (payload) => {
-        callback(payload.new as GuestPost)
+        const updatedPost = payload.new as GuestPost & { timeline_event_id?: string | null }
+        callback({
+          ...updatedPost,
+          timeline_event_id: updatedPost.timeline_event_id ?? null
+        })
       }
     )
     // Guest photos (uploaded via /dia-1000/upload)
@@ -79,6 +87,7 @@ export function subscribeToNewPosts(
           content: photo.caption || '',
           post_type: photo.is_video ? 'video' : 'image',
           media_urls: [publicUrl],
+          timeline_event_id: photo.timeline_event_id ?? null,
           status: 'approved',
           likes_count: 0,
           comments_count: 0,
@@ -107,6 +116,7 @@ export function subscribeToNewPosts(
           content: photo.caption || '',
           post_type: photo.is_video ? 'video' : 'image',
           media_urls: [publicUrl],
+          timeline_event_id: photo.timeline_event_id ?? null,
           status: 'approved',
           likes_count: 0,
           comments_count: 0,
@@ -618,6 +628,7 @@ export async function getLivePosts(
       content: photo.caption || '',
       post_type: photo.is_video ? 'video' : 'image' as const,
       media_urls: [publicUrl],
+      timeline_event_id: photo.timeline_event_id ?? null,
       status: 'approved' as const,
       likes_count: 0,
       comments_count: 0,
@@ -629,7 +640,12 @@ export async function getLivePosts(
   console.log('🔍 [getLivePosts] Transformed photos:', transformedPhotos.length)
 
   // Merge both arrays and sort by created_at descending
-  const allPosts = [...(postsResult.data || []), ...transformedPhotos]
+  const transformedGuestPosts: GuestPost[] = (postsResult.data || []).map((post: any) => ({
+    ...post,
+    timeline_event_id: post.timeline_event_id ?? null,
+  }))
+
+  const allPosts = [...transformedGuestPosts, ...transformedPhotos]
   console.log('🔍 [getLivePosts] Merged posts before sort:', allPosts.length)
 
   allPosts.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())

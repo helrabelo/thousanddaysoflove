@@ -1,18 +1,40 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
-import { Sparkles, Radio, Volume2, VolumeX } from 'lucide-react'
-import { LiveStats } from '@/components/live/LiveStats'
+import { Radio, Volume2, VolumeX } from 'lucide-react'
 import { PinnedMomentsSection } from '@/components/live/PinnedMomentsSection'
 import { LivePostStream } from '@/components/live/LivePostStream'
+import { LivingPhotoMosaicHeader } from '@/components/live/LivingPhotoMosaicHeader'
 import { getSoundManager } from '@/lib/utils/soundManager'
+import useTimelineState from '@/hooks/useTimelineState'
+import { LiveTimelineSidebar } from '@/components/live/LiveTimelineSidebar'
 
-export function LiveFeedPage() {
-  const [connectionStatus, setConnectionStatus] = useState<'live' | 'polling'>('live')
+interface LiveFeedPageProps {
+  variant?: 'default' | 'tv'
+}
+
+export function LiveFeedPage({ variant = 'default' }: LiveFeedPageProps) {
+  const connectionStatus: 'live' | 'polling' = 'live'
   const [isMuted, setIsMuted] = useState(true) // Start muted by default
   const [feedRefreshKey, setFeedRefreshKey] = useState(0)
   const shouldReduceMotion = useReducedMotion()
+  const isTV = variant === 'tv'
+  const {
+    data: timelineData,
+    events: timelineEvents,
+    isLoading: isTimelineLoading,
+    error: timelineError,
+    refresh: refreshTimeline,
+    lastUpdatedAt: timelineUpdatedAt,
+  } = useTimelineState({ updateIntervalMs: 20_000 })
+
+  const timelineEventsById = useMemo(() => {
+    return timelineEvents.reduce<Record<string, typeof timelineEvents[number]>>((acc, event) => {
+      acc[event._id] = event
+      return acc
+    }, {})
+  }, [timelineEvents])
 
   useEffect(() => {
     // Initialize sound manager
@@ -55,124 +77,19 @@ export function LiveFeedPage() {
 
   return (
     <div className="min-h-screen">
-      {/* Hero section with monochromatic elegance */}
-      <div className="bg-[#2C2C2C] text-[#F8F6F3] py-12 px-6 relative overflow-hidden border-b-2 border-[#A8A8A8]">
-
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center"
-          >
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <motion.div
-                animate={shouldReduceMotion ? {} : {
-                  scale: [1, 1.2, 1],
-                  rotate: [0, 360]
-                }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: 'easeInOut'
-                }}
-              >
-                <Sparkles className="w-8 h-8" />
-              </motion.div>
-              <motion.h1
-                className="text-4xl md:text-5xl font-playfair font-bold"
-                initial={{ scale: 0.95 }}
-                animate={{ scale: 1 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-              >
-                Hel & Ylana
-              </motion.h1>
-              <motion.div
-                animate={shouldReduceMotion ? {} : {
-                  scale: [1, 1.2, 1],
-                  rotate: [0, -360]
-                }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                  delay: 0.5
-                }}
-              >
-                <Sparkles className="w-8 h-8" />
-              </motion.div>
-            </div>
-
-            <motion.p
-              className="text-xl md:text-2xl font-crimson mb-6"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              O dia 1000
-            </motion.p>
-
-            {/* Connection status indicator with elegant pulse */}
-            <motion.div
-              className="inline-flex items-center gap-2 bg-[#F8F6F3]/10 backdrop-blur-sm px-4 py-2 rounded-full border border-[#A8A8A8]/30"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.4, type: 'spring', stiffness: 300 }}
-            >
-              <motion.div
-                animate={shouldReduceMotion ? {} : {
-                  scale: [1, 1.5, 1],
-                  opacity: [1, 0.5, 1]
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: 'easeInOut'
-                }}
-              >
-                <div className={`w-2 h-2 rounded-full ${connectionStatus === 'live' ? 'bg-[#A8A8A8]' : 'bg-[#E8E6E3]'
-                  }`} />
-              </motion.div>
-              <span className="text-sm font-medium font-crimson italic">
-                {connectionStatus === 'live' ? 'Ao Vivo' : 'Atualizando...'}
-              </span>
-            </motion.div>
-
-            {/* Sound hint for first-time visitors */}
-            {isMuted && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1 }}
-                className="mt-4 text-sm text-[#E8E6E3] font-crimson italic"
-              >
-                <motion.span
-                  animate={shouldReduceMotion ? {} : {
-                    opacity: [1, 0.6, 1]
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity
-                  }}
-                >
-                  💡 Toque no ícone de som para ativar efeitos sonoros
-                </motion.span>
-              </motion.div>
-            )}
-          </motion.div>
-        </div>
-      </div>
+      <LivingPhotoMosaicHeader connectionStatus={connectionStatus} isMuted={isMuted} variant={variant} />
 
       {/* Main content */}
-      <div className="max-w-7xl mx-auto px-4 lg:px-6 py-8">
-        {/* Main grid - Live feed takes 9/12, sidebar takes 3/12 */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* LEFT: LIVE FEED - 9 columns (75% width) */}
-          <div className="lg:col-span-9 space-y-6">
+      <div className={`max-w-7xl mx-auto ${isTV ? 'px-6 py-10' : 'px-4 lg:px-6 py-8'}`}>
+        {/* Main grid */}
+        <div className={isTV ? 'grid grid-cols-1 xl:grid-cols-[3fr_2fr] gap-8' : 'grid grid-cols-1 lg:grid-cols-12 gap-6'}>
+          {/* LEFT: LIVE FEED */}
+          <div className={isTV ? 'space-y-8 xl:pr-6' : 'lg:col-span-9 space-y-6'}>
             {/* Pinned special moments */}
             <PinnedMomentsSection />
 
             {/* Live Feed Section */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-[#E8E6E3] relative">
+            <div className={`bg-white rounded-2xl border border-[#E8E6E3] relative ${isTV ? 'p-7 shadow-lg' : 'p-6 shadow-sm'}`}>
               <div className="flex items-center gap-3 mb-6">
                 <div className="relative">
                   <Radio className="w-6 h-6 text-[#2C2C2C]" />
@@ -198,7 +115,9 @@ export function LiveFeedPage() {
               {/* Floating sound toggle button */}
               <motion.button
                 onClick={toggleSound}
-                className="absolute top-4 right-4 z-10 p-3 rounded-full bg-[#F8F6F3]/20 backdrop-blur-sm hover:bg-[#F8F6F3]/30 transition-all duration-300 border border-[#A8A8A8]/30 !w-fit"
+                className={`absolute top-4 right-4 z-10 rounded-full bg-[#F8F6F3]/20 backdrop-blur-sm border border-[#A8A8A8]/30 !w-fit transition-all duration-300 ${
+                  isTV ? 'p-3.5 hover:bg-[#F8F6F3]/40' : 'p-3 hover:bg-[#F8F6F3]/30'
+                }`}
                 whileHover={shouldReduceMotion ? {} : { scale: 1.05, rotate: 5 }}
                 whileTap={{ scale: 0.95 }}
                 title={isMuted ? 'Ativar sons' : 'Silenciar sons'}
@@ -220,20 +139,20 @@ export function LiveFeedPage() {
                   )}
                 </motion.div>
               </motion.button>
-              <LivePostStream key={feedRefreshKey} />
+              <LivePostStream key={feedRefreshKey} timelineEventsById={timelineEventsById} />
             </div>
           </div>
 
-          {/* RIGHT: COMPACT SIDEBAR - 3 columns (25% width) */}
-          <div className="lg:col-span-3 space-y-6">
-            {/* Compact stats */}
-            <div className="bg-white rounded-2xl p-4 shadow-sm border border-[#E8E6E3]">
-              <h3 className="text-lg font-playfair font-bold text-[#2C2C2C] mb-4">
-                Estatísticas
-              </h3>
-              <LiveStats compact />
-            </div>
-
+          {/* RIGHT: TIMELINE SIDEBAR */}
+          <div className={isTV ? 'space-y-8 xl:pl-2' : 'lg:col-span-3 space-y-6'}>
+            <LiveTimelineSidebar
+              data={timelineData}
+              isLoading={isTimelineLoading}
+              error={timelineError}
+              refresh={refreshTimeline}
+              lastUpdatedAt={timelineUpdatedAt}
+              variant={variant}
+            />
           </div>
         </div>
       </div>

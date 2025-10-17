@@ -41,6 +41,7 @@ interface PostCardProps {
   currentGuestName?: string;
   showComments?: boolean;
   onCommentAdded?: () => void;
+  timelineEventTitle?: string;
 }
 
 // Reaction icons mapping
@@ -72,6 +73,7 @@ export default function PostCard({
   post,
   currentGuestName,
   showComments = true,
+  timelineEventTitle,
 }: PostCardProps) {
   const [reactions, setReactions] = useState<PostReaction[]>([]);
   const [comments, setComments] = useState<PostComment[]>([]);
@@ -201,6 +203,11 @@ export default function PostCard({
           <p className="text-sm text-[#A8A8A8]" title={new Date(post.created_at).toLocaleString('pt-BR')}>
             {timeAgo}
           </p>
+          {timelineEventTitle && (
+            <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-[#F8F6F3] px-3 py-1 text-[11px] uppercase tracking-[0.25em] text-[#4A4A4A]">
+              ✨ Momento: {timelineEventTitle}
+            </span>
+          )}
         </div>
 
         {/* Post Type Badge */}

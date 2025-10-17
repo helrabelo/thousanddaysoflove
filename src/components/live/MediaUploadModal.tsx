@@ -32,13 +32,17 @@ interface MediaUploadModalProps {
   guestName: string
   onClose: () => void
   onUploadComplete?: () => void
+  timelineEventId?: string
+  timelineEventTitle?: string
 }
 
 export function MediaUploadModal({
   isOpen,
   guestName: _guestName, // eslint-disable-line @typescript-eslint/no-unused-vars -- Passed from parent but not used in this component
   onClose,
-  onUploadComplete
+  onUploadComplete,
+  timelineEventId,
+  timelineEventTitle
 }: MediaUploadModalProps) {
   const shouldReduceMotion = useReducedMotion()
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -149,6 +153,9 @@ export function MediaUploadModal({
       if (caption) {
         formData.append('caption', caption)
       }
+      if (timelineEventId) {
+        formData.append('timeline_event_id', timelineEventId)
+      }
 
       const response = await fetch('/api/photos/upload', {
         method: 'POST',
@@ -170,6 +177,17 @@ export function MediaUploadModal({
             : f
         )
       )
+
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(
+          new CustomEvent('media-uploaded', {
+            detail: {
+              photo: data.photo,
+              timelineEventId: data.photo?.timeline_event_id ?? null,
+            },
+          })
+        )
+      }
     } catch (error) {
       console.error('Upload error:', error)
       setFiles((prev) =>
@@ -277,6 +295,17 @@ export function MediaUploadModal({
 
               {/* Content - Scrollable with mobile padding */}
               <div className="p-4 sm:p-6 overflow-y-auto max-h-[calc(95vh-140px)] sm:max-h-[calc(90vh-140px)] space-y-4">
+                {timelineEventId && (
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 bg-white rounded-lg border border-[#E8E6E3] px-4 py-3">
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.3em] text-[#A8A8A8]">Momento selecionado</p>
+                      <p className="text-sm sm:text-base font-playfair text-[#2C2C2C]">{timelineEventTitle ?? 'Dia 1000'}</p>
+                    </div>
+                    <span className="inline-flex items-center gap-2 text-xs sm:text-sm text-[#4A4A4A]">
+                      📸 Envie fotos desse trecho
+                    </span>
+                  </div>
+                )}
                 {/* Success State */}
                 {allSuccess ? (
                   <motion.div

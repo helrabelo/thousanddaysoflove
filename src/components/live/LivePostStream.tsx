@@ -4,14 +4,18 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { ArrowUp, Loader2, Sparkles as SparklesIcon, MessageSquare } from 'lucide-react'
 import { subscribeToNewPosts, getLivePosts } from '@/lib/supabase/live'
-import type { GuestPost } from '@/types/wedding'
+import type { GuestPost, WeddingTimelineEvent } from '@/types/wedding'
 import { Confetti, Sparkles } from '@/components/ui/Confetti'
 import { isMilestone, getMilestoneMessage } from '@/lib/utils/animations'
 import { slideInVariants, tapScaleVariants } from '@/lib/utils/animations'
 import { playNewPostSound, playMilestoneSound } from '@/lib/utils/soundManager'
 import PostCard from '@/components/messages/PostCard'
 
-export function LivePostStream() {
+interface LivePostStreamProps {
+  timelineEventsById?: Record<string, WeddingTimelineEvent>
+}
+
+export function LivePostStream({ timelineEventsById }: LivePostStreamProps) {
   const [posts, setPosts] = useState<GuestPost[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [hasNewPosts, setHasNewPosts] = useState(false)
@@ -302,31 +306,38 @@ export function LivePostStream() {
         }}
       >
         <AnimatePresence mode="popLayout">
-          {posts.map((post, index) => (
-            <motion.div
-              key={post.id}
-              variants={slideInVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              transition={{ delay: index * 0.03 }}
-              className="relative"
-            >
-              {/* Sparkle effect for new posts */}
-              {post.id === newPostId && <Sparkles trigger={true} />}
+          {posts.map((post, index) => {
+            const timelineEventTitle = post.timeline_event_id
+              ? timelineEventsById?.[post.timeline_event_id]?.title
+              : undefined
 
-              {/* Use full-featured PostCard with comments support */}
-              <PostCard
-                post={post}
-                currentGuestName={guestName || undefined}
-                showComments={true}
-                onCommentAdded={() => {
-                  // Refresh post data to get updated comment count
-                  loadInitialPosts()
-                }}
-              />
-            </motion.div>
-          ))}
+            return (
+              <motion.div
+                key={post.id}
+                variants={slideInVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                transition={{ delay: index * 0.03 }}
+                className="relative"
+              >
+                {/* Sparkle effect for new posts */}
+                {post.id === newPostId && <Sparkles trigger={true} />}
+
+                {/* Use full-featured PostCard with comments support */}
+                <PostCard
+                  post={post}
+                  currentGuestName={guestName || undefined}
+                  showComments={true}
+                  onCommentAdded={() => {
+                    // Refresh post data to get updated comment count
+                    loadInitialPosts()
+                  }}
+                  timelineEventTitle={timelineEventTitle}
+                />
+              </motion.div>
+            )
+          })}
         </AnimatePresence>
       </div>
     </div>

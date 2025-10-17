@@ -4,8 +4,8 @@
  */
 
 import { createServerClient } from '@/lib/supabase/server'
-import { getPublicUrl } from '@/lib/supabase/storage-server'
-import { MediaItem } from '@/types/wedding'
+import { createClient as createBrowserClient } from '@/lib/supabase/client'
+import { MediaItem, TimelineEventPhoto } from '@/types/wedding'
 
 export interface GuestPhoto {
   id: string
@@ -23,7 +23,14 @@ export interface GuestPhoto {
   is_video: boolean
   moderation_status: 'pending' | 'approved' | 'rejected'
   uploaded_at: string
+  timeline_event_id: string | null
   guest?: { name: string }
+}
+
+export const GUEST_PHOTO_BUCKET = 'wedding-photos'
+
+function getSupabaseClient() {
+  return typeof window === 'undefined' ? createServerClient() : createBrowserClient()
 }
 
 /**
@@ -40,7 +47,7 @@ export class SupabaseGalleryService {
     media_types?: ('photo' | 'video')[]
   }): Promise<MediaItem[]> {
     try {
-      const supabase = createServerClient()
+      const supabase = getSupabaseClient()
 
       let query = supabase
         .from('guest_photos')
@@ -69,7 +76,7 @@ export class SupabaseGalleryService {
 
       // Convert to MediaItem format
       return (photos || []).map((photo) =>
-        guestPhotoToMediaItem(photo as GuestPhoto)
+        guestPhotoToMediaItem(photo as GuestPhoto, supabase)
       )
     } catch (error) {
       console.error('Error in getApprovedGuestPhotos:', error)
@@ -116,7 +123,7 @@ export class SupabaseGalleryService {
     }
   }> {
     try {
-      const supabase = createServerClient()
+      const supabase = getSupabaseClient()
 
       const { data: allPhotos } = await supabase
         .from('guest_photos')
@@ -149,14 +156,91 @@ export class SupabaseGalleryService {
       }
     }
   }
+
+  /**
+   * Get approved guest photos grouped by timeline event
+   */
+  static async getApprovedPhotosByTimelineEvent(
+    timelineEventIds: string[]
+  ): Promise<Record<string, TimelineEventPhoto[]>> {
+    if (timelineEventIds.length === 0) {
+      return {}
+    }
+
+    try {
+      const supabase = getSupabaseClient()
+
+      const { data, error } = await supabase
+        .from('guest_photos')
+        .select(
+          `id, guest_id, guest_name, upload_phase, storage_path, storage_bucket, file_size_bytes, mime_type, width, height, is_video, uploaded_at, timeline_event_id`
+        )
+        .eq('moderation_status', 'approved')
+        .eq('is_deleted', false)
+        .in('timeline_event_id', timelineEventIds)
+        .order('uploaded_at', { ascending: false })
+
+      if (error) {
+        console.error('Error fetching event guest photos:', error)
+        return {}
+      }
+
+      const grouped: Record<string, TimelineEventPhoto[]> = {}
+
+      for (const eventId of timelineEventIds) {
+        grouped[eventId] = []
+      }
+
+      for (const row of data ?? []) {
+        if (!row.timeline_event_id) {
+          continue
+        }
+
+        const { data: urlData } = supabase.storage
+          .from(row.storage_bucket || GUEST_PHOTO_BUCKET)
+          .getPublicUrl(row.storage_path)
+
+        const publicUrl = urlData.publicUrl
+
+        const photo: TimelineEventPhoto = {
+          id: row.id as string,
+          timelineEventId: row.timeline_event_id,
+          publicUrl,
+          storagePath: row.storage_path,
+          isVideo: Boolean(row.is_video),
+          guestName: row.guest_name as string,
+          uploadedAt: row.uploaded_at as string,
+          uploadPhase: row.upload_phase as TimelineEventPhoto['uploadPhase'],
+          width: row.width ?? null,
+          height: row.height ?? null,
+        }
+
+        if (!grouped[row.timeline_event_id]) {
+          grouped[row.timeline_event_id] = []
+        }
+
+        grouped[row.timeline_event_id].push(photo)
+      }
+
+      return grouped
+    } catch (error) {
+      console.error('Error in getApprovedPhotosByTimelineEvent:', error)
+      return {}
+    }
+  }
 }
 
 /**
  * Helper: Convert GuestPhoto to MediaItem format
  * Adds custom fields for guest attribution and phase
  */
-export function guestPhotoToMediaItem(photo: GuestPhoto): MediaItem {
-  const publicUrl = getPublicUrl(photo.storage_path, photo.storage_bucket)
+export function guestPhotoToMediaItem(
+  photo: GuestPhoto,
+  supabase = getSupabaseClient()
+): MediaItem {
+  const bucket = photo.storage_bucket || GUEST_PHOTO_BUCKET
+  const { data } = supabase.storage.from(bucket).getPublicUrl(photo.storage_path)
+  const publicUrl = data.publicUrl
 
   // Calculate aspect ratio if dimensions available
   const aspectRatio =

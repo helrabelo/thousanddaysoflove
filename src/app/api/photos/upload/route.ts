@@ -16,6 +16,7 @@ import {
   type StorageResult,
 } from '@/lib/supabase/storage-server'
 import { createAdminClient } from '@/lib/supabase/server'
+import { writeClient } from '@/sanity/lib/client'
 
 export const runtime = 'nodejs' // Need Node runtime for file handling
 export const maxDuration = 60 // 1 minute timeout for large uploads
@@ -33,6 +34,7 @@ interface SuccessResponse {
     is_video: boolean
     moderation_status: string
     auto_approved: boolean
+    timeline_event_id: string | null
   }
   message: string
 }
@@ -94,6 +96,10 @@ export async function POST(request: NextRequest): Promise<NextResponse<ErrorResp
     const phase = formData.get('phase') as string | null
     const caption = formData.get('caption') as string | null
     const title = formData.get('title') as string | null
+    const timelineEventIdRaw = formData.get('timeline_event_id')
+    const timelineEventId = typeof timelineEventIdRaw === 'string' && timelineEventIdRaw.trim().length > 0
+      ? timelineEventIdRaw.trim()
+      : null
 
     if (!file || !(file instanceof File)) {
       return NextResponse.json(
@@ -151,6 +157,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ErrorResp
         is_video: storageResult.is_video,
         video_duration_seconds: storageResult.video_duration_seconds || null,
         moderation_status: moderationStatus,
+        timeline_event_id: timelineEventId,
       })
       .select()
       .single()
@@ -165,6 +172,14 @@ export async function POST(request: NextRequest): Promise<NextResponse<ErrorResp
         { error: 'Erro ao salvar foto no banco de dados' },
         { status: 500 }
       )
+    }
+
+    if (timelineEventId) {
+      try {
+        await writeClient.patch(timelineEventId).inc({ guestPhotosCount: 1 }).commit()
+      } catch (sanityError) {
+        console.error('Failed to increment timeline guest photo count:', sanityError)
+      }
     }
 
     // Update session activity (uploads_count might not exist in older sessions)
@@ -187,6 +202,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ErrorResp
         phase: uploadPhase,
         file_size: storageResult.file_size_bytes,
         auto_approved: moderationStatus === 'approved',
+        timeline_event_id: timelineEventId,
       },
       is_public: moderationStatus === 'approved', // Show immediately if auto-approved
     })
@@ -205,6 +221,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ErrorResp
           is_video: storageResult.is_video,
           moderation_status: photo.moderation_status || 'pending',
           auto_approved: moderationStatus === 'approved',
+          timeline_event_id: timelineEventId,
         },
         message: responseMessage,
       },
