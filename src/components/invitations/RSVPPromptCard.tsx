@@ -170,7 +170,7 @@ export default function RSVPPromptCard({ invitation }: RSVPPromptCardProps) {
             <div className="bg-gradient-to-r from-[#4A7C59] to-[#5A8C69] px-6 md:px-8 py-6 relative">
               <button
                 onClick={handleDismiss}
-                className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 transition-colors text-white"
+                className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 transition-colors text-white !w-fit"
                 aria-label="Fechar"
               >
                 <X className="w-5 h-5" />
