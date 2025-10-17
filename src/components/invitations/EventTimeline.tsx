@@ -1,60 +1,98 @@
-'use client';
+'use client'
 
-import { motion } from 'framer-motion';
-import { Clock, Users, Heart, Camera, Music, Utensils } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react'
+import { format } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
+import { motion } from 'framer-motion'
+import {
+  Clock,
+  Users,
+  Heart,
+  Camera,
+  Music,
+  Utensils,
+  Sparkles,
+  PartyPopper,
+  Cake,
+  LucideIcon,
+} from 'lucide-react'
+import { fetchTimelineEvents } from '@/lib/sanity/timeline'
+import type { WeddingTimelineEvent } from '@/types/wedding'
 
-interface TimelineEvent {
-  time: string;
-  title: string;
-  description: string;
-  icon: React.ComponentType<{ className?: string }>;
-  color: string;
-  duration?: string;
+interface TimelineEntry {
+  id: string
+  time: string
+  title: string
+  description: string
+  icon: LucideIcon
+  colorGradient: string
+  durationLabel?: string
+  location?: string
+}
+
+const ICON_MAP: Record<string, LucideIcon> = {
+  Users,
+  Heart,
+  Camera,
+  Music,
+  Utensils,
+  Sparkles,
+  PartyPopper,
+  Cake,
+  Clock,
 }
 
 export default function EventTimeline() {
-  const events: TimelineEvent[] = [
-    {
-      time: '10:45',
-      title: 'Chegada dos Convidados',
-      description: 'Recepção com welcome drink e música ambiente',
-      icon: Users,
-      color: 'from-[#4A7C59] to-[#5A8C69]',
-      duration: '45 min',
-    },
-    {
-      time: '11:30',
-      title: 'Cerimônia',
-      description: 'Momento especial onde celebramos 1000 dias de amor',
-      icon: Heart,
-      color: 'from-[#D4A574] to-[#C19A6B]',
-      duration: '30 min',
-    },
-    {
-      time: '12:00',
-      title: 'Sessão de Fotos',
-      description: 'Registre este momento especial conosco!',
-      icon: Camera,
-      color: 'from-[#8B7355] to-[#A0826D]',
-      duration: '30 min',
-    },
-    {
-      time: '12:30',
-      title: 'Almoço',
-      description: 'Buffet completo com opções deliciosas',
-      icon: Utensils,
-      color: 'from-[#4A7C59] to-[#5A8C69]',
-      duration: '90 min',
-    },
-    {
-      time: '14:00',
-      title: 'Celebração',
-      description: 'Música, dança e muita alegria!',
-      icon: Music,
-      color: 'from-[#D4A574] to-[#C19A6B]',
-      duration: '3 horas',
-    },
-  ];
+  const [events, setEvents] = useState<WeddingTimelineEvent[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    let active = true
+
+    async function loadEvents() {
+      try {
+        const data = await fetchTimelineEvents()
+        if (!active) return
+        setEvents(data)
+      } catch (error) {
+        console.error('[EventTimeline] Failed to fetch timeline events', error)
+      } finally {
+        if (active) {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    void loadEvents()
+
+    return () => {
+      active = false
+    }
+  }, [])
+
+  const timelineEntries = useMemo<TimelineEntry[]>(() => {
+    return events.map((event) => {
+      const startLabel = event.startTime
+        ? format(new Date(event.startTime), 'HH:mm', { locale: ptBR })
+        : ''
+      const durationLabel = Number.isFinite(event.estimatedDuration) && event.estimatedDuration > 0
+        ? `${event.estimatedDuration} min`
+        : undefined
+
+      const icon = ICON_MAP[event.icon] ?? Clock
+
+      return {
+        id: event._id,
+        time: startLabel,
+        title: event.title,
+        description: event.description,
+        icon,
+        colorGradient: event.colorGradient || 'from-[#4A7C59] to-[#5A8C69]',
+        durationLabel,
+        location: event.location,
+      }
+    })
+  }, [events])
 
   return (
     <div className="relative">
@@ -63,12 +101,24 @@ export default function EventTimeline() {
 
       {/* Timeline Events */}
       <div className="space-y-12 md:space-y-16">
-        {events.map((event, index) => {
+        {isLoading && (
+          <div className="text-center text-[#A8A8A8] font-crimson italic">
+            Carregando programação...
+          </div>
+        )}
+
+        {!isLoading && timelineEntries.length === 0 && (
+          <div className="text-center text-[#A8A8A8] font-crimson italic">
+            A programação ainda não foi publicada.
+          </div>
+        )}
+
+        {timelineEntries.map((event, index) => {
           const isEven = index % 2 === 0;
 
           return (
             <motion.div
-              key={index}
+              key={event.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -87,13 +137,13 @@ export default function EventTimeline() {
 
                   {/* Center: Time Badge */}
                   <div className="hidden md:flex items-center justify-center">
-                    <TimeBadge time={event.time} duration={event.duration} />
+                    <TimeBadge time={event.time} duration={event.durationLabel} />
                   </div>
 
                   {/* Mobile: Full Width */}
                   <div className="md:hidden">
                     <div className="flex items-center gap-4 mb-4">
-                      <TimeBadge time={event.time} duration={event.duration} />
+                      <TimeBadge time={event.time} duration={event.durationLabel} />
                     </div>
                     <EventCard event={event} align="left" />
                   </div>
@@ -105,7 +155,7 @@ export default function EventTimeline() {
                 <>
                   {/* Desktop: Time Badge on Left */}
                   <div className="hidden md:flex items-center justify-center">
-                    <TimeBadge time={event.time} duration={event.duration} />
+                    <TimeBadge time={event.time} duration={event.durationLabel} />
                   </div>
 
                   {/* Desktop: Event Card on Right */}
@@ -116,7 +166,7 @@ export default function EventTimeline() {
                   {/* Mobile: Full Width */}
                   <div className="md:hidden">
                     <div className="flex items-center gap-4 mb-4">
-                      <TimeBadge time={event.time} duration={event.duration} />
+                      <TimeBadge time={event.time} duration={event.durationLabel} />
                     </div>
                     <EventCard event={event} align="left" />
                   </div>
@@ -153,7 +203,7 @@ function EventCard({
   event,
   align,
 }: {
-  event: TimelineEvent;
+  event: TimelineEntry;
   align: 'left' | 'right';
 }) {
   const IconComponent = event.icon;
@@ -166,7 +216,7 @@ function EventCard({
     >
       {/* Icon */}
       <div
-        className={`inline-flex w-14 h-14 rounded-full bg-gradient-to-br ${event.color} items-center justify-center mb-4`}
+        className={`inline-flex w-14 h-14 rounded-full bg-gradient-to-br ${event.colorGradient} items-center justify-center mb-4`}
       >
         <IconComponent className="w-7 h-7 text-white" />
       </div>
@@ -180,6 +230,11 @@ function EventCard({
       <p className="font-crimson text-base text-[#4A4A4A] leading-relaxed">
         {event.description}
       </p>
+      {event.location && (
+        <p className="font-crimson text-sm text-[#8C8577] mt-3">
+          📍 {event.location}
+        </p>
+      )}
     </div>
   );
 }
