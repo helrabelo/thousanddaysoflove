@@ -30,6 +30,7 @@
     "setup:story-preview": "tsx scripts/setup-story-preview.ts",
     "migrate:prod": "tsx scripts/apply-migration-to-prod.ts",
     "seed:invitations": "tsx scripts/seed-invitations.ts",
+    "sanity:populate-gifts": "tsx scripts/populate-gifts-sections.ts",
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:debug": "playwright test --debug",
