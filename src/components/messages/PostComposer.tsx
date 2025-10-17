@@ -12,6 +12,7 @@
  * - Preview uploaded media
  * - Post type detection (text/image/video/mixed)
  * - Loading states and error handling
+ * - Mobile-first responsive design with proper touch targets
  */
 
 import { useState, useRef } from 'react';
@@ -223,30 +224,30 @@ export default function PostComposer({
     <motion.div
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-lg border border-[#E8E6E3] p-6 shadow-sm"
+      className="bg-white rounded-lg border border-[#E8E6E3] p-4 sm:p-6 shadow-sm"
     >
       {/* Guest Name */}
-      <div className="mb-4">
+      <div className="mb-3 sm:mb-4">
         <p className="text-sm text-[#4A4A4A]">
           Mensagem de <span className="font-semibold text-[#2C2C2C]">{guestName}</span>
         </p>
       </div>
 
       {/* Textarea */}
-      <div className="mb-4">
+      <div className="mb-3 sm:mb-4">
         <textarea
           ref={textareaRef}
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="Compartilhe suas felicitações, memórias ou desejos para o casal..."
-          className="w-full min-h-[120px] p-3 border border-[#E8E6E3] rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-[#A8A8A8] transition-all text-[#2C2C2C]"
+          className="w-full min-h-[120px] p-3 border border-[#E8E6E3] rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-[#A8A8A8] transition-all text-[#2C2C2C] text-base"
           disabled={isSubmitting}
         />
 
         {/* Character Counter */}
         <div className="flex justify-end mt-2">
           <span
-            className={`text-sm ${
+            className={`text-xs sm:text-sm ${
               isContentTooLong
                 ? 'text-red-500 font-semibold'
                 : remainingChars < 100
@@ -266,7 +267,7 @@ export default function PostComposer({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="mb-4 grid grid-cols-3 gap-2"
+            className="mb-3 sm:mb-4 grid grid-cols-3 gap-2"
           >
             {mediaPreviewUrls.map((url, index) => {
               const file = mediaFiles[index];
@@ -278,7 +279,7 @@ export default function PostComposer({
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8 }}
-                  className="relative aspect-square rounded-md overflow-hidden  border border-[#E8E6E3]"
+                  className="relative aspect-square rounded-md overflow-hidden border border-[#E8E6E3]"
                 >
                   {isVideo ? (
                     <video
@@ -287,6 +288,7 @@ export default function PostComposer({
                       muted
                     />
                   ) : (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={url}
                       alt="Preview"
@@ -294,19 +296,20 @@ export default function PostComposer({
                     />
                   )}
 
-                  {/* Remove Button */}
+                  {/* Remove Button - Proper touch target */}
                   <button
                     type="button"
                     onClick={() => removeFile(index)}
                     disabled={isSubmitting}
-                    className="absolute top-1 right-1 p-1 bg-white/90 rounded-full shadow-md hover:bg-white transition-colors disabled:opacity-50"
+                    aria-label="Remover arquivo"
+                    className="absolute top-1 right-1 min-w-[44px] min-h-[44px] p-2 bg-white/90 rounded-full shadow-md hover:bg-white transition-colors disabled:opacity-50 flex items-center justify-center"
                   >
-                    <X className="w-4 h-4 text-[#2C2C2C]" />
+                    <X className="w-5 h-5 text-[#2C2C2C]" />
                   </button>
 
                   {/* Video Icon */}
                   {isVideo && (
-                    <div className="absolute bottom-1 left-1 p-1 bg-black/50 rounded-full">
+                    <div className="absolute bottom-1 left-1 p-1.5 bg-black/50 rounded-full">
                       <Video className="w-4 h-4 text-white" />
                     </div>
                   )}
@@ -324,16 +327,17 @@ export default function PostComposer({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="mb-4 p-3  rounded-md border border-[#E8E6E3]"
+            className="mb-3 sm:mb-4 p-3 rounded-md border border-[#E8E6E3]"
           >
-            <div className="grid grid-cols-12 gap-2">
+            <div className="grid grid-cols-8 sm:grid-cols-12 gap-2">
               {WEDDING_EMOJIS.map((emoji) => (
                 <button
                   key={emoji}
                   type="button"
                   onClick={() => addEmoji(emoji)}
                   disabled={isSubmitting}
-                  className="text-2xl hover:scale-125 transition-transform disabled:opacity-50"
+                  aria-label={`Adicionar emoji ${emoji}`}
+                  className="min-w-[44px] min-h-[44px] flex items-center justify-center text-2xl hover:scale-125 transition-transform disabled:opacity-50"
                 >
                   {emoji}
                 </button>
@@ -350,65 +354,71 @@ export default function PostComposer({
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md"
+            className="mb-3 sm:mb-4 p-2.5 sm:p-3 bg-red-50 border border-red-200 rounded-md"
           >
-            <p className="text-sm text-red-700">{error}</p>
+            <p className="text-xs sm:text-sm text-red-700">{error}</p>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Actions */}
-      <div className="flex items-center justify-between">
-        {/* Left: Media & Emoji Buttons */}
-        <div className="flex items-center gap-2">
-          {/* Photo/Video Upload */}
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*,video/*"
-            multiple
-            onChange={handleFileSelect}
-            disabled={isSubmitting || mediaFiles.length >= MAX_FILES}
-            className="hidden"
-          />
+      {/* Actions - Mobile-first stacked layout */}
+      <div className="space-y-3">
+        {/* Top Row: Media & Emoji Buttons + File Count */}
+        <div className="flex items-center justify-between">
+          {/* Left: Media & Emoji Buttons - Proper touch targets */}
+          <div className="flex items-center gap-1">
+            {/* Photo/Video Upload */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*,video/*"
+              multiple
+              onChange={handleFileSelect}
+              disabled={isSubmitting || mediaFiles.length >= MAX_FILES}
+              className="hidden"
+            />
 
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={isSubmitting || mediaFiles.length >= MAX_FILES}
-            className="p-2 rounded-full hover: transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            title="Adicionar foto/vídeo"
-          >
-            <ImageIcon className="w-5 h-5 text-[#4A4A4A]" />
-          </button>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isSubmitting || mediaFiles.length >= MAX_FILES}
+              aria-label="Adicionar foto ou vídeo"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full hover:bg-[#F8F6F3] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Adicionar foto/vídeo"
+            >
+              <ImageIcon className="w-5 h-5 text-[#4A4A4A]" />
+            </button>
 
-          {/* Emoji Picker Toggle */}
-          <button
-            type="button"
-            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-            disabled={isSubmitting}
-            className="p-2 rounded-full hover: transition-colors disabled:opacity-50"
-            title="Adicionar emoji"
-          >
-            <Smile className="w-5 h-5 text-[#4A4A4A]" />
-          </button>
+            {/* Emoji Picker Toggle */}
+            <button
+              type="button"
+              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+              disabled={isSubmitting}
+              aria-label="Adicionar emoji"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full hover:bg-[#F8F6F3] transition-colors disabled:opacity-50"
+              title="Adicionar emoji"
+            >
+              <Smile className="w-5 h-5 text-[#4A4A4A]" />
+            </button>
+          </div>
 
-          {/* File Count */}
+          {/* File Count - Only show on mobile when files exist */}
           {mediaFiles.length > 0 && (
-            <span className="text-sm text-[#4A4A4A]">
-              {mediaFiles.length}/{MAX_FILES} arquivo{mediaFiles.length !== 1 && 's'}
+            <span className="text-xs sm:text-sm text-[#4A4A4A] font-medium">
+              {mediaFiles.length}/{MAX_FILES}
             </span>
           )}
         </div>
 
-        {/* Right: Cancel & Submit */}
-        <div className="flex items-center gap-2">
+        {/* Bottom Row: Cancel & Submit - Full width on mobile */}
+        <div className="flex items-center gap-2 sm:gap-3">
           {onCancel && (
             <button
               type="button"
               onClick={onCancel}
               disabled={isSubmitting}
-              className="px-4 py-2 text-[#4A4A4A] hover:text-[#2C2C2C] transition-colors disabled:opacity-50"
+              aria-label="Cancelar"
+              className="flex-1 sm:flex-none min-h-[44px] px-4 sm:px-6 py-2.5 text-sm sm:text-base text-[#4A4A4A] hover:text-[#2C2C2C] transition-colors disabled:opacity-50 border border-[#E8E6E3] rounded-md hover:bg-[#F8F6F3]"
             >
               Cancelar
             </button>
@@ -418,35 +428,36 @@ export default function PostComposer({
             type="button"
             onClick={handleSubmit}
             disabled={isSubmitting || isContentTooLong || (!content.trim() && mediaFiles.length === 0)}
-            className="flex items-center gap-2 px-6 py-2 bg-[#2C2C2C] text-white rounded-md hover:bg-[#1A1A1A] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label={isSubmitting ? 'Enviando mensagem' : 'Enviar mensagem'}
+            className="flex-1 sm:flex-none min-h-[44px] flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 bg-[#2C2C2C] text-white text-sm sm:text-base font-medium rounded-md hover:bg-[#1A1A1A] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Enviando...</span>
+                <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin flex-shrink-0" />
+                <span className="whitespace-nowrap">Enviando...</span>
               </>
             ) : (
               <>
-                <Send className="w-4 h-4" />
-                <span>Enviar</span>
+                <Send className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                <span className="whitespace-nowrap">Enviar</span>
               </>
             )}
           </button>
         </div>
       </div>
 
-      {/* Moderation Notice */}
+      {/* Moderation Notice - Compact on mobile */}
       {!isAuthenticated && (
-        <div className="mt-4 p-3  rounded-md border border-[#E8E6E3]">
-          <p className="text-xs text-[#4A4A4A] text-center">
-            ✨ Sua mensagem será revisada antes de aparecer no feed. Aguarde alguns minutos!
+        <div className="mt-3 sm:mt-4 p-2 sm:p-3 rounded-md border border-[#E8E6E3] bg-[#F8F6F3]">
+          <p className="text-xs text-[#4A4A4A] text-center leading-relaxed">
+            ✨ Sua mensagem será revisada antes de aparecer no feed
           </p>
         </div>
       )}
       {isAuthenticated && (
-        <div className="mt-4 p-3 bg-green-50 rounded-md border border-green-200">
-          <p className="text-xs text-green-700 text-center">
-            ✅ Como convidado autenticado, sua mensagem será publicada imediatamente!
+        <div className="mt-3 sm:mt-4 p-2 sm:p-3 bg-green-50 rounded-md border border-green-200">
+          <p className="text-xs text-green-700 text-center leading-relaxed">
+            ✅ Sua mensagem será publicada imediatamente
           </p>
         </div>
       )}
