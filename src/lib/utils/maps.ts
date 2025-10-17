@@ -165,13 +165,13 @@ export class GoogleMapsService {
         <div class="flex flex-col gap-2">
           <button
             onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(location.address)}', '_blank')"
-            class="bg-rose-500 hover:bg-rose-600 text-white text-sm px-3 py-2 rounded-lg transition-colors duration-200"
+            class="bg-gray-500 hover:bg-gray-600 text-white text-sm px-3 py-2 rounded-lg transition-colors duration-200"
           >
             Como Chegar
           </button>
           <button
             onclick="window.open('https://maps.google.com/?q=${location.coordinates.lat},${location.coordinates.lng}', '_blank')"
-            class="bg-purple-500 hover:bg-purple-600 text-white text-sm px-3 py-2 rounded-lg transition-colors duration-200"
+            class="bg-gray-500 hover:bg-gray-600 text-white text-sm px-3 py-2 rounded-lg transition-colors duration-200"
           >
             Abrir no Google Maps
           </button>

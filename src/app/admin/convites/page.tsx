@@ -187,7 +187,7 @@ export default function AdminInvitationsPage() {
 
   const getRelationshipBadge = (type: string) => {
     const badges = {
-      family: <Badge className="bg-purple-100 text-purple-800 border-purple-200">Família</Badge>,
+      family: <Badge className="bg-gray-100 text-gray-800 border-gray-200">Família</Badge>,
       friend: <Badge className="bg-blue-100 text-blue-800 border-blue-200">Amigo</Badge>,
       colleague: <Badge className="bg-green-100 text-green-800 border-green-200">Colega</Badge>,
       other: <Badge className="bg-gray-100 text-gray-800 border-gray-200">Outro</Badge>,
@@ -247,16 +247,16 @@ export default function AdminInvitationsPage() {
       {/* Analytics Cards */}
       {analytics && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <Card className="p-4 bg-gradient-to-br from-purple-50 to-white border-purple-200">
+          <Card className="p-4 bg-gradient-to-br from-gray-50 to-white border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <Users className="w-6 h-6 text-purple-500 mb-2" />
+                <Users className="w-6 h-6 text-gray-500 mb-2" />
                 <h3 className="text-2xl font-bold text-[#2C2C2C]">{analytics.total}</h3>
                 <p className="text-sm text-[#4A4A4A]">Total de Convites</p>
               </div>
               <div className="text-right">
                 <div className="text-xs text-[#4A4A4A]">Taxa de abertura</div>
-                <div className="text-xs text-purple-600 font-medium">
+                <div className="text-xs text-gray-600 font-medium">
                   {analytics.open_rate}%
                 </div>
               </div>
@@ -299,10 +299,10 @@ export default function AdminInvitationsPage() {
             </div>
           </Card>
 
-          <Card className="p-4 bg-gradient-to-br from-pink-50 to-white border-pink-200">
+          <Card className="p-4 bg-gradient-to-br from-gray-50 to-white border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <Camera className="w-6 h-6 text-pink-500 mb-2" />
+                <Camera className="w-6 h-6 text-gray-500 mb-2" />
                 <h3 className="text-2xl font-bold text-[#2C2C2C]">
                   {analytics.photos_uploaded}
                 </h3>
@@ -310,7 +310,7 @@ export default function AdminInvitationsPage() {
               </div>
               <div className="text-right">
                 <div className="text-xs text-[#4A4A4A]">Taxa de fotos</div>
-                <div className="text-xs text-pink-600 font-medium">
+                <div className="text-xs text-gray-600 font-medium">
                   {analytics.photo_rate}%
                 </div>
               </div>
@@ -508,7 +508,7 @@ export default function AdminInvitationsPage() {
                           <Gift className="w-4 h-4 text-blue-500" aria-label="Presente selecionado" />
                         )}
                         {invitation.photos_uploaded && (
-                          <Camera className="w-4 h-4 text-pink-500" aria-label="Fotos enviadas" />
+                          <Camera className="w-4 h-4 text-gray-500" aria-label="Fotos enviadas" />
                         )}
                       </div>
                     </td>
@@ -931,7 +931,7 @@ function CreateInvitationModal({
             </div>
 
             {/* Preview Section */}
-            <div className="p-4 bg-gradient-to-br from-purple-50 to-white border border-purple-200 rounded-xl">
+            <div className="p-4 bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-xl">
               <h4 className="font-semibold text-[#2C2C2C] mb-2 flex items-center gap-2">
                 <Eye className="w-5 h-5" />
                 Preview do Convite
@@ -1378,7 +1378,7 @@ function DetailViewModal({
 
           <div className="space-y-6">
             {/* Guest Information */}
-            <Card className="p-4 bg-gradient-to-br from-purple-50 to-white border-purple-200">
+            <Card className="p-4 bg-gradient-to-br from-gray-50 to-white border-gray-200">
               <h4 className="font-semibold text-[#2C2C2C] mb-4 flex items-center gap-2">
                 <Users className="w-5 h-5" />
                 Informações do Convidado
@@ -1410,7 +1410,7 @@ function DetailViewModal({
                   <span className="text-sm text-[#4A4A4A]">Relacionamento:</span>
                   <div className="mt-1">
                     {invitation.relationship_type === 'family' && (
-                      <Badge className="bg-purple-100 text-purple-800 border-purple-200">
+                      <Badge className="bg-gray-100 text-gray-800 border-gray-200">
                         Família
                       </Badge>
                     )}
@@ -1540,7 +1540,7 @@ function DetailViewModal({
                     <div className="flex items-center gap-2">
                       <Camera
                         className={`w-5 h-5 ${
-                          invitation.photos_uploaded ? 'text-pink-500' : 'text-gray-300'
+                          invitation.photos_uploaded ? 'text-gray-500' : 'text-gray-300'
                         }`}
                       />
                       <span

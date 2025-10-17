@@ -238,16 +238,16 @@ export function GiftRegistryTab() {
 
       {/* Enhanced Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <Card className="p-4 bg-gradient-to-br from-purple-50 to-white border-purple-200">
+        <Card className="p-4 bg-gradient-to-br from-gray-50 to-white border-gray-200">
           <div className="flex items-center justify-between">
             <div>
-              <Gift className="w-6 h-6 text-purple-500 mb-2" />
+              <Gift className="w-6 h-6 text-gray-500 mb-2" />
               <h3 className="text-2xl font-bold text-burgundy-800">{stats.total}</h3>
               <p className="text-sm text-burgundy-600">Presentes na Lista</p>
             </div>
             <div className="text-right">
               <div className="text-xs text-burgundy-500">Categoria Popular</div>
-              <div className="text-xs text-purple-600 font-medium">
+              <div className="text-xs text-gray-600 font-medium">
                 {stats.popularCategory}
               </div>
             </div>
@@ -401,7 +401,7 @@ export function GiftRegistryTab() {
           >
             <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
               {/* Gift Image */}
-              <div className="aspect-video bg-gradient-to-br from-blush-100 to-purple-100 relative">
+              <div className="aspect-video bg-gradient-to-br from-blush-100 to-gray-100 relative">
                 {gift.image_url ? (
                   <img
                     src={gift.image_url}
@@ -457,7 +457,7 @@ export function GiftRegistryTab() {
                 {/* Progress Bar */}
                 <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
                   <div
-                    className="bg-gradient-to-r from-blush-500 to-purple-500 h-2 rounded-full transition-all duration-300"
+                    className="bg-gradient-to-r from-blush-500 to-gray-500 h-2 rounded-full transition-all duration-300"
                     style={{
                       width: `${Math.min((gift.quantity_purchased / gift.quantity_desired) * 100, 100)}%`
                     }}
@@ -559,7 +559,7 @@ export function GiftRegistryTab() {
 
               <div className="space-y-6">
                 {/* Gift Image */}
-                <div className="aspect-video bg-gradient-to-br from-blush-100 to-purple-100 rounded-xl overflow-hidden">
+                <div className="aspect-video bg-gradient-to-br from-blush-100 to-gray-100 rounded-xl overflow-hidden">
                   {selectedGift.image_url ? (
                     <img
                       src={selectedGift.image_url}

@@ -243,8 +243,8 @@ export function RsvpAnalyticsDashboard({ guests, className = '' }: RsvpAnalytics
 
         {/* Family Groups */}
         <Card className="glass p-4 text-center">
-          <Users className="w-8 h-8 text-purple-500 mx-auto mb-2" />
-          <div className="text-2xl font-bold text-purple-700">
+          <Users className="w-8 h-8 text-gray-500 mx-auto mb-2" />
+          <div className="text-2xl font-bold text-gray-700">
             {analytics.rsvpStats.family_groups_count}
           </div>
           <p className="text-sm text-burgundy-600">Famílias</p>
@@ -398,12 +398,12 @@ export function RsvpAnalyticsDashboard({ guests, className = '' }: RsvpAnalytics
 
           {/* Family Group Adoption */}
           <div className="text-center">
-            <Users className="w-8 h-8 text-purple-500 mx-auto mb-2" />
+            <Users className="w-8 h-8 text-gray-500 mx-auto mb-2" />
             <div className="text-xl font-bold text-burgundy-800">
               {Math.round((analytics.rsvpStats.family_groups_count / analytics.rsvpStats.total_guests) * 100)}%
             </div>
             <p className="text-sm text-burgundy-600">Em Grupos Familiares</p>
-            <p className="text-xs text-purple-600 mt-1">Convites compartilhados</p>
+            <p className="text-xs text-gray-600 mt-1">Convites compartilhados</p>
           </div>
         </div>
       </Card>

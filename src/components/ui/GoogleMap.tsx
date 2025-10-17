@@ -85,7 +85,7 @@ export default function GoogleMap({
             <p className="text-gray-600 mb-4">{error}</p>
             <button
               onClick={handleOpenInGoogleMaps}
-              className="bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2 mx-auto"
+              className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2 mx-auto"
             >
               <ExternalLink className="w-4 h-4" />
               Abrir no Google Maps
@@ -108,7 +108,7 @@ export default function GoogleMap({
       {isLoading && (
         <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center z-10 border border-gray-300">
           <div className="text-center">
-            <div className="w-8 h-8 border-4 border-rose-200 border-t-rose-500 rounded-full animate-spin mx-auto mb-4" />
+            <div className="w-8 h-8 border-4 border-gray-200 border-t-gray-500 rounded-full animate-spin mx-auto mb-4" />
             <p className="text-gray-600 text-sm">Carregando mapa...</p>
           </div>
         </div>
@@ -160,7 +160,7 @@ export default function GoogleMap({
           <div className="flex gap-2">
             <button
               onClick={handleDirections}
-              className="flex-1 bg-rose-500 hover:bg-rose-600 text-white px-4 py-3 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 font-medium"
+              className="flex-1 bg-gray-500 hover:bg-gray-600 text-white px-4 py-3 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 font-medium"
             >
               <Navigation className="w-4 h-4" />
               Como Chegar
@@ -192,7 +192,7 @@ export function LocationInfoBadge({ location = CONSTABLE_GALERIE }: { location?:
       transition={{ duration: 0.4 }}
     >
       <div className="flex items-start gap-3">
-        <div className="bg-rose-500 p-2 rounded-full">
+        <div className="bg-gray-500 p-2 rounded-full">
           <MapPin className="w-4 h-4 text-white" />
         </div>
         <div className="flex-1 min-w-0">

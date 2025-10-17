@@ -208,7 +208,7 @@ export default function AdminAnalytics(): JSX.Element {
               <p className="text-burgundy-600">Comprados</p>
             </Card>
             <Card className="glass p-6 text-center">
-              <h3 className="text-3xl font-bold text-purple-600">
+              <h3 className="text-3xl font-bold text-gray-600">
                 R$ {(analytics.gifts.totalValue / 1000).toFixed(1)}k
               </h3>
               <p className="text-burgundy-600">Valor Total</p>
@@ -263,7 +263,7 @@ export default function AdminAnalytics(): JSX.Element {
               </p>
             </div>
             <div>
-              <TrendingUp className="w-8 h-8 text-purple-500 mx-auto mb-2" />
+              <TrendingUp className="w-8 h-8 text-gray-500 mx-auto mb-2" />
               <p className="text-sm text-burgundy-600">Presentes Adquiridos</p>
               <p className="text-2xl font-bold text-burgundy-800">
                 {analytics.gifts.total > 0

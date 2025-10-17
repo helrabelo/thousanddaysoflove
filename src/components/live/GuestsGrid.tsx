@@ -8,7 +8,7 @@ import type { ConfirmedGuest } from '@/lib/supabase/live'
 import { Card } from '@/components/ui/card'
 
 const RELATIONSHIP_COLORS = {
-  family: 'from-purple-400 to-purple-500',
+  family: 'from-gray-400 to-gray-500',
   friend: 'from-blue-400 to-blue-500',
   colleague: 'from-green-400 to-green-500',
   other: 'from-gray-400 to-gray-500'
@@ -84,8 +84,8 @@ export function GuestsGrid() {
           onClick={() => setFilter('family')}
           className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
             filter === 'family'
-              ? 'bg-purple-500 text-white'
-              : 'bg-purple-50 text-purple-700 hover:bg-purple-100'
+              ? 'bg-gray-500 text-white'
+              : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
           }`}
         >
           Família ({guests.filter(g => g.relationship_type === 'family').length})

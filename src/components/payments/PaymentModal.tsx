@@ -169,7 +169,7 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
           <div className="p-6 border-b border-gray-100">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-rose-400 to-purple-600 rounded-full flex items-center justify-center">
+                <div className="w-10 h-10 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center">
                   {step === 'pix' ? (
                     <QrCode className="w-5 h-5 text-white" />
                   ) : step === 'success' ? (
@@ -206,7 +206,7 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
                 animate={{ opacity: 1, y: 0 }}
                 className="space-y-4"
               >
-                <div className="bg-gradient-to-br from-rose-50 to-purple-50 rounded-xl p-4 border border-rose-100">
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 border border-gray-200">
                   <div className="flex items-center gap-3">
                     {gift.imageUrl && (
                       <Image
@@ -220,7 +220,7 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
                     <div>
                       <h4 className="font-medium text-gray-900">{gift.title}</h4>
                       <p className="text-sm text-gray-600">{gift.description}</p>
-                      <p className="text-lg font-semibold text-purple-600 mt-1">
+                      <p className="text-lg font-semibold text-gray-700 mt-1">
                         {formatBRL(gift.fullPrice)}
                       </p>
                     </div>
@@ -236,7 +236,7 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
                       type="text"
                       value={buyerInfo.name}
                       onChange={(e) => setBuyerInfo({ ...buyerInfo, name: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                       placeholder="Digite seu nome completo"
                       required
                     />
@@ -250,7 +250,7 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
                       type="email"
                       value={buyerInfo.email}
                       onChange={(e) => setBuyerInfo({ ...buyerInfo, email: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                       placeholder="seu@email.com"
                       required
                     />
@@ -264,7 +264,7 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
                       type="number"
                       value={buyerInfo.amount}
                       onChange={(e) => setBuyerInfo({ ...buyerInfo, amount: Number(e.target.value) })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                       min="50"
                       step="1"
                     />
@@ -280,7 +280,7 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
                     <textarea
                       value={buyerInfo.message}
                       onChange={(e) => setBuyerInfo({ ...buyerInfo, message: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                       rows={3}
                       placeholder="Deixe uma mensagem carinhosa para Hel & Ylana..."
                     />
@@ -290,7 +290,7 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
                 <Button
                   onClick={handleCreatePixPayment}
                   disabled={loading || !buyerInfo.name || !buyerInfo.email}
-                  className="w-full bg-gradient-to-r from-rose-500 to-purple-600 hover:from-rose-600 hover:to-purple-700 text-white py-3 rounded-xl font-medium"
+                  className="w-full bg-gradient-to-r from-gray-500 to-gray-700 hover:from-gray-600 hover:to-gray-800 text-white py-3 rounded-xl font-medium"
                 >
                   {loading ? (
                     <div className="flex items-center gap-2">
@@ -314,7 +314,7 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
                 {/* QR Code */}
                 <div className="text-center">
                   {paymentData.mercadoPago.qrCodeImage ? (
-                    <div className="inline-block p-4 bg-white rounded-xl shadow-lg border-2 border-purple-100">
+                    <div className="inline-block p-4 bg-white rounded-xl shadow-lg border-2 border-gray-200">
                       <Image
                         src={paymentData.mercadoPago.qrCodeImage}
                         alt="QR Code PIX"
@@ -331,7 +331,7 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
                 </div>
 
                 {/* Instructions */}
-                <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-4 border border-blue-100">
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 border border-gray-200">
                   <h4 className="font-medium text-gray-900 mb-2">Como pagar:</h4>
                   <ol className="text-sm text-gray-700 space-y-1">
                     <li>1. Abra o app do seu banco</li>
@@ -376,7 +376,7 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
                     {statusChecking ? 'Verificando pagamento...' : 'Aguardando pagamento'}
                   </div>
                   {statusChecking && (
-                    <div className="w-6 h-6 border-2 border-purple-300 border-t-purple-600 rounded-full animate-spin mx-auto" />
+                    <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin mx-auto" />
                   )}
                 </div>
 
@@ -418,13 +418,13 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
                   </p>
                 </div>
 
-                <div className="bg-gradient-to-br from-rose-50 to-purple-50 rounded-xl p-4 border border-rose-100">
-                  <div className="flex items-center justify-center gap-2 text-purple-600 mb-2">
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 border border-gray-200">
+                  <div className="flex items-center justify-center gap-2 text-gray-700 mb-2">
                     <Heart className="w-5 h-5" />
                     <span className="font-medium">Presente confirmado</span>
                   </div>
                   <p className="text-sm text-gray-700">{gift.title}</p>
-                  <p className="text-lg font-semibold text-purple-600 mt-1">
+                  <p className="text-lg font-semibold text-gray-700 mt-1">
                     {formatBRL(buyerInfo.amount)}
                   </p>
                 </div>
@@ -435,7 +435,7 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
 
                 <Button
                   onClick={handleClose}
-                  className="w-full bg-gradient-to-r from-rose-500 to-purple-600 hover:from-rose-600 hover:to-purple-700 text-white py-3 rounded-xl font-medium"
+                  className="w-full bg-gradient-to-r from-gray-500 to-gray-700 hover:from-gray-600 hover:to-gray-800 text-white py-3 rounded-xl font-medium"
                 >
                   Fechar
                 </Button>
@@ -465,7 +465,7 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
                 <div className="space-y-3">
                   <Button
                     onClick={() => setStep('form')}
-                    className="w-full bg-gradient-to-r from-rose-500 to-purple-600 hover:from-rose-600 hover:to-purple-700 text-white py-3 rounded-xl font-medium"
+                    className="w-full bg-gradient-to-r from-gray-500 to-gray-700 hover:from-gray-600 hover:to-gray-800 text-white py-3 rounded-xl font-medium"
                   >
                     Tentar Novamente
                   </Button>

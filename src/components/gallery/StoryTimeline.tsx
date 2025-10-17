@@ -202,7 +202,7 @@ export default function StoryTimeline({
                         />
                         <div className="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/40 transition-colors">
                           <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center">
-                            <Play className="w-8 h-8 text-rose-600 ml-1" />
+                            <Play className="w-8 h-8 text-gray-600 ml-1" />
                           </div>
                         </div>
                       </div>

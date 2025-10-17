@@ -79,7 +79,7 @@ export default function PaymentConfirmation({ paymentData, onClose }: PaymentCon
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-purple-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-gray-50 flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -87,7 +87,7 @@ export default function PaymentConfirmation({ paymentData, onClose }: PaymentCon
         className="max-w-2xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden"
       >
         {/* Success Header */}
-        <div className="bg-gradient-to-r from-green-500 to-purple-600 px-8 py-12 text-center text-white">
+        <div className="bg-gradient-to-r from-green-500 to-gray-600 px-8 py-12 text-center text-white">
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
@@ -125,9 +125,9 @@ export default function PaymentConfirmation({ paymentData, onClose }: PaymentCon
             className="space-y-6"
           >
             {/* Gift Info */}
-            <div className="bg-gradient-to-br from-rose-50 to-purple-50 rounded-2xl p-6 border border-rose-100">
+            <div className="bg-gradient-to-br from-gray-50 to-gray-50 rounded-2xl p-6 border border-gray-100">
               <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-rose-400 to-purple-600 rounded-full flex items-center justify-center">
+                <div className="w-12 h-12 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center">
                   <Gift className="w-6 h-6 text-white" />
                 </div>
                 <div>
@@ -143,7 +143,7 @@ export default function PaymentConfirmation({ paymentData, onClose }: PaymentCon
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Valor:</span>
-                  <span className="font-bold text-purple-600 text-lg">{formatBRL(paymentData.amount)}</span>
+                  <span className="font-bold text-gray-600 text-lg">{formatBRL(paymentData.amount)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Comprador:</span>
@@ -161,11 +161,11 @@ export default function PaymentConfirmation({ paymentData, onClose }: PaymentCon
             {/* Thank You Message */}
             <div className="text-center space-y-4">
               <div className="flex items-center justify-center gap-2 text-2xl">
-                <Heart className="w-8 h-8 text-rose-500" fill="currentColor" />
-                <span className="font-semibold bg-gradient-to-r from-rose-600 to-purple-600 bg-clip-text text-transparent">
+                <Heart className="w-8 h-8 text-gray-500" fill="currentColor" />
+                <span className="font-semibold bg-gradient-to-r from-gray-600 to-gray-600 bg-clip-text text-transparent">
                   Hel & Ylana
                 </span>
-                <Heart className="w-8 h-8 text-rose-500" fill="currentColor" />
+                <Heart className="w-8 h-8 text-gray-500" fill="currentColor" />
               </div>
 
               <div className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-6 border border-yellow-100">
@@ -181,7 +181,7 @@ export default function PaymentConfirmation({ paymentData, onClose }: PaymentCon
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Button
                 onClick={handleShare}
-                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white flex items-center gap-2"
+                className="bg-gradient-to-r from-blue-500 to-gray-600 hover:from-blue-600 hover:to-gray-700 text-white flex items-center gap-2"
               >
                 <Share2 className="w-4 h-4" />
                 Compartilhar
@@ -207,7 +207,7 @@ export default function PaymentConfirmation({ paymentData, onClose }: PaymentCon
               </Link>
 
               <Link href="/presentes" className="w-full">
-                <Button className="w-full bg-gradient-to-r from-rose-500 to-purple-600 hover:from-rose-600 hover:to-purple-700 text-white flex items-center gap-2">
+                <Button className="w-full bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white flex items-center gap-2">
                   <Gift className="w-4 h-4" />
                   Ver Mais Presentes
                 </Button>

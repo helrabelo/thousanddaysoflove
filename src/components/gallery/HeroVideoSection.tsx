@@ -121,7 +121,7 @@ export default function HeroVideoSection({
         {[...Array(6)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute text-rose-200/20 text-4xl"
+            className="absolute text-gray-200/20 text-4xl"
             initial={{
               x: Math.random() * window.innerWidth || 0,
               y: window.innerHeight || 0,
@@ -154,11 +154,11 @@ export default function HeroVideoSection({
           <h1 className="hero-title text-white mb-6 leading-none">
             {title === '1000' ? (
               <AnimatedTitle
-                className="bg-gradient-to-r from-rose-200 via-pink-200 to-purple-200 bg-clip-text text-transparent"
+                className="bg-gradient-to-r from-gray-200 via-gray-200 to-gray-200 bg-clip-text text-transparent"
                 delay={1.5}
               />
             ) : (
-              <span className="bg-gradient-to-r from-rose-200 via-pink-200 to-purple-200 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-gray-200 via-gray-200 to-gray-200 bg-clip-text text-transparent">
                 {title}
               </span>
             )}
@@ -182,7 +182,7 @@ export default function HeroVideoSection({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 1.5 }}
           >
-            <button className="bg-gradient-to-r from-rose-500 to-pink-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:from-rose-600 hover:to-pink-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+            <button className="bg-gradient-to-r from-gray-500 to-gray-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:from-gray-600 hover:to-gray-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
               Ver Nossa Galeria
             </button>
             <button className="bg-white/10 backdrop-blur-md text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-white/20 transition-all duration-300 border border-white/20">

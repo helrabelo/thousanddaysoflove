@@ -117,7 +117,7 @@ const PROGRESS_ITEMS = [
     icon: Gift,
     title: 'Escolheu Presente',
     description: 'Selecione um presente',
-    color: 'from-rose-500 to-pink-500',
+    color: 'from-gray-500 to-gray-500',
   },
   {
     key: 'photos_uploaded' as keyof GuestProgress,
@@ -131,7 +131,7 @@ const PROGRESS_ITEMS = [
     icon: MessageSquare,
     title: 'Enviou Mensagem',
     description: 'Deixe uma mensagem (em breve)',
-    color: 'from-purple-500 to-indigo-500',
+    color: 'from-gray-500 to-indigo-500',
     comingSoon: true,
   },
 ];

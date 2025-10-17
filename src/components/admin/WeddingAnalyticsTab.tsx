@@ -241,7 +241,7 @@ export function WeddingAnalyticsTab() {
       </div>
 
       {/* Wedding Progress Overview */}
-      <Card className="p-6 mb-6 bg-gradient-to-r from-blush-50 to-purple-50 border-blush-200">
+      <Card className="p-6 mb-6 bg-gradient-to-r from-blush-50 to-gray-50 border-blush-200">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-semibold text-burgundy-800 flex items-center gap-2">
             <Heart className="w-6 h-6 text-blush-500" fill="currentColor" />
@@ -260,7 +260,7 @@ export function WeddingAnalyticsTab() {
             <div className="text-sm text-burgundy-600">Progresso da Jornada</div>
             <div className="w-full bg-gray-200 rounded-full h-3 mt-2">
               <div
-                className="bg-gradient-to-r from-blush-500 to-purple-500 h-3 rounded-full transition-all duration-500"
+                className="bg-gradient-to-r from-blush-500 to-gray-500 h-3 rounded-full transition-all duration-500"
                 style={{ width: `${analytics.weddingProgress.completionPercentage}%` }}
               ></div>
             </div>
@@ -308,10 +308,10 @@ export function WeddingAnalyticsTab() {
           </div>
         </Card>
 
-        <Card className="p-4 bg-gradient-to-br from-purple-50 to-white border-purple-200">
+        <Card className="p-4 bg-gradient-to-br from-gray-50 to-white border-gray-200">
           <div className="flex items-center justify-between">
             <div>
-              <Gift className="w-6 h-6 text-purple-500 mb-2" />
+              <Gift className="w-6 h-6 text-gray-500 mb-2" />
               <h3 className="text-2xl font-bold text-burgundy-800">
                 {formatPercentage((analytics.giftRegistryAnalytics.purchased / analytics.giftRegistryAnalytics.totalGifts) * 100)}
               </h3>
@@ -319,7 +319,7 @@ export function WeddingAnalyticsTab() {
             </div>
             <div className="text-right">
               <div className="text-xs text-burgundy-500">Recentemente</div>
-              <div className="text-xs text-purple-600 font-medium">
+              <div className="text-xs text-gray-600 font-medium">
                 +{analytics.giftRegistryAnalytics.recentPurchases} presentes
               </div>
             </div>
@@ -413,14 +413,14 @@ export function WeddingAnalyticsTab() {
         {/* Gift Registry Analytics */}
         <Card className="p-6">
           <h3 className="text-lg font-semibold text-burgundy-800 mb-4 flex items-center gap-2">
-            <Gift className="w-5 h-5 text-purple-500" />
+            <Gift className="w-5 h-5 text-gray-500" />
             Análise da Lista de Presentes
           </h3>
 
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4 text-center">
               <div>
-                <div className="text-xl font-bold text-purple-600">
+                <div className="text-xl font-bold text-gray-600">
                   {formatBRL(analytics.giftRegistryAnalytics.averageGiftValue)}
                 </div>
                 <div className="text-xs text-burgundy-600">Valor Médio</div>
@@ -442,7 +442,7 @@ export function WeddingAnalyticsTab() {
                     <span className="text-xs text-burgundy-600">{formatBRL(category.value)}</span>
                     <div className="w-16 bg-gray-200 rounded-full h-2">
                       <div
-                        className="bg-purple-500 h-2 rounded-full"
+                        className="bg-gray-500 h-2 rounded-full"
                         style={{
                           width: `${(category.count / analytics.giftRegistryAnalytics.totalGifts) * 100}%`
                         }}
@@ -520,7 +520,7 @@ export function WeddingAnalyticsTab() {
                 <div className="text-xs text-burgundy-600">Total de Visitas</div>
               </div>
               <div>
-                <div className="text-xl font-bold text-purple-600">{analytics.engagement.averageSessionDuration}</div>
+                <div className="text-xl font-bold text-gray-600">{analytics.engagement.averageSessionDuration}</div>
                 <div className="text-xs text-burgundy-600">Duração Média</div>
               </div>
             </div>

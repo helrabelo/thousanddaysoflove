@@ -26,7 +26,7 @@ export function Progress({
 
   const variants = {
     default: 'from-blush-400 to-blush-600',
-    romantic: 'from-blush-400 via-purple-400 to-burgundy-500',
+    romantic: 'from-blush-400 via-gray-400 to-burgundy-500',
     success: 'from-sage-400 to-sage-600',
     warning: 'from-yellow-400 to-orange-500',
     danger: 'from-red-400 to-red-600'

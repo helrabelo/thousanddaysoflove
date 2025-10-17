@@ -323,9 +323,9 @@ export default function AdminGuests(): JSX.Element {
             <p className="text-sm text-amber-700 mb-1">Pendentes</p>
             <p className="text-2xl font-semibold text-amber-900">{stats.pending}</p>
           </div>
-          <div className="bg-purple-50 rounded-lg border border-purple-200 p-4 text-center">
-            <p className="text-sm text-purple-700 mb-1">Acompanhantes</p>
-            <p className="text-2xl font-semibold text-purple-900">{stats.totalPlusOnes}</p>
+          <div className="bg-gray-50 rounded-lg border border-gray-200 p-4 text-center">
+            <p className="text-sm text-gray-700 mb-1">Acompanhantes</p>
+            <p className="text-2xl font-semibold text-gray-900">{stats.totalPlusOnes}</p>
           </div>
         </div>
 

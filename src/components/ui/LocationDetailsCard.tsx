@@ -45,7 +45,7 @@ export default function LocationDetailsCard({
         transition={{ duration: 0.4 }}
       >
         <div className="flex items-start gap-4">
-          <div className="bg-gradient-to-br from-rose-500 to-pink-600 p-3 rounded-full flex-shrink-0">
+          <div className="bg-gradient-to-br from-gray-500 to-gray-600 p-3 rounded-full flex-shrink-0">
             <MapPin className="w-5 h-5 text-white" />
           </div>
           <div className="flex-1 min-w-0">
@@ -59,7 +59,7 @@ export default function LocationDetailsCard({
           <div className="flex gap-2 mt-3">
             <button
               onClick={handleDirections}
-              className="flex-1 bg-rose-500 hover:bg-rose-600 text-white px-3 py-2.5 rounded-lg text-sm transition-colors duration-200 flex items-center justify-center gap-1"
+              className="flex-1 bg-gray-500 hover:bg-gray-600 text-white px-3 py-2.5 rounded-lg text-sm transition-colors duration-200 flex items-center justify-center gap-1"
             >
               <Navigation className="w-3 h-3" />
               Direções
@@ -87,7 +87,7 @@ export default function LocationDetailsCard({
         whileHover={{ scale: 1.02 }}
       >
         <div className="flex items-center gap-3 mb-3">
-          <div className="bg-gradient-to-br from-rose-500 to-pink-600 p-2 rounded-full">
+          <div className="bg-gradient-to-br from-gray-500 to-gray-600 p-2 rounded-full">
             <MapPin className="w-4 h-4 text-white" />
           </div>
           <div className="flex-1 min-w-0">
@@ -98,7 +98,7 @@ export default function LocationDetailsCard({
 
         <div className="space-y-1.5 text-xs text-gray-600">
           <div className="flex items-center gap-2">
-            <Clock className="w-3 h-3 text-purple-500" />
+            <Clock className="w-3 h-3 text-gray-500" />
             <span>20 de Nov • 10:30h</span>
           </div>
           <div className="flex items-center gap-2">
@@ -110,7 +110,7 @@ export default function LocationDetailsCard({
         {showActions && (
           <button
             onClick={handleDirections}
-            className="w-full bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 mt-3 flex items-center justify-center gap-1"
+            className="w-full bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 mt-3 flex items-center justify-center gap-1"
           >
             <Navigation className="w-3 h-3" />
             Ver Localização
@@ -129,7 +129,7 @@ export default function LocationDetailsCard({
       transition={{ duration: 0.6 }}
     >
       <div className="flex items-start gap-3 mb-4">
-        <div className="bg-rose-500 p-3 rounded-full">
+        <div className="bg-gray-500 p-3 rounded-full">
           <MapPin className="w-5.5 h-5.5 text-white" style={{ width: '1.375rem', height: '1.375rem' }} />
         </div>
         <div className="flex-1">
@@ -183,8 +183,8 @@ export default function LocationDetailsCard({
 
         {/* Date and Time */}
         <div className="flex items-start gap-3">
-          <div className="bg-purple-100 p-1.5 rounded-full">
-            <Clock className="w-4 h-4 text-purple-600" style={{ width: '1rem', height: '1rem' }} />
+          <div className="bg-gray-100 p-1.5 rounded-full">
+            <Clock className="w-4 h-4 text-gray-600" style={{ width: '1rem', height: '1rem' }} />
           </div>
           <div>
             <p
@@ -290,7 +290,7 @@ export default function LocationDetailsCard({
         <div className="flex flex-col sm:flex-row gap-2.5 mt-5">
           <button
             onClick={handleDirections}
-            className="flex-1 bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white px-5 py-2.5 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
+            className="flex-1 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-5 py-2.5 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
           >
             <Navigation className="w-5 h-5" />
             Como Chegar
@@ -298,7 +298,7 @@ export default function LocationDetailsCard({
 
           <button
             onClick={handleOpenMaps}
-            className="flex-1 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white px-5 py-2.5 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
+            className="flex-1 bg-gradient-to-r from-gray-500 to-indigo-600 hover:from-gray-600 hover:to-indigo-700 text-white px-5 py-2.5 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
           >
             <ExternalLink className="w-5 h-5" />
             Abrir no Maps
@@ -315,9 +315,9 @@ export default function LocationDetailsCard({
       )}
 
       {/* Additional Info */}
-      <div className="mt-5 p-3.5 bg-gradient-to-r from-rose-50 to-pink-50 rounded-xl border border-rose-200">
+      <div className="mt-5 p-3.5 bg-gradient-to-r from-gray-50 to-gray-50 rounded-xl border border-gray-200">
         <div className="flex items-start gap-3">
-          <Info className="w-5 h-5 text-rose-600 mt-0.5" />
+          <Info className="w-5 h-5 text-gray-600 mt-0.5" />
           <div>
             <h4 className="font-medium text-gray-800 mb-2">Informações Importantes</h4>
             <ul className="text-sm text-gray-600 space-y-1">

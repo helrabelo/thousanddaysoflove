@@ -358,7 +358,7 @@ export default function MediaLightbox({
                     onClick={handleLike}
                     className={`p-2 rounded-full backdrop-blur-sm transition-colors ${
                       likedItems.has(currentItem.id)
-                        ? 'bg-rose-500 text-white'
+                        ? 'bg-gray-500 text-white'
                         : 'bg-black/50 text-white hover:bg-black/70'
                     }`}
                   >
@@ -459,7 +459,7 @@ export default function MediaLightbox({
                         onClick={() => onChange(index)}
                         className={`relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 border-2 transition-all ${
                           index === currentIndex
-                            ? 'border-rose-500 scale-110'
+                            ? 'border-gray-500 scale-110'
                             : 'border-white/20 hover:border-white/50'
                         }`}
                       >
@@ -530,7 +530,7 @@ export default function MediaLightbox({
                         {currentItem.tags.map(tag => (
                           <span
                             key={tag}
-                            className="bg-rose-500/20 text-rose-300 px-2 py-1 rounded-full text-xs"
+                            className="bg-gray-500/20 text-gray-300 px-2 py-1 rounded-full text-xs"
                           >
                             #{tag}
                           </span>

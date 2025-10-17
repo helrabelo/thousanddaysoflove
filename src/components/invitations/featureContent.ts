@@ -118,7 +118,7 @@ export const photosFeature: FeatureCardContent = {
 
   progressKey: 'photos_uploaded',
   completionBadge: '✅ Fotos enviadas',
-  color: 'from-pink-100 to-rose-50',
+  color: 'from-gray-100 to-gray-50',
 };
 
 /**
@@ -216,7 +216,7 @@ export const liveFeature: FeatureCardContent = {
   },
 
   progressKey: 'photos_uploaded', // No specific progress for live (future)
-  color: 'from-purple-100 to-violet-50',
+  color: 'from-gray-100 to-gray-50',
 };
 
 /**

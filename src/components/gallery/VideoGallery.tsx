@@ -180,9 +180,9 @@ export default function VideoGallery({
                 whileTap={{ scale: 0.95 }}
               >
                 {playerState.isPlaying && playerState.videoId === video.id ? (
-                  <Pause className="w-10 h-10 text-rose-600" />
+                  <Pause className="w-10 h-10 text-gray-600" />
                 ) : (
-                  <Play className="w-10 h-10 text-rose-600 ml-1" />
+                  <Play className="w-10 h-10 text-gray-600 ml-1" />
                 )}
               </motion.button>
             </div>
@@ -201,7 +201,7 @@ export default function VideoGallery({
                 onClick={(e) => toggleLike(video.id, e)}
                 className={`p-2 rounded-full backdrop-blur-md border border-white/20 transition-all duration-300 ${
                   likedVideos.has(video.id)
-                    ? 'bg-rose-500 text-white'
+                    ? 'bg-gray-500 text-white'
                     : 'bg-white/10 text-white hover:bg-white/20'
                 }`}
               >
@@ -230,7 +230,7 @@ export default function VideoGallery({
             {playerState.videoId === video.id && playerState.isPlaying && (
               <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/30">
                 <div
-                  className="h-full bg-gradient-to-r from-rose-500 to-pink-600 transition-all duration-300"
+                  className="h-full bg-gradient-to-r from-gray-500 to-gray-600 transition-all duration-300"
                   style={{
                     width: `${(playerState.currentTime / playerState.duration) * 100}%`
                   }}
@@ -265,7 +265,7 @@ export default function VideoGallery({
                 {video.tags.slice(0, 3).map(tag => (
                   <span
                     key={tag}
-                    className="bg-rose-100 text-rose-700 px-2 py-1 rounded-full text-xs font-medium"
+                    className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs font-medium"
                   >
                     #{tag}
                   </span>
@@ -327,7 +327,7 @@ export default function VideoGallery({
                 }}
                 whileHover={{ scale: 1.1 }}
               >
-                <Play className="w-12 h-12 text-rose-600 ml-1" />
+                <Play className="w-12 h-12 text-gray-600 ml-1" />
               </motion.button>
             </div>
 
@@ -386,7 +386,7 @@ export default function VideoGallery({
   }
 
   return (
-    <section className="py-12 bg-gradient-to-br from-gray-50 to-rose-50">
+    <section className="py-12 bg-gradient-to-br from-gray-50 to-gray-50">
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
         <motion.div
@@ -397,7 +397,7 @@ export default function VideoGallery({
           viewport={{ once: true }}
         >
           <h2 className="section-header text-deep-romantic mb-6">
-            <span className="bg-gradient-to-r from-rose-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-gray-600 via-gray-600 to-gray-600 bg-clip-text text-transparent">
               {title}
             </span>
           </h2>

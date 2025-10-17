@@ -168,7 +168,7 @@ export default function WeddingLocation({ data }: WeddingLocationProps) {
 
               <div className="space-y-2.5">
                 <div className="flex items-start gap-2">
-                  <MapPin className="w-4 h-4 text-rose-500 mt-0.5 flex-shrink-0" />
+                  <MapPin className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
                   <div>
                     <p
                       className="font-medium text-gray-800"
@@ -191,7 +191,7 @@ export default function WeddingLocation({ data }: WeddingLocationProps) {
                 </div>
 
                 <div className="flex items-start gap-2">
-                  <Clock className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
+                  <Clock className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
                   <div>
                     <p
                       className="font-medium text-gray-800"
@@ -468,7 +468,7 @@ export default function WeddingLocation({ data }: WeddingLocationProps) {
 
               <div className="space-y-2.5">
                 <div className="flex items-start gap-2">
-                  <MapPin className="w-4 h-4 text-rose-500 mt-0.5 flex-shrink-0" />
+                  <MapPin className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
                   <div>
                     <p
                       className="font-medium text-gray-800"
@@ -491,7 +491,7 @@ export default function WeddingLocation({ data }: WeddingLocationProps) {
                 </div>
 
                 <div className="flex items-start gap-2">
-                  <Clock className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
+                  <Clock className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
                   <div>
                     <p
                       className="font-medium text-gray-800"

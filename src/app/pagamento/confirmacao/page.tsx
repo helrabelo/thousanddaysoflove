@@ -82,9 +82,9 @@ function PaymentConfirmationContent() {
     return (
       <>
         <Navigation />
-        <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-purple-50 flex items-center justify-center pt-12">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 flex items-center justify-center pt-12">
           <div className="text-center">
-            <div className="w-16 h-16 border-4 border-purple-300 border-t-purple-600 rounded-full animate-spin mx-auto mb-4" />
+            <div className="w-16 h-16 border-4 border-gray-300 border-t-gray-600 rounded-full animate-spin mx-auto mb-4" />
             <p className="text-gray-600 text-lg">Carregando dados do pagamento...</p>
           </div>
         </div>
@@ -96,7 +96,7 @@ function PaymentConfirmationContent() {
     return (
       <>
         <Navigation />
-        <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-rose-50 flex items-center justify-center p-4 pt-32">
+        <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-gray-50 flex items-center justify-center p-4 pt-32">
           <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-red-500 text-2xl">⚠️</span>
@@ -105,7 +105,7 @@ function PaymentConfirmationContent() {
             <p className="text-gray-600 mb-6">{error}</p>
             <a
               href="/presentes"
-              className="bg-gradient-to-r from-rose-500 to-purple-600 hover:from-rose-600 hover:to-purple-700 text-white py-3 px-6 rounded-lg font-medium transition-all duration-300 inline-block"
+              className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white py-3 px-6 rounded-lg font-medium transition-all duration-300 inline-block"
             >
               Voltar à Lista de Presentes
             </a>
@@ -119,7 +119,7 @@ function PaymentConfirmationContent() {
     return (
       <>
         <Navigation />
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50 flex items-center justify-center p-4 pt-32">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 flex items-center justify-center p-4 pt-32">
           <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-gray-500 text-2xl">❓</span>
@@ -130,7 +130,7 @@ function PaymentConfirmationContent() {
             </p>
             <a
               href="/presentes"
-              className="bg-gradient-to-r from-rose-500 to-purple-600 hover:from-rose-600 hover:to-purple-700 text-white py-3 px-6 rounded-lg font-medium transition-all duration-300 inline-block"
+              className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white py-3 px-6 rounded-lg font-medium transition-all duration-300 inline-block"
             >
               Ver Lista de Presentes
             </a>
@@ -153,9 +153,9 @@ export default function PaymentConfirmationPage() {
     <Suspense fallback={
       <>
         <Navigation />
-        <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-purple-50 flex items-center justify-center pt-12">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 flex items-center justify-center pt-12">
           <div className="text-center">
-            <div className="w-16 h-16 border-4 border-purple-300 border-t-purple-600 rounded-full animate-spin mx-auto mb-4" />
+            <div className="w-16 h-16 border-4 border-gray-300 border-t-gray-600 rounded-full animate-spin mx-auto mb-4" />
             <p className="text-gray-600 text-lg">Carregando confirmacao de pagamento...</p>
           </div>
         </div>

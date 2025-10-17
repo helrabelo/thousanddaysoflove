@@ -127,9 +127,9 @@ export function getRelationshipEmoji(type: RelationshipType): string {
  */
 export function getRelationshipColorClass(type: RelationshipType): string {
   const colors: Record<RelationshipType, string> = {
-    family: 'bg-amber-100 text-amber-800 border-amber-300',
-    friend: 'bg-blue-100 text-blue-800 border-blue-300',
-    colleague: 'bg-purple-100 text-purple-800 border-purple-300',
+    family: 'bg-gray-100 text-gray-800 border-gray-300',
+    friend: 'bg-gray-200 text-gray-800 border-gray-400',
+    colleague: 'bg-gray-100 text-gray-700 border-gray-300',
     other: 'bg-gray-100 text-gray-800 border-gray-300',
   };
 

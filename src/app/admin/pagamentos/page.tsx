@@ -151,7 +151,7 @@ export default function AdminPagamentos() {
           </Card>
 
           <Card className="glass p-6 text-center">
-            <CreditCard className="w-8 h-8 text-purple-500 mx-auto mb-3" />
+            <CreditCard className="w-8 h-8 text-gray-500 mx-auto mb-3" />
             <h3 className="text-3xl font-bold text-burgundy-800">{stats.total}</h3>
             <p className="text-burgundy-600">Total</p>
           </Card>

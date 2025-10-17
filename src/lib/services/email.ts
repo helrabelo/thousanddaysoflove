@@ -208,10 +208,10 @@ export class EmailService {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Confirmação RSVP - Hel & Ylana</title>
       </head>
-      <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #FDF2F8 0%, #F3E8FF 100%);">
+      <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #F8F6F3 0%, #E8E6E3 100%);">
         <div style="max-width: 600px; margin: 0 auto; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
           <!-- Header -->
-          <div style="background: linear-gradient(135deg, #F43F5E 0%, #8B5CF6 100%); padding: 40px 30px; text-align: center;">
+          <div style="background: linear-gradient(135deg, #6B6B6B 0%, #4A4A4A 100%); padding: 40px 30px; text-align: center;">
             <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 700;">Mil Dias de Amor</h1>
             <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">Hel & Ylana</p>
           </div>
@@ -235,7 +235,7 @@ export class EmailService {
             </div>
 
             <!-- Wedding Details -->
-            <div style="background: linear-gradient(135deg, #FEF3C7 0%, #DDD6FE 100%); padding: 25px; border-radius: 12px; margin-bottom: 30px;">
+            <div style="background: linear-gradient(135deg, #FEF3C7 0%, #E0DDD8 100%); padding: 25px; border-radius: 12px; margin-bottom: 30px;">
               <h3 style="color: #1F2937; margin: 0 0 15px 0; font-size: 18px;">Detalhes do Casamento</h3>
               <p style="color: #374151; margin: 5px 0; font-size: 14px;">
                 <strong>Data:</strong> 20 de Novembro de 2025
@@ -254,7 +254,7 @@ export class EmailService {
               </p>
 
               <p style="color: #4B5563; font-size: 16px; line-height: 1.6;">
-                Não se esqueça de conferir nossa <a href="${process.env.NEXT_PUBLIC_SITE_URL}/presentes" style="color: #8B5CF6; text-decoration: none;">lista de presentes</a> se desejar nos presentear.
+                Não se esqueça de conferir nossa <a href="${process.env.NEXT_PUBLIC_SITE_URL}/presentes" style="color: #4A4A4A; text-decoration: none;">lista de presentes</a> se desejar nos presentear.
               </p>
             ` : `
               <p style="color: #4B5563; font-size: 16px; line-height: 1.6;">
@@ -267,10 +267,10 @@ export class EmailService {
           <div style="background: #F9FAFB; padding: 30px; text-align: center; border-top: 1px solid #E5E7EB;">
             <p style="color: #6B7280; margin: 0; font-size: 14px;">
               Com amor,<br>
-              <strong style="color: #8B5CF6;">Hel & Ylana</strong>
+              <strong style="color: #4A4A4A;">Hel & Ylana</strong>
             </p>
             <p style="color: #9CA3AF; margin: 15px 0 0 0; font-size: 12px;">
-              <a href="${process.env.NEXT_PUBLIC_SITE_URL}" style="color: #8B5CF6; text-decoration: none;">thousanddaysoflove.com</a>
+              <a href="${process.env.NEXT_PUBLIC_SITE_URL}" style="color: #4A4A4A; text-decoration: none;">thousanddaysoflove.com</a>
             </p>
           </div>
         </div>
@@ -294,10 +294,10 @@ export class EmailService {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Pagamento Confirmado - Hel & Ylana</title>
       </head>
-      <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #FDF2F8 0%, #F3E8FF 100%);">
+      <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #F8F6F3 0%, #E8E6E3 100%);">
         <div style="max-width: 600px; margin: 0 auto; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
           <!-- Header -->
-          <div style="background: linear-gradient(135deg, #10B981 0%, #8B5CF6 100%); padding: 40px 30px; text-align: center;">
+          <div style="background: linear-gradient(135deg, #10B981 0%, #4A4A4A 100%); padding: 40px 30px; text-align: center;">
             <div style="background: white; width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
               <span style="color: #10B981; font-size: 30px;">✓</span>
             </div>
@@ -314,7 +314,7 @@ export class EmailService {
             </p>
 
             <!-- Payment Details -->
-            <div style="background: linear-gradient(135deg, #ECFDF5 0%, #F3E8FF 100%); padding: 25px; border-radius: 12px; margin-bottom: 30px; border: 1px solid #D1FAE5;">
+            <div style="background: linear-gradient(135deg, #ECFDF5 0%, #E8E6E3 100%); padding: 25px; border-radius: 12px; margin-bottom: 30px; border: 1px solid #D1FAE5;">
               <h3 style="color: #1F2937; margin: 0 0 15px 0; font-size: 18px;">Detalhes do Pagamento</h3>
               <p style="color: #374151; margin: 5px 0; font-size: 14px;">
                 <strong>Presente:</strong> ${data.giftName}
@@ -330,7 +330,7 @@ export class EmailService {
               </p>
             </div>
 
-            <div style="background: linear-gradient(135deg, #FEF3C7 0%, #DDD6FE 100%); padding: 25px; border-radius: 12px; text-align: center; margin-bottom: 30px;">
+            <div style="background: linear-gradient(135deg, #FEF3C7 0%, #E0DDD8 100%); padding: 25px; border-radius: 12px; text-align: center; margin-bottom: 30px;">
               <h3 style="color: #1F2937; margin: 0 0 15px 0; font-size: 18px;">💕 Hel & Ylana 💕</h3>
               <p style="color: #374151; margin: 0; font-size: 16px; font-style: italic;">
                 "Sua generosidade torna nosso dia ainda mais especial. Muito obrigado por fazer parte da nossa história de amor!"
@@ -339,7 +339,7 @@ export class EmailService {
 
             <p style="color: #4B5563; font-size: 16px; line-height: 1.6; text-align: center;">
               Nos vemos no grande dia:<br>
-              <strong style="color: #8B5CF6;">20 de Novembro de 2025</strong>
+              <strong style="color: #4A4A4A;">20 de Novembro de 2025</strong>
             </p>
           </div>
 
@@ -347,10 +347,10 @@ export class EmailService {
           <div style="background: #F9FAFB; padding: 30px; text-align: center; border-top: 1px solid #E5E7EB;">
             <p style="color: #6B7280; margin: 0; font-size: 14px;">
               Com muito amor e gratidão,<br>
-              <strong style="color: #8B5CF6;">Hel & Ylana</strong>
+              <strong style="color: #4A4A4A;">Hel & Ylana</strong>
             </p>
             <p style="color: #9CA3AF; margin: 15px 0 0 0; font-size: 12px;">
-              <a href="${process.env.NEXT_PUBLIC_SITE_URL}" style="color: #8B5CF6; text-decoration: none;">thousanddaysoflove.com</a>
+              <a href="${process.env.NEXT_PUBLIC_SITE_URL}" style="color: #4A4A4A; text-decoration: none;">thousanddaysoflove.com</a>
             </p>
           </div>
         </div>
@@ -378,7 +378,7 @@ export class EmailService {
       <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background: #F9FAFB;">
         <div style="max-width: 600px; margin: 0 auto; background: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
           <!-- Header -->
-          <div style="background: linear-gradient(135deg, #F59E0B 0%, #8B5CF6 100%); padding: 30px; text-align: center;">
+          <div style="background: linear-gradient(135deg, #F59E0B 0%, #4A4A4A 100%); padding: 30px; text-align: center;">
             <div style="background: white; width: 50px; height: 50px; border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;">
               <span style="color: #F59E0B; font-size: 24px;">🎁</span>
             </div>
@@ -429,7 +429,7 @@ export class EmailService {
           <!-- Footer -->
           <div style="background: #F9FAFB; padding: 20px; text-align: center; border-top: 1px solid #E5E7EB;">
             <p style="color: #6B7280; margin: 0; font-size: 12px;">
-              Sistema automático - <a href="${process.env.NEXT_PUBLIC_SITE_URL}/admin" style="color: #8B5CF6; text-decoration: none;">Ver Dashboard</a>
+              Sistema automático - <a href="${process.env.NEXT_PUBLIC_SITE_URL}/admin" style="color: #4A4A4A; text-decoration: none;">Ver Dashboard</a>
             </p>
           </div>
         </div>
@@ -452,10 +452,10 @@ export class EmailService {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Lembrete RSVP - Hel & Ylana</title>
       </head>
-      <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #FDF2F8 0%, #F3E8FF 100%);">
+      <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #F8F6F3 0%, #E8E6E3 100%);">
         <div style="max-width: 600px; margin: 0 auto; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
           <!-- Header -->
-          <div style="background: linear-gradient(135deg, #F59E0B 0%, #F43F5E 100%); padding: 40px 30px; text-align: center;">
+          <div style="background: linear-gradient(135deg, #F59E0B 0%, #6B6B6B 100%); padding: 40px 30px; text-align: center;">
             <div style="background: white; width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
               <span style="color: #F59E0B; font-size: 30px;">⏰</span>
             </div>
@@ -485,13 +485,13 @@ export class EmailService {
             <!-- CTA Button -->
             <div style="text-align: center; margin-bottom: 30px;">
               <a href="${process.env.NEXT_PUBLIC_SITE_URL}/rsvp?code=${data.invitationCode}"
-                 style="display: inline-block; background: linear-gradient(135deg, #F43F5E 0%, #8B5CF6 100%); color: white; padding: 15px 30px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px;">
+                 style="display: inline-block; background: linear-gradient(135deg, #6B6B6B 0%, #4A4A4A 100%); color: white; padding: 15px 30px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px;">
                 Confirmar Presença Agora
               </a>
             </div>
 
             <!-- Wedding Details -->}
-            <div style="background: linear-gradient(135deg, #F0F9FF 0%, #F3E8FF 100%); padding: 25px; border-radius: 12px; margin-bottom: 20px;">
+            <div style="background: linear-gradient(135deg, #F0F9FF 0%, #E8E6E3 100%); padding: 25px; border-radius: 12px; margin-bottom: 20px;">
               <h3 style="color: #1F2937; margin: 0 0 15px 0; font-size: 18px; text-align: center;">💒 Nosso Grande Dia</h3>
               <p style="color: #374151; margin: 5px 0; font-size: 14px; text-align: center;">
                 <strong>20 de Novembro de 2025</strong><br>
@@ -508,7 +508,7 @@ export class EmailService {
           <div style="background: #F9FAFB; padding: 30px; text-align: center; border-top: 1px solid #E5E7EB;">
             <p style="color: #6B7280; margin: 0; font-size: 14px;">
               Com amor,<br>
-              <strong style="color: #8B5CF6;">Hel & Ylana</strong>
+              <strong style="color: #4A4A4A;">Hel & Ylana</strong>
             </p>
           </div>
         </div>
@@ -537,7 +537,7 @@ export class EmailService {
         subject: 'Teste - Sistema de E-mail do Casamento',
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <h1 style="color: #8B5CF6;">Sistema de E-mail Funcionando! ✅</h1>
+            <h1 style="color: #4A4A4A;">Sistema de E-mail Funcionando! ✅</h1>
             <p>Este é um e-mail de teste do sistema do casamento Hel & Ylana.</p>
             <p>Se você recebeu este e-mail, significa que o sistema está funcionando corretamente.</p>
             <p style="color: #6B7280; font-size: 14px;">

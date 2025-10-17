@@ -35,13 +35,13 @@ export default function AnimatedTitle({ className = '', delay = 2 }: AnimatedTit
       opacity: 1,
       scale: 1,
       rotateY: 0,
-      color: '#fef7f7' // rose-50
+      color: '#F8F6F3' // cream background
     }),
     transforming: (custom: string) => ({
       opacity: [1, 0, 1],
       scale: [1, 1.2, 1],
       rotateY: [0, 180, 360],
-      color: custom === 'heart' ? '#f43f5e' : '#fef7f7', // rose-500 for heart, rose-50 for others
+      color: custom === 'heart' ? '#4A4A4A' : '#F8F6F3', // gray-600 for heart, cream for others
       transition: {
         duration: 0.8,
         ease: [0.42, 0, 0.58, 1], // easeInOut as cubic bezier
@@ -52,7 +52,7 @@ export default function AnimatedTitle({ className = '', delay = 2 }: AnimatedTit
       opacity: 1,
       scale: 1,
       rotateY: 0,
-      color: custom === 'heart' ? '#f43f5e' : '#fef7f7'
+      color: custom === 'heart' ? '#4A4A4A' : '#F8F6F3'
     })
   }
 
@@ -107,7 +107,7 @@ export default function AnimatedTitle({ className = '', delay = 2 }: AnimatedTit
           {[...Array(8)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute text-rose-300 text-lg"
+              className="absolute text-gray-300 text-lg"
               initial={{
                 opacity: 0,
                 scale: 0,

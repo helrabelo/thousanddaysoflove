@@ -456,7 +456,7 @@ export function BulkOperationsPanel({
       title: 'Gerar Códigos',
       description: 'Gerar 50 códigos de convite em lote',
       icon: QrCode,
-      color: 'bg-purple-500',
+      color: 'bg-gray-500',
       action: handleGenerateBulkCodes,
       disabled: false,
       count: 50
@@ -466,7 +466,7 @@ export function BulkOperationsPanel({
       title: 'Grupos Familiares',
       description: 'Criar grupos familiares automaticamente',
       icon: Users,
-      color: 'bg-pink-500',
+      color: 'bg-gray-500',
       action: handleCreateFamilyGroups,
       disabled: selectedGuestIds.length < 2,
       count: Math.floor(selectedGuestIds.length / 2)

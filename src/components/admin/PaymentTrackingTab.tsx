@@ -227,7 +227,7 @@ export function PaymentTrackingTab() {
       case 'credit_card':
         return <CreditCard className="w-4 h-4 text-blue-600" />
       case 'bank_transfer':
-        return <DollarSign className="w-4 h-4 text-purple-600" />
+        return <DollarSign className="w-4 h-4 text-gray-600" />
       default:
         return <DollarSign className="w-4 h-4 text-gray-600" />
     }
@@ -427,7 +427,7 @@ export function PaymentTrackingTab() {
 
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <PieChart className="w-8 h-8 text-purple-500" />
+            <PieChart className="w-8 h-8 text-gray-500" />
             <div>
               <h3 className="font-semibold text-burgundy-800">PIX Dominante</h3>
               <p className="text-sm text-burgundy-600">
@@ -566,7 +566,7 @@ export function PaymentTrackingTab() {
 
                   <td className="px-6 py-4">
                     <div className="flex items-center">
-                      <Gift className="w-4 h-4 mr-2 text-purple-500" />
+                      <Gift className="w-4 h-4 mr-2 text-gray-500" />
                       <span className="text-sm text-burgundy-700">
                         {payment.gift_name || 'Presente removido'}
                       </span>
