@@ -194,7 +194,7 @@ export default function ElegantInvitation({ variant = 'default', guestName }: El
         >
           Convidamos você para testemunhar nosso dia mais especial.
           {' '}
-          Celebramos nosso <strong style={{ fontWeight: '600' }}>milésimo</strong> dia juntos
+          <br />Celebraremos nosso <strong style={{ fontWeight: '600' }}>milésimo</strong> dia juntos
           {' '}
           transformando nossa certeza em compromisso.
         </motion.p>

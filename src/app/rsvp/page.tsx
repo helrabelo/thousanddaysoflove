@@ -279,28 +279,24 @@ export default function SimpleRSVP() {
               transition={{ duration: 0.6, delay: 0.5 }}
             >
               <h1
-                className="mb-4"
+                className="text-5xl md:text-7xl font-bold mb-8"
                 style={{
                   fontFamily: 'var(--font-playfair)',
-                  fontSize: 'clamp(1.75rem, 4vw, 2.25rem)',
                   color: 'var(--primary-text)',
-                  letterSpacing: '0.05em',
-                  lineHeight: '1.3'
+                  letterSpacing: '0.15em',
+                  lineHeight: '1.1'
                 }}
               >
                 Bem vindo ao nosso casamento! 🎉
               </h1>
+              <div className="w-24 h-px mx-auto mb-8" style={{ background: 'var(--decorative)' }} />
 
               <p
-                className="mb-2"
+                className="text-xl md:text-2xl max-w-2xl mx-auto leading-relaxed mb-2"
                 style={{
                   fontFamily: 'var(--font-crimson)',
-                  fontSize: 'clamp(1.125rem, 2.5vw, 1.375rem)',
                   color: 'var(--secondary-text)',
                   fontStyle: 'italic',
-                  lineHeight: '1.7',
-                  maxWidth: '36rem',
-                  margin: '0 auto 1rem'
                 }}
               >
                 Preparamos uma experiência digital super especial para nosso casório! Nossos convidados poderão mandar mensagens, postar fotos, vídeos, <br />&gt;&gt;&gt;&gt; COMPRAR PRESENTES &lt;&lt;&lt;&lt; e claro, confirmar presença. Tudo isso para deixar nossa celebração ainda mais inesquecível.
