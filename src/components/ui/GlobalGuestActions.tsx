@@ -26,6 +26,7 @@ export function GlobalGuestActions() {
   const [guestName, setGuestName] = useState('Convidado')
   const [isPostComposerOpen, setIsPostComposerOpen] = useState(false)
   const [isMediaUploadOpen, setIsMediaUploadOpen] = useState(false)
+  const [uploadTimelineEvent, setUploadTimelineEvent] = useState<{ id?: string; title?: string } | null>(null)
 
   useEffect(() => {
     // Check guest authentication on mount
@@ -43,8 +44,13 @@ export function GlobalGuestActions() {
       setIsPostComposerOpen(true)
     }
 
-    const handleOpenMediaUpload = () => {
+    const handleOpenMediaUpload = (event: Event) => {
       console.log('📸 [GlobalGuestActions] Request to open media upload received')
+      const detail = (event as CustomEvent<{ timelineEventId?: string; timelineEventTitle?: string }>).detail
+      setUploadTimelineEvent({
+        id: detail?.timelineEventId ?? undefined,
+        title: detail?.timelineEventTitle ?? undefined
+      })
       setIsMediaUploadOpen(true)
     }
 
@@ -133,7 +139,12 @@ export function GlobalGuestActions() {
       <MediaUploadModal
         isOpen={isMediaUploadOpen}
         guestName={guestName}
-        onClose={() => setIsMediaUploadOpen(false)}
+        timelineEventId={uploadTimelineEvent?.id}
+        timelineEventTitle={uploadTimelineEvent?.title}
+        onClose={() => {
+          setIsMediaUploadOpen(false)
+          setUploadTimelineEvent(null)
+        }}
         onUploadComplete={handleUploadComplete}
       />
     </>

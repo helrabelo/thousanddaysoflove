@@ -36,6 +36,7 @@ export interface GuestPhoto {
   is_deleted: boolean;
   created_at: string;
   updated_at: string;
+  timeline_event_id: string | null;
 }
 
 export interface GuestPhotoInsert {
@@ -63,6 +64,7 @@ export interface GuestPhotoInsert {
   is_deleted?: boolean;
   created_at?: string;
   updated_at?: string;
+  timeline_event_id?: string | null;
 }
 
 export interface GuestPhotoUpdate {
@@ -88,6 +90,7 @@ export interface GuestPhotoUpdate {
   is_featured?: boolean;
   is_deleted?: boolean;
   updated_at?: string;
+  timeline_event_id?: string | null;
 }
 
 // ============================================================================

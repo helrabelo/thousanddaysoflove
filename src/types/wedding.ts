@@ -1,3 +1,5 @@
+import type { UploadPhase } from './interactive-features'
+
 export interface Guest {
   id: string;
   name: string;
@@ -534,6 +536,7 @@ export interface GuestPost {
   content: string;
   post_type: 'text' | 'image' | 'video' | 'mixed';
   media_urls?: string[];
+  timeline_event_id?: string | null;
 
   // Moderation
   status: 'pending' | 'approved' | 'rejected';
@@ -728,4 +731,82 @@ export interface GiftsPageSections {
   // Meta
   lastUpdated?: string;
   isActive: boolean;
+}
+
+
+/**
+ * Wedding Timeline Event (Sanity CMS)
+ * Represents a scheduled event during the wedding day
+ */
+export interface WeddingTimelineEvent {
+  _id: string;
+  title: string;
+  description: string;
+  startTime: string; // ISO 8601 datetime
+  endTime?: string;
+  estimatedDuration: number; // minutes
+  icon: string; // Lucide icon name
+  colorGradient: string;
+  location?: string;
+  eventType:
+    | 'pre_ceremony'
+    | 'ceremony'
+    | 'post_ceremony'
+    | 'reception'
+    | 'entertainment'
+    | 'special_moment'
+    | 'closing';
+  allowPhotoUploads: boolean;
+  photoUploadPrompt?: string;
+  isHighlight: boolean;
+  showOnTVDisplay: boolean;
+  displayOrder: number;
+  isActive: boolean;
+  sendNotifications: boolean;
+  notificationLeadTime?: number;
+  guestPhotosCount: number;
+  viewCount: number;
+}
+
+export interface TimelineEventPhoto {
+  id: string;
+  timelineEventId: string;
+  publicUrl: string;
+  storagePath: string;
+  isVideo: boolean;
+  guestName: string;
+  uploadedAt: string;
+  uploadPhase: UploadPhase;
+  width?: number | null;
+  height?: number | null;
+}
+
+/**
+ * Timeline Event State
+ * Real-time state calculation for each event
+ */
+export interface TimelineEventState {
+  event: WeddingTimelineEvent;
+  status: 'upcoming' | 'happening_now' | 'completed';
+  timeUntilStart?: number; // minutes
+  timeRemaining?: number; // minutes
+  progressPercentage?: number; // 0-100
+  isNext: boolean; // Next event to start
+  guestPhotos: TimelineEventPhoto[]; // Photos uploaded for this event
+}
+
+/**
+ * Live Timeline Data
+ * Complete timeline with real-time calculations
+ */
+export interface LiveTimelineData {
+  events: TimelineEventState[];
+  currentEvent?: TimelineEventState;
+  nextEvent?: TimelineEventState;
+  overallProgress: number; // Percentage through the wedding day
+  totalEvents: number;
+  completedEvents: number;
+  currentTime: string; // ISO 8601
+  weddingStartTime: string;
+  weddingEndTime: string;
 }

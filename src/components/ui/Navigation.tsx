@@ -62,6 +62,13 @@ const guestMenuItems = [
     tooltip: 'Feed ao vivo',
     easterEgg: 'Acompanhe a festa em tempo real'
   },
+  {
+    name: 'Timeline Ao Vivo',
+    href: '/dia-1000/timeline',
+    icon: '🕒',
+    tooltip: 'Veja o que está rolando agora',
+    easterEgg: 'Agenda com transmissão ao vivo'
+  },
 ]
 
 export default function Navigation() {

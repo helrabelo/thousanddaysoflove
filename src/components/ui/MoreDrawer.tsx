@@ -47,6 +47,13 @@ const drawerItems: DrawerItem[] = [
     badge: 'Novo',
     badgeColor: 'var(--decorative)',
   },
+  {
+    name: 'Timeline Ao Vivo',
+    href: '/dia-1000/timeline',
+    icon: <MessageCircle className="w-5 h-5" />,
+    description: 'Agenda do dia com status ao vivo',
+    category: 'guest',
+  },
   // Info Pages
   {
     name: 'Confirmação',

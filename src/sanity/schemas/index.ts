@@ -14,11 +14,11 @@ import { documentSchemas } from './documents'
 import { sectionSchemas } from './sections'
 import { pageSchemas } from './pages'
 
-// All schemas for Sanity Studio (18 total)
+// All schemas for Sanity Studio (24 total)
 export const schemaTypes = [
   ...globalSchemas, // 4 singletons
-  ...documentSchemas, // 4 reusable docs
-  ...sectionSchemas, // 7 sections
+  ...documentSchemas, // 9 reusable docs
+  ...sectionSchemas, // 8 sections
   ...pageSchemas, // 3 pages
 ]
 

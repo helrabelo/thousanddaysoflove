@@ -34,6 +34,14 @@ const getGuestMenuItems = (inviteCode?: string): GuestMenuItem[] => [
     badge: '20 Nov',
     badgeColor: 'var(--secondary-text)',
   },
+  {
+    name: 'Timeline Ao Vivo',
+    href: '/dia-1000/timeline',
+    icon: <MessageCircle className="w-5 h-5" />,
+    description: 'Veja o que está rolando agora',
+    timeGated: true,
+    availableDate: new Date('2025-11-20'),
+  },
 ]
 
 export default function GuestMenu() {

@@ -3,6 +3,7 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import { ReactNode, useMemo, useState, useEffect } from 'react'
 import MediaCarousel, { MediaItem } from '@/components/ui/MediaCarousel'
+import AnimatedDayNumber from './AnimatedDayNumber'
 
 interface TimelineMomentCardProps {
   /** Day number in the relationship */
@@ -183,7 +184,7 @@ export default function TimelineMomentCard({
               ${isLeft ? 'md:col-start-1' : 'md:col-start-2'}
             `}
           >
-            {/* Day Badge */}
+            {/* Day Badge with Animated Number */}
             <motion.div
               initial={{ scale: shouldReduceMotion ? 1 : 0.95, opacity: 0 }}
               whileInView={{ scale: 1, opacity: 1 }}
@@ -212,7 +213,11 @@ export default function TimelineMomentCard({
                     fontWeight: '700',
                   }}
                 >
-                  Dia {day}
+                  Dia <AnimatedDayNumber
+                    value={day}
+                    duration={2}
+                    delay={0.4}
+                  />
                 </span>
                 <span className="opacity-50">•</span>
                 <span className="opacity-75">{date}</span>

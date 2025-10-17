@@ -13,6 +13,7 @@ import weddingSettings from './weddingSettings'
 import galleryImage from './galleryImage'
 import guestMedia from './guestMedia'
 import { giftItem } from './giftItem'
+import weddingTimelineEvent from './weddingTimelineEvent'
 
 export const documentSchemas = [
   pet,
@@ -23,6 +24,7 @@ export const documentSchemas = [
   galleryImage,
   guestMedia, // Guest-uploaded photos and videos
   giftItem, // Gift registry items
+  weddingTimelineEvent, // Wedding day timeline events
 ]
 
 export default documentSchemas

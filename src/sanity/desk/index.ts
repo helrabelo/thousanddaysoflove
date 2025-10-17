@@ -162,6 +162,19 @@ export const deskStructure: StructureResolver = (S) =>
             ])
         ),
 
+
+      S.divider(),
+
+      // 🕒 TIMELINE DO CASAMENTO
+      S.listItem()
+        .title('🕒 Timeline do Casamento')
+        .icon(Clock)
+        .child(
+          S.documentTypeList('weddingTimelineEvent')
+            .title('Eventos do Dia do Casamento')
+            .filter('_type == "weddingTimelineEvent"')
+            .defaultOrdering([{field: 'displayOrder', direction: 'asc'}])
+        ),
       S.divider(),
 
       // 📷 GALERIA
