@@ -319,7 +319,7 @@ export default function MediaCarousel({
         <>
           {/* Previous Button */}
           <motion.button
-            className="absolute left-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full backdrop-blur-md"
+            className="!w-fit absolute left-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full backdrop-blur-md"
             style={{
               background: 'rgba(255, 255, 255, 0.2)',
               border: '2px solid rgba(255, 255, 255, 0.4)',
@@ -338,7 +338,7 @@ export default function MediaCarousel({
 
           {/* Next Button */}
           <motion.button
-            className="absolute right-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full backdrop-blur-md"
+            className="!w-fit absolute right-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full backdrop-blur-md"
             style={{
               background: 'rgba(255, 255, 255, 0.2)',
               border: '2px solid rgba(255, 255, 255, 0.4)',
@@ -357,7 +357,7 @@ export default function MediaCarousel({
 
           {/* Play/Pause Button */}
           <motion.button
-            className="absolute top-4 right-4 z-10 p-3 rounded-full backdrop-blur-md"
+            className="!w-fit absolute top-4 right-4 z-10 p-3 rounded-full backdrop-blur-md"
             style={{
               background: 'rgba(255, 255, 255, 0.2)',
               border: '2px solid rgba(255, 255, 255, 0.4)',

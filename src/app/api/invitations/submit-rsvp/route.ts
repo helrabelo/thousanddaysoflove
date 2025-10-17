@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
     // Prepare update data
     const updateData: any = {
       rsvp_completed: true,
-      rsvp_confirmed: attending, // Add this field to track yes/no
+      attending: attending,
     };
 
     // Update dietary restrictions if provided

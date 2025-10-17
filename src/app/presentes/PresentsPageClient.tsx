@@ -370,7 +370,7 @@ export default function PresentsPageClient({ sections }: PresentsPageClientProps
             {/* Search */}
             <div className="relative">
               <Search
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4"
                 style={{ color: 'var(--decorative)' }}
               />
               <input
@@ -378,7 +378,7 @@ export default function PresentsPageClient({ sections }: PresentsPageClientProps
                 placeholder="Buscar presentes..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 transition-all duration-200"
+                className="w-full pl-4 pr-10 py-3 border rounded-lg focus:ring-2 transition-all duration-200"
                 style={{
                   borderColor: 'var(--border-subtle)',
                   background: 'var(--background)',
