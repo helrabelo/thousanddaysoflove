@@ -16,6 +16,7 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { X, Upload, Loader2, CheckCircle2, XCircle, Video } from 'lucide-react'
 import { validateFile, formatFileSize, type UploadPhase } from '@/lib/supabase/storage'
+import { uploadFileDirect } from '@/lib/supabase/direct-upload'
 
 interface UploadFile {
   id: string
@@ -24,6 +25,7 @@ interface UploadFile {
   progress: number
   status: 'pending' | 'uploading' | 'success' | 'error'
   error?: string
+  warning?: string
   autoApproved?: boolean
 }
 
@@ -93,13 +95,18 @@ export function MediaUploadModal({
   const handleFileSelect = useCallback((selectedFiles: FileList | null) => {
     if (!selectedFiles) return
 
-    const newFiles: UploadFile[] = Array.from(selectedFiles).map((file) => ({
-      id: Math.random().toString(36).substring(7),
-      file,
-      preview: URL.createObjectURL(file),
-      progress: 0,
-      status: 'pending'
-    }))
+    const newFiles: UploadFile[] = Array.from(selectedFiles).map((file) => {
+      const validation = validateFile(file)
+      return {
+        id: Math.random().toString(36).substring(7),
+        file,
+        preview: URL.createObjectURL(file),
+        progress: 0,
+        status: validation.valid ? 'pending' : 'error',
+        error: validation.error,
+        warning: validation.warning,
+      }
+    })
 
     setFiles((prev) => [...prev, ...newFiles])
   }, [])
@@ -124,7 +131,7 @@ export function MediaUploadModal({
     [handleFileSelect]
   )
 
-  // Upload file
+  // Upload file using direct Supabase upload (bypasses Vercel 4.5MB limit)
   const uploadFile = async (uploadFile: UploadFile) => {
     // Validate file
     const validation = validateFile(uploadFile.file)
@@ -147,43 +154,41 @@ export function MediaUploadModal({
     )
 
     try {
-      const formData = new FormData()
-      formData.append('file', uploadFile.file)
-      formData.append('phase', uploadPhase)
-      if (caption) {
-        formData.append('caption', caption)
-      }
-      if (timelineEventId) {
-        formData.append('timeline_event_id', timelineEventId)
-      }
-
-      const response = await fetch('/api/photos/upload', {
-        method: 'POST',
-        credentials: 'include', // Include cookies for authentication
-        body: formData
+      // Use direct upload to Supabase (bypasses Vercel limit!)
+      const result = await uploadFileDirect({
+        file: uploadFile.file,
+        phase: uploadPhase,
+        caption: caption || undefined,
+        timelineEventId: timelineEventId || undefined,
+        onProgress: (progress) => {
+          setFiles((prev) =>
+            prev.map((f) =>
+              f.id === uploadFile.id ? { ...f, progress } : f
+            )
+          )
+        },
       })
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Erro ao fazer upload')
+      if (!result.success) {
+        throw new Error(result.error || 'Erro ao fazer upload')
       }
 
       // Update status to success
       setFiles((prev) =>
         prev.map((f) =>
           f.id === uploadFile.id
-            ? { ...f, status: 'success', progress: 100, autoApproved: data.photo?.auto_approved }
+            ? { ...f, status: 'success', progress: 100, autoApproved: result.photo?.auto_approved }
             : f
         )
       )
 
+      // Dispatch event for other components
       if (typeof window !== 'undefined') {
         window.dispatchEvent(
           new CustomEvent('media-uploaded', {
             detail: {
-              photo: data.photo,
-              timelineEventId: data.photo?.timeline_event_id ?? null,
+              photo: result.photo,
+              timelineEventId: result.photo?.timeline_event_id ?? null,
             },
           })
         )
@@ -514,6 +519,13 @@ export function MediaUploadModal({
                                         />
                                       </div>
                                     </div>
+                                  )}
+
+                                  {/* Warning Message */}
+                                  {file.warning && file.status === 'pending' && (
+                                    <p className="mt-1 font-crimson text-xs text-orange-600">
+                                      ⚠️ {file.warning}
+                                    </p>
                                   )}
 
                                   {/* Error Message */}

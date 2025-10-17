@@ -1183,7 +1183,7 @@ function CreateInvitationModal({
                   required
                   value={formData.guest_name}
                   onChange={(e) => setFormData({ ...formData, guest_name: e.target.value })}
-                  placeholder="João Silva"
+                  placeholder="Convidado(a)"
                 />
               </div>
 

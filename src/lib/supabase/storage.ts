@@ -295,9 +295,14 @@ export async function generateVideoThumbnail(file: File): Promise<Blob> {
 export function validateFile(file: File): {
   valid: boolean
   error?: string
+  warning?: string
 } {
+  // Theoretical limits (Supabase Storage supports up to 5GB)
   const MAX_IMAGE_SIZE = 100 * 1024 * 1024 // 100MB
   const MAX_VIDEO_SIZE = 500 * 1024 * 1024 // 500MB
+
+  // Practical limit (Vercel API Route body size - ALL plans)
+  const VERCEL_API_LIMIT = 4.5 * 1024 * 1024 // 4.5MB
 
   const isVideo = file.type.startsWith('video/')
   const isImage = file.type.startsWith('image/')
@@ -316,6 +321,16 @@ export function validateFile(file: File): {
       valid: false,
       error: `Arquivo muito grande. Máximo: ${maxSizeMB}MB`,
     }
+  }
+
+  // Now using direct upload to Supabase (no Vercel 4.5MB limit!)
+  // Just warn about very large files (slow uploads)
+  const LARGE_FILE_WARNING = 20 * 1024 * 1024 // 20MB
+
+  let warning: string | undefined
+  if (file.size > LARGE_FILE_WARNING) {
+    const sizeMB = (file.size / 1024 / 1024).toFixed(1)
+    warning = `Arquivo grande (${sizeMB}MB). Upload pode demorar alguns minutos.`
   }
 
   const allowedImageTypes = [
@@ -342,7 +357,7 @@ export function validateFile(file: File): {
     }
   }
 
-  return { valid: true }
+  return { valid: true, warning }
 }
 
 /**

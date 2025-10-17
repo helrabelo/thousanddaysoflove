@@ -3,8 +3,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
-import { ChevronDown, Calendar, MessageCircle, Radio, Sparkles } from 'lucide-react'
+import { ChevronDown, Calendar, MessageCircle, Radio, Sparkles, LogOut } from 'lucide-react'
 import { useGuestSession } from '@/hooks/useGuestSession'
+import { useRouter } from 'next/navigation'
 
 interface GuestMenuItem {
   name: string
@@ -46,8 +47,10 @@ const getGuestMenuItems = (inviteCode?: string): GuestMenuItem[] => [
 
 export default function GuestMenu() {
   const [isOpen, setIsOpen] = useState(false)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
-  const { session, loading } = useGuestSession()
+  const { session, loading, logout } = useGuestSession()
+  const router = useRouter()
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -92,6 +95,30 @@ export default function GuestMenu() {
   const isTimeGatedAvailable = (item: GuestMenuItem) => {
     if (!item.timeGated || !item.availableDate) return true
     return new Date() >= item.availableDate || isWeddingDay()
+  }
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true)
+
+    try {
+      const result = await logout()
+
+      if (result.success) {
+        // Close menu
+        setIsOpen(false)
+
+        // Redirect to home page
+        router.push('/')
+        router.refresh()
+      } else {
+        alert('Erro ao fazer logout. Por favor, tente novamente.')
+      }
+    } catch (error) {
+      console.error('Logout error:', error)
+      alert('Erro ao fazer logout. Por favor, tente novamente.')
+    } finally {
+      setIsLoggingOut(false)
+    }
   }
 
   // Get guest name from session, or use default
@@ -313,18 +340,34 @@ export default function GuestMenu() {
             </div>
 
             {/* Footer */}
-            {!isLoggedIn && (
-              <div
-                className="px-4 py-3 text-center border-t"
-                style={{
-                  borderColor: 'var(--border-subtle)',
-                  background: 'var(--accent)',
-                }}
-              >
+            <div
+              className="px-4 py-3 border-t"
+              style={{
+                borderColor: 'var(--border-subtle)',
+                background: 'var(--accent)',
+              }}
+            >
+              {isLoggedIn ? (
+                <button
+                  onClick={handleLogout}
+                  disabled={isLoggingOut}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 hover:opacity-80 disabled:opacity-50"
+                  style={{
+                    fontFamily: 'var(--font-crimson)',
+                    fontSize: '0.875rem',
+                    color: 'var(--secondary-text)',
+                    background: 'transparent',
+                    border: '1px solid var(--border-subtle)',
+                  }}
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>{isLoggingOut ? 'Saindo...' : 'Sair da Conta'}</span>
+                </button>
+              ) : (
                 <Link
                   href="/convite"
                   onClick={() => setIsOpen(false)}
-                  className="text-sm transition-colors"
+                  className="text-center block text-sm transition-colors"
                   style={{
                     fontFamily: 'var(--font-crimson)',
                     fontStyle: 'italic',
@@ -333,8 +376,8 @@ export default function GuestMenu() {
                 >
                   Não tem código? <span className="font-semibold underline">Obter convite →</span>
                 </Link>
-              </div>
-            )}
+              )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

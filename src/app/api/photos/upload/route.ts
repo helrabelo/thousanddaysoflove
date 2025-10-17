@@ -21,6 +21,26 @@ import { writeClient } from '@/sanity/lib/client'
 export const runtime = 'nodejs' // Need Node runtime for file handling
 export const maxDuration = 60 // 1 minute timeout for large uploads
 
+/**
+ * File Upload Limits:
+ *
+ * Current Architecture: Browser → API Route → Supabase Storage
+ *
+ * Constraints:
+ * - Vercel API Route body limit: 4.5MB (ALL plans - Hobby/Pro/Enterprise)
+ * - Vercel function duration: 10s (Hobby) / 60s (Pro)
+ * - Supabase Storage max: 5GB per file
+ *
+ * Note: The 100MB Vercel deployment limit doesn't apply here (that's for `vercel deploy`)
+ * Note: Vercel Blob 5TB limit doesn't apply (we use Supabase, not Blob)
+ *
+ * For files > 4.5MB, implement direct client→Supabase upload:
+ * - Generate signed upload URL from API route
+ * - Upload directly from browser to Supabase Storage
+ * - No Vercel limits (up to Supabase's 5GB)
+ * - Faster uploads (no proxy through Vercel)
+ */
+
 interface ErrorResponse {
   error: string
 }
