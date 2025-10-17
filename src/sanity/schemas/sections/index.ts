@@ -12,6 +12,7 @@ import aboutUs from './aboutUs'
 import ourFamily from './ourFamily'
 import quickPreview from './quickPreview'
 import weddingLocation from './weddingLocation'
+import giftsPageSections from './giftsPageSections'
 
 export const sectionSchemas = [
   videoHero,
@@ -21,6 +22,7 @@ export const sectionSchemas = [
   ourFamily,
   quickPreview,
   weddingLocation,
+  giftsPageSections,
 ]
 
 export default sectionSchemas

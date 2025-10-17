@@ -2,14 +2,15 @@
  * Sanity Studio Desk Structure
  *
  * Organizes the Studio sidebar with clear hierarchy:
- * - Nossa História (Timeline content and pages)
- * - Páginas (Homepage, Other Pages)
- * - Conteúdo (Pets, Features, Wedding Settings)
- * - Seções (Page sections and components)
- * - Configurações (Global settings)
+ * - Páginas (Homepage, Timeline, Other Pages)
+ * - Nossa História (Story phases, moments, and preview)
+ * - Conteúdo Base (Reusable collections like pets and feature cards)
+ * - Galeria (Curated photo collections)
+ * - Seções (Reusable sections/components)
+ * - Configurações (Global and wedding settings)
  */
 
-import type { StructureResolver } from 'sanity/structure'
+import type {StructureResolver} from 'sanity/structure'
 import {
   Home,
   FileText,
@@ -27,89 +28,16 @@ import {
   Cog,
   Layers,
   ImageIcon,
+  Gift,
+  Sparkles,
+  PlayCircle,
 } from 'lucide-react'
 
 export const deskStructure: StructureResolver = (S) =>
   S.list()
     .title('Conteúdo')
     .items([
-      // ❤️ NOSSA HISTÓRIA SECTION (New unified section)
-      S.listItem()
-        .title('❤️ Nossa História')
-        .icon(Heart)
-        .child(
-          S.list()
-            .title('Nossa História')
-            .items([
-              // 📖 Content Library Subgroup
-              S.listItem()
-                .title('📖 Conteúdo da História')
-                .icon(Database)
-                .child(
-                  S.list()
-                    .title('Biblioteca de Conteúdo')
-                    .items([
-                      // Chapters (Fases → Capítulos)
-                      S.listItem()
-                        .title('Capítulos')
-                        .icon(Layers)
-                        .child(
-                          S.documentTypeList('storyPhase')
-                            .title('Capítulos da História')
-                            .filter('_type == "storyPhase"')
-                            .defaultOrdering([{ field: 'displayOrder', direction: 'asc' }])
-                        ),
-
-                      // Moments (Momentos → Momentos Especiais)
-                      S.listItem()
-                        .title('Momentos Especiais')
-                        .icon(Heart)
-                        .child(
-                          S.documentTypeList('storyMoment')
-                            .title('Momentos da História')
-                            .filter('_type == "storyMoment"')
-                            .defaultOrdering([{ field: 'displayOrder', direction: 'asc' }])
-                        ),
-                    ])
-                ),
-
-              S.divider(),
-
-              // 📄 Pages Using Content
-              S.listItem()
-                .title('📄 Onde Aparece')
-                .icon(FileText)
-                .child(
-                  S.list()
-                    .title('Páginas com História')
-                    .items([
-                      // Homepage Preview Section
-                      S.listItem()
-                        .title('🏠 Prévia na Homepage')
-                        .child(
-                          S.documentTypeList('storyPreview')
-                            .title('Seção: História (Homepage)')
-                            .filter('_type == "storyPreview"')
-                        ),
-
-                      // Full Timeline Page
-                      S.listItem()
-                        .title('🕰️ Página Completa')
-                        .icon(Clock)
-                        .child(
-                          S.document()
-                            .schemaType('timelinePage')
-                            .documentId('timelinePage')
-                            .title('Página: História Completa')
-                        ),
-                    ])
-                ),
-            ])
-        ),
-
-      S.divider(),
-
-      // 📄 PAGES SECTION (without timeline page)
+      // 📄 PÁGINAS PRINCIPAIS
       S.listItem()
         .title('📄 Páginas')
         .icon(FileText)
@@ -117,7 +45,6 @@ export const deskStructure: StructureResolver = (S) =>
           S.list()
             .title('Páginas')
             .items([
-              // Homepage (singleton)
               S.listItem()
                 .title('Homepage')
                 .icon(Home)
@@ -128,9 +55,18 @@ export const deskStructure: StructureResolver = (S) =>
                     .title('Homepage')
                 ),
 
+              S.listItem()
+                .title('Página da História')
+                .icon(Clock)
+                .child(
+                  S.document()
+                    .schemaType('timelinePage')
+                    .documentId('timelinePage')
+                    .title('Página: História Completa')
+                ),
+
               S.divider(),
 
-              // Other Pages (list)
               S.listItem()
                 .title('Outras Páginas')
                 .icon(FileText)
@@ -140,7 +76,95 @@ export const deskStructure: StructureResolver = (S) =>
 
       S.divider(),
 
-      // 📷 GALLERY SECTION
+      // ❤️ NOSSA HISTÓRIA
+      S.listItem()
+        .title('❤️ Nossa História')
+        .icon(Heart)
+        .child(
+          S.list()
+            .title('Nossa História')
+            .items([
+              S.listItem()
+                .title('Capítulos')
+                .icon(Layers)
+                .child(
+                  S.documentTypeList('storyPhase')
+                    .title('Capítulos da História')
+                    .filter('_type == "storyPhase"')
+                    .defaultOrdering([{field: 'displayOrder', direction: 'asc'}])
+                ),
+
+              S.listItem()
+                .title('Momentos Especiais')
+                .icon(Sparkles)
+                .child(
+                  S.documentTypeList('storyMoment')
+                    .title('Momentos da História')
+                    .filter('_type == "storyMoment"')
+                    .defaultOrdering([{field: 'displayOrder', direction: 'asc'}])
+                ),
+
+              S.divider(),
+
+              S.listItem()
+                .title('Prévia na Homepage')
+                .icon(PlayCircle)
+                .child(
+                  S.documentTypeList('storyPreview')
+                    .title('Seção: História (Homepage)')
+                    .filter('_type == "storyPreview"')
+                ),
+            ])
+        ),
+
+      S.divider(),
+
+      // 📚 CONTEÚDO BASE
+      S.listItem()
+        .title('📚 Conteúdo Base')
+        .icon(Database)
+        .child(
+          S.list()
+            .title('Conteúdo Base')
+            .items([
+              S.listItem()
+                .title('Feature Cards')
+                .icon(LayoutGrid)
+                .child(
+                  S.documentTypeList('featureCard')
+                    .title('Feature Cards')
+                    .filter('_type == "featureCard"')
+                    .defaultOrdering([{field: 'displayOrder', direction: 'asc'}])
+                ),
+
+              S.listItem()
+                .title('Pets')
+                .icon(Dog)
+                .child(
+                  S.documentTypeList('pet')
+                    .title('Pets')
+                    .filter('_type == "pet"')
+                    .defaultOrdering([{field: 'displayOrder', direction: 'asc'}])
+                ),
+
+              S.listItem()
+                .title('Lista de Presentes')
+                .icon(Gift)
+                .child(
+                  S.documentTypeList('giftItem')
+                    .title('Lista de Presentes')
+                    .filter('_type == "giftItem"')
+                    .defaultOrdering([
+                      {field: 'priority', direction: 'asc'},
+                      {field: 'fullPrice', direction: 'desc'},
+                    ])
+                ),
+            ])
+        ),
+
+      S.divider(),
+
+      // 📷 GALERIA
       S.listItem()
         .title('📷 Galeria')
         .icon(ImageIcon)
@@ -148,7 +172,6 @@ export const deskStructure: StructureResolver = (S) =>
           S.list()
             .title('Galeria de Fotos')
             .items([
-              // All Gallery Images
               S.listItem()
                 .title('Todas as Imagens')
                 .icon(ImageIcon)
@@ -156,24 +179,25 @@ export const deskStructure: StructureResolver = (S) =>
                   S.documentTypeList('galleryImage')
                     .title('Galeria Completa')
                     .filter('_type == "galleryImage"')
-                    .defaultOrdering([{ field: 'displayOrder', direction: 'asc' }, { field: 'dateTaken', direction: 'desc' }])
+                    .defaultOrdering([
+                      {field: 'displayOrder', direction: 'asc'},
+                      {field: 'dateTaken', direction: 'desc'},
+                    ])
                 ),
 
               S.divider(),
 
-              // Featured Images
               S.listItem()
                 .title('⭐ Imagens Destacadas')
                 .child(
                   S.documentTypeList('galleryImage')
                     .title('Imagens Destacadas')
                     .filter('_type == "galleryImage" && isFeatured == true')
-                    .defaultOrdering([{ field: 'displayOrder', direction: 'asc' }])
+                    .defaultOrdering([{field: 'displayOrder', direction: 'asc'}])
                 ),
 
               S.divider(),
 
-              // By Category
               S.listItem()
                 .title('📂 Por Categoria')
                 .child(
@@ -186,7 +210,7 @@ export const deskStructure: StructureResolver = (S) =>
                           S.documentTypeList('galleryImage')
                             .title('Noivado')
                             .filter('_type == "galleryImage" && category == "engagement"')
-                            .defaultOrdering([{ field: 'dateTaken', direction: 'desc' }])
+                            .defaultOrdering([{field: 'dateTaken', direction: 'desc'}])
                         ),
                       S.listItem()
                         .title('✈️ Viagens')
@@ -194,7 +218,7 @@ export const deskStructure: StructureResolver = (S) =>
                           S.documentTypeList('galleryImage')
                             .title('Viagens')
                             .filter('_type == "galleryImage" && category == "travel"')
-                            .defaultOrdering([{ field: 'dateTaken', direction: 'desc' }])
+                            .defaultOrdering([{field: 'dateTaken', direction: 'desc'}])
                         ),
                       S.listItem()
                         .title('💕 Encontros')
@@ -202,7 +226,7 @@ export const deskStructure: StructureResolver = (S) =>
                           S.documentTypeList('galleryImage')
                             .title('Encontros')
                             .filter('_type == "galleryImage" && category == "dates"')
-                            .defaultOrdering([{ field: 'dateTaken', direction: 'desc' }])
+                            .defaultOrdering([{field: 'dateTaken', direction: 'desc'}])
                         ),
                       S.listItem()
                         .title('👨‍👩‍👧‍👦 Família')
@@ -210,7 +234,7 @@ export const deskStructure: StructureResolver = (S) =>
                           S.documentTypeList('galleryImage')
                             .title('Família')
                             .filter('_type == "galleryImage" && category == "family"')
-                            .defaultOrdering([{ field: 'dateTaken', direction: 'desc' }])
+                            .defaultOrdering([{field: 'dateTaken', direction: 'desc'}])
                         ),
                       S.listItem()
                         .title('👯 Amigos')
@@ -218,7 +242,7 @@ export const deskStructure: StructureResolver = (S) =>
                           S.documentTypeList('galleryImage')
                             .title('Amigos')
                             .filter('_type == "galleryImage" && category == "friends"')
-                            .defaultOrdering([{ field: 'dateTaken', direction: 'desc' }])
+                            .defaultOrdering([{field: 'dateTaken', direction: 'desc'}])
                         ),
                       S.listItem()
                         .title('✨ Momentos Especiais')
@@ -226,7 +250,7 @@ export const deskStructure: StructureResolver = (S) =>
                           S.documentTypeList('galleryImage')
                             .title('Momentos Especiais')
                             .filter('_type == "galleryImage" && category == "special_moments"')
-                            .defaultOrdering([{ field: 'dateTaken', direction: 'desc' }])
+                            .defaultOrdering([{field: 'dateTaken', direction: 'desc'}])
                         ),
                       S.listItem()
                         .title('💎 Pedido')
@@ -234,7 +258,7 @@ export const deskStructure: StructureResolver = (S) =>
                           S.documentTypeList('galleryImage')
                             .title('Pedido')
                             .filter('_type == "galleryImage" && category == "proposal"')
-                            .defaultOrdering([{ field: 'dateTaken', direction: 'desc' }])
+                            .defaultOrdering([{field: 'dateTaken', direction: 'desc'}])
                         ),
                       S.listItem()
                         .title('👰 Preparativos')
@@ -242,7 +266,7 @@ export const deskStructure: StructureResolver = (S) =>
                           S.documentTypeList('galleryImage')
                             .title('Preparativos')
                             .filter('_type == "galleryImage" && category == "wedding_prep"')
-                            .defaultOrdering([{ field: 'dateTaken', direction: 'desc' }])
+                            .defaultOrdering([{field: 'dateTaken', direction: 'desc'}])
                         ),
                       S.listItem()
                         .title('🎬 Bastidores')
@@ -250,7 +274,7 @@ export const deskStructure: StructureResolver = (S) =>
                           S.documentTypeList('galleryImage')
                             .title('Bastidores')
                             .filter('_type == "galleryImage" && category == "behind_scenes"')
-                            .defaultOrdering([{ field: 'dateTaken', direction: 'desc' }])
+                            .defaultOrdering([{field: 'dateTaken', direction: 'desc'}])
                         ),
                       S.listItem()
                         .title('📸 Profissionais')
@@ -258,7 +282,7 @@ export const deskStructure: StructureResolver = (S) =>
                           S.documentTypeList('galleryImage')
                             .title('Profissionais')
                             .filter('_type == "galleryImage" && category == "professional"')
-                            .defaultOrdering([{ field: 'dateTaken', direction: 'desc' }])
+                            .defaultOrdering([{field: 'dateTaken', direction: 'desc'}])
                         ),
                     ])
                 ),
@@ -267,66 +291,7 @@ export const deskStructure: StructureResolver = (S) =>
 
       S.divider(),
 
-      // 🎁 CONTENT SECTION (Pets, Features, Wedding Settings)
-      S.listItem()
-        .title('🎁 Conteúdo')
-        .icon(Database)
-        .child(
-          S.list()
-            .title('Conteúdo')
-            .items([
-              // Feature Cards
-              S.listItem()
-                .title('Feature Cards')
-                .icon(LayoutGrid)
-                .child(
-                  S.documentTypeList('featureCard')
-                    .title('Feature Cards')
-                    .filter('_type == "featureCard"')
-                    .defaultOrdering([{ field: 'displayOrder', direction: 'asc' }])
-                ),
-
-              // Pets
-              S.listItem()
-                .title('Pets')
-                .icon(Dog)
-                .child(
-                  S.documentTypeList('pet')
-                    .title('Pets')
-                    .filter('_type == "pet"')
-                    .defaultOrdering([{ field: 'displayOrder', direction: 'asc' }])
-                ),
-
-              S.divider(),
-
-              // Gift Registry
-              S.listItem()
-                .title('Lista de Presentes')
-                .child(
-                  S.documentTypeList('giftItem')
-                    .title('Lista de Presentes')
-                    .filter('_type == "giftItem"')
-                    .defaultOrdering([{ field: 'priority', direction: 'asc' }, { field: 'fullPrice', direction: 'desc' }])
-                ),
-
-              S.divider(),
-
-              // Wedding Settings (singleton)
-              S.listItem()
-                .title('Configurações do Casamento')
-                .icon(Church)
-                .child(
-                  S.document()
-                    .schemaType('weddingSettings')
-                    .documentId('weddingSettings')
-                    .title('Configurações do Casamento')
-                ),
-            ])
-        ),
-
-      S.divider(),
-
-      // 🎨 SECTIONS (page components)
+      // 🎨 SEÇÕES E COMPONENTES
       S.listItem()
         .title('🎨 Seções')
         .icon(Layout)
@@ -357,12 +322,16 @@ export const deskStructure: StructureResolver = (S) =>
               S.listItem()
                 .title('Wedding Location')
                 .child(S.documentTypeList('weddingLocation').title('Wedding Location Sections')),
+
+              S.listItem()
+                .title('História - Prévia')
+                .child(S.documentTypeList('storyPreview').title('Story Preview Sections')),
             ])
         ),
 
       S.divider(),
 
-      // ⚙️ SETTINGS SECTION
+      // ⚙️ CONFIGURAÇÕES
       S.listItem()
         .title('⚙️ Configurações')
         .icon(Settings)
@@ -370,7 +339,16 @@ export const deskStructure: StructureResolver = (S) =>
           S.list()
             .title('Configurações Globais')
             .items([
-              // Site Settings (singleton)
+              S.listItem()
+                .title('Configurações do Casamento')
+                .icon(Church)
+                .child(
+                  S.document()
+                    .schemaType('weddingSettings')
+                    .documentId('weddingSettings')
+                    .title('Configurações do Casamento')
+                ),
+
               S.listItem()
                 .title('Configurações do Site')
                 .icon(Cog)
@@ -381,7 +359,6 @@ export const deskStructure: StructureResolver = (S) =>
                     .title('Configurações do Site')
                 ),
 
-              // Navigation (singleton)
               S.listItem()
                 .title('Navegação')
                 .icon(Menu)
@@ -392,13 +369,11 @@ export const deskStructure: StructureResolver = (S) =>
                     .title('Navegação')
                 ),
 
-              // Footer (singleton)
               S.listItem()
                 .title('Rodapé')
                 .icon(PanelBottom)
                 .child(S.document().schemaType('footer').documentId('footer').title('Rodapé')),
 
-              // SEO Settings (singleton)
               S.listItem()
                 .title('Configurações de SEO')
                 .icon(Search)

@@ -653,3 +653,79 @@ export interface RenderedGalleryMediaItem {
     width: number;
   };
 }
+
+// =====================================================
+// SANITY CMS TYPES - Gifts Page Sections
+// =====================================================
+
+/**
+ * Project Render Image
+ * Represents a single render/image from the apartment renovation project
+ */
+export interface ProjectRender {
+  _key: string;
+  title?: string;
+  alt?: string;
+  caption?: string;
+  renderType: 'before' | 'after' | '3d-render' | 'floor-plan' | 'detail';
+  displayOrder: number;
+  asset: {
+    _id: string;
+    url: string;
+    metadata?: {
+      dimensions?: {
+        width: number;
+        height: number;
+        aspectRatio: number;
+      };
+      lqip?: string;
+    };
+  };
+  hotspot?: {
+    x: number;
+    y: number;
+    height: number;
+    width: number;
+  };
+  crop?: {
+    top: number;
+    bottom: number;
+    left: number;
+    right: number;
+  };
+}
+
+/**
+ * Footer Bullet Point
+ * Small informational bullet for the footer section
+ */
+export interface FooterBullet {
+  text: string;
+}
+
+/**
+ * Gifts Page Sections
+ * Complete content for the /presentes page (header, project gallery, footer)
+ */
+export interface GiftsPageSections {
+  _id: string;
+
+  // Header Section
+  headerTitle: string;
+  headerContent: string;
+
+  // Project Render Gallery
+  showProjectGallery: boolean;
+  projectGalleryTitle?: string;
+  projectGalleryDescription?: string;
+  projectRenders?: ProjectRender[];
+
+  // Footer CTA Section
+  footerTitle: string;
+  footerContent: string;
+  footerBullets?: FooterBullet[];
+
+  // Meta
+  lastUpdated?: string;
+  isActive: boolean;
+}
