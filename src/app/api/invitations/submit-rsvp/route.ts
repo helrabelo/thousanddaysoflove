@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/server';
 
 /**
  * POST /api/invitations/submit-rsvp
@@ -15,6 +15,9 @@ import { createServerClient } from '@/lib/supabase/server';
  *
  * Returns:
  * - Updated invitation object
+ *
+ * Note: Uses admin client to bypass RLS, but validates invitation exists first.
+ * This is safe because the API route runs server-side only.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -26,6 +29,8 @@ export async function POST(request: NextRequest) {
       plus_one_name,
       dietary_restrictions,
     } = body;
+
+    console.log('[RSVP] Received submission:', { code, attending });
 
     // Validation
     if (!code) {
@@ -42,8 +47,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create server client
-    const supabase = createServerClient();
+    // Create admin client (safe in API routes - service key stays on server)
+    const supabase = createAdminClient();
 
     // Fetch invitation to validate it exists
     const { data: invitation, error: fetchError } = await supabase
