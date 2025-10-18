@@ -275,13 +275,13 @@ export default function VideoHeroSection({ data }: VideoHeroProps) {
         <AnimatePresence>
           {(showInitialTooltip || undefined) && (
             <motion.div
-              className="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-md text-xs whitespace-nowrap pointer-events-none z-50"
+              className="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-md text-sm whitespace-nowrap pointer-events-none z-50"
               style={{
                 background: 'rgba(255,255,255,0.95)',
                 color: 'var(--secondary-text)',
                 fontFamily: 'var(--font-crimson)',
                 fontStyle: 'italic',
-                fontSize: '0.7rem',
+                fontSize: '0.875rem',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
                 fontWeight: '500'
               }}
@@ -297,13 +297,13 @@ export default function VideoHeroSection({ data }: VideoHeroProps) {
 
         {/* Hover-only tooltip */}
         <motion.div
-          className="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-md text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
+          className="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-md text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
           style={{
             background: 'rgba(255,255,255,0.9)',
             color: 'var(--secondary-text)',
             fontFamily: 'var(--font-crimson)',
             fontStyle: 'italic',
-            fontSize: '0.7rem',
+            fontSize: '0.875rem',
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
           }}
         >

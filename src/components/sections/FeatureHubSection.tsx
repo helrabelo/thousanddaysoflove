@@ -187,7 +187,7 @@ export default function FeatureHubSection() {
                     className="mb-6"
                     style={{
                       fontFamily: 'var(--font-crimson)',
-                      fontSize: '1rem',
+                      fontSize: 'clamp(1rem, 2.5vw, 1.125rem)',
                       color: 'var(--secondary-text)',
                       lineHeight: '1.6',
                     }}
