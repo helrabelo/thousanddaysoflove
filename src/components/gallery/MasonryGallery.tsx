@@ -341,22 +341,43 @@ export default function MasonryGallery({
                     style={{
                       boxShadow: hoveredItem === item.id ? '0 12px 40px rgba(0,0,0,0.15)' : '0 2px 8px rgba(0,0,0,0.08)',
                     }}>
-                    {/* Clean Image */}
+                    {/* Media Display - Images and Videos */}
                     <div className="relative overflow-hidden">
-                      <motion.img
-                        src={primaryMedia?.url || item.thumbnail_url || item.url}
-                        alt={item.title}
-                        className="w-full h-auto object-cover"
-                        style={{
-                          aspectRatio: item.aspect_ratio,
-                          display: 'block'
-                        }}
-                        loading="lazy"
-                        animate={{
-                          scale: hoveredItem === item.id ? 1.05 : 1,
-                        }}
-                        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                      />
+                      {primaryMedia?.type === 'video' ? (
+                        <motion.video
+                          src={primaryMedia.url}
+                          className="w-full h-auto object-cover"
+                          style={{
+                            aspectRatio: item.aspect_ratio,
+                            display: 'block'
+                          }}
+                          muted
+                          loop
+                          playsInline
+                          preload="metadata"
+                          onMouseEnter={(e) => e.currentTarget.play()}
+                          onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0 }}
+                          animate={{
+                            scale: hoveredItem === item.id ? 1.05 : 1,
+                          }}
+                          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                        />
+                      ) : (
+                        <motion.img
+                          src={primaryMedia?.url || item.thumbnail_url || item.url}
+                          alt={item.title}
+                          className="w-full h-auto object-cover"
+                          style={{
+                            aspectRatio: item.aspect_ratio,
+                            display: 'block'
+                          }}
+                          loading="lazy"
+                          animate={{
+                            scale: hoveredItem === item.id ? 1.05 : 1,
+                          }}
+                          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                        />
+                      )}
 
                       {/* Multi-Media Badge with Shimmer Effect */}
                       {hasMultiple && (
