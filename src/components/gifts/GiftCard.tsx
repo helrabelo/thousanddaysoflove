@@ -112,7 +112,7 @@ export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
         )}
 
         {/* Gift Image */}
-        <div className="relative h-56 overflow-hidden">
+        <div className="relative h-48 md:h-56 overflow-hidden">
           {gift.imageUrl ? (
             <Image
               src={gift.imageUrl}
@@ -188,31 +188,32 @@ export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
         </div>
 
         {/* Gift Content */}
-        <div className="p-6">
+        <div className="p-4 md:p-6">
           {/* Gift Info */}
           <div className="mb-5">
             <h3 className="text-xl font-semibold mb-2 line-clamp-2" style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-playfair)', lineHeight: '1.3' }}>
               {gift.title}
             </h3>
-            <p className="text-sm line-clamp-3 mb-3" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic', lineHeight: '1.6' }}>
+            <p className="text-sm md:text-base line-clamp-3 mb-3" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic', lineHeight: '1.6', fontSize: 'clamp(0.875rem, 2.5vw, 1rem)' }}>
               {gift.description}
             </p>
 
-            {/* Romantic story on hover - Enhanced visibility */}
-            <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 mb-3 transform translate-y-2 group-hover:translate-y-0">
-              <p className="text-xs italic p-2 rounded-lg" style={{
+            {/* Romantic story - Always visible on mobile, hover on desktop */}
+            <div className="md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 mb-3 md:transform md:translate-y-2 md:group-hover:translate-y-0">
+              <p className="text-sm italic p-2 rounded-lg" style={{
                 color: 'var(--decorative)',
                 fontFamily: 'var(--font-crimson)',
                 background: 'var(--accent)',
-                border: '1px solid var(--border-subtle)'
+                border: '1px solid var(--border-subtle)',
+                fontSize: 'clamp(0.875rem, 2vw, 0.875rem)'
               }}>
                 {getRomanticContext(gift.category, gift.title)}
               </p>
             </div>
 
             {/* Price and Store Link */}
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-2xl font-bold" style={{ color: 'var(--decorative)', fontFamily: 'var(--font-playfair)' }}>
+            <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+              <span className="text-xl md:text-2xl font-bold" style={{ color: 'var(--decorative)', fontFamily: 'var(--font-playfair)', fontSize: 'clamp(1.25rem, 4vw, 1.5rem)' }}>
                 {formatBRL(gift.fullPrice)}
               </span>
               {gift.storeUrl && !isCompleted && (
@@ -233,7 +234,7 @@ export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
 
           {/* Progress Section - Enhanced */}
           <div className="mb-5">
-            <div className="flex items-center justify-between text-sm mb-3" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)' }}>
+            <div className="flex items-center justify-between text-sm md:text-base mb-3" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontSize: 'clamp(0.875rem, 2.5vw, 1rem)' }}>
               <div className="flex items-center gap-1.5">
                 <Users className="w-4 h-4" />
                 <span className="font-medium">
@@ -242,19 +243,20 @@ export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
               </div>
               <div className="flex items-center gap-2">
                 {isPartial && (
-                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{
+                  <span className="text-sm font-semibold px-2 py-0.5 rounded-full" style={{
                     background: 'var(--accent)',
-                    color: 'var(--decorative)'
+                    color: 'var(--decorative)',
+                    fontSize: 'clamp(0.875rem, 2vw, 0.875rem)'
                   }}>
                     Faltam {getRemainingAmount()}
                   </span>
                 )}
-                <span className="font-bold text-base" style={{ color: 'var(--primary-text)' }}>{progress}%</span>
+                <span className="font-bold text-base md:text-lg" style={{ color: 'var(--primary-text)', fontSize: 'clamp(1rem, 2.5vw, 1.125rem)' }}>{progress}%</span>
               </div>
             </div>
 
             {/* Enhanced Progress Bar */}
-            <div className="w-full rounded-full h-3 overflow-hidden relative" style={{ background: 'var(--accent)' }}>
+            <div className="w-full rounded-full h-2.5 md:h-3 overflow-hidden relative" style={{ background: 'var(--accent)' }}>
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${progress}%` }}
@@ -303,12 +305,12 @@ export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
                 {/* Primary CTA - Concise and elegant */}
                 <button
                   onClick={() => setShowPaymentModal(true)}
-                  className="w-full py-3.5 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2 relative overflow-hidden group/button"
+                  className="w-full py-4 md:py-3.5 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2 relative overflow-hidden group/button min-h-[48px]"
                   style={{
                     background: 'var(--primary-text)',
                     color: 'var(--white-soft)',
                     fontFamily: 'var(--font-playfair)',
-                    fontSize: '1rem',
+                    fontSize: 'clamp(1rem, 2.5vw, 1rem)',
                     letterSpacing: '0.02em'
                   }}
                   title={getRomanticContext(gift.category, gift.title)}
@@ -337,12 +339,13 @@ export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
                 {/* Secondary Actions - More subtle */}
                 {gift.storeUrl && (
                   <button
-                    className="w-full text-sm py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
+                    className="w-full text-sm md:text-base py-3 md:py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 min-h-[44px]"
                     style={{
                       background: 'transparent',
                       color: 'var(--decorative)',
                       border: '1px solid var(--border-subtle)',
-                      fontFamily: 'var(--font-crimson)'
+                      fontFamily: 'var(--font-crimson)',
+                      fontSize: 'clamp(0.875rem, 2.5vw, 1rem)'
                     }}
                     onClick={() => window.open(gift.storeUrl, '_blank')}
                     onMouseEnter={(e) => {
