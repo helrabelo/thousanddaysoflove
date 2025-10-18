@@ -380,10 +380,10 @@ export default function MediaCarousel({
         </>
       )}
 
-      {/* Dot Indicators */}
+      {/* Dot Indicators - Hidden on mobile, shown on desktop */}
       {!isSingleItem && (
         <div
-          className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex gap-2"
+          className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 hidden md:flex gap-2"
           style={{
             padding: '8px 12px',
             borderRadius: '999px',
