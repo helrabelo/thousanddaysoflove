@@ -186,7 +186,7 @@ export default function Navigation() {
                         initial={{ opacity: 0, y: 10, scale: 0.9 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 10, scale: 0.9 }}
-                        className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-2 rounded-lg text-xs whitespace-nowrap z-50 pointer-events-none"
+                        className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-2 rounded-lg text-sm whitespace-nowrap z-50 pointer-events-none"
                         style={{
                           background: 'var(--white-soft)',
                           color: 'var(--primary-text)',
@@ -266,7 +266,7 @@ export default function Navigation() {
                     />
                   </div>
                   <div
-                    className="text-xs tracking-widest uppercase"
+                    className="text-sm tracking-widest uppercase"
                     style={{
                       fontFamily: 'var(--font-crimson)',
                       fontStyle: 'italic',
@@ -338,7 +338,7 @@ export default function Navigation() {
                                 style={{
                                   fontFamily: 'var(--font-crimson)',
                                   fontStyle: 'italic',
-                                  fontSize: '0.8125rem',
+                                  fontSize: '0.875rem',
                                   color: 'var(--text-muted)',
                                   letterSpacing: '0.02em',
                                   lineHeight: '1.3',
@@ -423,7 +423,7 @@ export default function Navigation() {
                               style={{
                                 fontFamily: 'var(--font-crimson)',
                                 fontStyle: 'italic',
-                                fontSize: '0.8125rem',
+                                fontSize: '0.875rem',
                                 color: 'var(--text-muted)',
                                 letterSpacing: '0.02em',
                                 lineHeight: '1.3',
@@ -486,7 +486,7 @@ export default function Navigation() {
                     style={{
                       fontFamily: 'var(--font-crimson)',
                       fontStyle: 'italic',
-                      fontSize: '0.75rem',
+                      fontSize: '0.875rem',
                       color: 'var(--decorative)',
                       letterSpacing: '0.05em'
                     }}

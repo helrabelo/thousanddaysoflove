@@ -105,12 +105,12 @@ export default function BottomNav() {
 
                 {/* Label */}
                 <span
-                  className="mt-1.5 text-xs"
+                  className="mt-1.5 text-sm"
                   style={{
                     fontFamily: 'var(--font-crimson)',
                     color: active ? 'var(--primary-text)' : 'var(--secondary-text)',
                     fontWeight: active ? '600' : '400',
-                    fontSize: '0.6875rem',
+                    fontSize: '0.875rem',
                     letterSpacing: '0.02em',
                   }}
                 >
@@ -134,10 +134,10 @@ export default function BottomNav() {
               <MoreHorizontal className="w-5 h-5" strokeWidth={2} />
             </motion.div>
             <span
-              className="mt-1.5 text-xs"
+              className="mt-1.5 text-sm"
               style={{
                 fontFamily: 'var(--font-crimson)',
-                fontSize: '0.6875rem',
+                fontSize: '0.875rem',
                 letterSpacing: '0.02em',
               }}
             >
