@@ -1,0 +1,65 @@
+# Story Moments Folder Mapping
+# Manual mapping for folders that couldn't be auto-matched
+#
+# Format: [Moment #] = [Folder Day Number]
+# Example: 2 = 28
+#
+# Leave blank to skip that moment
+
+# ✅ ALREADY MATCHED (auto-detected):
+# 1. Do Tinder ao WhatsApp = Dia 1 ✓
+# 5. Cacao Se Junta à Linda = Dia 55 ✓
+# 14. O Pedido Perfeito = Dia 917 ✓
+
+# ⚠️  NEEDS MANUAL MAPPING:
+
+# Momento #2: Casa Fontana & Avatar VIP (currently: Dia -36)
+# Available folders: 28, 309, 346, 365, 409, 598, 614, 669, 675, 856, 963
+2 =
+
+# Momento #3: O Gesto que Mudou Tudo (currently: Dia -13)
+3 =
+
+# Momento #4: Guaramiranga Espontâneo (currently: Dia 1)
+# Note: Dia 1 was already used for moment #1, maybe this is a duplicate?
+4 =
+
+# Momento #6: Primeiro Réveillon Juntos (currently: Dia 360)
+# Matching folder: 309 - Primeiro Reveillon Juntos
+6 = 309
+
+# Momento #7: 1º Aniversário Surpresa (currently: Dia 416)
+# Matching folder: 365 - Jantar de 1 Ano de Namoro
+7 = 365
+
+# Momento #8: Linda Nos Deu Olivia e Oliver (currently: Dia 430)
+# Matching folder: 346 - Linda nos dá Oliver e Olívia
+8 = 346
+
+# Momento #9: O Apartamento dos Sonhos (currently: Dia 435)
+# Matching folder: 409 - Mudança pra Casa Nova, Casa HY
+9 = 409
+
+# Momento #10: Mangue Azul & Rio de Janeiro (currently: Dia 659)
+# Matching folders: 598 - Aniversário Hel e Ylana no Mangue Azul OR 614 - Viagem para o Rio de Janeiro
+10 = 598
+
+# Momento #11: Natal em Casa Própria (currently: Dia 720)
+# Matching folder: 669 - Primeiro Natal na Casa HY
+11 = 669
+
+# Momento #12: Segundo Réveillon em Casa PRÓPRIA (currently: Dia 726)
+# Matching folder: 675 - Segundo Reveillon Juntos
+12 = 675
+
+# Momento #13: Pensando no Futuro Juntos (currently: Dia 831)
+# Matching folder: 856 - Viagem de SP e Congelamento de Óvulos da Ylana
+13 = 856
+
+# Momento #15: Mil Dias Viram Para Sempre (currently: Dia 1000)
+15 =
+
+# UNMAPPED FOLDERS (add new moments for these if needed):
+# - Dia 28: 28 - Jantar do Primeiro Mês de Namoro
+# - Dia 614: 614 - Viagem para o Rio de Janeiro (if not used for #10)
+# - Dia 963: 963 - Aniversário Hel e Ylana 2025

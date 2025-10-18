@@ -1,0 +1,30 @@
+# Gallery Albums Data
+# Format:
+# Album: Title
+# Category: engagement|travel|dates|family|friends|special_moments|proposal|wedding_prep|behind_scenes|professional
+# Date: YYYY-MM-DD (optional)
+# Location: City, State (optional)
+# Featured: yes/no (optional, defaults to no)
+# Description: Custom description (optional, auto-generated if not provided)
+# - /path/to/image1.jpg | Optional caption
+# - /path/to/image2.jpg | Another caption
+# - /path/to/video.mp4 | Video caption
+# (blank line to separate albums)
+
+# Example:
+Album: Viagem para Gramado
+Category: travel
+Date: 2024-08-15
+Location: Gramado, RS
+Featured: yes
+- /Users/helrabelo/Downloads/gramado1.jpg | Chegada em Gramado
+- /Users/helrabelo/Downloads/gramado2.jpg | Rua Coberta
+- /Users/helrabelo/Downloads/gramado3.jpg | Mini Mundo
+
+Album: Jantar Romântico
+Category: dates
+Date: 2024-09-01
+Location: Fortaleza, CE
+- /Users/helrabelo/Downloads/dinner.jpg | Nosso jantar especial
+
+# Add your albums below:

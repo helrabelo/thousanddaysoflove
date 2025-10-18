@@ -39,6 +39,15 @@ export default defineType({
     }),
 
     defineField({
+      name: 'dayNumber',
+      title: '📅 Dia do Relacionamento',
+      type: 'number',
+      description: 'Número do dia contado desde o início (ex: Dia 1, Dia 434, Dia 1000)',
+      placeholder: 'Ex: 1, 100, 434',
+      validation: (Rule) => Rule.integer().positive(),
+    }),
+
+    defineField({
       name: 'icon',
       title: 'Ícone/Emoji',
       type: 'string',
@@ -205,13 +214,6 @@ export default defineType({
       to: [{ type: 'storyPhase' }],
       description: '📚 Este momento pertence a qual capítulo da história?',
       validation: (Rule) => Rule.required(),
-    }),
-
-    defineField({
-      name: 'dayNumber',
-      title: 'Dia (Opcional)',
-      type: 'number',
-      description: 'Número do dia para referência (ex: Dia 1, Dia 434)',
     }),
 
     defineField({
