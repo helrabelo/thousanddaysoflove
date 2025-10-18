@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createServerClient } from '@/lib/supabase/server';
 
 /**
  * POST /api/invitations/submit-rsvp
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create server client
-    const supabase = await createClient();
+    const supabase = createServerClient();
 
     // Fetch invitation to validate it exists
     const { data: invitation, error: fetchError } = await supabase

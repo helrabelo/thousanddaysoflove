@@ -17,7 +17,10 @@ import {
   Mail,
   Phone,
   Users,
-  Zap
+  Zap,
+  ArrowUp,
+  ArrowDown,
+  ArrowUpDown
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { InlineEditableText } from '@/components/admin/InlineEditableField'
@@ -74,6 +77,8 @@ export default function AdminGuests(): JSX.Element {
   const [searchQuery, setSearchQuery] = useState('')
   const [filterStatus, setFilterStatus] = useState<'all' | 'confirmed' | 'declined' | 'pending'>('all')
   const [quickEditMode, setQuickEditMode] = useState(false)
+  const [sortField, setSortField] = useState<keyof Guest>('name')
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
 
   useEffect(() => {
     loadGuests()
@@ -81,7 +86,7 @@ export default function AdminGuests(): JSX.Element {
 
   useEffect(() => {
     filterAndSearchGuests()
-  }, [guests, searchQuery, filterStatus])
+  }, [guests, searchQuery, filterStatus, sortField, sortDirection])
 
   const loadGuests = async (): Promise<void> => {
     setLoading(true)
@@ -126,7 +131,40 @@ export default function AdminGuests(): JSX.Element {
       )
     }
 
+    // Apply sorting
+    filtered.sort((a, b) => {
+      const aVal = a[sortField]
+      const bVal = b[sortField]
+
+      // Handle null/undefined values
+      if (aVal === null || aVal === undefined) return 1
+      if (bVal === null || bVal === undefined) return -1
+
+      // Compare values
+      let comparison = 0
+      if (typeof aVal === 'string' && typeof bVal === 'string') {
+        comparison = aVal.localeCompare(bVal)
+      } else if (typeof aVal === 'number' && typeof bVal === 'number') {
+        comparison = aVal - bVal
+      } else if (typeof aVal === 'boolean' && typeof bVal === 'boolean') {
+        comparison = aVal === bVal ? 0 : aVal ? -1 : 1
+      }
+
+      return sortDirection === 'asc' ? comparison : -comparison
+    })
+
     setFilteredGuests(filtered)
+  }
+
+  const handleSort = (field: keyof Guest): void => {
+    if (sortField === field) {
+      // Toggle direction if same field
+      setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc')
+    } else {
+      // New field, default to asc
+      setSortField(field)
+      setSortDirection('asc')
+    }
   }
 
   const startEditing = (guest: Guest): void => {
@@ -578,18 +616,91 @@ export default function AdminGuests(): JSX.Element {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-[#E8E6E3] bg-[#F8F6F3]">
-                  <th className="text-left p-3 font-semibold text-[#2C2C2C]">Nome</th>
-                  <th className="text-left p-3 font-semibold text-[#2C2C2C]">Email</th>
-                  <th className="text-left p-3 font-semibold text-[#2C2C2C]">Telefone</th>
-                  <th className="text-left p-3 font-semibold text-[#2C2C2C]">Código</th>
-                  <th className="text-center p-3 font-semibold text-[#2C2C2C]">Status</th>
-                  <th className="text-center p-3 font-semibold text-[#2C2C2C]">+</th>
+                  <th className="text-center p-3 font-semibold text-[#2C2C2C] w-12">#</th>
+                  <th
+                    className="text-left p-3 font-semibold text-[#2C2C2C] cursor-pointer hover:bg-[#E8E6E3] select-none"
+                    onClick={() => handleSort('name')}
+                  >
+                    <div className="flex items-center gap-1">
+                      Nome
+                      {sortField === 'name' ? (
+                        sortDirection === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                      ) : (
+                        <ArrowUpDown className="w-3 h-3 opacity-30" />
+                      )}
+                    </div>
+                  </th>
+                  <th
+                    className="text-left p-3 font-semibold text-[#2C2C2C] cursor-pointer hover:bg-[#E8E6E3] select-none"
+                    onClick={() => handleSort('email')}
+                  >
+                    <div className="flex items-center gap-1">
+                      Email
+                      {sortField === 'email' ? (
+                        sortDirection === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                      ) : (
+                        <ArrowUpDown className="w-3 h-3 opacity-30" />
+                      )}
+                    </div>
+                  </th>
+                  <th
+                    className="text-left p-3 font-semibold text-[#2C2C2C] cursor-pointer hover:bg-[#E8E6E3] select-none"
+                    onClick={() => handleSort('phone')}
+                  >
+                    <div className="flex items-center gap-1">
+                      Telefone
+                      {sortField === 'phone' ? (
+                        sortDirection === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                      ) : (
+                        <ArrowUpDown className="w-3 h-3 opacity-30" />
+                      )}
+                    </div>
+                  </th>
+                  <th
+                    className="text-left p-3 font-semibold text-[#2C2C2C] cursor-pointer hover:bg-[#E8E6E3] select-none"
+                    onClick={() => handleSort('invitation_code')}
+                  >
+                    <div className="flex items-center gap-1">
+                      Código
+                      {sortField === 'invitation_code' ? (
+                        sortDirection === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                      ) : (
+                        <ArrowUpDown className="w-3 h-3 opacity-30" />
+                      )}
+                    </div>
+                  </th>
+                  <th
+                    className="text-center p-3 font-semibold text-[#2C2C2C] cursor-pointer hover:bg-[#E8E6E3] select-none"
+                    onClick={() => handleSort('attending')}
+                  >
+                    <div className="flex items-center gap-1 justify-center">
+                      Status
+                      {sortField === 'attending' ? (
+                        sortDirection === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                      ) : (
+                        <ArrowUpDown className="w-3 h-3 opacity-30" />
+                      )}
+                    </div>
+                  </th>
+                  <th
+                    className="text-center p-3 font-semibold text-[#2C2C2C] cursor-pointer hover:bg-[#E8E6E3] select-none"
+                    onClick={() => handleSort('plus_ones')}
+                  >
+                    <div className="flex items-center gap-1 justify-center">
+                      +
+                      {sortField === 'plus_ones' ? (
+                        sortDirection === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                      ) : (
+                        <ArrowUpDown className="w-3 h-3 opacity-30" />
+                      )}
+                    </div>
+                  </th>
                   <th className="text-left p-3 font-semibold text-[#2C2C2C]">Obs</th>
                   <th className="text-right p-3 font-semibold text-[#2C2C2C]">Ações</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredGuests.map((guest) => {
+                {filteredGuests.map((guest, index) => {
                   const isEditing = !quickEditMode && editingId === guest.id
 
                   if (quickEditMode) {
@@ -598,6 +709,9 @@ export default function AdminGuests(): JSX.Element {
                         key={guest.id}
                         className="border-b border-burgundy-100 bg-burgundy-50/30"
                       >
+                        <td className="p-3 text-center text-[#A8A8A8] font-medium text-xs">
+                          {index + 1}
+                        </td>
                         <td className="p-3 align-top">
                           <InlineEditableText
                             active={quickEditMode}
@@ -749,6 +863,9 @@ export default function AdminGuests(): JSX.Element {
                       {isEditing && editForm ? (
                         <>
                           {/* Editing mode */}
+                          <td className="p-3 text-center text-[#A8A8A8] font-medium text-xs">
+                            {index + 1}
+                          </td>
                           <td className="p-2">
                             <input
                               type="text"
@@ -839,6 +956,9 @@ export default function AdminGuests(): JSX.Element {
                       ) : (
                         <>
                           {/* View mode */}
+                          <td className="p-3 text-center text-[#A8A8A8] font-medium text-xs">
+                            {index + 1}
+                          </td>
                           <td className="p-3">
                             <div className="font-medium text-burgundy-800">{guest.name}</div>
                             {guest.confirmed_by === 'admin' && (
