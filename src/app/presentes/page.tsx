@@ -14,11 +14,13 @@ export default async function PresentsPage() {
   // Fallback content if Sanity data isn't available
   const defaultSections = {
     headerTitle: 'Bem-vindo à Nossa Lista (Quase Anti-Lista) 🎁',
-    headerContent: `Esse é o cantinho onde a gente deixa claro: o presente que mais importa é te ver dia 20 de novembro, na Casa HY, rindo com a gente (e provavelmente fugindo de algum cachorro). Mas, se o coração pede pra transformar carinho em algo palpável, aqui vai o jeito certo.
+    headerContent: `Esse é o cantinho onde a gente deixa claro: o presente que mais importa é te ver dia 20 de novembro, com a gente. Mas, se o coração pede pra transformar o carinho em algo palpável, não vamos te privar desse gesto.
 
-A gente tá finalmente reformando o apê que o Hel passava de bicicleta sonhando em morar. Sala nova, cozinha funcionando, quarto sem fio pendurado. Família de seis, contando Linda 👑, Cacao 🍫, Olivia 🌸 e Oliver ⚡, precisa de um lar do nosso tamanho.
+A gente tá finalmente reformando o nosso cantinho, vamos deixá-lo com a nossa cara. Sala nova, cozinha funcionando, quarto sem fio pendurado. Família de seis ( por enquanto ).
 
-Quer ajudar com a TV, o sofá, a lua de mel, a marcenaria ou aquela decoração que faz a casa parecer casa? Escolhe o que combina com você e bora deixar nosso cantinho redondo.`,
+Quer ajudar com a TV, o sofá, a lua de mel, a marcenaria ou aquela decoração que faz a casa parecer casa? Escolhe o que combina com você e bora tirar o escorpião do bolso.
+
+E obviamente, se quiser dar um presente fora da lista, a gente recebe com o maior amor também. O que importa é você estar lá com a gente.`,
     footerTitle: 'Como Mimamos Você Enquanto Você Mima a Gente',
     footerContent: `Item grande? A gente quebra em cotas. Exemplo real oficial: TV de R$10.000 vira contribuições de R$100, R$250, R$500 — ou qualquer outro valor (mínimo R$50). Tem opção pra lua de mel, reforma, plantinha, o que fizer sentido aí na sua cabeça.
 
