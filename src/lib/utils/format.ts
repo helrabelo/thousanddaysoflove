@@ -34,3 +34,8 @@ export function formatRelativeTime(date: Date | string): string {
 
   return then.toLocaleDateString('pt-BR')
 }
+
+/**
+ * Alias for formatRelativeTime (for consistency with other components)
+ */
+export const formatTimeAgo = formatRelativeTime
