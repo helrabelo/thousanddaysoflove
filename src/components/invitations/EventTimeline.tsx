@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { format } from 'date-fns'
+import { format, parseISO } from 'date-fns'
+import { formatInTimeZone } from 'date-fns-tz'
 import { ptBR } from 'date-fns/locale'
 import { motion } from 'framer-motion'
 import {
@@ -71,9 +72,12 @@ export default function EventTimeline() {
   }, [])
 
   const timelineEntries = useMemo<TimelineEntry[]>(() => {
+    // Use São Paulo timezone (America/Sao_Paulo = GMT-3)
+    const SAO_PAULO_TZ = 'America/Sao_Paulo'
+
     return events.map((event) => {
       const startLabel = event.startTime
-        ? format(new Date(event.startTime), 'HH:mm', { locale: ptBR })
+        ? formatInTimeZone(parseISO(event.startTime), SAO_PAULO_TZ, 'HH:mm', { locale: ptBR })
         : ''
       const durationLabel = Number.isFinite(event.estimatedDuration) && event.estimatedDuration > 0
         ? `${event.estimatedDuration} min`
