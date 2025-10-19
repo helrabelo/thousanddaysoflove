@@ -20,7 +20,8 @@ import {
   Zap,
   ArrowUp,
   ArrowDown,
-  ArrowUpDown
+  ArrowUpDown,
+  Copy
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { InlineEditableText } from '@/components/admin/InlineEditableField'
@@ -346,6 +347,34 @@ export default function AdminGuests(): JSX.Element {
     } catch (error) {
       console.error('Error updating RSVP:', error)
       showToast({ title: 'Erro ao atualizar RSVP', type: 'error' })
+    }
+  }
+
+  const copyInviteToClipboard = async (guest: Guest): Promise<void> => {
+    if (!guest.invitation_code) {
+      showToast({ title: 'Convidado não tem código de convite', type: 'error' })
+      return
+    }
+
+    const inviteUrl = `https://thousanddaysof.love/convite/${guest.invitation_code}`
+    const firstName = guest.name.split(' ')[0]
+
+    const message = `${firstName}, você está convidado(a)! 💍
+
+Hel & Ylana se casam em 20 de Novembro de 2025 na Casa HY. Queremos você lá! ❤️
+
+${inviteUrl}`
+
+    try {
+      await navigator.clipboard.writeText(message)
+      showToast({
+        title: 'Convite copiado!',
+        description: `Mensagem do convite de ${firstName} copiada para a área de transferência`,
+        type: 'success'
+      })
+    } catch (error) {
+      console.error('Error copying to clipboard:', error)
+      showToast({ title: 'Erro ao copiar convite', type: 'error' })
     }
   }
 
@@ -846,6 +875,14 @@ export default function AdminGuests(): JSX.Element {
                         <td className="p-3">
                           <div className="flex justify-end gap-1">
                             <button
+                              onClick={() => copyInviteToClipboard(guest)}
+                              className="p-1 text-burgundy-600 hover:bg-burgundy-100 rounded"
+                              title="Copiar Convite"
+                              disabled={!guest.invitation_code}
+                            >
+                              <Copy className="w-4 h-4" />
+                            </button>
+                            <button
                               onClick={async () => await deleteGuest(guest.id)}
                               className="p-1 text-red-600 hover:bg-red-50 rounded"
                               title="Deletar"
@@ -1045,6 +1082,14 @@ export default function AdminGuests(): JSX.Element {
                           </td>
                           <td className="p-3">
                             <div className="flex justify-end gap-1">
+                              <button
+                                onClick={() => copyInviteToClipboard(guest)}
+                                className="p-1 text-burgundy-600 hover:bg-burgundy-100 rounded"
+                                title="Copiar Convite"
+                                disabled={!guest.invitation_code}
+                              >
+                                <Copy className="w-4 h-4" />
+                              </button>
                               <button
                                 onClick={() => startEditing(guest)}
                                 className="p-1 text-burgundy-600 hover:bg-burgundy-100 rounded"
