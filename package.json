@@ -27,6 +27,7 @@
     "sanity:typegen": "sanity schema extract && sanity typegen generate",
     "migrate:to-sanity": "tsx scripts/migration/migrate-to-sanity.ts",
     "migrate:timeline": "tsx scripts/migrate-timeline-to-sanity.ts",
+    "migrate:recalculate-days": "tsx scripts/recalculate-day-numbers.ts",
     "setup:story-preview": "tsx scripts/setup-story-preview.ts",
     "migrate:prod": "tsx scripts/apply-migration-to-prod.ts",
     "seed:invitations": "tsx scripts/seed-invitations.ts",

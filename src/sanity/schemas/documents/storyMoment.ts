@@ -11,6 +11,7 @@
 
 import { defineType, defineField, defineArrayMember } from 'sanity'
 import { Heart } from 'lucide-react'
+import { DayNumberInput } from '@/sanity/components/DayNumberInput'
 
 export default defineType({
   name: 'storyMoment',
@@ -42,9 +43,15 @@ export default defineType({
       name: 'dayNumber',
       title: '📅 Dia do Relacionamento',
       type: 'number',
-      description: 'Número do dia contado desde o início (ex: Dia 1, Dia 434, Dia 1000)',
-      placeholder: 'Ex: 1, 100, 434',
-      validation: (Rule) => Rule.integer().positive(),
+      description: 'Calculado automaticamente baseado na data (Dia 1 = 25/02/2023). Suporta números negativos para eventos antes do namoro oficial.',
+      components: {
+        input: DayNumberInput,
+      },
+      readOnly: ({ currentUser }) => {
+        // Allow admins to manually override if needed, but discourage it
+        return !currentUser?.roles?.some((role) => role.name === 'administrator')
+      },
+      hidden: false,
     }),
 
     defineField({

@@ -7,6 +7,7 @@
 
 import { defineType, defineField } from 'sanity'
 import { Layers } from 'lucide-react'
+import { DayRangeInput } from '@/sanity/components/DayRangeInput'
 
 export default defineType({
   name: 'storyPhase',
@@ -39,9 +40,15 @@ export default defineType({
       name: 'dayRange',
       title: 'Intervalo de Dias',
       type: 'string',
-      description: 'Período em dias (ex: "Dia 1 - 100")',
-      validation: (Rule) => Rule.required(),
-      placeholder: 'Dia 1 - 100',
+      description: 'Calculado automaticamente baseado nos momentos desta fase. O intervalo é do primeiro ao último momento.',
+      components: {
+        input: DayRangeInput,
+      },
+      readOnly: ({ currentUser }) => {
+        // Allow admins to manually override if needed
+        return !currentUser?.roles?.some((role) => role.name === 'administrator')
+      },
+      hidden: false,
     }),
 
     defineField({
