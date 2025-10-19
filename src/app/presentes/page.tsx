@@ -13,7 +13,7 @@ export default async function PresentsPage() {
 
   // Fallback content if Sanity data isn't available
   const defaultSections = {
-    headerTitle: 'Bem-vindo à Nossa Lista (Quase Anti-Lista) 🎁',
+    headerTitle: 'Bora coçar os bolsos? 🎁',
     headerContent: `Esse é o cantinho pra quem insiste em presentear. O presente gigante é ver você dia 20 de novembro, na Casa HY, mas se o coração pede pra materializar carinho, fica à vontade.
 
 A gente tá deixando o apê que o Hel passava de bicicleta sonhando em morar com a nossa cara. Sala nova, cozinha funcionando, quarto sem fio pendurado. Família de seis (Linda 👑, Cacao 🍫, Olivia 🌸 e Oliver ⚡) merece lar decente.
