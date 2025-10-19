@@ -1,9 +1,6 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { format, parseISO } from 'date-fns'
-import { formatInTimeZone } from 'date-fns-tz'
-import { ptBR } from 'date-fns/locale'
 import { motion } from 'framer-motion'
 import {
   Clock,
@@ -72,12 +69,11 @@ export default function EventTimeline() {
   }, [])
 
   const timelineEntries = useMemo<TimelineEntry[]>(() => {
-    // Use São Paulo timezone (America/Sao_Paulo = GMT-3)
-    const SAO_PAULO_TZ = 'America/Sao_Paulo'
-
     return events.map((event) => {
+      // Extract time directly from ISO string without timezone conversion
+      // This ensures the time shows exactly as saved in Sanity, regardless of device timezone
       const startLabel = event.startTime
-        ? formatInTimeZone(parseISO(event.startTime), SAO_PAULO_TZ, 'HH:mm', { locale: ptBR })
+        ? event.startTime.substring(11, 16) // Extract HH:mm from "YYYY-MM-DDTHH:mm:ss"
         : ''
       const durationLabel = Number.isFinite(event.estimatedDuration) && event.estimatedDuration > 0
         ? `${event.estimatedDuration} min`
