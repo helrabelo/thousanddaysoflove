@@ -9,6 +9,7 @@ import Image from 'next/image'
 import { sanityFetch } from '@/sanity/lib/client'
 import { storyPreviewMomentsQuery } from '@/sanity/queries/timeline'
 import { getPrimaryStoryMedia, hasMultipleMedia } from '@/lib/utils/sanity-media'
+import { calculateDayNumber } from '@/lib/utils/relationship-days'
 import type { SanityStoryMoment } from '@/types/sanity'
 
 // Helper function to truncate text
@@ -175,6 +176,7 @@ export default function StoryPreview() {
               const primaryMedia = getPrimaryStoryMedia(moment as any)
               const imageUrl = primaryMedia?.url || '/images/hero-poster.jpg'
               const hasMultiple = hasMultipleMedia(moment as any)
+              const dayNumber = moment.date ? calculateDayNumber(moment.date) : null
 
               return (
                 <motion.div
@@ -247,7 +249,7 @@ export default function StoryPreview() {
                           }}
                         >
                           {/* Day Number Badge - Top */}
-                          {moment.dayNumber && (
+                          {dayNumber !== null && (
                             <motion.div
                               style={{
                                 alignSelf: 'flex-start',
@@ -268,7 +270,7 @@ export default function StoryPreview() {
                               animate={{ y: 0, opacity: 1 }}
                               transition={{ duration: 0.4, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
                             >
-                              Dia {moment.dayNumber}
+                              Dia {dayNumber}
                             </motion.div>
                           )}
 

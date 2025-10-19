@@ -11,7 +11,7 @@
 
 import { defineType, defineField, defineArrayMember } from 'sanity'
 import { Heart } from 'lucide-react'
-import { DayNumberInput } from '@/sanity/components/DayNumberInput'
+import { calculateDayNumber, formatDayNumber } from '@/lib/utils/relationship-days'
 
 export default defineType({
   name: 'storyMoment',
@@ -37,21 +37,6 @@ export default defineType({
       options: {
         dateFormat: 'DD/MM/YYYY',
       },
-    }),
-
-    defineField({
-      name: 'dayNumber',
-      title: '📅 Dia do Relacionamento',
-      type: 'number',
-      description: 'Calculado automaticamente baseado na data (Dia 1 = 25/02/2023). Suporta números negativos para eventos antes do namoro oficial.',
-      components: {
-        input: DayNumberInput,
-      },
-      readOnly: ({ currentUser }) => {
-        // Allow admins to manually override if needed, but discourage it
-        return !currentUser?.roles?.some((role) => role.name === 'administrator')
-      },
-      hidden: false,
     }),
 
     defineField({
@@ -282,17 +267,11 @@ export default defineType({
       name: 'date',
       by: [{ field: 'date', direction: 'asc' }],
     },
-    {
-      title: 'Dia',
-      name: 'dayNumber',
-      by: [{ field: 'dayNumber', direction: 'asc' }],
-    },
   ],
 
   preview: {
     select: {
       title: 'title',
-      day: 'dayNumber',
       order: 'displayOrder',
       icon: 'icon',
       showPreview: 'showInPreview',
@@ -300,8 +279,9 @@ export default defineType({
       visible: 'isVisible',
       media: 'media',
       legacyImage: 'image',
+      date: 'date',
     },
-    prepare({ title, day, order, icon, showPreview, showTimeline, visible, media, legacyImage }) {
+    prepare({ title, date, order, icon, showPreview, showTimeline, visible, media, legacyImage }) {
       // Build badge indicators
       const badges = []
       if (!visible) badges.push('🔒')
@@ -309,7 +289,8 @@ export default defineType({
       if (showTimeline) badges.push('📍')
 
       const badgeText = badges.length > 0 ? ` ${badges.join(' ')}` : ''
-      const dayText = day ? `Dia ${day}` : 'Sem dia específico'
+      const calculatedDay = date ? calculateDayNumber(date) : null
+      const dayText = calculatedDay !== null ? formatDayNumber(calculatedDay) : 'Sem dia específico'
 
       // Count media items
       const mediaCount = media?.length || 0

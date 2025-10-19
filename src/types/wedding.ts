@@ -424,7 +424,6 @@ export interface SanityStoryMoment {
   description: string;
   media: SanityStoryMomentMediaItem[];
   phase?: SanityStoryPhase;
-  dayNumber?: number;
   contentAlign: 'left' | 'right';
   displayOrder: number;
   showInPreview?: boolean;

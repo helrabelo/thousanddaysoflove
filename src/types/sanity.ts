@@ -263,7 +263,6 @@ export interface SanityStoryMoment extends SanityDocument {
   legacyImage?: SanityImage
   legacyVideo?: SanityFile
   phase?: SanityStoryPhase | SanityReference
-  dayNumber?: number
   contentAlign: 'left' | 'right'
   displayOrder: number
   showInPreview?: boolean

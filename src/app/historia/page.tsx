@@ -6,6 +6,7 @@ import HistoriaBackButton from '@/components/historia/HistoriaBackButton'
 import { sanityFetch } from '@/sanity/lib/client'
 import { timelineQuery } from '@/sanity/queries/timeline'
 import { getStoryMomentMedia } from '@/lib/utils/sanity-media'
+import { calculateDayNumber } from '@/lib/utils/relationship-days'
 import type { SanityStoryMoment } from '@/types/wedding'
 
 interface TimelineMoment extends SanityStoryMoment {
@@ -14,7 +15,6 @@ interface TimelineMoment extends SanityStoryMoment {
   date: string
   icon?: string
   description: string
-  dayNumber?: number
   contentAlign: 'left' | 'right'
   displayOrder: number
 }
@@ -87,11 +87,12 @@ export default async function HistoriaPage() {
                 height: item.height,
                 aspectRatio: item.aspectRatio,
               }))
+              const dayNumber = calculateDayNumber(moment.date)
 
               return (
                 <TimelineMomentCard
                   key={moment._id}
-                  day={moment.dayNumber || 0}
+                  day={dayNumber}
                   date={new Date(moment.date).toLocaleDateString('pt-BR', {
                     day: '2-digit',
                     month: 'long',

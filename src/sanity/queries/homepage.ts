@@ -96,7 +96,6 @@ export const homePageQuery = groq`
             title,
             dayRange
           },
-          dayNumber,
           displayOrder,
           contentAlign,
           showInPreview,

@@ -7,7 +7,6 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import GuestMenu from './GuestMenu'
-import BottomNav from './BottomNav'
 
 const navItems = [
   {
@@ -499,9 +498,6 @@ export default function Navigation() {
           )}
         </AnimatePresence>
       </motion.nav>
-
-      {/* Mobile Bottom Navigation */}
-      <BottomNav />
     </>
   )
 }

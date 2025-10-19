@@ -88,7 +88,6 @@ export const timelineQuery = groq`
         description,
         ${mediaFragment},
         ${legacyMediaFragment},
-        dayNumber,
         contentAlign,
         displayOrder
       }
@@ -117,7 +116,6 @@ export const storyPreviewMomentsQuery = groq`
       dayRange,
       displayOrder
     },
-    dayNumber,
     displayOrder,
     contentAlign,
     showInPreview
