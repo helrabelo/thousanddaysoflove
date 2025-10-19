@@ -20,16 +20,14 @@ export default function GalleryHero() {
           <HYBadge />
 
           <h1 className="text-5xl md:text-7xl font-bold mb-8" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)', letterSpacing: '0.15em', lineHeight: '1.1' }}>
-            Nossas Memórias
+            Nosso Caos Bonito Em Fotos
           </h1>
           <div className="w-24 h-px mx-auto mb-8" style={{ background: 'var(--decorative)' }} />
           <p className="text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed mb-6" style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)', fontStyle: 'italic' }}>
-            Cada foto conta parte da nossa história de amor.
+            Cada clique aqui tem cheiro de café, latido no fundo e sorriso torto. Vida real, zero filtro.
           </p>
           <p className="text-lg md:text-xl max-w-3xl mx-auto leading-relaxed mb-12" style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)' }}>
-            Compartilhe suas memórias conosco! Seja aquele momento especial antes do grande dia,
-            a alegria durante a celebração, ou as lembranças que ficaram depois.
-            Cada imagem é uma preciosidade que guardamos com carinho.
+            Achou uma foto nossa perdida no rolo? Manda. Pode ser bastidor antes do casamento, selfie suada na festa, vídeo tremido do after. Tudo vira memória oficial por aqui – e a gente guarda como álbum de família (porque é).
           </p>
 
           {/* Upload CTA */}
