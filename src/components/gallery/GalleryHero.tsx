@@ -20,12 +20,49 @@ export default function GalleryHero() {
           <HYBadge />
 
           <h1 className="text-5xl md:text-7xl font-bold mb-8" style={{ fontFamily: 'var(--font-playfair)', color: 'var(--primary-text)', letterSpacing: '0.15em', lineHeight: '1.1' }}>
-            Galeria HY
+            Nossas Memórias
           </h1>
           <div className="w-24 h-px mx-auto mb-8" style={{ background: 'var(--decorative)' }} />
-          <p className="text-xl md:text-2xl max-w-2xl mx-auto leading-relaxed" style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)', fontStyle: 'italic' }}>
-            Um compilado de momentos especiais capturados em fotos.
+          <p className="text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed mb-6" style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)', fontStyle: 'italic' }}>
+            Cada foto conta parte da nossa história de amor.
           </p>
+          <p className="text-lg md:text-xl max-w-3xl mx-auto leading-relaxed mb-12" style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)' }}>
+            Compartilhe suas memórias conosco! Seja aquele momento especial antes do grande dia,
+            a alegria durante a celebração, ou as lembranças que ficaram depois.
+            Cada imagem é uma preciosidade que guardamos com carinho.
+          </p>
+
+          {/* Upload CTA */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+          >
+            <button
+              onClick={() => {
+                // Trigger the global media upload modal
+                window.dispatchEvent(new CustomEvent('open-media-upload'))
+              }}
+              className="inline-flex items-center gap-3 px-10 py-5 text-lg font-medium transition-all duration-300 group hover:shadow-lg"
+              style={{
+                fontFamily: 'var(--font-crimson)',
+                background: 'var(--primary-text)',
+                color: 'var(--background)',
+                borderRadius: '2px',
+              }}
+            >
+              <span className="text-2xl group-hover:scale-110 transition-transform">📸</span>
+              <span>Compartilhar Suas Fotos</span>
+              <svg
+                className="w-5 h-5 group-hover:translate-x-1 transition-transform"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </motion.div>
         </motion.div>
       </div>
     </section>
