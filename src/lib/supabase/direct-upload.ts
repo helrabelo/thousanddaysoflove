@@ -20,6 +20,7 @@ import type { UploadPhase } from './storage'
 export interface DirectUploadOptions {
   file: File
   phase: UploadPhase
+  title?: string
   caption?: string
   timelineEventId?: string
   onProgress?: (progress: number) => void
@@ -47,7 +48,7 @@ export interface DirectUploadResult {
 export async function uploadFileDirect(
   options: DirectUploadOptions
 ): Promise<DirectUploadResult> {
-  const { file, phase, caption, timelineEventId, onProgress } = options
+  const { file, phase, title, caption, timelineEventId, onProgress } = options
 
   try {
     // Step 1: Get signed upload URL
@@ -130,6 +131,7 @@ export async function uploadFileDirect(
         mimeType: file.type,
         isVideo,
         phase,
+        title,
         caption,
         timelineEventId,
         width,

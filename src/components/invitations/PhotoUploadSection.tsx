@@ -13,6 +13,8 @@ type UploadPhase = 'before' | 'during' | 'after';
 export default function PhotoUploadSection({ invitationCode }: PhotoUploadSectionProps) {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [phase, setPhase] = useState<UploadPhase>('before');
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
   const [uploading, setUploading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState<{
     type: 'success' | 'error';
@@ -43,6 +45,8 @@ export default function PhotoUploadSection({ invitationCode }: PhotoUploadSectio
         formData.append('file', file);
         formData.append('phase', phase);
         formData.append('invitation_code', invitationCode);
+        if (title) formData.append('title', title);
+        if (description) formData.append('caption', description);
 
         const response = await fetch('/api/photos/upload', {
           method: 'POST',
@@ -76,8 +80,10 @@ export default function PhotoUploadSection({ invitationCode }: PhotoUploadSectio
         message: `${selectedFiles.length} ${selectedFiles.length === 1 ? 'foto enviada' : 'fotos enviadas'} com sucesso!`,
       });
 
-      // Clear selection
+      // Clear selection and form
       setSelectedFiles([]);
+      setTitle('');
+      setDescription('');
     } catch (error) {
       setUploadStatus({
         type: 'error',
@@ -113,6 +119,42 @@ export default function PhotoUploadSection({ invitationCode }: PhotoUploadSectio
               {option.label}
             </button>
           ))}
+        </div>
+      </div>
+
+      {/* Title and Description Fields */}
+      <div className="space-y-4">
+        <div>
+          <label htmlFor="photo-title" className="block font-playfair text-lg text-[#2C2C2C] mb-2">
+            Título da foto <span className="text-[#A8A8A8] text-sm font-crimson">(opcional)</span>
+          </label>
+          <input
+            id="photo-title"
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Ex: Churrasco na casa da vovó"
+            maxLength={100}
+            className="w-full px-4 py-3 rounded-xl border border-[#E8E6E3] font-crimson text-[#2C2C2C] placeholder-[#A8A8A8] focus:border-[#4A7C59] focus:ring-2 focus:ring-[#4A7C59]/20 transition-all"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="photo-description" className="block font-playfair text-lg text-[#2C2C2C] mb-2">
+            Descrição <span className="text-[#A8A8A8] text-sm font-crimson">(opcional)</span>
+          </label>
+          <textarea
+            id="photo-description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Conte a história por trás desse momento..."
+            maxLength={500}
+            rows={3}
+            className="w-full px-4 py-3 rounded-xl border border-[#E8E6E3] font-crimson text-[#2C2C2C] placeholder-[#A8A8A8] focus:border-[#4A7C59] focus:ring-2 focus:ring-[#4A7C59]/20 transition-all resize-none"
+          />
+          <p className="mt-1 text-xs text-[#A8A8A8] font-crimson">
+            {description.length}/500 caracteres
+          </p>
         </div>
       </div>
 

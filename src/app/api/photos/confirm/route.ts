@@ -30,6 +30,7 @@ interface ConfirmUploadRequest {
   mimeType: string
   isVideo: boolean
   phase: 'before' | 'during' | 'after'
+  title?: string
   caption?: string
   timelineEventId?: string
   width?: number
@@ -68,6 +69,7 @@ export async function POST(request: NextRequest) {
       mimeType,
       isVideo,
       phase,
+      title,
       caption,
       timelineEventId,
       width,
@@ -94,7 +96,7 @@ export async function POST(request: NextRequest) {
       .insert({
         guest_id: session.guest_id,
         guest_name: session.guest?.name || 'Convidado',
-        title: null,
+        title: title || null,
         caption: caption || null,
         upload_phase: phase,
         storage_path: storagePath,

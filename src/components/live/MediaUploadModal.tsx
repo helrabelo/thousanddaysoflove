@@ -52,6 +52,7 @@ export function MediaUploadModal({
   const [uploadPhase, setUploadPhase] = useState<UploadPhase>('during')
   const [files, setFiles] = useState<UploadFile[]>([])
   const [isDragging, setIsDragging] = useState(false)
+  const [title, setTitle] = useState('')
   const [caption, setCaption] = useState('')
 
   // Handle ESC key to close modal
@@ -85,6 +86,7 @@ export function MediaUploadModal({
   useEffect(() => {
     if (!isOpen) {
       setFiles([])
+      setTitle('')
       setCaption('')
       setUploadPhase('during')
       setIsDragging(false)
@@ -158,6 +160,7 @@ export function MediaUploadModal({
       const result = await uploadFileDirect({
         file: uploadFile.file,
         phase: uploadPhase,
+        title: title || undefined,
         caption: caption || undefined,
         timelineEventId: timelineEventId || undefined,
         onProgress: (progress) => {
@@ -426,27 +429,45 @@ export function MediaUploadModal({
                       </div>
                     </motion.div>
 
-                    {/* Caption Input */}
+                    {/* Title and Caption Inputs */}
                     {hasFiles && (
                       <motion.div
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
-                        className="bg-white rounded-lg p-3 sm:p-4 border border-[#E8E6E3]"
+                        className="bg-white rounded-lg p-3 sm:p-4 border border-[#E8E6E3] space-y-3 sm:space-y-4"
                       >
-                        <label className="block font-crimson text-xs sm:text-sm text-[#4A4A4A] mb-2">
-                          Legenda (opcional)
-                        </label>
-                        <textarea
-                          value={caption}
-                          onChange={(e) => setCaption(e.target.value)}
-                          placeholder="Adicione uma legenda..."
-                          maxLength={500}
-                          rows={3}
-                          className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-[#E8E6E3] rounded-lg font-crimson text-sm sm:text-base text-[#2C2C2C] placeholder:text-[#A8A8A8] focus:outline-none focus:border-[#2C2C2C] transition-colors resize-none"
-                        />
-                        <p className="mt-2 font-crimson text-xs text-[#A8A8A8] text-right">
-                          {caption.length}/500
-                        </p>
+                        {/* Title Input */}
+                        <div>
+                          <label className="block font-crimson text-xs sm:text-sm text-[#4A4A4A] mb-2">
+                            Título (opcional)
+                          </label>
+                          <input
+                            type="text"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            placeholder="Ex: Churrasco na casa da vovó"
+                            maxLength={100}
+                            className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-[#E8E6E3] rounded-lg font-crimson text-sm sm:text-base text-[#2C2C2C] placeholder:text-[#A8A8A8] focus:outline-none focus:border-[#2C2C2C] transition-colors"
+                          />
+                        </div>
+
+                        {/* Caption Input */}
+                        <div>
+                          <label className="block font-crimson text-xs sm:text-sm text-[#4A4A4A] mb-2">
+                            Descrição (opcional)
+                          </label>
+                          <textarea
+                            value={caption}
+                            onChange={(e) => setCaption(e.target.value)}
+                            placeholder="Conte a história por trás desse momento..."
+                            maxLength={500}
+                            rows={3}
+                            className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-[#E8E6E3] rounded-lg font-crimson text-sm sm:text-base text-[#2C2C2C] placeholder:text-[#A8A8A8] focus:outline-none focus:border-[#2C2C2C] transition-colors resize-none"
+                          />
+                          <p className="mt-2 font-crimson text-xs text-[#A8A8A8] text-right">
+                            {caption.length}/500
+                          </p>
+                        </div>
                       </motion.div>
                     )}
 
