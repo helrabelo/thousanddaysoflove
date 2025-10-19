@@ -25,7 +25,7 @@ interface PresentsPageClientProps {
 }
 
 const defaultSections = {
-  headerTitle: 'Bem-vindo à Nossa Lista (Quase Anti-Lista) 🎁',
+  headerTitle: 'Bora coçar os bolsos? 🎁',
   headerContent: `Esse é o cantinho pra quem insiste em presentear. O presente gigante é ver você dia 20 de novembro, na Casa HY, mas se o coração pede pra materializar carinho, fica à vontade.
 
 A gente tá deixando o apê que o Hel passava de bicicleta sonhando em morar com a nossa cara. Sala nova, cozinha funcionando, quarto sem fio pendurado. Família de seis (Linda 👑, Cacao 🍫, Olivia 🌸 e Oliver ⚡) merece lar decente.
@@ -43,9 +43,10 @@ E lembra: te ver na Casa HY, dia 20 de novembro, é o que importa. O resto é ca
     { text: 'Qualquer valor vira história dentro do nosso lar' },
   ],
   showProjectGallery: false,
-  projectGalleryTitle: '',
-  projectGalleryDescription: '',
-  projectRenders: [] as any[],
+  projectGalleryTitle: 'O Projeto do Nosso Lar',
+  projectGalleryDescription:
+    'Esse apartamento que tava meio largado? Agora vira nosso lar de verdade. Veja como vai ficar depois da reforma.',
+  projectRenders: [],
 }
 
 export default function PresentsPageClient({ sections }: PresentsPageClientProps) {
