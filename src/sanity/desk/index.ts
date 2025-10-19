@@ -339,6 +339,16 @@ export const deskStructure: StructureResolver = (S) =>
               S.listItem()
                 .title('História - Prévia')
                 .child(S.documentTypeList('storyPreview').title('Story Preview Sections')),
+
+              S.listItem()
+                .title('Página de Presentes')
+                .icon(Gift)
+                .child(
+                  S.document()
+                    .schemaType('giftsPageSections')
+                    .documentId('giftsPageSections')
+                    .title('Seções da Página de Presentes')
+                ),
             ])
         ),
 
