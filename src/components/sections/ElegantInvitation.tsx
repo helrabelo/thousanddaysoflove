@@ -62,7 +62,7 @@ export default function ElegantInvitation({ variant = 'default', guestName }: El
                   letterSpacing: 'clamp(0.1em, 1.5vw, 0.2em)',
                 }}
               >
-                11H.00
+                11H.15
               </div>
             </motion.div>
 
@@ -228,7 +228,7 @@ export default function ElegantInvitation({ variant = 'default', guestName }: El
               letterSpacing: 'clamp(0.1em, 1.5vw, 0.2em)',
             }}
           >
-            11H.00
+            11H.15
           </div>
         </motion.div>
 
