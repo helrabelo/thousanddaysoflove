@@ -80,8 +80,8 @@ export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
   // Get appropriate CTA text based on gift state
   const getCtaText = () => {
     if (isCompleted) return null
-    if (isPartial) return 'Completar Presente'
-    return 'Presentear 💕'
+    if (isPartial) return 'Contribuir Também 💕'
+    return 'Contribuir 💕'
   }
 
   return (
@@ -211,11 +211,16 @@ export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
               </p>
             </div>
 
-            {/* Price and Store Link */}
+            {/* Goal Price and Store Link */}
             <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-              <span className="text-xl md:text-2xl font-bold" style={{ color: 'var(--decorative)', fontFamily: 'var(--font-playfair)', fontSize: 'clamp(1.25rem, 4vw, 1.5rem)' }}>
-                {formatBRL(gift.fullPrice)}
-              </span>
+              <div>
+                <p className="text-xs mb-1" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
+                  Meta do presente:
+                </p>
+                <span className="text-xl md:text-2xl font-bold" style={{ color: 'var(--decorative)', fontFamily: 'var(--font-playfair)', fontSize: 'clamp(1.25rem, 4vw, 1.5rem)' }}>
+                  {formatBRL(gift.fullPrice)}
+                </span>
+              </div>
               {gift.storeUrl && !isCompleted && (
                 <a
                   href={gift.storeUrl}
@@ -280,6 +285,66 @@ export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
               </motion.div>
             </div>
           </div>
+
+          {/* Suggested Contributions - Only show if partial payment allowed and not completed */}
+          {gift.allowPartialPayment && !isCompleted && (
+            <div className="mb-5">
+              <p className="text-xs font-medium mb-2" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
+                💝 Contribua com qualquer valor:
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {(gift.suggestedContributions || [100, 250, 500, 1000]).slice(0, 4).map((amount) => (
+                  <button
+                    key={amount}
+                    onClick={() => setShowPaymentModal(true)}
+                    className="px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200"
+                    style={{
+                      background: 'var(--accent)',
+                      color: 'var(--decorative)',
+                      border: '1px solid var(--border-subtle)',
+                      fontFamily: 'var(--font-crimson)',
+                      fontSize: 'clamp(0.75rem, 2vw, 0.875rem)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'var(--decorative)'
+                      e.currentTarget.style.color = 'var(--white-soft)'
+                      e.currentTarget.style.transform = 'scale(1.05)'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'var(--accent)'
+                      e.currentTarget.style.color = 'var(--decorative)'
+                      e.currentTarget.style.transform = 'scale(1)'
+                    }}
+                  >
+                    {formatBRL(amount)}
+                  </button>
+                ))}
+                <button
+                  onClick={() => setShowPaymentModal(true)}
+                  className="px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200"
+                  style={{
+                    background: 'transparent',
+                    color: 'var(--decorative)',
+                    border: '1px solid var(--decorative)',
+                    fontFamily: 'var(--font-crimson)',
+                    fontSize: 'clamp(0.75rem, 2vw, 0.875rem)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'var(--decorative)'
+                    e.currentTarget.style.color = 'var(--white-soft)'
+                    e.currentTarget.style.transform = 'scale(1.05)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'transparent'
+                    e.currentTarget.style.color = 'var(--decorative)'
+                    e.currentTarget.style.transform = 'scale(1)'
+                  }}
+                >
+                  Outro valor
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Action Buttons - Redesigned */}
           <div className="space-y-3">

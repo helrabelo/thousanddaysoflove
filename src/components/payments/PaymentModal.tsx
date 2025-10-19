@@ -38,10 +38,12 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
   const [buyerInfo, setBuyerInfo] = useState({
     name: '',
     email: '',
-    amount: gift.fullPrice,
+    amount: 0, // Start with no amount selected
     message: ''
   })
   const [statusChecking, setStatusChecking] = useState(false)
+  const [showCustomAmount, setShowCustomAmount] = useState(false)
+  const [selectedSuggestedAmount, setSelectedSuggestedAmount] = useState<number | null>(null)
 
   // Check payment status every 5 seconds when showing PIX
   useEffect(() => {
@@ -136,10 +138,26 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
     setBuyerInfo({
       name: '',
       email: '',
-      amount: gift.fullPrice,
+      amount: 0,
       message: ''
     })
     setCopied(false)
+    setShowCustomAmount(false)
+    setSelectedSuggestedAmount(null)
+  }
+
+  // Handle selecting a suggested amount
+  const handleSelectAmount = (amount: number) => {
+    setSelectedSuggestedAmount(amount)
+    setBuyerInfo({ ...buyerInfo, amount })
+    setShowCustomAmount(false)
+  }
+
+  // Handle selecting custom amount option
+  const handleSelectCustom = () => {
+    setShowCustomAmount(true)
+    setSelectedSuggestedAmount(null)
+    setBuyerInfo({ ...buyerInfo, amount: 0 })
   }
 
   const handleClose = () => {
@@ -180,9 +198,9 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900">
-                    {step === 'form' && 'Comprar com PIX'}
+                    {step === 'form' && 'Contribuir com PIX'}
                     {step === 'pix' && 'Pagamento PIX'}
-                    {step === 'success' && 'Pagamento Confirmado!'}
+                    {step === 'success' && 'Contribuição Confirmada!'}
                     {step === 'error' && 'Erro no Pagamento'}
                   </h3>
                   <p className="text-sm text-gray-600">{gift.title}</p>
@@ -207,7 +225,7 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
                 className="space-y-4"
               >
                 <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 border border-gray-200">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 mb-3">
                     {gift.imageUrl && (
                       <Image
                         src={gift.imageUrl}
@@ -219,12 +237,94 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
                     )}
                     <div>
                       <h4 className="font-medium text-gray-900">{gift.title}</h4>
-                      <p className="text-sm text-gray-600">{gift.description}</p>
-                      <p className="text-lg font-semibold text-gray-700 mt-1">
+                      <p className="text-sm text-gray-600 line-clamp-2">{gift.description}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between pt-3 border-t border-gray-200">
+                    <div>
+                      <p className="text-xs text-gray-600">Meta do presente:</p>
+                      <p className="text-lg font-semibold text-gray-700">
                         {formatBRL(gift.fullPrice)}
                       </p>
                     </div>
+                    <div className="text-right">
+                      <p className="text-xs text-gray-600">Já arrecadado:</p>
+                      <p className="text-base font-medium text-gray-700">
+                        {formatBRL(gift.totalContributed)} ({Math.round(gift.percentFunded)}%)
+                      </p>
+                    </div>
                   </div>
+                </div>
+
+                {/* Contribution Amount Selection - Prominent */}
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      💝 Escolha o valor da sua contribuição *
+                    </label>
+                    <p className="text-xs text-gray-600 mb-3">
+                      Contribua com qualquer valor! Muitos convidados juntos tornam esse sonho realidade.
+                    </p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {(gift.suggestedContributions || [100, 250, 500, 1000]).map((amount) => (
+                        <button
+                          key={amount}
+                          type="button"
+                          onClick={() => handleSelectAmount(amount)}
+                          className={`p-3 rounded-lg border-2 transition-all duration-200 ${
+                            selectedSuggestedAmount === amount
+                              ? 'border-gray-700 bg-gray-100 shadow-md'
+                              : 'border-gray-200 hover:border-gray-400 hover:bg-gray-50'
+                          }`}
+                        >
+                          <div className="text-center">
+                            <p className="text-lg font-bold text-gray-900">{formatBRL(amount)}</p>
+                            {amount === gift.remainingAmount && (
+                              <p className="text-xs text-green-600 mt-1">✨ Completa o presente!</p>
+                            )}
+                          </div>
+                        </button>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={handleSelectCustom}
+                        className={`p-3 rounded-lg border-2 transition-all duration-200 col-span-2 ${
+                          showCustomAmount
+                            ? 'border-gray-700 bg-gray-100 shadow-md'
+                            : 'border-gray-200 hover:border-gray-400 hover:bg-gray-50'
+                        }`}
+                      >
+                        <p className="text-base font-semibold text-gray-900">💖 Outro valor</p>
+                        <p className="text-xs text-gray-600 mt-1">Escolha quanto você quer contribuir</p>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Custom Amount Input - Only shows when custom is selected */}
+                  {showCustomAmount && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                    >
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Digite o valor personalizado
+                      </label>
+                      <input
+                        type="number"
+                        value={buyerInfo.amount || ''}
+                        onChange={(e) => setBuyerInfo({ ...buyerInfo, amount: Number(e.target.value) })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+                        min="50"
+                        max={gift.remainingAmount}
+                        step="10"
+                        placeholder="Mínimo R$ 50"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Valor mínimo: R$ 50 • Falta: {formatBRL(gift.remainingAmount)}
+                      </p>
+                    </motion.div>
+                  )}
                 </div>
 
                 <div className="space-y-4">
@@ -258,23 +358,6 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Valor
-                    </label>
-                    <input
-                      type="number"
-                      value={buyerInfo.amount}
-                      onChange={(e) => setBuyerInfo({ ...buyerInfo, amount: Number(e.target.value) })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                      min="50"
-                      step="1"
-                    />
-                    <p className="text-xs text-gray-500 mt-1">
-                      Valor mínimo: R$ 50. Contribua com qualquer valor {gift.allowPartialPayment && 'até'} {formatBRL(gift.fullPrice)}
-                    </p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
                       Mensagem para os noivos (opcional)
                     </label>
                     <textarea
@@ -289,16 +372,18 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
 
                 <Button
                   onClick={handleCreatePixPayment}
-                  disabled={loading || !buyerInfo.name || !buyerInfo.email}
-                  className="w-full bg-gradient-to-r from-gray-500 to-gray-700 hover:from-gray-600 hover:to-gray-800 text-white py-3 rounded-xl font-medium"
+                  disabled={loading || !buyerInfo.name || !buyerInfo.email || !buyerInfo.amount || buyerInfo.amount < 50}
+                  className="w-full bg-gradient-to-r from-gray-500 to-gray-700 hover:from-gray-600 hover:to-gray-800 text-white py-3 rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? (
                     <div className="flex items-center gap-2">
                       <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                       Gerando PIX...
                     </div>
+                  ) : buyerInfo.amount > 0 ? (
+                    `Contribuir ${formatBRL(buyerInfo.amount)} via PIX`
                   ) : (
-                    `Gerar PIX - ${formatBRL(buyerInfo.amount)}`
+                    'Escolha um valor para continuar'
                   )}
                 </Button>
               </motion.div>
@@ -411,26 +496,29 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
 
                 <div>
                   <h4 className="text-xl font-semibold text-gray-900 mb-2">
-                    Pagamento Confirmado!
+                    Contribuição Confirmada!
                   </h4>
                   <p className="text-gray-600">
-                    Obrigado por presentear Hel & Ylana!
+                    Obrigado por contribuir para o sonho de Hel & Ylana! 💝
                   </p>
                 </div>
 
                 <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 border border-gray-200">
                   <div className="flex items-center justify-center gap-2 text-gray-700 mb-2">
                     <Heart className="w-5 h-5" />
-                    <span className="font-medium">Presente confirmado</span>
+                    <span className="font-medium">Sua contribuição</span>
                   </div>
                   <p className="text-sm text-gray-700">{gift.title}</p>
                   <p className="text-lg font-semibold text-gray-700 mt-1">
                     {formatBRL(buyerInfo.amount)}
                   </p>
+                  <p className="text-xs text-gray-600 mt-2">
+                    Junto com outros convidados, você está ajudando a tornar esse sonho realidade!
+                  </p>
                 </div>
 
                 <p className="text-sm text-gray-600">
-                  Voces receberao um e-mail de confirmacao em breve.
+                  Você receberá um e-mail de confirmação em breve.
                 </p>
 
                 <Button
