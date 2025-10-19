@@ -90,7 +90,7 @@ Transform the invitation page into a beautiful, personalized digital wedding inv
 
 #### A. **Data e Horário**
 - Date: 20 de Novembro de 2025
-- Time: 11h00 (chegada dos convidados)
+- Time: 11h15 (chegada dos convidados)
 - Cerimônia: 11h30
 - Recepção: 13h00
 - Visual timeline with icons
