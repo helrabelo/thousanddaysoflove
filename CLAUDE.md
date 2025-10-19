@@ -27,6 +27,7 @@ A beautiful, modern wedding website for Hel and Ylana's November 20th, 2025 wedd
 - 🗺️ Interactive venue map with directions
 - 🌟 Mobile-first responsive design
 - 📷 Gallery with CDN-powered image optimization
+- 📅 Auto-calculated timeline day numbers (Day 1 = Feb 25, 2023)
 
 ## Development Commands
 ```bash
@@ -168,6 +169,14 @@ The admin area has been streamlined to avoid duplication with Sanity CMS. Conten
 All content editing happens in Sanity Studio:
 - **Gallery**: Photo albums and images (`galleryImage`)
 - **Timeline/Historia**: Story moments and phases (`storyMoment`, `storyPhase`, `storyCard`)
+  - **Auto-Calculated Day Numbers** ✅ NEW (2025-10-19)
+    - Day numbers calculate automatically from dates
+    - Day 1 = February 25, 2023 (Guaramiranga - official relationship start)
+    - Day 1000 = November 20, 2025 (Wedding day)
+    - Supports negative days for pre-relationship events (e.g., Tinder match = Day -49)
+    - Custom Sanity components show contextual badges and helpful info
+    - Phase day ranges auto-calculate from phase moments
+    - See `docs/DAY_NUMBER_REFACTORING.md` for full details
 - **Pets**: Family pets section (`pet`, `ourFamily`)
 - **About Us**: Couple information (`aboutUs`)
 - **Hero Images**: Homepage hero section (`videoHero`)
