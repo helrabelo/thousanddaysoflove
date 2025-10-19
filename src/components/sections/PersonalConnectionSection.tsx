@@ -296,7 +296,7 @@ export default function PersonalConnectionSection() {
                     letterSpacing: '0.05em'
                   }}
                 >
-                  20 de Novembro • 11h00 • Casa HY
+                  20 de Novembro • 11h15 • Casa HY
                 </span>
               </div>
             </div>

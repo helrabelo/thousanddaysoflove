@@ -93,7 +93,7 @@ const journeyMoments: JourneyMoment[] = [
     title: 'Mil Dias Viram Para Sempre',
     date: '20 de novembro de 2025',
     emotion: 'Amor Eterno',
-    description: 'Casa HY, 11h00. Caseiros celebrando com quem mais amam.',
+    description: 'Casa HY, 11h15. Caseiros celebrando com quem mais amam.',
     impact: 'peak',
     color: 'var(--primary-text)'
   }
@@ -340,7 +340,7 @@ export default function EmotionalJourneyMap() {
                   fontWeight: '500'
                 }}
               >
-                20 de novembro de 2025 • 11h00 • Casa HY
+                20 de novembro de 2025 • 11h15 • Casa HY
               </span>
             </div>
           </div>

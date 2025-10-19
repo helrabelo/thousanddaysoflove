@@ -804,7 +804,7 @@ export default function SimpleRSVP() {
                             className="text-sm mb-2"
                             style={{ fontFamily: 'var(--font-crimson)', color: 'var(--secondary-text)' }}
                           >
-                            20 de Novembro de 2025, 11h00 • Casa HY, Fortaleza
+                            20 de Novembro de 2025, 11h15 • Casa HY, Fortaleza
                           </p>
                           <p
                             className="text-xs"
@@ -928,7 +928,7 @@ export default function SimpleRSVP() {
                       onClick={() => {
                         const message = encodeURIComponent(
                           `🎉 Confirme sua presença no casamento de Hel & Ylana!\n\n` +
-                          `📅 20 de Novembro de 2025, às 11h00\n` +
+                          `📅 20 de Novembro de 2025, às 11h15\n` +
                           `📍 Casa HY, Fortaleza\n\n` +
                           `Confirme pelo site: ${window.location.origin}/rsvp\n\n` +
                           `Mil dias de amor viram para sempre! 💕`

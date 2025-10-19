@@ -52,7 +52,7 @@ const EVENT_DETAILS = [
   {
     icon: Clock,
     label: 'Horário',
-    value: '11h00',
+    value: '11h15',
     detail: 'Chegada dos convidados',
   },
   {
