@@ -54,6 +54,32 @@ export default function PersonalizedInvitationPage() {
 
       // Track invitation open (first time + view count)
       await trackInvitationOpen(code);
+
+      // Authenticate guest automatically with invitation code
+      // This creates a session in the database and sets a cookie
+      try {
+        const authResponse = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            authMethod: 'invitation_code',
+            invitationCode: code.toUpperCase(),
+          }),
+        });
+
+        if (!authResponse.ok) {
+          console.warn('Failed to create guest session:', await authResponse.text());
+          // Don't show error to user - invitation still loads fine
+        } else {
+          const authData = await authResponse.json();
+          console.log('Guest session created successfully:', authData);
+        }
+      } catch (authError) {
+        console.warn('Error creating guest session:', authError);
+        // Don't show error to user - invitation still loads fine
+      }
     } catch (err) {
       console.error('Error loading invitation:', err);
       setError('Erro ao carregar convite. Tente novamente mais tarde.');

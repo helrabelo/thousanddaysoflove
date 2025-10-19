@@ -126,6 +126,38 @@ export default function GuestMenu() {
   const isLoggedIn = !!session?.guest
   const guestMenuItems = getGuestMenuItems(session?.guest?.invitation_code)
 
+  // When NOT logged in: Show simple invitation button
+  if (!loading && !isLoggedIn) {
+    return (
+      <Link
+        href="/convite"
+        className="flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 min-h-[44px]"
+        style={{
+          fontFamily: 'var(--font-playfair)',
+          color: 'var(--secondary-text)',
+          fontWeight: '400',
+          fontSize: '1rem',
+          letterSpacing: '0.05em',
+          background: 'transparent',
+          textDecoration: 'none',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.color = 'var(--primary-text)'
+          e.currentTarget.style.background = 'var(--accent)'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.color = 'var(--secondary-text)'
+          e.currentTarget.style.background = 'transparent'
+        }}
+        aria-label="Ver meu convite"
+      >
+        <Sparkles className="w-4 h-4" />
+        <span>Meu Convite</span>
+      </Link>
+    )
+  }
+
+  // When logged in: Show full dropdown menu
   return (
     <div className="relative" ref={menuRef}>
       {/* Trigger Button - Matches Navigation Style */}
@@ -339,7 +371,7 @@ export default function GuestMenu() {
               })}
             </div>
 
-            {/* Footer */}
+            {/* Footer - Logout Button */}
             <div
               className="px-4 py-3 border-t"
               style={{
@@ -347,36 +379,21 @@ export default function GuestMenu() {
                 background: 'var(--accent)',
               }}
             >
-              {isLoggedIn ? (
-                <button
-                  onClick={handleLogout}
-                  disabled={isLoggingOut}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 hover:opacity-80 disabled:opacity-50"
-                  style={{
-                    fontFamily: 'var(--font-crimson)',
-                    fontSize: '0.875rem',
-                    color: 'var(--secondary-text)',
-                    background: 'transparent',
-                    border: '1px solid var(--border-subtle)',
-                  }}
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span>{isLoggingOut ? 'Saindo...' : 'Sair da Conta'}</span>
-                </button>
-              ) : (
-                <Link
-                  href="/convite"
-                  onClick={() => setIsOpen(false)}
-                  className="text-center block text-sm transition-colors"
-                  style={{
-                    fontFamily: 'var(--font-crimson)',
-                    fontStyle: 'italic',
-                    color: 'var(--secondary-text)',
-                  }}
-                >
-                  Não tem código? <span className="font-semibold underline">Obter convite →</span>
-                </Link>
-              )}
+              <button
+                onClick={handleLogout}
+                disabled={isLoggingOut}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 hover:opacity-80 disabled:opacity-50"
+                style={{
+                  fontFamily: 'var(--font-crimson)',
+                  fontSize: '0.875rem',
+                  color: 'var(--secondary-text)',
+                  background: 'transparent',
+                  border: '1px solid var(--border-subtle)',
+                }}
+              >
+                <LogOut className="w-4 h-4" />
+                <span>{isLoggingOut ? 'Saindo...' : 'Sair da Conta'}</span>
+              </button>
             </div>
           </motion.div>
         )}
