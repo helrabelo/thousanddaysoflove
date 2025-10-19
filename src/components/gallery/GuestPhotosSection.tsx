@@ -39,18 +39,45 @@ export default function GuestPhotosSection({
   const [guestName, setGuestName] = useState('Convidado')
   const [isLoading, setIsLoading] = useState(true)
 
-  // Load guest session from cookie
+  // Load guest session from cookie and verify it
   useEffect(() => {
-    const sessionCookie = Cookies.get(GUEST_SESSION_COOKIE)
-    if (sessionCookie) {
+    const loadGuestSession = async () => {
+      const sessionToken = Cookies.get(GUEST_SESSION_COOKIE)
+      console.log('[GuestPhotosSection] Session token from cookie:', sessionToken)
+
+      if (!sessionToken) {
+        console.log('[GuestPhotosSection] No session token found')
+        return
+      }
+
       try {
-        const sessionData = JSON.parse(sessionCookie)
-        setGuestSessionId(sessionData.id)
-        setGuestName(sessionData.guest?.name || 'Convidado')
+        // Verify session with server
+        const response = await fetch('/api/auth/verify-session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ sessionToken }),
+        })
+
+        if (!response.ok) {
+          console.error('[GuestPhotosSection] Session verification failed:', response.status)
+          return
+        }
+
+        const { session } = await response.json()
+        console.log('[GuestPhotosSection] Session verified:', session)
+
+        if (session && session.guest) {
+          setGuestSessionId(session.id)
+          setGuestName(session.guest.name || 'Convidado')
+        }
       } catch (error) {
-        console.error('Error parsing guest session:', error)
+        console.error('[GuestPhotosSection] Error verifying session:', error)
       }
     }
+
+    loadGuestSession()
   }, [])
 
   // Load photos with interactions

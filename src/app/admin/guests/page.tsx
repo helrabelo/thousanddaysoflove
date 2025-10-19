@@ -1,7 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
-import type { ChangeEvent } from 'react'
+import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import {
   Plus,
@@ -12,7 +11,6 @@ import {
   Save,
   XCircle,
   Search,
-  Filter,
   Download,
   Mail,
   Phone,
@@ -369,7 +367,7 @@ ${inviteUrl}`
       await navigator.clipboard.writeText(message)
       showToast({
         title: 'Convite copiado!',
-        description: `Mensagem do convite de ${firstName} copiada para a área de transferência`,
+        message: `Mensagem do convite de ${firstName} copiada para a área de transferência`,
         type: 'success'
       })
     } catch (error) {
