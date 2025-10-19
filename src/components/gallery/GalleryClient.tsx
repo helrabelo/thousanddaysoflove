@@ -45,21 +45,34 @@ export default function GalleryClient({ mediaItems, guestPhotosByPhase }: Galler
     guestPhotosByPhase.during.length +
     guestPhotosByPhase.after.length
 
+  // Shuffle function for random order
+  const shuffleArray = <T,>(array: T[]): T[] => {
+    const shuffled = [...array]
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    }
+    return shuffled
+  }
+
+  // Randomize gallery order (consistent per page load)
+  const [randomizedMedia] = useState(() => shuffleArray(mediaItems))
+
   return (
     <>
-      {/* Unified Media Gallery (Photos & Videos) */}
-      <MasonryGallery
-        items={mediaItems}
-        showFilters={true}
-        onItemClick={(item, index) => {
-          openLightbox(item, mediaItems)
-        }}
-      />
-
-      {/* Guest Photos Section */}
+      {/* Guest Photos Section - FIRST! */}
       {totalGuestPhotos > 0 && (
         <GuestPhotosSection photosByPhase={guestPhotosByPhase} />
       )}
+
+      {/* Unified Media Gallery (Photos & Videos) - Random order, no filters */}
+      <MasonryGallery
+        items={randomizedMedia}
+        showFilters={false}
+        onItemClick={(item, index) => {
+          openLightbox(item, randomizedMedia)
+        }}
+      />
 
       {/* Lightbox */}
       <MediaLightbox

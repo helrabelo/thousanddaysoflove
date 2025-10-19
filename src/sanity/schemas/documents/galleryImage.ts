@@ -265,14 +265,6 @@ export default defineType({
       initialValue: true,
     }),
 
-    defineField({
-      name: 'displayOrder',
-      title: 'Ordem de Exibição',
-      type: 'number',
-      description: 'Números menores aparecem primeiro (opcional)',
-      validation: (Rule) => Rule.integer().positive(),
-    }),
-
     // Technical Metadata (optional)
     defineField({
       name: 'aspectRatio',
@@ -280,50 +272,6 @@ export default defineType({
       type: 'number',
       description: 'Largura / Altura (calculado automaticamente)',
       readOnly: true,
-    }),
-
-    defineField({
-      name: 'photographer',
-      title: 'Fotógrafo',
-      type: 'string',
-      description: 'Quem tirou estas fotos?',
-    }),
-
-    defineField({
-      name: 'cameraInfo',
-      title: 'Info da Câmera',
-      type: 'object',
-      description: 'Detalhes técnicos (opcional)',
-      options: {
-        collapsible: true,
-        collapsed: true,
-      },
-      fields: [
-        {
-          name: 'make',
-          title: 'Marca',
-          type: 'string',
-          placeholder: 'ex: Canon',
-        },
-        {
-          name: 'model',
-          title: 'Modelo',
-          type: 'string',
-          placeholder: 'ex: EOS R5',
-        },
-        {
-          name: 'lens',
-          title: 'Lente',
-          type: 'string',
-          placeholder: 'ex: 24-70mm f/2.8',
-        },
-        {
-          name: 'settings',
-          title: 'Configurações',
-          type: 'string',
-          placeholder: 'ex: ISO 400, f/2.8, 1/200s',
-        },
-      ],
     }),
   ],
 
@@ -402,11 +350,6 @@ export default defineType({
       title: 'Categoria',
       name: 'categoryAsc',
       by: [{ field: 'category', direction: 'asc' }],
-    },
-    {
-      title: 'Ordem de Exibição',
-      name: 'displayOrder',
-      by: [{ field: 'displayOrder', direction: 'asc' }],
     },
   ],
 })
