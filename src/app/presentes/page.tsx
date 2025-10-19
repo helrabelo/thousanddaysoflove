@@ -14,23 +14,21 @@ export default async function PresentsPage() {
   // Fallback content if Sanity data isn't available
   const defaultSections = {
     headerTitle: 'Bem-vindo à Nossa Lista (Quase Anti-Lista) 🎁',
-    headerContent: `Esse é o cantinho onde a gente deixa claro: o presente que mais importa é te ver dia 20 de novembro, com a gente. Mas, se o coração pede pra transformar o carinho em algo palpável, não vamos te privar desse gesto.
+    headerContent: `Esse é o cantinho pra quem insiste em presentear. O presente gigante é ver você dia 20 de novembro, na Casa HY, mas se o coração pede pra materializar carinho, fica à vontade.
 
-A gente tá finalmente reformando o nosso cantinho, vamos deixá-lo com a nossa cara. Sala nova, cozinha funcionando, quarto sem fio pendurado. Família de seis ( por enquanto ).
+A gente tá deixando o apê que o Hel passava de bicicleta sonhando em morar com a nossa cara. Sala nova, cozinha funcionando, quarto sem fio pendurado. Família de seis (Linda 👑, Cacao 🍫, Olivia 🌸 e Oliver ⚡) merece lar decente.
 
-Quer ajudar com a TV, o sofá, a lua de mel, a marcenaria ou aquela decoração que faz a casa parecer casa? Escolhe o que combina com você e bora tirar o escorpião do bolso.
+Quer ajudar com TV, sofá, lua de mel, plantinha ou qualquer detalhe? Escolhe o que combina contigo. Até presente fora da lista a gente abraça. Amor nunca sobra.`,
+    footerTitle: 'Obrigadaço por transformar carinho em casa',
+    footerContent: `Se você chegou aqui pensando em mimar a gente, obrigadaço de verdade. Cada contribuição vira história: panela que não deixa o arroz passar, sofá com quatro cachorros em cima, marcenaria que some com os fios.
 
-E obviamente, se quiser dar um presente fora da lista, a gente recebe com o maior amor também. O que importa é você estar lá com a gente.`,
-    footerTitle: 'Como Mimamos Você Enquanto Você Mima a Gente',
-    footerContent: `Item grande? A gente quebra em cotas. Exemplo real oficial: TV de R$10.000 vira contribuições de R$100, R$250, R$500 — ou qualquer outro valor (mínimo R$50). Tem opção pra lua de mel, reforma, plantinha, o que fizer sentido aí na sua cabeça.
+Dá um quentinho saber que você quer deixar nosso lar ainda mais cheio de nós dois. A gente recebe com todo amor e transforma em detalhe pra vida toda.
 
-Cada ajuda vira parede pintada, sofá sem rasgo, cozinha com panela combinando. Os quatro latidos barulhentos agradecem muito. A gente também.
-
-Só não esquece: o presente gigante é você lá com a gente. Dia 20 de novembro. Casa HY. O resto é carinho que dá pra pegar com a mão.`,
+E lembra: te ver na Casa HY, dia 20 de novembro, é o que importa. O resto é carinho em forma de PIX.`,
     footerBullets: [
       { text: 'PIX brasileiro, rapidinho e sem enrolação' },
-      { text: 'Confirmação chega na hora (a gente vibra junto)' },
-      { text: '“O que temos entre nós é muito maior” — Hel & Ylana' },
+      { text: 'Confirmação na hora — a gente vibra junto' },
+      { text: 'Qualquer valor vira história dentro do nosso lar' },
     ],
     showProjectGallery: false,
     projectGalleryTitle: 'O Projeto do Nosso Lar',

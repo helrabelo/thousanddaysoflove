@@ -27,10 +27,22 @@ interface PresentsPageClientProps {
 
 const defaultSections = {
   headerTitle: 'Bem-vindo à Nossa Lista (Quase Anti-Lista) 🎁',
-  headerContent: '',
-  footerTitle: 'Como Mimamos Você Enquanto Você Mima a Gente',
-  footerContent: '',
-  footerBullets: [] as Array<{ text: string }>,
+  headerContent: `Esse é o cantinho pra quem insiste em presentear. O presente gigante é ver você dia 20 de novembro, na Casa HY, mas se o coração pede pra materializar carinho, fica à vontade.
+
+A gente tá deixando o apê que o Hel passava de bicicleta sonhando em morar com a nossa cara. Sala nova, cozinha funcionando, quarto sem fio pendurado. Família de seis (Linda 👑, Cacao 🍫, Olivia 🌸 e Oliver ⚡) merece lar decente.
+
+Quer ajudar com TV, sofá, lua de mel, plantinha ou qualquer detalhe? Escolhe o que combina contigo. Até presente fora da lista a gente abraça. Amor nunca sobra.`,
+  footerTitle: 'Obrigadaço por transformar carinho em casa',
+  footerContent: `Se você chegou aqui pensando em mimar a gente, obrigadaço de verdade. Cada contribuição vira história: panela que não deixa o arroz passar, sofá com quatro cachorros em cima, marcenaria que some com os fios.
+
+Dá um quentinho saber que você quer deixar nosso lar ainda mais cheio de nós dois. A gente recebe com todo amor e transforma em detalhe pra vida toda.
+
+E lembra: te ver na Casa HY, dia 20 de novembro, é o que importa. O resto é carinho em forma de PIX.`,
+  footerBullets: [
+    { text: 'PIX brasileiro, rapidinho e sem enrolação' },
+    { text: 'Confirmação na hora — a gente vibra junto' },
+    { text: 'Qualquer valor vira história dentro do nosso lar' },
+  ],
   showProjectGallery: false,
   projectGalleryTitle: '',
   projectGalleryDescription: '',
