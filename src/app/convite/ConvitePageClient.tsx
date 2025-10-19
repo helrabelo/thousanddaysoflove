@@ -134,14 +134,20 @@ export default function ConvitePageClient() {
                   />
                   <button
                     type="submit"
-                    className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-medium transition-all hover:shadow-lg transform hover:scale-105"
+                    disabled={!inviteCode.trim()}
+                    className="w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-full font-semibold transition-all hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none"
                     style={{
-                      background: 'var(--decorative)',
+                      background: inviteCode.trim()
+                        ? 'linear-gradient(135deg, var(--primary-text) 0%, var(--secondary-text) 100%)'
+                        : 'var(--decorative)',
                       color: 'var(--white-soft)',
+                      boxShadow: inviteCode.trim()
+                        ? '0 4px 16px rgba(44, 44, 44, 0.25)'
+                        : 'none',
                     }}
                   >
                     Acessar Convite Personalizado
-                    <ArrowRight className="w-4 h-4" />
+                    <ArrowRight className="w-5 h-5" />
                   </button>
                 </form>
               </motion.div>
