@@ -13,24 +13,22 @@ export default async function PresentsPage() {
 
   // Fallback content if Sanity data isn't available
   const defaultSections = {
-    headerTitle: 'Presentes? A Gente Só Quer Você Lá',
-    headerContent: `Deus nos deu muita coisa. Saúde. Família. Trabalho. Sinceramente? A gente não precisa de nada. Só de você lá dia 20 de novembro.
+    headerTitle: 'Bem-vindo à Nossa Lista (Quase Anti-Lista) 🎁',
+    headerContent: `Esse é o cantinho onde a gente deixa claro: o presente que mais importa é te ver dia 20 de novembro, na Casa HY, rindo com a gente (e provavelmente fugindo de algum cachorro). Mas, se o coração pede pra transformar carinho em algo palpável, aqui vai o jeito certo.
 
-Mas a gente sabe. Tem gente que faz questão. Que quer materializar o carinho de algum jeito.
+A gente tá finalmente reformando o apê que o Hel passava de bicicleta sonhando em morar. Sala nova, cozinha funcionando, quarto sem fio pendurado. Família de seis, contando Linda 👑, Cacao 🍫, Olivia 🌸 e Oliver ⚡, precisa de um lar do nosso tamanho.
 
-Então... a gente tá finalmente (finalmente!) reformando nosso apê. Tava meio inacabado desde que a gente se mudou. Agora vai virar nosso lar de verdade. Pra sempre. Família de (por enquanto) 6 (contando Linda 👑, Cacao 🍫, Olivia 🌸 e Oliver ⚡).
+Quer ajudar com a TV, o sofá, a lua de mel, a marcenaria ou aquela decoração que faz a casa parecer casa? Escolhe o que combina com você e bora deixar nosso cantinho redondo.`,
+    footerTitle: 'Como Mimamos Você Enquanto Você Mima a Gente',
+    footerContent: `Item grande? A gente quebra em cotas. Exemplo real oficial: TV de R$10.000 vira contribuições de R$100, R$250, R$500 — ou qualquer outro valor (mínimo R$50). Tem opção pra lua de mel, reforma, plantinha, o que fizer sentido aí na sua cabeça.
 
-Se quiser contribuir pro nosso cantinho - uma TV, um sofá, lua de mel, decoração - a gente abraça e agradece o gesto. De coração.`,
-    footerTitle: 'Obrigado Por Se Importar (Mas Principalmente Por Estar Lá!)',
-    footerContent: `Tem item grande? A gente divide em pedacinhos (aquela TV de R$10.000 vira cotas de R$100, R$250, R$500 - ou o valor que você quiser, mínimo R$50). Tem também contribuição pra lua de mel, decoração, aquelas coisinhas que transformam casa em lar.
+Cada ajuda vira parede pintada, sofá sem rasgo, cozinha com panela combinando. Os quatro latidos barulhentos agradecem muito. A gente também.
 
-Cada gesto ajuda a fazer desse apartamento (que tava meio largado) nosso cantinho de verdade. Os 4 cachorros barulhentos também agradecem.
-
-Mas pra gente, o presente maior é você lá. Casa HY. 20 de novembro. O resto é só carinho materializado.`,
+Só não esquece: o presente gigante é você lá com a gente. Dia 20 de novembro. Casa HY. O resto é carinho que dá pra pegar com a mão.`,
     footerBullets: [
-      { text: 'PIX brasileiro, rápido e seguro' },
-      { text: 'Confirmação na hora do carinho' },
-      { text: '"O que temos entre nós é muito maior" - Hel & Ylana' },
+      { text: 'PIX brasileiro, rapidinho e sem enrolação' },
+      { text: 'Confirmação chega na hora (a gente vibra junto)' },
+      { text: '“O que temos entre nós é muito maior” — Hel & Ylana' },
     ],
     showProjectGallery: false,
     projectGalleryTitle: 'O Projeto do Nosso Lar',

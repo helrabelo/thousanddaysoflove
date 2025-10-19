@@ -26,9 +26,9 @@ interface PresentsPageClientProps {
 }
 
 const defaultSections = {
-  headerTitle: 'Presentes? A Gente Só Quer Você Lá',
+  headerTitle: 'Bem-vindo à Nossa Lista (Quase Anti-Lista) 🎁',
   headerContent: '',
-  footerTitle: 'Obrigado!',
+  footerTitle: 'Como Mimamos Você Enquanto Você Mima a Gente',
   footerContent: '',
   footerBullets: [] as Array<{ text: string }>,
   showProjectGallery: false,
