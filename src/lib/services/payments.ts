@@ -334,6 +334,13 @@ export class PaymentService {
     description: string
     giftName?: string
     buyerName?: string
+    processorPaymentMethodId?: string
+    cardToken?: string
+    installments?: number
+    issuerId?: string
+    identificationType?: string
+    identificationNumber?: string
+    cardholderName?: string
   }) {
     const accessToken = process.env.MERCADO_PAGO_ACCESS_TOKEN
 
@@ -346,22 +353,47 @@ export class PaymentService {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
     const hasValidWebhookUrl = siteUrl && siteUrl.startsWith('https://')
 
+    const displayName = (paymentData.cardholderName || paymentData.buyerName || 'Convidado Casamento').trim()
+    const nameTokens = displayName.split(' ').filter(Boolean)
+    const firstName = nameTokens.shift() || 'Convidado'
+    const lastName = nameTokens.join(' ') || 'Casamento'
+
     const requestBody: any = {
       transaction_amount: paymentData.amount,
       description: `${paymentData.description} - ${paymentData.giftName || 'Presente'}`,
-      payment_method_id: paymentData.paymentMethod,
+      payment_method_id: paymentData.processorPaymentMethodId || paymentData.paymentMethod,
       payer: {
         email: paymentData.payerEmail || 'convidado@casamento.com',
-        first_name: paymentData.buyerName?.split(' ')[0] || 'Convidado',
-        last_name: paymentData.buyerName?.split(' ').slice(1).join(' ') || 'Casamento'
+        first_name: firstName,
+        last_name: lastName
       },
       external_reference: paymentData.paymentId,
       metadata: {
         payment_id: paymentData.paymentId,
         gift_name: paymentData.giftName,
-        buyer_name: paymentData.buyerName,
+        buyer_name: displayName,
         wedding_couple: 'Hel & Ylana',
         wedding_date: '2025-11-20'
+      }
+    }
+
+    if (paymentData.identificationType && paymentData.identificationNumber) {
+      requestBody.payer.identification = {
+        type: paymentData.identificationType,
+        number: paymentData.identificationNumber
+      }
+    }
+
+    if (paymentData.paymentMethod === 'credit_card') {
+      if (!paymentData.cardToken) {
+        throw new Error('Card token is required for credit card payments')
+      }
+
+      requestBody.token = paymentData.cardToken
+      requestBody.installments = paymentData.installments && paymentData.installments > 0 ? paymentData.installments : 1
+
+      if (paymentData.issuerId) {
+        requestBody.issuer_id = paymentData.issuerId
       }
     }
 
@@ -430,6 +462,7 @@ export class PaymentService {
           paymentMethodId: result.payment_method_id,
           transactionAmount: result.transaction_amount,
           externalReference: result.external_reference,
+          installments: result.installments,
           qrCodeExists: !!result.point_of_interaction?.transaction_data?.qr_code,
           qrCodeBase64Exists: !!result.point_of_interaction?.transaction_data?.qr_code_base64
         })
@@ -540,6 +573,117 @@ export class PaymentService {
       }
     } catch (error) {
       console.error('❌ Error creating PIX payment:', error)
+      throw error
+    }
+  }
+
+  static async createCreditCardPayment(paymentData: {
+    sanityGiftId: string
+    guestId?: string
+    amount: number
+    message?: string
+    payerEmail: string
+    buyerName: string
+    giftName?: string
+    cardToken: string
+    paymentMethodId: string
+    installments: number
+    issuerId?: string
+    identificationType: string
+    identificationNumber: string
+    cardholderName: string
+  }) {
+    const adminClient = createAdminClient()
+
+    try {
+      console.log('🎯 [1/4] Creating credit card payment record in database...')
+      const { data: payment, error: createError } = await adminClient
+        .from('payments')
+        .insert({
+          sanity_gift_id: paymentData.sanityGiftId,
+          guest_id: paymentData.guestId || null,
+          amount: paymentData.amount,
+          status: 'pending',
+          payment_method: 'credit_card',
+          message: paymentData.message || null
+        })
+        .select()
+        .single()
+
+      if (createError || !payment) {
+        console.error('❌ [1/4] Failed to create credit card payment record:', createError)
+        throw new Error(`Database error: ${createError?.message || 'Unknown error creating credit card payment'}`)
+      }
+
+      console.log('✅ [1/4] Credit card payment record created:', {
+        internalId: payment.id,
+        amount: payment.amount,
+        status: payment.status
+      })
+
+      console.log('🎯 [2/4] Calling Mercado Pago API for credit card payment...')
+      const mercadoPagoResult = await this.processMercadoPagoPayment({
+        paymentId: payment.id,
+        amount: paymentData.amount,
+        paymentMethod: 'credit_card',
+        processorPaymentMethodId: paymentData.paymentMethodId,
+        payerEmail: paymentData.payerEmail,
+        description: `Casamento Hel & Ylana`,
+        giftName: paymentData.giftName,
+        buyerName: paymentData.buyerName,
+        cardToken: paymentData.cardToken,
+        installments: paymentData.installments,
+        issuerId: paymentData.issuerId,
+        identificationType: paymentData.identificationType,
+        identificationNumber: paymentData.identificationNumber,
+        cardholderName: paymentData.cardholderName
+      })
+
+      console.log('✅ [2/4] Mercado Pago response for credit card payment:', {
+        mercadoPagoId: mercadoPagoResult.id,
+        status: mercadoPagoResult.status,
+        statusDetail: mercadoPagoResult.status_detail,
+        installments: mercadoPagoResult.installments
+      })
+
+      console.log('🎯 [3/4] Updating credit card payment status in database...')
+      const mappedStatus = this.mapMercadoPagoStatus(mercadoPagoResult.status)
+      const mercadoPagoIdString = String(mercadoPagoResult.id)
+
+      const { data: updatedPayment, error: updateError } = await adminClient
+        .from('payments')
+        .update({
+          mercado_pago_payment_id: mercadoPagoIdString,
+          status: mappedStatus,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', payment.id)
+        .select()
+        .single()
+
+      if (updateError) {
+        console.error('❌ [3/4] Failed to persist Mercado Pago ID for credit card payment:', updateError)
+      }
+
+      const finalPayment = updatedPayment || {
+        ...payment,
+        mercado_pago_payment_id: mercadoPagoIdString,
+        status: mappedStatus
+      }
+
+      console.log('✅ [4/4] Credit card payment processing complete:', {
+        internalId: finalPayment.id,
+        status: finalPayment.status,
+        mercadoPagoIdSaved: finalPayment.mercado_pago_payment_id
+      })
+
+      return {
+        payment: finalPayment,
+        mercadoPago: mercadoPagoResult,
+        status: mappedStatus
+      }
+    } catch (error) {
+      console.error('❌ Error processing credit card payment:', error)
       throw error
     }
   }
@@ -670,6 +814,26 @@ export class PaymentService {
   // Validate payment amount
   static validatePaymentAmount(amount: number, giftPrice: number): boolean {
     return amount > 0 && amount <= giftPrice
+  }
+
+  static mapMercadoPagoStatus(status: string): Payment['status'] {
+    switch (status) {
+      case 'approved':
+        return 'completed'
+      case 'authorized':
+      case 'pending':
+      case 'in_process':
+      case 'in_mediation':
+        return 'pending'
+      case 'refunded':
+        return 'refunded'
+      case 'cancelled':
+      case 'rejected':
+      case 'charged_back':
+        return 'failed'
+      default:
+        return 'pending'
+    }
   }
 
   // Get payment method display name in Portuguese

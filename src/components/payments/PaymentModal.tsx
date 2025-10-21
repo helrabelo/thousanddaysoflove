@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, QrCode, Copy, Check, Heart, Clock, CreditCard } from 'lucide-react'
+import { X, QrCode, Copy, Check, Heart, Clock, CreditCard, ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { GiftWithProgress } from '@/lib/services/gifts'
 import Image from 'next/image'
+import { CreditCardForm } from './CreditCardForm'
+import { PaymentMethodOption, PaymentMethodSelector } from './PaymentMethodSelector'
 
 interface PaymentModalProps {
   isOpen: boolean
@@ -22,6 +24,10 @@ interface PaymentData {
     pixCode?: string
     qrCodeBase64?: string
     qrCodeImage?: string
+    statusDetail?: string
+    installments?: number
+    paymentMethodId?: string
+    issuerId?: string
   }
   gift: {
     id: string
@@ -31,7 +37,7 @@ interface PaymentData {
 }
 
 export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }: PaymentModalProps) {
-  const [step, setStep] = useState<'form' | 'pix' | 'success' | 'error'>('form')
+  const [step, setStep] = useState<'form' | 'pix' | 'card' | 'success' | 'error'>('form')
   const [loading, setLoading] = useState(false)
   const [paymentData, setPaymentData] = useState<PaymentData | null>(null)
   const [copied, setCopied] = useState(false)
@@ -44,6 +50,7 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
   const [statusChecking, setStatusChecking] = useState(false)
   const [showCustomAmount, setShowCustomAmount] = useState(false)
   const [selectedSuggestedAmount, setSelectedSuggestedAmount] = useState<number | null>(null)
+  const [selectedMethod, setSelectedMethod] = useState<PaymentMethodOption>('pix')
 
   // Check payment status every 5 seconds when showing PIX
   useEffect(() => {
@@ -79,6 +86,14 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
     }
   }, [step, paymentData, onPaymentSuccess])
 
+  const handleContinue = async () => {
+    if (selectedMethod === 'pix') {
+      await handleCreatePixPayment()
+    } else {
+      setStep('card')
+    }
+  }
+
   const handleCreatePixPayment = async () => {
     setLoading(true)
 
@@ -113,6 +128,51 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
     }
   }
 
+  const handleCreditCardPayment = async (cardDetails: {
+    token: string
+    paymentMethodId: string
+    issuerId?: string
+    installments: number
+    identificationType: string
+    identificationNumber: string
+    cardholderName: string
+  }) => {
+    if (!buyerInfo.amount || buyerInfo.amount < 50) {
+      throw new Error('Escolha um valor válido para continuar.')
+    }
+
+    const response = await fetch('/api/payments/create-credit-card', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        sanityGiftId: gift._id,
+        amount: buyerInfo.amount,
+        payerEmail: buyerInfo.email,
+        buyerName: buyerInfo.name,
+        message: buyerInfo.message,
+        installments: cardDetails.installments,
+        cardToken: cardDetails.token,
+        paymentMethodId: cardDetails.paymentMethodId,
+        issuerId: cardDetails.issuerId,
+        identificationType: cardDetails.identificationType,
+        identificationNumber: cardDetails.identificationNumber,
+        cardholderName: cardDetails.cardholderName
+      })
+    })
+
+    const result = await response.json()
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.error || result.details || 'Falha ao processar pagamento com cartão.')
+    }
+
+    setPaymentData(result)
+    setStep('success')
+    onPaymentSuccess(result.payment.id)
+  }
+
   const copyPixCode = async () => {
     if (paymentData?.mercadoPago.pixCode) {
       try {
@@ -144,6 +204,7 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
     setCopied(false)
     setShowCustomAmount(false)
     setSelectedSuggestedAmount(null)
+    setSelectedMethod('pix')
   }
 
   // Handle selecting a suggested amount
@@ -198,8 +259,9 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900">
-                    {step === 'form' && 'Contribuir com PIX'}
+                    {step === 'form' && (selectedMethod === 'pix' ? 'Contribuir com PIX' : 'Contribuir com Cartão')}
                     {step === 'pix' && 'Pagamento PIX'}
+                    {step === 'card' && 'Pagamento com Cartão'}
                     {step === 'success' && 'Contribuição Confirmada!'}
                     {step === 'error' && 'Erro no Pagamento'}
                   </h3>
@@ -370,9 +432,20 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
                   </div>
                 </div>
 
+                <PaymentMethodSelector
+                  value={selectedMethod}
+                  onChange={(method) => setSelectedMethod(method)}
+                />
+
                 <Button
-                  onClick={handleCreatePixPayment}
-                  disabled={loading || !buyerInfo.name || !buyerInfo.email || !buyerInfo.amount || buyerInfo.amount < 50}
+                  onClick={handleContinue}
+                  disabled={
+                    loading ||
+                    !buyerInfo.name ||
+                    !buyerInfo.email ||
+                    !buyerInfo.amount ||
+                    buyerInfo.amount < 50
+                  }
                   className="w-full bg-gradient-to-r from-gray-500 to-gray-700 hover:from-gray-600 hover:to-gray-800 text-white py-3 rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? (
@@ -381,11 +454,69 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
                       Gerando PIX...
                     </div>
                   ) : buyerInfo.amount > 0 ? (
-                    `Contribuir ${formatBRL(buyerInfo.amount)} via PIX`
+                    selectedMethod === 'pix'
+                      ? `Contribuir ${formatBRL(buyerInfo.amount)} via PIX`
+                      : `Continuar para pagar ${formatBRL(buyerInfo.amount)} com cartão`
                   ) : (
                     'Escolha um valor para continuar'
                   )}
                 </Button>
+              </motion.div>
+            )}
+
+            {/* Credit Card Payment Step */}
+            {step === 'card' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-5"
+              >
+                <div className="flex items-center justify-between">
+                  <button
+                    type="button"
+                    onClick={() => setStep('form')}
+                    className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    Ajustar valor ou dados do convidado
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedMethod('pix')
+                      setStep('form')
+                    }}
+                    className="text-xs text-gray-500 hover:text-gray-800"
+                  >
+                    Prefere pagar com PIX?
+                  </button>
+                </div>
+
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 border border-gray-200 space-y-2">
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>Presente:</span>
+                    <span className="font-medium text-gray-800">{gift.title}</span>
+                  </div>
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>Contribuição:</span>
+                    <span className="font-semibold text-gray-900">{formatBRL(buyerInfo.amount)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>Nome:</span>
+                    <span className="font-medium text-gray-800">{buyerInfo.name}</span>
+                  </div>
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>Email:</span>
+                    <span className="font-medium text-gray-800">{buyerInfo.email}</span>
+                  </div>
+                </div>
+
+                <CreditCardForm
+                  amount={buyerInfo.amount}
+                  buyerName={buyerInfo.name}
+                  buyerEmail={buyerInfo.email}
+                  onSubmit={handleCreditCardPayment}
+                />
               </motion.div>
             )}
 
