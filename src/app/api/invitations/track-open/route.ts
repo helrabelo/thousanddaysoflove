@@ -46,8 +46,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Prepare updates
+    const currentOpenCount = invitation.open_count ?? 0
     const updates: InvitationOpenUpdate = {
-      open_count: invitation.open_count + 1,
+      open_count: currentOpenCount + 1,
     }
 
     // Set opened_at only on first open

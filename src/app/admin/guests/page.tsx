@@ -194,12 +194,12 @@ export default function AdminGuests(): JSX.Element {
         .from('simple_guests')
         .update({
           name: editForm.name,
-          phone: editForm.phone || null,
-          email: editForm.email || null,
+          phone: editForm.phone || undefined,
+          email: editForm.email || undefined,
           attending: editForm.attending,
           plus_ones: editForm.plus_ones,
-          notes: editForm.notes || null,
-          invitation_code: editForm.invitation_code || null
+          notes: editForm.notes || undefined,
+          invitation_code: editForm.invitation_code || undefined
         })
         .eq('id', editForm.id)
 
@@ -220,9 +220,13 @@ export default function AdminGuests(): JSX.Element {
   ): Promise<void> => {
     try {
       const supabase = createClient()
+      const normalizedUpdates = Object.fromEntries(
+        Object.entries(updates).map(([key, value]) => [key, value ?? undefined])
+      )
+
       const { data, error } = await supabase
         .from('simple_guests')
-        .update(updates)
+        .update(normalizedUpdates as Record<string, unknown>)
         .eq('id', guestId)
         .select('*')
         .single()
@@ -276,8 +280,8 @@ export default function AdminGuests(): JSX.Element {
       // Prepare bulk insert - use custom code if provided, otherwise generate one
       const guestsToInsert = validEntries.map(entry => ({
         name: entry.name.trim(),
-        phone: entry.phone.trim() || null,
-        email: entry.email.trim() || null,
+        phone: entry.phone.trim() || undefined,
+        email: entry.email.trim() || undefined,
         invitation_code: entry.invitation_code.trim()
           ? entry.invitation_code.trim().toUpperCase()
           : `HY${Date.now().toString().slice(-6)}${Math.random().toString(36).substring(2, 4).toUpperCase()}`
@@ -761,7 +765,7 @@ ${inviteUrl}`
                             value={guest.email ?? ''}
                             onSave={async (next) => {
                               await handleQuickGuestUpdate(guest.id, {
-                                email: next ? next : null,
+                                email: next ? next : undefined,
                               })
                             }}
                             placeholder="email@exemplo.com"
@@ -776,7 +780,7 @@ ${inviteUrl}`
                             value={guest.phone ?? ''}
                             onSave={async (next) => {
                               await handleQuickGuestUpdate(guest.id, {
-                                phone: next ? next : null,
+                                phone: next ? next : undefined,
                               })
                             }}
                             placeholder="(11) 99999-9999"
@@ -791,7 +795,7 @@ ${inviteUrl}`
                             value={guest.invitation_code ?? ''}
                             onSave={async (next) => {
                               await handleQuickGuestUpdate(guest.id, {
-                                invitation_code: next ? next.toUpperCase() : null,
+                                invitation_code: next ? next.toUpperCase() : undefined,
                               })
                             }}
                             placeholder="Código"
@@ -861,7 +865,7 @@ ${inviteUrl}`
                             value={guest.notes ?? ''}
                             onSave={async (next) => {
                               await handleQuickGuestUpdate(guest.id, {
-                                notes: next ? next : null,
+                                notes: next ? next : undefined,
                               })
                             }}
                             placeholder="Observações..."

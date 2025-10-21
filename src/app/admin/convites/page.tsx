@@ -176,11 +176,6 @@ export default function AdminInvitationsPage() {
     )
   }
 
-  // Load data
-  useEffect(() => {
-    void loadData()
-  }, [loadData])
-
   // Filter invitations
   useEffect(() => {
     let filtered = invitations
@@ -243,6 +238,11 @@ export default function AdminInvitationsPage() {
     },
     [sortBy, sortOrder]
   )
+
+  // Load data
+  useEffect(() => {
+    void loadData()
+  }, [loadData])
 
   useEffect(() => {
     return () => {

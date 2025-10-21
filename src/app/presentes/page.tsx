@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
 import { getGiftsPageSections } from '@/lib/sanity/giftsPageService'
 import PresentsPageClient from './PresentsPageClient'
+import type { GiftsPageSections } from '@/types/wedding'
 
 /**
  * Gifts Page - Server Component
@@ -12,7 +13,8 @@ export default async function PresentsPage() {
   const sections = await getGiftsPageSections()
 
   // Fallback content if Sanity data isn't available
-  const defaultSections = {
+  const defaultSections: GiftsPageSections = {
+    _id: 'default-gifts-page',
     headerTitle: 'Bora coçar os bolsos? 🎁',
     headerContent: `Esse é o cantinho pra quem insiste em presentear. O presente gigante é ver você dia 20 de novembro, na Casa HY, mas se o coração pede pra materializar carinho, fica à vontade.
 
@@ -35,9 +37,11 @@ E lembra: te ver na Casa HY, dia 20 de novembro, é o que importa. O resto é ca
     projectGalleryDescription:
       'Esse apartamento que tava meio largado? Agora vira nosso lar de verdade. Veja como vai ficar depois da reforma.',
     projectRenders: [],
+    isActive: true,
+    lastUpdated: new Date().toISOString(),
   }
 
-  const pageContent = sections || defaultSections
+  const pageContent: GiftsPageSections = sections ?? defaultSections
 
   return (
     <Suspense fallback={<LoadingState />}>

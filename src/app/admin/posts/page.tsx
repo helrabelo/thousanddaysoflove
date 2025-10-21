@@ -55,41 +55,6 @@ export default function AdminPostsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [stats, setStats] = useState<PostStatsOverview | null>(null);
 
-  // Load posts when filter changes
-  useEffect(() => {
-    loadPosts();
-  }, [loadPosts]);
-
-  // Load stats
-  useEffect(() => {
-    loadStats();
-  }, [loadStats]);
-
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
-      // Don't trigger if typing in input
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
-        return;
-      }
-
-      const selectedPost = posts.find(p => selectedPosts.has(p.id));
-      if (!selectedPost || selectedPost.status !== 'pending') return;
-
-      if (e.key === 'a' || e.key === 'A') {
-        e.preventDefault();
-        handleModerate(selectedPost.id, 'approve');
-      } else if (e.key === 'r' || e.key === 'R') {
-        e.preventDefault();
-        const reason = prompt('Motivo da rejeição (opcional):');
-        handleModerate(selectedPost.id, 'reject', reason || undefined);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [posts, selectedPosts, handleModerate]);
-
   const loadPosts = useCallback(async () => {
     setIsLoading(true);
 
@@ -124,6 +89,14 @@ export default function AdminPostsPage() {
       console.error('Error loading stats:', error);
     }
   }, []);
+
+  useEffect(() => {
+    void loadPosts();
+  }, [loadPosts]);
+
+  useEffect(() => {
+    void loadStats();
+  }, [loadStats]);
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
@@ -161,6 +134,31 @@ export default function AdminPostsPage() {
       showToast({ title: 'Erro ao moderar mensagem', type: 'error' });
     }
   }, [loadPosts, loadStats, showToast]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      // Don't trigger if typing in input
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      const selectedPost = posts.find(p => selectedPosts.has(p.id));
+      if (!selectedPost || selectedPost.status !== 'pending') return;
+
+      if (e.key === 'a' || e.key === 'A') {
+        e.preventDefault();
+        handleModerate(selectedPost.id, 'approve');
+      } else if (e.key === 'r' || e.key === 'R') {
+        e.preventDefault();
+        const reason = prompt('Motivo da rejeição (opcional):');
+        handleModerate(selectedPost.id, 'reject', reason || undefined);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [posts, selectedPosts, handleModerate]);
 
   const handleBatchModerate = useCallback(
     async (action: 'approve' | 'reject') => {

@@ -24,6 +24,25 @@ interface SeoSettings {
   }
 }
 
+const allowedOpenGraphTypes = [
+  'article',
+  'website',
+  'book',
+  'profile',
+  'music.song',
+  'music.album',
+  'music.playlist',
+  'music.radio_station',
+  'video.movie',
+  'video.episode',
+  'video.tv_show',
+  'video.other'
+] as const
+
+function isAllowedOpenGraphType(value?: string): value is typeof allowedOpenGraphTypes[number] {
+  return !!value && (allowedOpenGraphTypes as readonly string[]).includes(value)
+}
+
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
@@ -76,6 +95,10 @@ export async function generateMetadata(): Promise<Metadata> {
   const twitterCard: TwitterCardType = rawTwitterCard === 'summary' || rawTwitterCard === 'summary_large_image' || rawTwitterCard === 'app' || rawTwitterCard === 'player'
     ? rawTwitterCard
     : 'summary_large_image'
+  const rawOpenGraphType = seoSettings?.openGraph?.type
+  const openGraphType = isAllowedOpenGraphType(rawOpenGraphType)
+    ? rawOpenGraphType
+    : 'website'
 
   return {
     title: defaultTitle,
@@ -86,7 +109,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title: defaultTitle,
       description: defaultDescription,
-      type: seoSettings?.openGraph?.type || "website",
+      type: openGraphType,
       locale: seoSettings?.openGraph?.locale || "pt_BR",
       url: "https://thousandaysof.love",
       siteName: siteName,

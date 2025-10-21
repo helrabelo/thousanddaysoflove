@@ -6,9 +6,9 @@ export interface Guest {
   email: string;
   phone?: string;
   attending: boolean | null;
-  dietary_restrictions?: string;
+  dietary_restrictions?: string | null;
   plus_one?: boolean;
-  plus_one_name?: string;
+  plus_one_name?: string | null;
   invitation_code: string;
   rsvp_date?: string;
   special_requests?: string;
@@ -487,27 +487,27 @@ export interface Invitation {
   id: string;
   code: string;
   guest_name: string;
-  guest_email?: string;
-  guest_phone?: string;
+  guest_email?: string | null;
+  guest_phone?: string | null;
   relationship_type: 'family' | 'friend' | 'colleague' | 'other';
   plus_one_allowed: boolean;
-  plus_one_name?: string;
-  custom_message?: string;
-  table_number?: number;
-  dietary_restrictions?: string;
+  plus_one_name?: string | null;
+  custom_message?: string | null;
+  table_number?: number | null;
+  dietary_restrictions?: string | null;
 
   // Tracking
-  opened_at?: string;
+  opened_at?: string | null;
   open_count: number;
   rsvp_completed: boolean;
-  rsvp_confirmed?: boolean; // NULL = no response, TRUE = attending, FALSE = not attending
+  rsvp_confirmed?: boolean | null; // NULL = no response, TRUE = attending, FALSE = not attending
   gift_selected: boolean;
   photos_uploaded: boolean;
 
   // Metadata
   created_at: string;
   updated_at: string;
-  created_by?: string;
+  created_by?: string | null;
 }
 
 /**

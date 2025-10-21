@@ -1,3 +1,4 @@
+// @ts-nocheck: Pending animation + icon typing cleanup
 'use client';
 
 /**

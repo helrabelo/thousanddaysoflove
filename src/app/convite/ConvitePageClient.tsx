@@ -25,6 +25,7 @@ const WEBSITE_FEATURES = [
     description: 'Confirme sua presença e nos conte se virá acompanhado',
     action: 'Fazer RSVP',
     href: '/rsvp',
+    comingSoon: false,
   },
   {
     icon: Camera,
@@ -32,6 +33,7 @@ const WEBSITE_FEATURES = [
     description: 'Compartilhe fotos e mensagens em tempo real durante o casamento',
     action: 'Acessar Feed',
     href: '/dia-1000',
+    comingSoon: false,
   },
   {
     icon: Gift,
@@ -39,6 +41,7 @@ const WEBSITE_FEATURES = [
     description: 'Veja nossa lista de presentes e escolha o seu',
     action: 'Ver Presentes',
     href: '/presentes',
+    comingSoon: false,
   },
 ];
 

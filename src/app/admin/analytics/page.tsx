@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Users, Gift, CreditCard, Calendar, TrendingUp, Heart } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import Link from 'next/link'
+import { useToast } from '@/components/ui/Toast'
 
 interface Analytics {
   guests: {
@@ -52,6 +53,7 @@ interface PaymentItem {
 }
 
 export default function AdminAnalytics(): JSX.Element {
+  const { showToast, ToastRenderer } = useToast()
   const [analytics, setAnalytics] = useState<Analytics>({
     guests: { total: 0, confirmed: 0, declined: 0, pending: 0, totalWithPlusOnes: 0 },
     gifts: { total: 0, purchased: 0, remaining: 0, totalValue: 0, purchasedValue: 0 },
@@ -60,11 +62,7 @@ export default function AdminAnalytics(): JSX.Element {
   })
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    loadAnalytics()
-  }, [])
-
-  const loadAnalytics = async (): Promise<void> => {
+  const loadAnalytics = useCallback(async (): Promise<void> => {
     setLoading(true)
     try {
       const supabase = createClient()
@@ -129,7 +127,11 @@ export default function AdminAnalytics(): JSX.Element {
     } finally {
       setLoading(false)
     }
-  }
+  }, [showToast])
+
+  useEffect(() => {
+    void loadAnalytics()
+  }, [loadAnalytics])
 
   if (loading) {
     return (
@@ -141,6 +143,7 @@ export default function AdminAnalytics(): JSX.Element {
 
   return (
     <div className="min-h-screen bg-hero-gradient py-16 px-4">
+      <ToastRenderer />
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <Link href="/admin" className="text-burgundy-700 hover:text-blush-600 inline-block mb-4">

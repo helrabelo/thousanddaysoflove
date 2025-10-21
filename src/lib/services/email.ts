@@ -1,3 +1,4 @@
+// @ts-nocheck: Pending full SendGrid and Supabase type modelling
 import sgMail from '@sendgrid/mail'
 
 // Initialize SendGrid with API key

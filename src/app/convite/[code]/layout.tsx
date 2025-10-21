@@ -1,14 +1,15 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
+import type { ReactNode } from 'react';
 import { createServerClient } from '@/lib/supabase/server';
 import type { Invitation } from '@/types/wedding';
 
-type Props = {
-  params: { code: string };
-  children: React.ReactNode;
+type InvitationLayoutProps = {
+  children: ReactNode;
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const code = params.code?.toUpperCase();
+export async function generateMetadata({ params }: { params: Promise<{ code: string }> }): Promise<Metadata> {
+  const { code } = await params;
+  const normalizedCode = code?.toUpperCase();
 
   // Fetch invitation data for personalized metadata (server-side)
   let invitation: Invitation | null = null;
@@ -17,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { data } = await supabase
       .from('invitations')
       .select('*')
-      .eq('code', code)
+      .eq('code', normalizedCode)
       .single();
 
     invitation = data as Invitation | null;
@@ -40,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         title,
         description,
         type: 'website',
-        url: `${baseUrl}/convite/${code}`,
+        url: `${baseUrl}/convite/${normalizedCode}`,
         siteName: 'Casamento Hel & Ylana',
         locale: 'pt_BR',
         // TODO: Add OG image at /public/og-image-invitation.jpg (1200x630)
@@ -73,6 +74,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default function InvitationLayout({ children }: Props) {
+export default function InvitationLayout({ children }: InvitationLayoutProps) {
   return <>{children}</>;
 }

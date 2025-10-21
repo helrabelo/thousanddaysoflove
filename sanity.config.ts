@@ -6,7 +6,7 @@
  */
 import {BulkDelete} from 'sanity-plugin-bulk-delete'
 import { defineConfig } from 'sanity'
-import type { SanityDocument } from 'sanity'
+import type { SanityDocument, ResolveProductionUrlContext } from 'sanity'
 import { structureTool } from 'sanity/structure'
 import { visionTool } from '@sanity/vision'
 import { schemaTypes } from './src/sanity/schemas'
@@ -56,7 +56,8 @@ export default defineConfig({
 
   // Portuguese language support
   document: {
-    productionUrl: async (prev, { document }: { document: SanityDocument }) => {
+    productionUrl: async (prev, context: ResolveProductionUrlContext) => {
+      const document = context.document as SanityDocument
 
       // Generate preview URLs for pages
       if (document._type === 'page') {

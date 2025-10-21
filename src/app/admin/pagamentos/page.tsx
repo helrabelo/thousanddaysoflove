@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { CreditCard, DollarSign, CheckCircle, Clock, XCircle } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import Link from 'next/link'
+import { useToast } from '@/components/ui/Toast'
 
 interface Payment {
   id: string
@@ -20,6 +21,7 @@ interface Payment {
 }
 
 export default function AdminPagamentos() {
+  const { showToast, ToastRenderer } = useToast()
   const [payments, setPayments] = useState<Payment[]>([])
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState({
@@ -31,11 +33,7 @@ export default function AdminPagamentos() {
     completedAmount: 0
   })
 
-  useEffect(() => {
-    loadPayments()
-  }, [])
-
-  const loadPayments = async () => {
+  const loadPayments = useCallback(async () => {
     setLoading(true)
     try {
       const supabase = createClient()
@@ -79,7 +77,11 @@ export default function AdminPagamentos() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [showToast])
+
+  useEffect(() => {
+    void loadPayments()
+  }, [loadPayments])
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -117,6 +119,7 @@ export default function AdminPagamentos() {
 
   return (
     <div className="min-h-screen bg-hero-gradient py-16 px-4">
+      <ToastRenderer />
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <Link href="/admin" className="text-burgundy-700 hover:text-blush-600 inline-block mb-4">

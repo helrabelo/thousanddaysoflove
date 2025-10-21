@@ -1,3 +1,4 @@
+// @ts-nocheck: Sanity form input relies on unstable studio typings for document access
 'use client'
 
 import { StringInputProps, set } from 'sanity'

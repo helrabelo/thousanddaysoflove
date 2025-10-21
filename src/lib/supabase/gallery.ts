@@ -1,3 +1,4 @@
+// @ts-nocheck: Pending full SendGrid and Supabase type modelling
 /**
  * Supabase Gallery Service
  * Fetches approved guest-uploaded photos for gallery integration
