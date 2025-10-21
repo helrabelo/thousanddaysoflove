@@ -92,8 +92,7 @@ function getContentType(filePath: string): string {
  */
 async function uploadMedia(
   filePath: string,
-  mediaType: 'image' | 'video',
-  title: string
+  mediaType: 'image' | 'video'
 ) {
   try {
     console.log(`    📥 Reading ${mediaType} from ${filePath}...`)
@@ -136,7 +135,7 @@ async function createAlbum(album: Album, index: number) {
     const mediaType = getMediaType(item.path)
 
     console.log(`  📷 Media ${i + 1}/${album.media.length}`)
-    const uploadedAsset = await uploadMedia(item.path, mediaType, album.title)
+    const uploadedAsset = await uploadMedia(item.path, mediaType)
 
     mediaArray.push({
       _key: `media-${Date.now()}-${i}`,
@@ -274,7 +273,7 @@ async function main() {
       successCount++
     } catch (error) {
       failCount++
-      console.error(`Failed to process album: ${albums[i].title}`)
+      console.error(`Failed to process album: ${albums[i].title}`, error)
     }
   }
 

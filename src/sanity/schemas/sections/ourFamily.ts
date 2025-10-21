@@ -102,7 +102,7 @@ export default defineType({
       description: 'sectionDescription',
       pets: 'pets',
     },
-    prepare({ title, description, pets }) {
+    prepare({ title, pets }) {
       const petCount = Array.isArray(pets) ? pets.length : 0
 
       return {

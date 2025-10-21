@@ -170,7 +170,7 @@ export async function getVideoMetadata(file: File): Promise<{
 export async function uploadFile(
   options: UploadOptions
 ): Promise<StorageResult> {
-  const { guestId, phase, file, onProgress } = options
+  const { guestId, phase, file } = options
   const supabase = createClient()
 
   // Validate file
@@ -302,7 +302,6 @@ export function validateFile(file: File): {
   const MAX_VIDEO_SIZE = 500 * 1024 * 1024 // 500MB
 
   // Practical limit (Vercel API Route body size - ALL plans)
-  const VERCEL_API_LIMIT = 4.5 * 1024 * 1024 // 4.5MB
 
   const isVideo = file.type.startsWith('video/')
   const isImage = file.type.startsWith('image/')

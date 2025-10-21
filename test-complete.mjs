@@ -61,7 +61,7 @@ async function test2_VerifyFrontend() {
     console.log('  → Gift visible on page ✓')
 
     // Check stats
-    const stats = await page.locator('[class*="grid"][class*="gap"]').first().textContent()
+    await page.locator('[class*="grid"][class*="gap"]').first().textContent()
     console.log(`  → Page stats loaded ✓`)
 
     // Verify filters work

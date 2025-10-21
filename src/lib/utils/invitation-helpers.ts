@@ -167,7 +167,6 @@ export function getWelcomeMessage(
   relationshipType: RelationshipType
 ): string {
   const firstName = getFirstName(guestName);
-  const relationship = relationshipType.toLowerCase();
 
   const messages: Record<RelationshipType, string> = {
     family: `${firstName}, é uma honra compartilhar este momento especial com nossa família!`,

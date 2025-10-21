@@ -5,6 +5,7 @@ import * as Icons from 'lucide-react'
 import Link from 'next/link'
 import { Card, CardContent } from '@/components/ui/card'
 import { SectionDivider, CardAccent } from '@/components/ui/BotanicalDecorations'
+import type { ComponentType, CSSProperties } from 'react'
 
 interface FeatureCard {
   _id: string
@@ -99,8 +100,8 @@ export default function QuickPreview({ data }: QuickPreviewProps) {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {features.map((feature, index) => {
-            // Get icon component from lucide-react
-            const Icon = (Icons as any)[feature.icon] || Icons.Heart
+            const iconLibrary = Icons as Record<string, ComponentType<{ className?: string; style?: CSSProperties }>>
+            const Icon = iconLibrary[feature.icon] || Icons.Heart
 
             return (
               <motion.div
@@ -212,6 +213,17 @@ export default function QuickPreview({ data }: QuickPreviewProps) {
                       }}
                     >
                       Cerimônia
+                    </div>
+                  <div
+                      style={{
+                        fontFamily: 'var(--font-crimson)',
+                        fontSize: '1.125rem',
+                        color: 'var(--secondary-text)',
+                        fontStyle: 'italic',
+                        lineHeight: '1.6'
+                      }}
+                    >
+                      {formattedDate}
                     </div>
                     <div
                       style={{

@@ -127,6 +127,10 @@ export async function POST(req: NextRequest) {
     // Process the webhook notification
     const result = await PaymentService.processWebhookNotification(webhookData)
 
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Webhook processing result:', result)
+    }
+
     // If payment was completed, send notification email
     if (webhookData.type === 'payment' && webhookData.data?.id) {
       try {

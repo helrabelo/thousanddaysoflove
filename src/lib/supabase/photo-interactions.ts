@@ -5,6 +5,7 @@
 
 import { createClient } from '@/lib/supabase/client'
 import { createAdminClient } from '@/lib/supabase/server'
+import type { Database } from '@/types/supabase'
 
 // =====================================================
 // TYPES
@@ -43,6 +44,11 @@ export interface PhotoWithInteractions {
   reactions_count: number
   comment_count: number
   created_at: string
+}
+
+type GuestPhotoRowWithCounts = Database['public']['Tables']['guest_photos']['Row'] & {
+  reactions_count?: number | null
+  comment_count?: number | null
 }
 
 // =====================================================
@@ -318,16 +324,18 @@ export async function getPhotosWithInteractions(
 
   if (!data) return []
 
+  const typedPhotos: GuestPhotoRowWithCounts[] = data
+
   // Map to expected interface, handling legacy data without reactions_count
-  const mappedPhotos = data.map((photo: any) => ({
+  const mappedPhotos = typedPhotos.map((photo) => ({
     id: photo.id,
     title: photo.title || null,
     caption: photo.caption || null,
     storage_path: photo.storage_path,
     guest_name: photo.guest_name,
     upload_phase: photo.upload_phase,
-    reactions_count: photo.reactions_count || 0, // Fallback for legacy data
-    comment_count: photo.comment_count || 0,
+    reactions_count: photo.reactions_count ?? 0,
+    comment_count: photo.comment_count ?? 0,
     created_at: photo.uploaded_at || photo.created_at, // Use uploaded_at (correct field name)
   }))
 

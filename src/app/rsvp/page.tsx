@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Search, Check, X, Users, Heart, Gift, MapPin, Calendar } from 'lucide-react'
 import { Card } from '@/components/ui/card'
@@ -9,7 +9,6 @@ import Link from 'next/link'
 import Navigation from '@/components/ui/Navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import confetti from 'canvas-confetti'
-import Image from 'next/image'
 import type { Database } from '@/types/supabase'
 import ElegantInvitation from '@/components/sections/ElegantInvitation'
 import HYBadge from '@/components/ui/HYBadge'
@@ -145,7 +144,7 @@ export default function SimpleRSVP() {
   const [specialMessage, setSpecialMessage] = useState('')
   const [showEnhancedForm, setShowEnhancedForm] = useState(false)
 
-  const searchGuests = async () => {
+  const searchGuests = useCallback(async () => {
     if (!searchTerm.trim()) {
       setGuests([])
       return
@@ -180,7 +179,7 @@ export default function SimpleRSVP() {
     } finally {
       setSearching(false)
     }
-  }
+  }, [searchTerm])
 
   // Real-time search with debounce
   useEffect(() => {
@@ -189,7 +188,7 @@ export default function SimpleRSVP() {
     }, 300) // Wait 300ms after user stops typing
 
     return () => clearTimeout(debounceTimer)
-  }, [searchTerm])
+  }, [searchGuests])
 
   const openEnhancedForm = (guestId: string, guest: Guest) => {
     setSelectedGuestId(guestId)

@@ -36,7 +36,7 @@ export interface ActivityItem {
   description: string;
   icon: string;
   timestamp: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 /**

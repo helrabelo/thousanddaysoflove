@@ -124,7 +124,7 @@ async function analyzeStoryStructure() {
     console.log(`Total Phases: ${phases.length}`)
     console.log(`Visible Phases: ${phases.filter((p) => p.isVisible).length}\n`)
 
-    phases.forEach((phase, index) => {
+    phases.forEach((phase) => {
       const phaseMoments = moments.filter(
         (m) => m.phase && (m.phase as any)._id === phase._id
       )
@@ -181,7 +181,7 @@ async function analyzeStoryStructure() {
       console.log(`\n📖 ${phase.title.toUpperCase()}`)
       console.log('-'.repeat(80))
 
-      phaseMoments.forEach((moment, index) => {
+      phaseMoments.forEach((moment) => {
         const visibilityIcon = moment.isVisible ? '✅' : '❌'
         const previewIcon = moment.showInPreview ? '🏠' : ''
         const timelineIcon = moment.showInTimeline ? '📍' : ''

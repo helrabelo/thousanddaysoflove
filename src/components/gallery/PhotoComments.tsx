@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MessageCircle, Send, User } from 'lucide-react'
 import {
@@ -30,13 +30,7 @@ export default function PhotoComments({
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  useEffect(() => {
-    if (showComments) {
-      loadComments()
-    }
-  }, [showComments, photoId])
-
-  const loadComments = async () => {
+  const loadComments = useCallback(async () => {
     setIsLoading(true)
     try {
       const data = await getPhotoComments(photoId)
@@ -46,7 +40,13 @@ export default function PhotoComments({
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [photoId])
+
+  useEffect(() => {
+    if (showComments) {
+      loadComments()
+    }
+  }, [loadComments, showComments])
 
   const handleSubmitComment = async () => {
     if (!guestSessionId) {
@@ -86,9 +86,9 @@ export default function PhotoComments({
     }
   }
 
-  const totalComments = comments.reduce((count, comment) => {
-    return count + 1 + (comment.replies?.length || 0)
-  }, 0)
+  const totalComments = showComments
+    ? comments.reduce((count, comment) => count + 1 + (comment.replies?.length || 0), 0)
+    : initialCount
 
   return (
     <div className="relative">

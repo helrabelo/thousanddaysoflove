@@ -171,7 +171,7 @@ export default defineType({
       cards: 'featureCards',
       showHighlights: 'showHighlights',
     },
-    prepare({ title, description, cards, showHighlights }) {
+    prepare({ title, cards, showHighlights }) {
       const cardCount = Array.isArray(cards) ? cards.length : 0
       const features = [`${cardCount} cards`]
       if (showHighlights) features.push('Com destaques')

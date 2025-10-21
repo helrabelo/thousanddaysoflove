@@ -1,7 +1,7 @@
 // Whimsy & Delight Utilities for Thousand Days of Love
 // Micro-interactions, easter eggs, and joyful moments
 
-import { petsPersonalities, getSpecialMoments } from './wedding'
+import { petsPersonalities } from './wedding'
 
 // Confetti system for celebrations
 export interface ConfettiConfig {
@@ -155,7 +155,6 @@ export function getRandomErrorMessage(category: keyof typeof errorMessages): str
 
 // Pet interactions and reactions
 export function getPetReaction(petName: keyof typeof petsPersonalities): string {
-  const pet = petsPersonalities[petName]
   const reactions = {
     linda: [
       "Linda aprova com sua perfeição autista! 👑✨",

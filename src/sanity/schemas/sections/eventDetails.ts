@@ -97,7 +97,7 @@ export default defineType({
       showCountdown: 'showCountdown',
       showDressCode: 'showDressCode',
     },
-    prepare({ title, weddingSettings, showCountdown, showDressCode }) {
+    prepare({ title, showCountdown, showDressCode }) {
       const features = []
       if (showCountdown) features.push('Contador')
       if (showDressCode) features.push('Dress Code')

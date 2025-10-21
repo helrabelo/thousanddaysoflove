@@ -12,6 +12,11 @@ interface TrackOpenRequest {
   code: string
 }
 
+interface InvitationOpenUpdate {
+  open_count: number
+  opened_at?: string
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json().catch(() => null) as TrackOpenRequest | null
@@ -41,7 +46,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Prepare updates
-    const updates: any = {
+    const updates: InvitationOpenUpdate = {
       open_count: invitation.open_count + 1,
     }
 

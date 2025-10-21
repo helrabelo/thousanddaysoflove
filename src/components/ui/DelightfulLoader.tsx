@@ -1,7 +1,6 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import Image from 'next/image'
 import { getRandomLoadingMessage } from '@/lib/utils/whimsy'
 import { petsPersonalities } from '@/lib/utils/wedding'
 import HYBadge from './HYBadge'

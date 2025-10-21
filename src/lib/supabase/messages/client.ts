@@ -259,9 +259,21 @@ export async function getPinnedPosts(): Promise<GuestPost[]> {
     return []
   }
 
-  return (data as any[])
-    .map((item) => item.guest_posts)
-    .filter(Boolean) as GuestPost[]
+  if (!Array.isArray(data)) {
+    return []
+  }
+
+  const posts = data
+    .map((item) => {
+      if (item && typeof item === 'object' && 'guest_posts' in item) {
+        const { guest_posts } = item as { guest_posts?: GuestPost | null }
+        return guest_posts ?? null
+      }
+      return null
+    })
+    .filter((post): post is GuestPost => post !== null)
+
+  return posts
 }
 
 /**

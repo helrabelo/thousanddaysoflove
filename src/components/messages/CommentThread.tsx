@@ -14,7 +14,7 @@
  * - Mobile-first responsive design
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, User, Loader2, CornerDownRight } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
@@ -53,18 +53,18 @@ function CommentItem({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showReplies, setShowReplies] = useState(false);
 
-  // Load replies for this comment
-  useEffect(() => {
-    loadReplies();
-  }, [comment.id]);
-
-  const loadReplies = async () => {
+  const loadReplies = useCallback(async () => {
     const data = await getCommentReplies(comment.id);
     setReplies(data);
     if (data.length > 0) {
       setShowReplies(true);
     }
-  };
+  }, [comment.id]);
+
+  // Load replies for this comment
+  useEffect(() => {
+    loadReplies();
+  }, [loadReplies]);
 
   // Submit reply
   const handleSubmitReply = async () => {

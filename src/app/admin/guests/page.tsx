@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import {
   Plus,
@@ -79,15 +79,7 @@ export default function AdminGuests(): JSX.Element {
   const [sortField, setSortField] = useState<keyof Guest>('name')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
 
-  useEffect(() => {
-    loadGuests()
-  }, [])
-
-  useEffect(() => {
-    filterAndSearchGuests()
-  }, [guests, searchQuery, filterStatus, sortField, sortDirection])
-
-  const loadGuests = async (): Promise<void> => {
+  const loadGuests = useCallback(async (): Promise<void> => {
     setLoading(true)
     try {
       const supabase = createClient()
@@ -104,9 +96,9 @@ export default function AdminGuests(): JSX.Element {
     } finally {
       setLoading(false)
     }
-  }
+  }, [showToast])
 
-  const filterAndSearchGuests = (): void => {
+  const filterAndSearchGuests = useCallback((): void => {
     let filtered = [...guests]
 
     // Apply status filter
@@ -153,7 +145,15 @@ export default function AdminGuests(): JSX.Element {
     })
 
     setFilteredGuests(filtered)
-  }
+  }, [filterStatus, guests, searchQuery, sortDirection, sortField])
+
+  useEffect(() => {
+    loadGuests()
+  }, [loadGuests])
+
+  useEffect(() => {
+    filterAndSearchGuests()
+  }, [filterAndSearchGuests])
 
   const handleSort = (field: keyof Guest): void => {
     if (sortField === field) {

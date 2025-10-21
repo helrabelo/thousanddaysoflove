@@ -4,6 +4,7 @@
  */
 
 import { createAdminClient, createServerClient } from '@/lib/supabase/server'
+import type { Database } from '@/types/supabase'
 
 export const GUEST_SESSION_COOKIE = 'guest_session_token'
 export const GUEST_SESSION_DURATION_HOURS = 72
@@ -27,6 +28,21 @@ export interface AuthResult {
   success: boolean
   session?: GuestSession
   error?: string
+}
+
+type SimpleGuestRecord = Pick<Database['public']['Tables']['simple_guests']['Row'], 'id' | 'name' | 'invitation_code' | 'attending'>
+
+const toGuestSessionInfo = (guest: SimpleGuestRecord): GuestSession['guest'] => ({
+  id: guest.id,
+  name: guest.name,
+  invitation_code: guest.invitation_code ?? '',
+  attending: guest.attending ?? false,
+})
+
+const isSimpleGuestRecord = (value: unknown): value is SimpleGuestRecord => {
+  if (!value || typeof value !== 'object') return false
+  const record = value as Record<string, unknown>
+  return typeof record.id === 'string' && typeof record.name === 'string'
 }
 
 function getServerSupabaseClient() {
@@ -155,7 +171,7 @@ export async function authenticateWithPassword(
 
   // If guest name provided, find or create guest
   let guestId: string
-  let guest: any
+  let guest: GuestSession['guest'] | undefined
 
   if (guestName) {
     // Try to find existing guest by name
@@ -167,7 +183,7 @@ export async function authenticateWithPassword(
 
     if (existingGuest) {
       guestId = existingGuest.id
-      guest = existingGuest
+      guest = toGuestSessionInfo(existingGuest)
     } else {
       // Create new guest with generated invitation code
       const { data: newGuestData, error: createError } = await supabase.rpc(
@@ -185,9 +201,19 @@ export async function authenticateWithPassword(
         }
       }
 
-      const newGuest = newGuestData[0]
+      const newGuestCandidate = newGuestData[0]
+
+      if (!isSimpleGuestRecord(newGuestCandidate)) {
+        console.error('Unexpected guest payload from RPC:', newGuestCandidate)
+        return {
+          success: false,
+          error: 'Erro ao criar conta de convidado',
+        }
+      }
+
+      const newGuest = newGuestCandidate
       guestId = newGuest.id
-      guest = newGuest
+      guest = toGuestSessionInfo(newGuest)
     }
   } else {
     // Anonymous guest session - create with generated invitation code
@@ -206,9 +232,19 @@ export async function authenticateWithPassword(
       }
     }
 
-    const anonGuest = anonGuestData[0]
+    const anonGuestCandidate = anonGuestData[0]
+
+    if (!isSimpleGuestRecord(anonGuestCandidate)) {
+      console.error('Unexpected anonymous guest payload from RPC:', anonGuestCandidate)
+      return {
+        success: false,
+        error: 'Erro ao criar sessão',
+      }
+    }
+
+    const anonGuest = anonGuestCandidate
     guestId = anonGuest.id
-    guest = anonGuest
+    guest = toGuestSessionInfo(anonGuest)
   }
 
   // Create session

@@ -14,13 +14,8 @@
  */
 
 import { createClient } from '@/lib/supabase/client'
-import { Guest, EmailTemplate, EmailLog } from '@/types/wedding'
-import {
-  formatBrazilianDate,
-  formatBrazilianDateTime,
-  getBrazilianWeddingGreeting,
-  getBrazilianRelationshipTitle
-} from '@/lib/utils/wedding'
+import { Guest } from '@/types/wedding'
+import { getBrazilianWeddingGreeting } from '@/lib/utils/wedding'
 
 interface EmailData {
   to: string
@@ -46,7 +41,7 @@ export class EmailAutomationService {
   /**
    * Portuguese invitation email template
    */
-  private static getInvitationTemplate(guest: Guest, customData?: Record<string, any>): EmailData {
+  private static getInvitationTemplate(guest: Guest): EmailData {
     const timeOfDay = new Date().getHours() < 12 ? 'morning' :
                      new Date().getHours() < 18 ? 'afternoon' : 'evening'
     const greeting = getBrazilianWeddingGreeting(timeOfDay)

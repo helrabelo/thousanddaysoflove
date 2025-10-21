@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
 
     // Note: guest_posts table exists but types may not be generated yet
     const { data, error } = await supabase
-      .from('guest_posts' as any)
+      .from('guest_posts')
       .insert({
         guest_session_id: session?.id ?? null,
         guest_name: guestName,

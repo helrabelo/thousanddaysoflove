@@ -211,12 +211,10 @@ Mas pra gente, o presente maior é você lá. Casa HY. 20 de novembro. O resto �
 
   preview: {
     select: {
-      headerTitle: 'headerTitle',
-      footerTitle: 'footerTitle',
       isActive: 'isActive',
       renderCount: 'projectRenders',
     },
-    prepare({ headerTitle, footerTitle, isActive, renderCount }) {
+    prepare({ isActive, renderCount }) {
       const renderCountNum = Array.isArray(renderCount) ? renderCount.length : 0
 
       return {

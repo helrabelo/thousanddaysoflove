@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import Image from 'next/image'
 import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react'
 
 interface MediaItem {
@@ -70,11 +71,15 @@ export default function AutoCarousel({
     return (
       <div className={`relative ${className}`}>
         {item.media_type === 'image' ? (
-          <img
-            src={item.media_url}
-            alt={item.caption || 'Mídia'}
-            className="w-full h-full object-cover rounded-lg"
-          />
+          <div className="relative h-full w-full">
+            <Image
+              src={item.media_url}
+              alt={item.caption || 'Mídia'}
+              fill
+              className="object-cover rounded-lg"
+              sizes="100vw"
+            />
+          </div>
         ) : (
           <video
             src={item.media_url}
@@ -106,12 +111,14 @@ export default function AutoCarousel({
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}
         >
           {media.map((item, index) => (
-            <div key={index} className="min-w-full">
+            <div key={index} className="relative min-w-full h-full">
               {item.media_type === 'image' ? (
-                <img
+                <Image
                   src={item.media_url}
                   alt={item.caption || `Mídia ${index + 1}`}
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
+                  sizes="100vw"
                 />
               ) : (
                 <video

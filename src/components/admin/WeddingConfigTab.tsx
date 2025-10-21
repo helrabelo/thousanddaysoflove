@@ -301,7 +301,10 @@ export function WeddingConfigTab() {
     }
   }
 
-  const updateConfig = (section: keyof WeddingConfiguration, updates: any) => {
+  const updateConfig = <K extends keyof WeddingConfiguration>(
+    section: K,
+    updates: Partial<WeddingConfiguration[K]>
+  ) => {
     if (!config) return
 
     setConfig(prev => ({

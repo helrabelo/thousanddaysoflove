@@ -3,7 +3,6 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import {
   CheckCircle2,
-  Circle,
   Gift,
   Camera,
   MessageSquare,
@@ -392,7 +391,7 @@ export default function GuestProgressTracker({
                         <CheckCircle2 className="w-6 h-6 text-white" />
                       </motion.div>
                     ) : (
-                      <Circle
+                      <Icon
                         className="w-6 h-6"
                         style={{ color: 'var(--decorative)' }}
                       />

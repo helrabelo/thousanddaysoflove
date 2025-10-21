@@ -16,9 +16,6 @@ export default async function GaleriaPage() {
     guestPhotosByPhase = { before: [], during: [], after: [] } satisfies GuestPhotosByPhase
   }
 
-  // Calculate total guest photos
-  const totalGuestPhotos = guestPhotosByPhase.before.length + guestPhotosByPhase.during.length + guestPhotosByPhase.after.length
-
   return (
     <main className="min-h-screen pt-12 md:pt-0">
       <Navigation />
@@ -27,7 +24,7 @@ export default async function GaleriaPage() {
       <GalleryHero />
 
       {/* Guest Photos Gallery with Reactions & Comments */}
-      <GuestPhotosSection guestPhotosByPhase={guestPhotosByPhase} />
+      <GuestPhotosSection photosByPhase={guestPhotosByPhase} />
     </main>
   )
 }

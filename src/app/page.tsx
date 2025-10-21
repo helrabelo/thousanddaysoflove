@@ -1,5 +1,5 @@
 import Navigation from '@/components/ui/Navigation'
-import VideoHeroSection from '@/components/sections/VideoHeroSection'
+import VideoHeroSection, { type VideoHeroData } from '@/components/sections/VideoHeroSection'
 import FeatureHubSection from '@/components/sections/FeatureHubSection'
 import InvitationCTASection from '@/components/sections/InvitationCTASection'
 import { sanityFetch } from '@/sanity/lib/client'
@@ -56,7 +56,9 @@ export default async function Home(): Promise<JSX.Element> {
       <Navigation />
 
       {/* Video Hero Section - SUPER IMPORTANT, unchanged */}
-      {sections.videoHero && <VideoHeroSection data={sections.videoHero as any} />}
+      {sections.videoHero && (
+        <VideoHeroSection data={sections.videoHero as VideoHeroData} />
+      )}
 
       {/* Feature Hub Section - NEW: 2x2 grid showcasing main features */}
       <FeatureHubSection />

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Star, Heart, MessageSquare, Sparkles } from 'lucide-react'
 import { getPinnedPostsWithDetails, subscribeToPinnedPosts } from '@/lib/supabase/live'
@@ -124,11 +125,15 @@ export function PinnedMomentsSection() {
                       controls
                     />
                   ) : (
-                    <img
-                      src={post.media_urls[0]}
-                      alt="Momento especial"
-                      className="w-full aspect-video object-cover"
-                    />
+                    <div className="relative aspect-video">
+                      <Image
+                        src={post.media_urls[0]}
+                        alt="Momento especial"
+                        fill
+                        className="object-cover"
+                        sizes="(min-width: 1024px) 50vw, 100vw"
+                      />
+                    </div>
                   )}
                 </div>
               )}

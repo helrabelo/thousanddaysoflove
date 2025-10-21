@@ -22,7 +22,7 @@ test.describe('Payment Flow', () => {
     await page.waitForLoadState('networkidle')
   })
 
-  test('should create PIX payment successfully', async ({ page, browser }) => {
+  test('should create PIX payment successfully', async ({ page }) => {
     test.setTimeout(60000) // 60 seconds for full flow
 
     // Step 1: Find and click first gift card "Presentear" button

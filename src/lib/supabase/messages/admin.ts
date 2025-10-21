@@ -8,8 +8,6 @@
 import { createAdminClient } from '@/lib/supabase/server'
 import type { GuestPost, PinnedPost } from '@/types/wedding'
 import type { Database } from '@/types/supabase'
-
-type GuestPostRow = Database['public']['Tables']['guest_posts']['Row']
 type PostStatus = Database['public']['Tables']['guest_posts']['Row']['status']
 
 /**

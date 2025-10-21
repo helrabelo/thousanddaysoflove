@@ -2,8 +2,12 @@
 'use client'
 
 import { useState, useCallback, useMemo } from 'react'
+import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Play, Pause, Volume2, VolumeX, Maximize, Clock, Eye, Heart, Share2 } from 'lucide-react'
+import { Play, Pause, Volume2, VolumeX, Clock, Eye, Heart, Share2 } from 'lucide-react'
+
+const VIDEO_PLACEHOLDER =
+  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAgODAiIHByZXNlcnZlQXNwZWN0UmF0aW89InhNaWRZTWlkIHNsaWNlIj48cmVjdCB3aWR0aD0iMTIwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjMWYyOTMzIi8+PHBvbHlnb24gcG9pbnRzPSI0OCwzMCA4MCw1MCA0OCw3MCIgZmlsbD0iI2YxZjVmOSIvPjwvc3ZnPg=='
 import { MediaItem } from '@/types/wedding'
 
 interface VideoGalleryProps {
@@ -360,10 +364,12 @@ export default function VideoGallery({
               onClick={() => handleVideoClick(video, index + 1)}
             >
               <div className="relative w-32 h-20 rounded-lg overflow-hidden bg-black flex-shrink-0">
-                <img
-                  src={video.thumbnail_url}
+                <Image
+                  src={video.thumbnail_url || VIDEO_PLACEHOLDER}
                   alt={video.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-110"
+                  sizes="128px"
                 />
                 <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
                   <Play className="w-6 h-6 text-white" />
@@ -438,7 +444,7 @@ export default function VideoGallery({
               >
                 <video
                   controls
-                  autoPlay
+                  autoPlay={autoPlay}
                   className="w-full aspect-video rounded-2xl"
                   poster={selectedVideo.thumbnail_url}
                 >

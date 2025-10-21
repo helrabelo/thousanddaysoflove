@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, CheckCircle, AlertCircle, Info, Heart } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 export type ToastType = 'success' | 'error' | 'info' | 'romantic'
 
@@ -27,6 +27,13 @@ export function Toast({
 }: ToastProps) {
   const [isVisible, setIsVisible] = useState(true)
 
+  const handleClose = useCallback(() => {
+    setIsVisible(false)
+    setTimeout(() => {
+      onClose?.()
+    }, 300)
+  }, [onClose])
+
   useEffect(() => {
     if (duration > 0) {
       const timer = setTimeout(() => {
@@ -35,14 +42,7 @@ export function Toast({
 
       return () => clearTimeout(timer)
     }
-  }, [duration])
-
-  const handleClose = () => {
-    setIsVisible(false)
-    setTimeout(() => {
-      onClose?.()
-    }, 300)
-  }
+  }, [duration, handleClose])
 
   const getIcon = () => {
     switch (type) {
@@ -70,6 +70,7 @@ export function Toast({
     <AnimatePresence>
       {isVisible && (
         <motion.div
+          id={id}
           initial={{ opacity: 0, y: -20, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -20, scale: 0.95 }}

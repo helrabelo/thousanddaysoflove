@@ -54,6 +54,7 @@ export class GoogleMapsService {
 
       return this.apiKey;
     } catch (error) {
+      console.error('Error fetching Google Maps API key:', error);
       throw new Error('Google Maps API key not available');
     }
   }
@@ -74,15 +75,16 @@ export class GoogleMapsService {
     });
   }
 
-  async loadGoogleMaps(): Promise<google.maps.Map | null> {
+  async loadGoogleMaps(): Promise<typeof google.maps | null> {
     try {
       await this.initializeLoader();
       if (!this.loader) {
         throw new Error('Google Maps loader not initialized');
       }
       await this.loader.load();
-      return Promise.resolve(google.maps as any);
+      return google.maps;
     } catch (error) {
+      console.error('Error loading Google Maps script:', error);
       return null;
     }
   }
@@ -116,6 +118,7 @@ export class GoogleMapsService {
 
       return this.mapInstance;
     } catch (error) {
+      console.error('Error creating Google Map instance:', error);
       return null;
     }
   }
@@ -278,8 +281,7 @@ export class GoogleMapsService {
 
   static getDistanceFromFortaleza(location: WeddingLocation): string {
     // Approximate distance from Fortaleza city center
-    // Eng. Luciano Cavalcante is about 12-15km from downtown Fortaleza
-    return 'Aproximadamente 15 km do centro de Fortaleza';
+    return `${location.name} fica a aproximadamente 15 km do centro de Fortaleza`;
   }
 
   static getNearbyLandmarks(): string[] {

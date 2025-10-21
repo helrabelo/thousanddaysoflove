@@ -27,7 +27,7 @@ const formatBrazilianDate = (dateString: string): string => {
       month: 'long',
       year: 'numeric',
     }).format(date)
-  } catch (error) {
+  } catch {
     return dateString
   }
 }
@@ -51,10 +51,10 @@ export default function StoryPreview() {
 
       if (process.env.NODE_ENV === 'development') {
         console.log('📊 Story Preview - Loaded moments:', moments?.length || 0)
-        console.log('📸 Moments with images:', moments?.filter(m => getPrimaryStoryMedia(m as any)?.type === 'image').length || 0)
-        console.log('🎬 Moments with videos:', moments?.filter(m => getPrimaryStoryMedia(m as any)?.type === 'video').length || 0)
-        console.log('🎞️  Moments with multiple media:', moments?.filter(m => hasMultipleMedia(m as any)).length || 0)
-        console.log('❌ Moments without media:', moments?.filter(m => !getPrimaryStoryMedia(m as any)).length || 0)
+        console.log('📸 Moments with images:', moments?.filter(m => getPrimaryStoryMedia(m)?.type === 'image').length || 0)
+        console.log('🎬 Moments with videos:', moments?.filter(m => getPrimaryStoryMedia(m)?.type === 'video').length || 0)
+        console.log('🎞️  Moments with multiple media:', moments?.filter(m => hasMultipleMedia(m)).length || 0)
+        console.log('❌ Moments without media:', moments?.filter(m => !getPrimaryStoryMedia(m)).length || 0)
       }
 
       setStoryMoments(moments || [])
@@ -173,9 +173,9 @@ export default function StoryPreview() {
               const shouldSpanTwo = index % 3 === 0 || index % 5 === 0
 
               // Get primary media from the moment (first image or video)
-              const primaryMedia = getPrimaryStoryMedia(moment as any)
+              const primaryMedia = getPrimaryStoryMedia(moment)
               const imageUrl = primaryMedia?.url || '/images/hero-poster.jpg'
-              const hasMultiple = hasMultipleMedia(moment as any)
+              const hasMultiple = hasMultipleMedia(moment)
               const dayNumber = moment.date ? calculateDayNumber(moment.date) : null
 
               return (
@@ -226,7 +226,7 @@ export default function StoryPreview() {
                         transition={{ delay: 0.2, duration: 0.3 }}
                       >
                         <Images className="w-3.5 h-3.5" strokeWidth={2.5} />
-                        <span>{getPrimaryStoryMedia(moment as any) ? '3+' : '2+'}</span>
+                        <span>{getPrimaryStoryMedia(moment) ? '3+' : '2+'}</span>
                       </motion.div>
                     )}
 

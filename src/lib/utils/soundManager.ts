@@ -13,6 +13,10 @@ const SOUNDS = {
 
 type SoundType = keyof typeof SOUNDS
 
+type WindowWithWebkitAudio = Window & {
+  webkitAudioContext?: typeof AudioContext
+}
+
 class SoundManager {
   private audioContext: AudioContext | null = null
   private sounds: Map<SoundType, AudioBuffer> = new Map()
@@ -36,7 +40,18 @@ class SoundManager {
 
     try {
       // Create audio context
-      this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+      if (typeof window === 'undefined') {
+        throw new Error('AudioContext not available in this environment')
+      }
+
+      const AudioContextCtor =
+        window.AudioContext || (window as WindowWithWebkitAudio).webkitAudioContext
+
+      if (!AudioContextCtor) {
+        throw new Error('AudioContext not supported')
+      }
+
+      this.audioContext = new AudioContextCtor()
 
       // Preload all sounds (optional - loads small files)
       // await this.preloadSounds()
@@ -59,7 +74,7 @@ class SoundManager {
         const arrayBuffer = await response.arrayBuffer()
         const audioBuffer = await this.audioContext!.decodeAudioData(arrayBuffer)
         this.sounds.set(type as SoundType, audioBuffer)
-      } catch (error) {
+      } catch {
         // Sounds are optional - fail silently
         console.debug(`Failed to load sound: ${type}`)
       }
@@ -89,6 +104,7 @@ class SoundManager {
       })
     } catch (error) {
       // Audio is optional enhancement - fail silently
+      console.debug(`Failed to play sound: ${type}`, error)
     }
   }
 

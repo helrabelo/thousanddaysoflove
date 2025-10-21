@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Heart, Users, Coffee, Camera, Home } from 'lucide-react'
+import { Heart, Users, Coffee, Camera } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { SectionDivider } from '@/components/ui/BotanicalDecorations'

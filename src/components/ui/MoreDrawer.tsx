@@ -11,7 +11,6 @@ import {
   MapPin,
   Sparkles,
   User,
-  Mail,
 } from 'lucide-react'
 
 interface MoreDrawerProps {

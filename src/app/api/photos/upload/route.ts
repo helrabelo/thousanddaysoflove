@@ -65,7 +65,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ErrorResp
     const formData = await request.formData()
     const invitationCode = formData.get('invitation_code') as string | null
 
-    let session: any
+    let session: GuestSession | null = null
 
     if (invitationCode) {
       // Authenticate with invitation code
@@ -99,6 +99,13 @@ export async function POST(request: NextRequest): Promise<NextResponse<ErrorResp
           { status: 401 }
         )
       }
+    }
+
+    if (!session) {
+      return NextResponse.json(
+        { error: 'Sessão inválida ou expirada' },
+        { status: 401 }
+      )
     }
 
     // Check upload permissions

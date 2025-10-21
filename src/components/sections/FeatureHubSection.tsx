@@ -3,7 +3,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { ArrowRight, Calendar, Gift, Heart, Image } from 'lucide-react'
+import { ArrowRight, Calendar, Gift, Heart, Image as ImageIcon } from 'lucide-react'
 
 interface FeatureCard {
   title: string
@@ -27,7 +27,7 @@ const features: FeatureCard[] = [
     title: 'Galeria',
     description: '1000 dias em fotos - Momentos especiais capturados',
     href: '/galeria',
-    icon: <Image className="w-8 h-8" />,
+    icon: <ImageIcon className="w-8 h-8" />,
     gradient: '',
   },
   {

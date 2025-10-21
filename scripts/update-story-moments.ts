@@ -131,7 +131,7 @@ function getContentType(filePath: string): string {
 /**
  * Upload media file to Sanity
  */
-async function uploadMedia(filePath: string, mediaType: 'image' | 'video', title: string) {
+async function uploadMedia(filePath: string, mediaType: 'image' | 'video') {
   try {
     console.log(`      📥 Uploading ${mediaType}: ${filePath.split('/').pop()}`)
     const buffer = readFileSync(filePath)
@@ -199,7 +199,7 @@ async function updateMoment(moment: StoryMoment, folder: FolderInfo) {
     const filePath = folder.files[i]
     const mediaType = getMediaType(filePath)
 
-    const uploadedAsset = await uploadMedia(filePath, mediaType, moment.title)
+    const uploadedAsset = await uploadMedia(filePath, mediaType)
     if (uploadedAsset) {
       mediaArray.push({
         _key: `media-${Date.now()}-${i}`,
@@ -218,7 +218,7 @@ async function updateMoment(moment: StoryMoment, folder: FolderInfo) {
 
   // Update the moment
   try {
-    const result = await client
+    await client
       .patch(moment._id)
       .set({
         media: mediaArray,

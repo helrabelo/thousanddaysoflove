@@ -211,7 +211,7 @@ export interface ActivityFeed {
   guest_name: string;
   target_type: TargetType | null;
   target_id: string | null;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   is_public: boolean;
   created_at: string;
 }
@@ -223,7 +223,7 @@ export interface ActivityFeedInsert {
   guest_name: string;
   target_type?: TargetType | null;
   target_id?: string | null;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   is_public?: boolean;
   created_at?: string;
 }

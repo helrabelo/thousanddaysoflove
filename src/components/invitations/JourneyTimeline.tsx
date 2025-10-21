@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 
 interface TimelinePhase {
   key: 'now' | 'wedding' | 'after';
@@ -14,7 +14,6 @@ interface TimelinePhase {
 }
 
 interface JourneyTimelineProps {
-  weddingDate: Date;
   currentPhase?: 'now' | 'wedding' | 'after';
 }
 
@@ -192,7 +191,6 @@ function TimelinePhaseCard({
 }
 
 export default function JourneyTimeline({
-  weddingDate,
   currentPhase = 'now',
 }: JourneyTimelineProps) {
   const [expandedPhases, setExpandedPhases] = useState<Set<string>>(
@@ -248,7 +246,7 @@ export default function JourneyTimeline({
 
       {/* Timeline Phases */}
       <div className="space-y-0 md:space-y-4">
-        {TIMELINE_PHASES.map((phase, index) => (
+        {TIMELINE_PHASES.map((phase) => (
           <TimelinePhaseCard
             key={phase.key}
             phase={phase}

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Heart, Image, Gift, MoreHorizontal } from 'lucide-react'
+import { Home, Heart, Image as ImageIcon, Gift, MoreHorizontal } from 'lucide-react'
 import MoreDrawer from './MoreDrawer'
 
 interface NavItem {
@@ -30,8 +30,8 @@ const navItems: NavItem[] = [
   {
     name: 'Galeria',
     href: '/galeria',
-    icon: <Image className="w-5 h-5" strokeWidth={2} />,
-    activeIcon: <Image className="w-5 h-5" strokeWidth={2.5} fill="currentColor" />,
+    icon: <ImageIcon className="w-5 h-5" strokeWidth={2} />,
+    activeIcon: <ImageIcon className="w-5 h-5" strokeWidth={2.5} fill="currentColor" />,
   },
   {
     name: 'Presentes',

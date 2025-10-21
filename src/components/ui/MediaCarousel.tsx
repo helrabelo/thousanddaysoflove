@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react'
 import Image from 'next/image'
@@ -57,27 +57,27 @@ export default function MediaCarousel({
   }, [currentIndex, currentMedia?.mediaType, hasMedia])
 
   // Navigation handlers
-  const goToNext = () => {
+  const goToNext = useCallback(() => {
     if (!hasMedia) return
     setDirection('forward')
     setCurrentIndex((prev) => (prev + 1) % itemCount)
     setImageLoaded(false)
-  }
+  }, [hasMedia, itemCount])
 
-  const goToPrevious = () => {
+  const goToPrevious = useCallback(() => {
     if (!hasMedia) return
     setDirection('backward')
     setCurrentIndex((prev) => (prev - 1 + itemCount) % itemCount)
     setImageLoaded(false)
-  }
+  }, [hasMedia, itemCount])
 
-  const goToIndex = (index: number) => {
+  const goToIndex = useCallback((index: number) => {
     if (!hasMedia) return
     const boundedIndex = ((index % itemCount) + itemCount) % itemCount
     setDirection(boundedIndex > safeIndex ? 'forward' : 'backward')
     setCurrentIndex(boundedIndex)
     setImageLoaded(false)
-  }
+  }, [hasMedia, itemCount, safeIndex])
 
   useEffect(() => {
     if (!hasMedia) {
@@ -127,7 +127,7 @@ export default function MediaCarousel({
   }
 
   // Toggle play/pause
-  const togglePlayPause = () => {
+  const togglePlayPause = useCallback(() => {
     if (!hasMedia) return
 
     setIsPaused((prev) => {
@@ -143,7 +143,7 @@ export default function MediaCarousel({
 
       return next
     })
-  }
+  }, [currentMedia?.mediaType, hasMedia])
 
   // Keyboard navigation
   useEffect(() => {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   addPhotoReaction,
@@ -52,11 +52,7 @@ export default function PhotoReactions({
   const [isLoading, setIsLoading] = useState(false)
 
   // Load user's reaction and counts on mount
-  useEffect(() => {
-    loadReactions()
-  }, [photoId, guestSessionId])
-
-  const loadReactions = async () => {
+  const loadReactions = useCallback(async () => {
     if (!guestSessionId) return
 
     try {
@@ -74,7 +70,11 @@ export default function PhotoReactions({
     } catch (error) {
       console.error('Error loading reactions:', error)
     }
-  }
+  }, [guestSessionId, photoId])
+
+  useEffect(() => {
+    loadReactions()
+  }, [loadReactions])
 
   const handleReaction = async (reactionType: ReactionType) => {
     if (!guestSessionId) {

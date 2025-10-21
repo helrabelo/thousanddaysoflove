@@ -1,12 +1,13 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import Image from 'next/image'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { ChevronLeft, ChevronRight, Pause, Play, X, Camera } from 'lucide-react'
 import { getRecentApprovedPhotos } from '@/lib/supabase/live'
 import type { RecentPhoto } from '@/lib/supabase/live'
 import { Card } from '@/components/ui/card'
-import { kenBurnsVariants, hoverLiftVariants, pulseVariants } from '@/lib/utils/animations'
+import { kenBurnsVariants, pulseVariants } from '@/lib/utils/animations'
 import { playPhotoSound } from '@/lib/utils/soundManager'
 
 export function LivePhotoGallery() {
@@ -180,14 +181,20 @@ export function LivePhotoGallery() {
               className="absolute inset-0"
             >
               {/* Ken Burns effect - subtle zoom and pan */}
-              <motion.img
-                src={currentPhoto.photo_url}
-                alt="Foto do casamento"
-                className="w-full h-full object-contain"
+              <motion.div
+                className="absolute inset-0"
                 variants={shouldReduceMotion ? {} : kenBurnsVariants}
                 initial="initial"
                 animate="animate"
-              />
+              >
+                <Image
+                  src={currentPhoto.photo_url}
+                  alt="Foto do casamento"
+                  fill
+                  className="object-contain"
+                  sizes="(min-width: 1024px) 60vw, 100vw"
+                />
+              </motion.div>
             </motion.div>
           </AnimatePresence>
 
@@ -265,7 +272,7 @@ export function LivePhotoGallery() {
                 setDirection(index > currentIndex ? 1 : -1)
                 setCurrentIndex(index)
               }}
-              className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
+              className={`relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
                 index === currentIndex
                   ? 'border-[#2C2C2C] scale-110 shadow-lg'
                   : 'border-transparent opacity-60 hover:opacity-100'
@@ -276,10 +283,12 @@ export function LivePhotoGallery() {
               }}
               whileTap={{ scale: 0.95 }}
             >
-              <img
+              <Image
                 src={photo.photo_url}
                 alt={`Foto ${index + 1}`}
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                sizes="64px"
               />
               {index === currentIndex && (
                 <motion.div
@@ -316,10 +325,8 @@ export function LivePhotoGallery() {
             </motion.button>
 
             <AnimatePresence mode="wait" custom={direction}>
-              <motion.img
+              <motion.div
                 key={currentPhoto.id}
-                src={currentPhoto.photo_url}
-                alt="Foto do casamento"
                 custom={direction}
                 initial={{
                   x: direction > 0 ? 300 : -300,
@@ -341,9 +348,18 @@ export function LivePhotoGallery() {
                   stiffness: 300,
                   damping: 30
                 }}
-                className="max-w-[90vw] max-h-[90vh] object-contain"
+                className="relative"
+                style={{ width: 'min(90vw, 960px)', height: 'min(90vh, 640px)' }}
                 onClick={(e) => e.stopPropagation()}
-              />
+              >
+                <Image
+                  src={currentPhoto.photo_url}
+                  alt="Foto do casamento"
+                  fill
+                  className="object-contain rounded-xl"
+                  sizes="(min-width: 1024px) 70vw, 100vw"
+                />
+              </motion.div>
             </AnimatePresence>
 
             <motion.button

@@ -6,6 +6,24 @@ import { sanityFetch } from '@/sanity/lib/client'
 import { seoSettingsQuery } from '@/sanity/queries/seo'
 import { GlobalGuestActions } from '@/components/ui/GlobalGuestActions'
 
+type TwitterCardType = 'summary' | 'summary_large_image' | 'app' | 'player'
+
+interface SeoSettings {
+  defaultTitle?: string
+  defaultDescription?: string
+  keywords?: string[]
+  robotsIndex?: boolean
+  openGraph?: {
+    siteName?: string
+    type?: string
+    locale?: string
+  }
+  twitter?: {
+    cardType?: string
+    handle?: string
+  }
+}
+
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
@@ -44,7 +62,7 @@ const shadowsIntoLight = Shadows_Into_Light({
 // Generate metadata from Sanity
 export async function generateMetadata(): Promise<Metadata> {
   // Fetch SEO settings from Sanity
-  const seoSettings = await sanityFetch<any>({
+  const seoSettings = await sanityFetch<SeoSettings | null>({
     query: seoSettingsQuery,
     tags: ['seoSettings'],
   })
@@ -54,7 +72,10 @@ export async function generateMetadata(): Promise<Metadata> {
   const defaultDescription = seoSettings?.defaultDescription || "Junte-se a Hel e Ylana para celebrar seus 1000 dias de amor com o casamento em 20 de novembro de 2025. Confirme presença, explore nossa lista de presentes e faça parte do nosso dia especial."
   const keywords = seoSettings?.keywords?.join(', ') || "casamento, Hel e Ylana, 20 novembro 2025, mil dias de amor, RSVP, lista de presentes"
   const siteName = seoSettings?.openGraph?.siteName || "Thousand Days of Love"
-  const twitterCard = seoSettings?.twitter?.cardType || "summary_large_image"
+  const rawTwitterCard = seoSettings?.twitter?.cardType
+  const twitterCard: TwitterCardType = rawTwitterCard === 'summary' || rawTwitterCard === 'summary_large_image' || rawTwitterCard === 'app' || rawTwitterCard === 'player'
+    ? rawTwitterCard
+    : 'summary_large_image'
 
   return {
     title: defaultTitle,
@@ -79,7 +100,7 @@ export async function generateMetadata(): Promise<Metadata> {
       ],
     },
     twitter: {
-      card: twitterCard as any,
+      card: twitterCard,
       title: defaultTitle,
       description: defaultDescription,
       images: ["/og/wedding-invitation.png"],

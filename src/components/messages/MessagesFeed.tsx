@@ -15,7 +15,7 @@
  * - Elegant wedding aesthetic
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { MessageCircle, Image, Video, FileText } from 'lucide-react';
 import { getApprovedPosts } from '@/lib/supabase/messages/client';
@@ -76,11 +76,7 @@ export default function MessagesFeed() {
   }, []);
 
   // Load posts
-  useEffect(() => {
-    loadPosts();
-  }, [filter]);
-
-  const loadPosts = async () => {
+  const loadPosts = useCallback(async () => {
     setIsLoading(true);
     try {
       const data = await getApprovedPosts({
@@ -93,7 +89,11 @@ export default function MessagesFeed() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [filter]);
+
+  useEffect(() => {
+    loadPosts();
+  }, [loadPosts]);
 
   // Handle post creation
   const handlePostCreated = () => {

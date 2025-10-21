@@ -15,7 +15,7 @@
  * - Mobile-optimized
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Check,
@@ -30,6 +30,21 @@ import { useToast } from '@/components/ui/Toast';
 
 type StatusFilter = 'all' | 'pending' | 'approved' | 'rejected';
 
+interface PostStatsOverview {
+  total: number;
+  pending: number;
+  approved: number;
+  rejected: number;
+  by_type: {
+    text: number;
+    image: number;
+    video: number;
+    mixed: number;
+  };
+  total_likes: number;
+  total_comments: number;
+}
+
 export default function AdminPostsPage() {
   const { showToast, ToastRenderer } = useToast()
   const [posts, setPosts] = useState<GuestPost[]>([]);
@@ -38,17 +53,17 @@ export default function AdminPostsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<PostStatsOverview | null>(null);
 
   // Load posts when filter changes
   useEffect(() => {
     loadPosts();
-  }, [filter]);
+  }, [loadPosts]);
 
   // Load stats
   useEffect(() => {
     loadStats();
-  }, []);
+  }, [loadStats]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -73,9 +88,9 @@ export default function AdminPostsPage() {
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [posts, selectedPosts]);
+  }, [posts, selectedPosts, handleModerate]);
 
-  const loadPosts = async () => {
+  const loadPosts = useCallback(async () => {
     setIsLoading(true);
 
     try {
@@ -86,16 +101,16 @@ export default function AdminPostsPage() {
         throw new Error('Failed to load posts');
       }
 
-      const data = await response.json();
+      const data: GuestPost[] = await response.json();
       setPosts(data);
     } catch (error) {
       console.error('Error loading posts:', error);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [filter]);
 
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/posts?action=stats');
 
@@ -103,20 +118,20 @@ export default function AdminPostsPage() {
         throw new Error('Failed to load stats');
       }
 
-      const data = await response.json();
+      const data: PostStatsOverview | null = await response.json();
       setStats(data);
     } catch (error) {
       console.error('Error loading stats:', error);
     }
-  };
+  }, []);
 
-  const handleRefresh = async () => {
+  const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
     await Promise.all([loadPosts(), loadStats()]);
     setIsRefreshing(false);
-  };
+  }, [loadPosts, loadStats]);
 
-  const handleModerate = async (
+  const handleModerate = useCallback(async (
     postId: string,
     action: 'approve' | 'reject',
     reason?: string
@@ -129,7 +144,9 @@ export default function AdminPostsPage() {
       });
 
       if (!response.ok) {
-        const errorBody = await response.json().catch(() => null);
+        const errorBody = (await response.json().catch(() => null)) as
+          | { error?: string }
+          | null;
         throw new Error(errorBody?.error || 'Failed to moderate post');
       }
 
@@ -143,20 +160,21 @@ export default function AdminPostsPage() {
       console.error('Error moderating post:', error);
       showToast({ title: 'Erro ao moderar mensagem', type: 'error' });
     }
-  };
+  }, [loadPosts, loadStats, showToast]);
 
-  const handleBatchModerate = async (action: 'approve' | 'reject') => {
-    if (selectedPosts.size === 0) return;
+  const handleBatchModerate = useCallback(
+    async (action: 'approve' | 'reject') => {
+      if (selectedPosts.size === 0) return;
 
-    const confirmed = confirm(
-      `Deseja ${action === 'approve' ? 'aprovar' : 'rejeitar'} ${selectedPosts.size} mensagens?`
-    );
+      const confirmed = confirm(
+        `Deseja ${action === 'approve' ? 'aprovar' : 'rejeitar'} ${selectedPosts.size} mensagens?`
+      );
 
-    if (!confirmed) return;
+      if (!confirmed) return;
 
-    try {
-      const payload: {
-        action: 'approve' | 'reject';
+      try {
+        const payload: {
+          action: 'approve' | 'reject';
         postIds: string[];
         reason?: string;
       } = {
@@ -171,7 +189,9 @@ export default function AdminPostsPage() {
       });
 
       if (!response.ok) {
-        const errorBody = await response.json().catch(() => null);
+        const errorBody = (await response.json().catch(() => null)) as
+          | { error?: string }
+          | null;
         throw new Error(errorBody?.error || 'Failed to batch moderate posts');
       }
 
@@ -181,7 +201,9 @@ export default function AdminPostsPage() {
       console.error('Error batch moderating:', error);
       showToast({ title: 'Erro ao moderar mensagens em lote', type: 'error' });
     }
-  };
+    },
+    [selectedPosts, loadPosts, loadStats, showToast]
+  );
 
   const toggleSelection = (postId: string) => {
     setSelectedPosts(prev => {

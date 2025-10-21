@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
+import type { ComponentType } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { MessageSquare, Camera, Users, Heart, TrendingUp } from 'lucide-react'
 import { getLiveCelebrationStats, getRecentActivity } from '@/lib/supabase/live'
@@ -30,16 +31,7 @@ export function LiveStats({
   const [previousReactions, setPreviousReactions] = useState(0)
   const shouldReduceMotion = useReducedMotion()
 
-  useEffect(() => {
-    loadStats()
-    checkAuthentication()
-
-    // Auto-refresh every 30 seconds
-    const interval = setInterval(loadStats, 30000)
-    return () => clearInterval(interval)
-  }, [])
-
-  const checkAuthentication = async () => {
+  const checkAuthentication = useCallback(async () => {
     try {
       // Note: guest_session_token is an httpOnly cookie that can only be read server-side
       const response = await fetch('/api/auth/verify')
@@ -54,7 +46,26 @@ export function LiveStats({
       console.error('[LiveStats] Error checking authentication:', error)
       setIsAuthenticated(false)
     }
-  }
+  }, [])
+
+  const loadStats = useCallback(async () => {
+    const [statsData, activitiesData] = await Promise.all([
+      getLiveCelebrationStats(),
+      getRecentActivity(10)
+    ])
+    setStats(statsData)
+    setActivities(activitiesData)
+    setIsLoading(false)
+  }, [])
+
+  useEffect(() => {
+    loadStats()
+    checkAuthentication()
+
+    // Auto-refresh every 30 seconds
+    const interval = setInterval(loadStats, 30000)
+    return () => clearInterval(interval)
+  }, [checkAuthentication, loadStats])
 
   // Check for reactions milestone
   useEffect(() => {
@@ -66,19 +77,19 @@ export function LiveStats({
       }
     }
     setPreviousReactions(stats.total_reactions)
-  }, [stats.total_reactions])
+  }, [previousReactions, stats.total_reactions])
 
-  const loadStats = async () => {
-    const [statsData, activitiesData] = await Promise.all([
-      getLiveCelebrationStats(),
-      getRecentActivity(10)
-    ])
-    setStats(statsData)
-    setActivities(activitiesData)
-    setIsLoading(false)
+  interface StatConfig {
+    icon: ComponentType<{ className?: string }>
+    label: string
+    value: number
+    color: string
+    bgColor: string
+    iconColor: string
+    emoji: string
   }
 
-  const statCards = [
+  const statCards: StatConfig[] = [
     {
       icon: MessageSquare,
       label: 'Mensagens Hoje',
@@ -276,30 +287,27 @@ export function LiveStats({
 
 // Stat Card Component with delightful micro-interactions
 interface StatCardProps {
-  stat: {
-    icon: any
-    label: string
-    value: number
-    color: string
-    bgColor: string
-    iconColor: string
-    emoji: string
-  }
+  stat: StatConfig
   index: number
   shouldReduceMotion?: boolean
 }
 
 function StatCard({ stat, index, shouldReduceMotion }: StatCardProps) {
   const [isHovered, setIsHovered] = useState(false)
-  const [previousValue, setPreviousValue] = useState(stat.value)
   const [showIncrement, setShowIncrement] = useState(false)
+  const previousValueRef = useRef(stat.value)
 
   useEffect(() => {
-    if (stat.value > previousValue) {
+    if (stat.value > previousValueRef.current) {
       setShowIncrement(true)
-      setTimeout(() => setShowIncrement(false), 2000)
+      const timer = setTimeout(() => setShowIncrement(false), 2000)
+      previousValueRef.current = stat.value
+      return () => clearTimeout(timer)
     }
-    setPreviousValue(stat.value)
+    if (stat.value !== previousValueRef.current) {
+      previousValueRef.current = stat.value
+    }
+    return undefined
   }, [stat.value])
 
   const Icon = stat.icon

@@ -2,8 +2,8 @@
 
 import { useState, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
-import { Search, Filter, X, Share2, Heart, Download, Play, MapPin, Calendar, Images } from 'lucide-react'
-import { MediaItem, MediaCategory, GalleryFilter } from '@/types/wedding'
+import { Search, Filter, Share2, Heart, Play, MapPin, Calendar, Images } from 'lucide-react'
+import { MediaItem, MediaCategory } from '@/types/wedding'
 import GalleryLightbox from './GalleryLightbox'
 
 // Placeholder type - backend architect will provide actual type from utilities
@@ -20,6 +20,12 @@ interface SanityGalleryAlbum {
     caption?: string
     displayOrder: number
   }>
+}
+
+type GallerySource = MediaItem | SanityGalleryAlbum
+
+const isSanityAlbum = (item: GallerySource): item is SanityGalleryAlbum => {
+  return 'media' in item && Array.isArray(item.media)
 }
 
 interface MasonryGalleryProps {
@@ -59,11 +65,13 @@ const categoryIcons: Record<MediaCategory | 'all', string> = {
   professional: '📷'
 }
 
+const mediaTypeOptions: ReadonlyArray<'all' | 'photo' | 'video'> = ['all', 'photo', 'video']
+
 // Helper functions - will be replaced by backend architect's utilities
 // Placeholder implementations based on the schema structure
-function getPrimaryGalleryMedia(item: any): { url: string; type: 'image' | 'video' } | null {
+function getPrimaryGalleryMedia(item: GallerySource): { url: string; type: 'image' | 'video' } | null {
   // Check if item has media array (Sanity album format)
-  if (item.media && Array.isArray(item.media) && item.media.length > 0) {
+  if (isSanityAlbum(item) && item.media.length > 0) {
     const firstMedia = item.media[0]
     if (firstMedia.mediaType === 'video' && firstMedia.video?.asset?.url) {
       return { url: firstMedia.video.asset.url, type: 'video' }
@@ -74,15 +82,15 @@ function getPrimaryGalleryMedia(item: any): { url: string; type: 'image' | 'vide
   }
 
   // Fallback to MediaItem format (guest photos or legacy format)
-  if (item.url) {
+  if ('url' in item) {
     return { url: item.url, type: item.media_type === 'video' ? 'video' : 'image' }
   }
 
   return null
 }
 
-function hasMultipleMedia(item: any): boolean {
-  return item.media && Array.isArray(item.media) && item.media.length > 1
+function hasMultipleMedia(item: GallerySource): item is SanityGalleryAlbum {
+  return isSanityAlbum(item) && item.media.length > 1
 }
 
 export default function MasonryGallery({
@@ -97,7 +105,6 @@ export default function MasonryGallery({
   const [searchQuery, setSearchQuery] = useState('')
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
   const [mediaTypeFilter, setMediaTypeFilter] = useState<'all' | 'photo' | 'video'>('all')
-  const [isLoading, setIsLoading] = useState(false)
   const [likedItems, setLikedItems] = useState<Set<string>>(new Set())
   const [hoveredItem, setHoveredItem] = useState<string | null>(null)
   const shouldReduceMotion = useReducedMotion()
@@ -127,13 +134,11 @@ export default function MasonryGallery({
   }, [items, selectedCategory, searchQuery, mediaTypeFilter])
 
   const handleItemClick = useCallback((item: MediaItem, index: number) => {
-    // Check if item is a Sanity album with multiple media
-    if (hasMultipleMedia(item)) {
-      // Open lightbox for albums
-      setSelectedAlbum(item as any as SanityGalleryAlbum)
+    const galleryItem: GallerySource = item
+    if (hasMultipleMedia(galleryItem)) {
+      setSelectedAlbum(galleryItem)
       setLightboxOpen(true)
     } else if (onItemClick) {
-      // Use custom handler for single items
       onItemClick(item, index)
     }
   }, [onItemClick])
@@ -275,10 +280,10 @@ export default function MasonryGallery({
                     <div className="flex flex-wrap gap-4 justify-center">
                       <div className="flex items-center space-x-3">
                         <span className="text-sm font-medium" style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-crimson)' }}>Tipo:</span>
-                        {['all', 'photo', 'video'].map(type => (
+                        {mediaTypeOptions.map(type => (
                           <button
                             key={type}
-                            onClick={() => setMediaTypeFilter(type as any)}
+                            onClick={() => setMediaTypeFilter(type)}
                             className="px-4 py-2 rounded-lg text-sm font-medium transition-all"
                             style={{
                               background: mediaTypeFilter === type ? 'var(--decorative)' : 'var(--white-soft)',
@@ -320,8 +325,9 @@ export default function MasonryGallery({
             transition={{ duration: 0.8, delay: 0.4 }}
           >
             {filteredItems.map((item, index) => {
-              const primaryMedia = getPrimaryGalleryMedia(item)
-              const hasMultiple = hasMultipleMedia(item)
+              const galleryItem: GallerySource = item
+              const primaryMedia = getPrimaryGalleryMedia(galleryItem)
+              const hasMultiple = hasMultipleMedia(galleryItem)
 
               return (
                 <motion.div
@@ -413,7 +419,7 @@ export default function MasonryGallery({
                           }}
                         >
                           <Images className="w-3.5 h-3.5" strokeWidth={2.5} />
-                          <span>{(item as any).media?.length || '2+'}</span>
+                          <span>{isSanityAlbum(galleryItem) ? galleryItem.media.length : '2+'}</span>
                         </motion.div>
                       )}
 

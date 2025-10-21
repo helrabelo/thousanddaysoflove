@@ -7,37 +7,39 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 
-interface VideoHeroProps {
-  data?: {
-    monogram?: boolean
-    tagline?: string
-    dateBadge?: string
-    primaryCta?: {
-      label: string
-      href: string
-    }
-    secondaryCta?: {
-      label: string
-      href: string
-    }
-    backgroundVideo?: {
-      asset?: {
-        url: string
-      }
-    }
-    backgroundImage?: {
-      asset?: {
-        url: string
-      }
-      alt?: string
-    }
-    posterImage?: {
-      asset?: {
-        url: string
-      }
-      alt?: string
+export interface VideoHeroData {
+  monogram?: boolean
+  tagline?: string
+  dateBadge?: string
+  primaryCta?: {
+    label: string
+    href: string
+  }
+  secondaryCta?: {
+    label: string
+    href: string
+  }
+  backgroundVideo?: {
+    asset?: {
+      url: string
     }
   }
+  backgroundImage?: {
+    asset?: {
+      url: string
+    }
+    alt?: string
+  }
+  posterImage?: {
+    asset?: {
+      url: string
+    }
+    alt?: string
+  }
+}
+
+interface VideoHeroProps {
+  data?: VideoHeroData
 }
 
 export default function VideoHeroSection({ data }: VideoHeroProps) {

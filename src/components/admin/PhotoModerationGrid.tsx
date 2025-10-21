@@ -45,7 +45,6 @@ interface PhotoModerationGridProps {
 
 export default function PhotoModerationGrid({
   photos: initialPhotos,
-  initialFilters,
 }: PhotoModerationGridProps) {
   const router = useRouter()
   const [photos, setPhotos] = useState(initialPhotos)
@@ -53,7 +52,12 @@ export default function PhotoModerationGrid({
   const [focusedIndex, setFocusedIndex] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [isRefreshing, setIsRefreshing] = useState(false)
-  const [stats, setStats] = useState<any>(null)
+  const [stats, setStats] = useState<{
+    total: number
+    pending: number
+    approved: number
+    rejected: number
+  } | null>(null)
 
   // Filters
   const [statusFilter, setStatusFilter] = useState<string>('pending')
@@ -63,14 +67,14 @@ export default function PhotoModerationGrid({
   // Fetch photos when status filter changes
   useEffect(() => {
     loadPhotos()
-  }, [statusFilter])
+  }, [loadPhotos])
 
   // Load stats on mount
   useEffect(() => {
     loadStats()
-  }, [])
+  }, [loadStats])
 
-  const loadPhotos = async () => {
+  const loadPhotos = useCallback(async () => {
     setIsLoading(true)
     try {
       const params = new URLSearchParams()
@@ -86,25 +90,30 @@ export default function PhotoModerationGrid({
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [statusFilter])
 
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/photos?action=stats')
       if (!response.ok) throw new Error('Failed to load stats')
 
-      const data = await response.json()
+      const data: {
+        total: number
+        pending: number
+        approved: number
+        rejected: number
+      } = await response.json()
       setStats(data)
     } catch (error) {
       console.error('Error loading stats:', error)
     }
-  }
+  }, [])
 
-  const handleRefresh = async () => {
+  const handleRefresh = useCallback(async () => {
     setIsRefreshing(true)
     await Promise.all([loadPhotos(), loadStats()])
     setIsRefreshing(false)
-  }
+  }, [loadPhotos, loadStats])
 
   // Client-side filtering for phase and search
   const filteredPhotos = photos.filter(photo => {
@@ -192,7 +201,7 @@ export default function PhotoModerationGrid({
 
     window.addEventListener('keydown', handleKeyboard)
     return () => window.removeEventListener('keydown', handleKeyboard)
-  }, [photos, focusedIndex, selectedIds])
+  }, [focusedIndex, moderateBatch, moderatePhoto, photos, selectedIds])
 
   // Toggle selection
   const toggleSelection = (id: string) => {
@@ -218,7 +227,7 @@ export default function PhotoModerationGrid({
   }
 
   // Moderate single photo
-  const moderatePhoto = async (
+  const moderatePhoto = useCallback(async (
     id: string,
     action: 'approved' | 'rejected',
     rejectionReason?: string
@@ -261,10 +270,10 @@ export default function PhotoModerationGrid({
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [router])
 
   // Moderate batch
-  const moderateBatch = async (
+  const moderateBatch = useCallback(async (
     action: 'approved' | 'rejected',
     rejectionReason?: string
   ) => {
@@ -327,7 +336,7 @@ export default function PhotoModerationGrid({
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [loadPhotos, loadStats, selectedIds])
 
   return (
     <div className="min-h-screen  py-6 px-4">

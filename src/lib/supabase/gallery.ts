@@ -257,7 +257,7 @@ export function guestPhotoToMediaItem(
     width: photo.width || undefined,
     height: photo.height || undefined,
     aspect_ratio: aspectRatio,
-    category: 'wedding_prep' as any, // Guest photos are "wedding prep"
+    category: 'wedding_prep', // Guest photos are "wedding prep"
     tags: ['guest_upload', photo.upload_phase],
     date_taken: photo.uploaded_at,
     location: undefined,

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Gift,
@@ -12,14 +13,11 @@ import {
   Filter,
   Package,
   DollarSign,
-  Star,
   CheckCircle,
   Clock,
   AlertCircle,
-  ShoppingBag,
   TrendingUp,
   Tag,
-  Image,
   ExternalLink,
   RefreshCw,
   Download
@@ -44,8 +42,8 @@ export function GiftRegistryTab() {
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all')
   const [selectedGift, setSelectedGift] = useState<GiftType | null>(null)
   const [showGiftDetail, setShowGiftDetail] = useState(false)
-  const [showAddGift, setShowAddGift] = useState(false)
-  const [showEditGift, setShowEditGift] = useState(false)
+  const [, setShowAddGift] = useState(false)
+  const [, setShowEditGift] = useState(false)
 
   const [stats, setStats] = useState({
     total: 0,
@@ -403,10 +401,12 @@ export function GiftRegistryTab() {
               {/* Gift Image */}
               <div className="aspect-video bg-gradient-to-br from-blush-100 to-gray-100 relative">
                 {gift.image_url ? (
-                  <img
+                  <Image
                     src={gift.image_url}
                     alt={gift.name}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
+                    sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
@@ -559,12 +559,14 @@ export function GiftRegistryTab() {
 
               <div className="space-y-6">
                 {/* Gift Image */}
-                <div className="aspect-video bg-gradient-to-br from-blush-100 to-gray-100 rounded-xl overflow-hidden">
+                <div className="aspect-video bg-gradient-to-br from-blush-100 to-gray-100 rounded-xl overflow-hidden relative">
                   {selectedGift.image_url ? (
-                    <img
+                    <Image
                       src={selectedGift.image_url}
                       alt={selectedGift.name}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
+                      sizes="(min-width: 768px) 50vw, 100vw"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">

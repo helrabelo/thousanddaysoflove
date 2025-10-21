@@ -1,5 +1,4 @@
-import { differenceInDays, differenceInHours, differenceInMinutes, addDays, subDays, format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { differenceInDays, differenceInHours, differenceInMinutes } from 'date-fns';
 
 export const WEDDING_DATE = new Date('2025-11-20T10:30:00');
 

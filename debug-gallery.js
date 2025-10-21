@@ -18,7 +18,7 @@ Object.keys(mockLocalStorage).forEach(key => {
       const parsed = JSON.parse(data)
       console.log(`✅ ${key}: ${Array.isArray(parsed) ? parsed.length : 'object'} itens`)
     } catch (error) {
-      console.log(`❌ ${key}: erro ao fazer parse`)
+      console.log(`❌ ${key}: erro ao fazer parse`, error)
     }
   } else {
     console.log(`⚠️  ${key}: vazio`)

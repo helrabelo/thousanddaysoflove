@@ -258,7 +258,7 @@ async function main() {
       successCount++
     } catch (error) {
       failCount++
-      console.error(`Failed to process ${gift.title}`)
+      console.error(`Failed to process ${gift.title}:`, error)
     }
   }
 

@@ -26,7 +26,6 @@ interface FeatureDiscoveryHubProps {
  */
 export default function FeatureDiscoveryHub({
   progress,
-  invitationCode,
 }: FeatureDiscoveryHubProps) {
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
 
@@ -66,7 +65,7 @@ export default function FeatureDiscoveryHub({
 
       {/* Feature Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {ALL_FEATURES.map((feature, index) => {
+        {ALL_FEATURES.map((feature) => {
           // Determine if feature is completed based on progress
           // Progress values can be boolean or number (count)
           const progressValue = progress[feature.progressKey];

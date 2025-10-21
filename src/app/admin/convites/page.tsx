@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Mail,
@@ -47,12 +48,13 @@ import QRCode from 'qrcode'
 
 type FilterStatus = 'all' | 'opened' | 'rsvp' | 'gift' | 'photos'
 type RelationshipFilter = 'all' | 'family' | 'friend' | 'colleague' | 'other'
+type InvitationAnalytics = Awaited<ReturnType<typeof getInvitationAnalytics>>
 
 export default function AdminInvitationsPage() {
   const { showToast, ToastRenderer } = useToast()
   const [invitations, setInvitations] = useState<Invitation[]>([])
   const [filteredInvitations, setFilteredInvitations] = useState<Invitation[]>([])
-  const [analytics, setAnalytics] = useState<any>(null)
+  const [analytics, setAnalytics] = useState<InvitationAnalytics | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all')
@@ -61,8 +63,8 @@ export default function AdminInvitationsPage() {
   const [showDetailModal, setShowDetailModal] = useState(false)
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
-  const [sortBy, setSortBy] = useState<'created_at' | 'guest_name' | 'opened_at' | 'open_count'>('created_at')
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+  const sortBy: 'created_at' | 'guest_name' | 'opened_at' | 'open_count' = 'created_at'
+  const sortOrder: 'asc' | 'desc' = 'desc'
   const [quickEditMode, setQuickEditMode] = useState(false)
   const [quickSaving, setQuickSaving] = useState<Record<string, boolean>>({})
   const [deletePromptId, setDeletePromptId] = useState<string | null>(null)
@@ -530,6 +532,25 @@ export default function AdminInvitationsPage() {
                 <Gift className="w-4 h-4 mr-2" />
                 Presentes
               </Button>
+            </div>
+
+            <div className="flex gap-2 flex-wrap">
+              {([
+                { key: 'all', label: 'Todos' },
+                { key: 'family', label: 'Família' },
+                { key: 'friend', label: 'Amigos' },
+                { key: 'colleague', label: 'Trabalho' },
+                { key: 'other', label: 'Outros' }
+              ] as const).map(({ key, label }) => (
+                <Button
+                  key={key}
+                  variant={relationshipFilter === key ? 'wedding' : 'outline'}
+                  size="sm"
+                  onClick={() => setRelationshipFilter(key)}
+                >
+                  {label}
+                </Button>
+              ))}
             </div>
           </div>
 
@@ -1223,7 +1244,7 @@ function CreateInvitationModal({
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      relationship_type: e.target.value as any,
+                      relationship_type: e.target.value as Invitation['relationship_type'],
                     })
                   }
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2C2C2C] focus:border-transparent"
@@ -1409,7 +1430,7 @@ function EditInvitationModal({
         guest_name: invitation.guest_name,
         guest_email: invitation.guest_email || '',
         guest_phone: invitation.guest_phone || '',
-        relationship_type: invitation.relationship_type as any,
+        relationship_type: invitation.relationship_type as Invitation['relationship_type'],
         plus_one_allowed: invitation.plus_one_allowed,
         plus_one_name: invitation.plus_one_name || '',
         custom_message: invitation.custom_message || '',
@@ -1539,7 +1560,7 @@ function EditInvitationModal({
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      relationship_type: e.target.value as any,
+                      relationship_type: e.target.value as Invitation['relationship_type'],
                     })
                   }
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2C2C2C] focus:border-transparent"
@@ -2028,10 +2049,13 @@ function DetailViewModal({
                   <QrCode className="w-5 h-5" />
                   QR Code do Convite
                 </h4>
-                <img
+                <Image
                   src={qrCodeUrl}
                   alt="QR Code"
+                  width={192}
+                  height={192}
                   className="w-48 h-48 mx-auto mb-4 border-4 border-[#E8E6E3] rounded-lg"
+                  unoptimized
                 />
                 <div className="flex justify-center gap-2">
                   <Button size="sm" variant="outline" onClick={handleDownloadQR}>

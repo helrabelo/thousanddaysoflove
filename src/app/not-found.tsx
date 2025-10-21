@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Heart, Home, ArrowLeft } from 'lucide-react'
+import { Heart, Home } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { CardAccent } from '@/components/ui/BotanicalDecorations'
 

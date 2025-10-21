@@ -14,16 +14,10 @@
  * - Elegant wedding aesthetic
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Heart,
-  MessageCircle,
-  Laugh,
-  Sparkles,
-  PartyPopper,
-  User,
-} from 'lucide-react';
+import { MessageCircle, User } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import {
@@ -43,15 +37,6 @@ interface PostCardProps {
   onCommentAdded?: () => void;
   timelineEventTitle?: string;
 }
-
-// Reaction icons mapping
-const REACTION_ICONS = {
-  heart: Heart,
-  clap: Sparkles,
-  laugh: Laugh,
-  celebrate: PartyPopper,
-  love: Heart,
-};
 
 const REACTION_LABELS = {
   heart: 'Coração',
@@ -86,6 +71,22 @@ export default function PostCard({
   const isGuestPhoto = post.id.startsWith('photo-');
 
   // Load reactions and comments (skip for guest photos)
+  const loadReactions = useCallback(async () => {
+    const data = await getPostReactions(post.id);
+    setReactions(data);
+  }, [post.id]);
+
+  const loadComments = useCallback(async () => {
+    const data = await getPostComments(post.id);
+    setComments(data);
+  }, [post.id]);
+
+  const loadUserReaction = useCallback(async () => {
+    if (!currentGuestName) return;
+    const reaction = await getGuestReaction(post.id, currentGuestName);
+    setUserReaction(reaction);
+  }, [currentGuestName, post.id]);
+
   useEffect(() => {
     if (!isGuestPhoto) {
       loadReactions();
@@ -93,30 +94,14 @@ export default function PostCard({
         loadComments();
       }
     }
-  }, [post.id, isGuestPhoto]);
+  }, [isGuestPhoto, loadComments, loadReactions, showComments]);
 
   // Load user's reaction (skip for guest photos)
   useEffect(() => {
     if (!isGuestPhoto && currentGuestName) {
       loadUserReaction();
     }
-  }, [post.id, currentGuestName, isGuestPhoto]);
-
-  const loadReactions = async () => {
-    const data = await getPostReactions(post.id);
-    setReactions(data);
-  };
-
-  const loadComments = async () => {
-    const data = await getPostComments(post.id);
-    setComments(data);
-  };
-
-  const loadUserReaction = async () => {
-    if (!currentGuestName) return;
-    const reaction = await getGuestReaction(post.id, currentGuestName);
-    setUserReaction(reaction);
-  };
+  }, [currentGuestName, isGuestPhoto, loadUserReaction]);
 
   // Handle reaction toggle
   const handleReaction = async (
@@ -250,10 +235,12 @@ export default function PostCard({
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <img
+                  <Image
                     src={url}
                     alt="Post media"
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
+                    sizes="(min-width: 1024px) 25vw, 50vw"
                   />
                 )}
               </motion.div>
@@ -302,7 +289,6 @@ export default function PostCard({
         <div className="flex items-center gap-2 mb-4 flex-wrap">
           {/* Reaction Buttons */}
           {(['heart', 'clap', 'laugh', 'celebrate'] as const).map((type) => {
-            const Icon = REACTION_ICONS[type];
             const count = reactionCounts[type] || 0;
             const isActive = userReaction?.reaction_type === type;
 

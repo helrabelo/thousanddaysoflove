@@ -6,7 +6,6 @@ import {
   CheckCircle,
   Gift,
   Camera,
-  MessageSquare,
   ArrowRight,
 } from 'lucide-react';
 import type { Invitation } from '@/types/wedding';

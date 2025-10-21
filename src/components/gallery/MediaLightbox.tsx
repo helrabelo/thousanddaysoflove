@@ -1,13 +1,14 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
+import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, RotateCw,
   Download, Share2, Heart, Play, Pause, Volume2, VolumeX,
-  Maximize, Grid, Info
+  Info
 } from 'lucide-react'
-import { MediaItem, LightboxState } from '@/types/wedding'
+import { MediaItem } from '@/types/wedding'
 
 interface MediaLightboxProps {
   isOpen: boolean
@@ -112,14 +113,14 @@ export default function MediaLightbox({
           rotateImage()
           break
         case 'i':
-          setShowInfo(!showInfo)
+          setShowInfo(prev => !prev)
           break
       }
     }
 
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [isOpen, currentIndex, showInfo, currentItem])
+  }, [currentItem, goToNext, goToPrevious, isOpen, onClose, rotateImage, togglePlay, zoomIn, zoomOut])
 
   const goToPrevious = useCallback(() => {
     const newIndex = currentIndex > 0 ? currentIndex - 1 : items.length - 1
@@ -463,10 +464,12 @@ export default function MediaLightbox({
                             : 'border-white/20 hover:border-white/50'
                         }`}
                       >
-                        <img
+                        <Image
                           src={item.thumbnail_url || item.url}
                           alt={item.title}
-                          className="w-full h-full object-cover"
+                          fill
+                          className="object-cover"
+                          sizes="64px"
                         />
                         {item.media_type === 'video' && (
                           <div className="absolute inset-0 bg-black/30 flex items-center justify-center">

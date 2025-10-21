@@ -115,7 +115,7 @@ export interface EmailLog {
   error_message?: string;
   opened_date?: string;
   clicked_date?: string;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   created_at: string;
 }
 
@@ -123,7 +123,7 @@ export interface RsvpAnalytics {
   id: string;
   guest_id?: string;
   event_type: 'invitation_sent' | 'invitation_opened' | 'form_started' | 'form_completed' | 'reminder_sent';
-  event_data: Record<string, any>;
+  event_data: Record<string, unknown>;
   user_agent?: string;
   ip_address?: string;
   referrer?: string;

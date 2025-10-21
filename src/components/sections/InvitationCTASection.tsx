@@ -5,7 +5,6 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowRight, Calendar, MessageCircle, Radio } from 'lucide-react'
-import Image from 'next/image'
 import ElegantInvitation from './ElegantInvitation'
 import type { GuestSession } from '@/lib/auth/guestAuth'
 

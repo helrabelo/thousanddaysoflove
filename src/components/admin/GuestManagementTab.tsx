@@ -50,7 +50,6 @@ export function GuestManagementTab() {
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all')
   const [selectedGuest, setSelectedGuest] = useState<Guest | null>(null)
   const [showGuestDetail, setShowGuestDetail] = useState(false)
-  const [showAddGuest, setShowAddGuest] = useState(false)
   const [showBulkActions, setShowBulkActions] = useState(false)
   const [selectedGuests, setSelectedGuests] = useState<string[]>([])
 

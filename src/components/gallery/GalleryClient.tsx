@@ -69,7 +69,7 @@ export default function GalleryClient({ mediaItems, guestPhotosByPhase }: Galler
       <MasonryGallery
         items={randomizedMedia}
         showFilters={false}
-        onItemClick={(item, index) => {
+        onItemClick={(item) => {
           openLightbox(item, randomizedMedia)
         }}
       />
@@ -83,7 +83,7 @@ export default function GalleryClient({ mediaItems, guestPhotosByPhase }: Galler
         showThumbnails={true}
         onClose={closeLightbox}
         onChange={changeLightboxIndex}
-        onLike={(item) => {
+        onLike={() => {
           // Like action (future: save to database)
         }}
         onShare={(item) => {

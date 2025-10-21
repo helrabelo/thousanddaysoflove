@@ -135,7 +135,7 @@ async function main() {
       successCount++
     } catch (error) {
       failCount++
-      console.error(`Failed to process ${renovation.title}`)
+      console.error(`Failed to process ${renovation.title}:`, error)
     }
   }
 

@@ -12,12 +12,11 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useEffect, useCallback } from 'react'
+import { motion } from 'framer-motion'
 import {
   TrendingUp,
   Users,
-  Calendar,
   Mail,
   MessageSquare,
   Heart,
@@ -27,7 +26,6 @@ import {
   Globe,
   Smartphone,
   CheckCircle2,
-  AlertTriangle,
   ArrowUp,
   ArrowDown
 } from 'lucide-react'
@@ -35,7 +33,7 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Guest, GuestRsvpStats } from '@/types/wedding'
-import { formatBrazilianDate, formatBrazilianCurrency, generateWeddingTimelineData } from '@/lib/utils/wedding'
+import { formatBrazilianDate, generateWeddingTimelineData } from '@/lib/utils/wedding'
 import EnhancedGuestService from '@/lib/services/enhanced-guests'
 
 interface RsvpAnalyticsDashboardProps {
@@ -43,12 +41,26 @@ interface RsvpAnalyticsDashboardProps {
   className?: string
 }
 
+type WeddingProgress = ReturnType<typeof generateWeddingTimelineData>
+
+interface TrendAnalytics {
+  rsvpTrend: number
+  currentWeekRsvps: number
+  predictedCompletionRate: number
+  averageDailyRsvps: number
+}
+
+interface DailyActivityEntry {
+  date: string
+  rsvps: number
+  dateFormatted: string
+}
+
 interface AnalyticsMetrics {
   rsvpStats: GuestRsvpStats
-  engagementData: any
-  weddingProgress: any
-  dailyActivity: any[]
-  trends: any
+  weddingProgress: WeddingProgress
+  dailyActivity: DailyActivityEntry[]
+  trends: TrendAnalytics
 }
 
 export function RsvpAnalyticsDashboard({ guests, className = '' }: RsvpAnalyticsDashboardProps) {
@@ -56,28 +68,17 @@ export function RsvpAnalyticsDashboard({ guests, className = '' }: RsvpAnalytics
   const [isLoading, setIsLoading] = useState(true)
   const [selectedTimeRange, setSelectedTimeRange] = useState<'7d' | '30d' | 'all'>('30d')
 
-  const weddingTimeline = generateWeddingTimelineData()
-
-  useEffect(() => {
-    loadAnalytics()
-  }, [guests, selectedTimeRange])
-
-  const loadAnalytics = async () => {
+  const loadAnalytics = useCallback(async () => {
     setIsLoading(true)
     try {
-      const [rsvpStats, engagementData] = await Promise.all([
-        EnhancedGuestService.getRsvpStatistics(),
-        EnhancedGuestService.getGuestEngagementAnalytics(selectedTimeRange === '7d' ? 7 : selectedTimeRange === '30d' ? 30 : 365)
-      ])
-
-      // Calculate trends and predictions
+      const rsvpStats = await EnhancedGuestService.getRsvpStatistics()
       const trends = calculateTrends(guests)
-      const dailyActivity = generateDailyActivity(guests)
+      const dailyActivity = generateDailyActivity(guests, selectedTimeRange)
+      const weddingProgress = generateWeddingTimelineData()
 
       setAnalytics({
         rsvpStats,
-        engagementData,
-        weddingProgress: weddingTimeline,
+        weddingProgress,
         dailyActivity,
         trends
       })
@@ -86,9 +87,13 @@ export function RsvpAnalyticsDashboard({ guests, className = '' }: RsvpAnalytics
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [guests, selectedTimeRange])
 
-  const calculateTrends = (guestList: Guest[]) => {
+  useEffect(() => {
+    loadAnalytics()
+  }, [loadAnalytics])
+
+  const calculateTrends = (guestList: Guest[]): TrendAnalytics => {
     const now = new Date()
     const lastWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
     const previousWeek = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000)
@@ -120,14 +125,19 @@ export function RsvpAnalyticsDashboard({ guests, className = '' }: RsvpAnalytics
     }
   }
 
-  const generateDailyActivity = (guestList: Guest[]) => {
-    const last30Days = Array.from({ length: 30 }, (_, i) => {
+  const generateDailyActivity = (
+    guestList: Guest[],
+    range: '7d' | '30d' | 'all'
+  ): DailyActivityEntry[] => {
+    const daysToInclude = range === '7d' ? 7 : range === '30d' ? 30 : 90
+
+    const selectedDays = Array.from({ length: daysToInclude }, (_, i) => {
       const date = new Date()
       date.setDate(date.getDate() - i)
       return date.toISOString().split('T')[0]
     }).reverse()
 
-    return last30Days.map(date => {
+    return selectedDays.map(date => {
       const dayRsvps = guestList.filter(g =>
         g.rsvp_date && g.rsvp_date.startsWith(date)
       ).length

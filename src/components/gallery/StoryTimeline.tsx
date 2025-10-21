@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Calendar, MapPin, Heart, Play } from 'lucide-react'
 import { TimelineEvent } from '@/types/wedding'
@@ -42,7 +43,7 @@ export default function StoryTimeline({
     return icons[type] || '💝'
   }
 
-  const getMilestoneColor = (type: TimelineEvent['milestone_type']) => {
+  const getMilestoneColor = () => {
     // Using monochromatic wedding invitation palette
     return 'var(--decorative)' // All milestones use same elegant silver-gray
   }
@@ -142,7 +143,7 @@ export default function StoryTimeline({
                   <motion.div
                     className="w-20 h-20 rounded-full flex items-center justify-center shadow-lg border-4 relative overflow-hidden"
                     style={{
-                      background: getMilestoneColor(event.milestone_type),
+                      background: getMilestoneColor(),
                       borderColor: 'var(--white-soft)'
                     }}
                     whileHover={{ scale: 1.1, rotate: 5 }}
@@ -187,18 +188,24 @@ export default function StoryTimeline({
                       />
                     ) : event.media_type === 'photo' ? (
                       // Single photo - backward compatibility
-                      <img
-                        src={event.media_url}
-                        alt={event.title}
-                        className="w-full h-80 object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
+                      <div className="relative h-80">
+                        <Image
+                          src={event.media_url}
+                          alt={event.title}
+                          fill
+                          className="object-cover transition-transform duration-500 group-hover:scale-110"
+                          sizes="(min-width: 1024px) 33vw, (min-width: 768px) 40vw, 100vw"
+                        />
+                      </div>
                     ) : (
                       // Single video - backward compatibility
-                      <div className="relative">
-                        <img
+                      <div className="relative h-80">
+                        <Image
                           src={event.thumbnail_url || event.media_url}
                           alt={event.title}
-                          className="w-full h-80 object-cover transition-transform duration-500 group-hover:scale-110"
+                          fill
+                          className="object-cover transition-transform duration-500 group-hover:scale-110"
+                          sizes="(min-width: 1024px) 33vw, (min-width: 768px) 40vw, 100vw"
                         />
                         <div className="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/40 transition-colors">
                           <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center">
@@ -291,12 +298,18 @@ export default function StoryTimeline({
                 </div>
               ) : selectedEvent.media_type === 'photo' ? (
                 // Single photo - backward compatibility
-                <img
-                  src={selectedEvent.media_url}
-                  alt={selectedEvent.title}
-                  className="w-full h-64 object-cover rounded-xl mb-6"
+                <div
+                  className="relative h-64 mb-6 rounded-xl overflow-hidden"
                   style={{ border: '1px solid var(--border-subtle)' }}
-                />
+                >
+                  <Image
+                    src={selectedEvent.media_url}
+                    alt={selectedEvent.title}
+                    fill
+                    className="object-cover"
+                    sizes="(min-width: 768px) 60vw, 100vw"
+                  />
+                </div>
               ) : (
                 // Single video - backward compatibility
                 <video

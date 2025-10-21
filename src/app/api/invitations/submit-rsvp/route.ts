@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/server';
 
+interface InvitationUpdatePayload {
+  rsvp_completed: boolean;
+  attending: boolean;
+  dietary_restrictions?: string;
+  plus_one_name?: string | null;
+}
+
 /**
  * POST /api/invitations/submit-rsvp
  *
@@ -65,7 +72,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Prepare update data
-    const updateData: any = {
+    const updateData: InvitationUpdatePayload = {
       rsvp_completed: true,
       attending: attending,
     };

@@ -97,6 +97,7 @@ export const galleryImagesQuery = groq`
  * Get gallery albums filtered by category
  */
 export function getGalleryImagesByCategoryQuery(category: string) {
+  void category
   return groq`
     *[_type == "galleryImage" && isPublic == true && category == $category] | order(
       displayOrder asc,
@@ -125,6 +126,7 @@ export const featuredGalleryImagesQuery = groq`
  * Get single gallery album by ID
  */
 export function getGalleryImageByIdQuery(id: string) {
+  void id
   return groq`
     *[_type == "galleryImage" && _id == $id][0] {
       ${galleryAlbumFields}
@@ -163,6 +165,7 @@ export const galleryStatsQuery = groq`
  * Search gallery albums by title, description, tags, or location
  */
 export function searchGalleryImagesQuery(searchTerm: string) {
+  void searchTerm
   return groq`
     *[
       _type == "galleryImage" &&
@@ -192,8 +195,18 @@ export interface SanityGalleryAlbumMediaItem {
   image?: {
     asset: { url: string }
     alt?: string
-    hotspot?: any
-    crop?: any
+    hotspot?: {
+      x: number
+      y: number
+      height: number
+      width: number
+    }
+    crop?: {
+      top: number
+      bottom: number
+      left: number
+      right: number
+    }
   }
   video?: {
     asset: { url: string }

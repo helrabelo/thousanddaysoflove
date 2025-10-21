@@ -44,6 +44,7 @@ export default function GoogleMap({
 
         setIsLoading(false)
       } catch (err) {
+        console.error('Failed to initialize Google Maps:', err)
         setError('Não foi possível carregar o mapa. Tente novamente.')
         setIsLoading(false)
       }

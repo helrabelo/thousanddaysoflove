@@ -6,18 +6,19 @@
  * Organized by phase (before/during/after) with reactions and comments
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import PhotoCard from './PhotoCard'
 import { getPhotosWithInteractions, type PhotoWithInteractions } from '@/lib/supabase/photo-interactions'
 import { GUEST_SESSION_COOKIE } from '@/lib/auth/guestAuth'
 import Cookies from 'js-cookie'
+import type { MediaItem } from '@/types/wedding'
 
 interface GuestPhotosSectionProps {
-  guestPhotosByPhase: {
-    before: any[]
-    during: any[]
-    after: any[]
+  photosByPhase: {
+    before: MediaItem[]
+    during: MediaItem[]
+    after: MediaItem[]
   }
 }
 
@@ -31,7 +32,7 @@ const phaseLabels: Record<Phase, string> = {
 }
 
 export default function GuestPhotosSection({
-  guestPhotosByPhase,
+  photosByPhase,
 }: GuestPhotosSectionProps) {
   const [selectedPhase, setSelectedPhase] = useState<Phase>('all')
   const [photos, setPhotos] = useState<PhotoWithInteractions[]>([])
@@ -82,10 +83,10 @@ export default function GuestPhotosSection({
 
   // Load photos with interactions
   useEffect(() => {
-    loadPhotos()
-  }, [selectedPhase])
+    void loadPhotos()
+  }, [loadPhotos])
 
-  const loadPhotos = async () => {
+  const loadPhotos = useCallback(async () => {
     setIsLoading(true)
     try {
       const data = await getPhotosWithInteractions(
@@ -98,9 +99,11 @@ export default function GuestPhotosSection({
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [selectedPhase])
 
-  const totalPhotos = photos.length
+  const fallbackPhotoCount =
+    photosByPhase.before.length + photosByPhase.during.length + photosByPhase.after.length
+  const totalPhotos = photos.length || fallbackPhotoCount
 
   return (
     <section className="py-12">

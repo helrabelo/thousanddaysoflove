@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import type { TargetAndTransition } from 'framer-motion'
 
 interface AnimatedTitleProps {
   className?: string
@@ -24,20 +25,27 @@ export default function AnimatedTitle({ className = '', delay = 2 }: AnimatedTit
     return () => clearTimeout(timer)
   }, [delay])
 
+  type CharacterType = 'heart' | 'letter'
+
   const containerVariants = {
     initial: { opacity: 1 },
     transforming: { opacity: 1 },
     final: { opacity: 1 }
   }
 
-  const characterVariants = {
-    initial: () => ({
+  type CharacterVariants = Record<
+    'initial' | 'transforming' | 'final',
+    TargetAndTransition | ((custom: CharacterType) => TargetAndTransition)
+  >
+
+  const characterVariants: CharacterVariants = {
+    initial: {
       opacity: 1,
       scale: 1,
       rotateY: 0,
-      color: '#F8F6F3' // cream background
-    }),
-    transforming: (custom: string) => ({
+      color: '#F8F6F3'
+    },
+    transforming: (custom: CharacterType) => ({
       opacity: [1, 0, 1],
       scale: [1, 1.2, 1],
       rotateY: [0, 180, 360],
@@ -48,7 +56,7 @@ export default function AnimatedTitle({ className = '', delay = 2 }: AnimatedTit
         times: [0, 0.5, 1]
       }
     }),
-    final: (custom: string) => ({
+    final: (custom: CharacterType) => ({
       opacity: 1,
       scale: 1,
       rotateY: 0,
@@ -86,7 +94,7 @@ export default function AnimatedTitle({ className = '', delay = 2 }: AnimatedTit
           <motion.span
             key={`${currentState}-${index}`}
             custom={getCustomType(index)}
-            variants={characterVariants as any}
+            variants={characterVariants}
             initial="initial"
             animate={currentState}
             className="inline-block text-center font-bold tracking-wider"

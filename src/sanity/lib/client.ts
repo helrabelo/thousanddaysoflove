@@ -52,16 +52,16 @@ export const writeClient = createClient({
  *   tags: ['homePage'],
  * })
  */
-export async function sanityFetch<T = any>({
+export async function sanityFetch<T>({
   query,
-  params = {},
+  params,
   tags,
 }: {
   query: string
-  params?: any
+  params?: Record<string, unknown>
   tags?: string[]
 }): Promise<T> {
-  return client.fetch<T>(query, params, {
+  return client.fetch<T>(query, params ?? {}, {
     cache: 'force-cache',
     next: {
       tags,

@@ -8,6 +8,7 @@ import { GiftWithProgress } from '@/lib/services/gifts'
 import Image from 'next/image'
 import { CreditCardForm } from './CreditCardForm'
 import { PaymentMethodOption, PaymentMethodSelector } from './PaymentMethodSelector'
+import type { Database } from '@/types/supabase'
 
 interface PaymentModalProps {
   isOpen: boolean
@@ -16,8 +17,10 @@ interface PaymentModalProps {
   onPaymentSuccess: (paymentId: string) => void
 }
 
+type PaymentRecord = Database['public']['Tables']['payments']['Row']
+
 interface PaymentData {
-  payment: any
+  payment: PaymentRecord
   mercadoPago: {
     paymentId: string
     status: string

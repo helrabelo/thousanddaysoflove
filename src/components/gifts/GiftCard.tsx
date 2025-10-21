@@ -5,9 +5,7 @@ import { motion } from 'framer-motion'
 import { Heart, ShoppingCart, Users, QrCode, CheckCircle, Sparkles } from 'lucide-react'
 import Image from 'next/image'
 import { GiftWithProgress } from '@/lib/services/gifts'
-import { Button } from '@/components/ui/button'
 import PaymentModal from '@/components/payments/PaymentModal'
-import { Badge } from '@/components/ui/badge'
 import { giftStories } from '@/lib/utils/wedding'
 
 interface GiftCardProps {

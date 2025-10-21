@@ -39,6 +39,8 @@ interface BulkOperationsResult {
   errors: string[]
 }
 
+const ALLOWED_GUEST_TYPES: Guest['guest_type'][] = ['individual', 'family_head', 'family_member']
+
 interface BulkOperationsPanelProps {
   guests: Guest[]
   selectedGuestIds: string[]
@@ -218,6 +220,7 @@ export function BulkOperationsPanel({
               result.errors.push(`Falha ao criar grupo familiar ${familyName}`)
             }
           } catch (error) {
+            console.error('Error processing family group:', error)
             result.failed++
             result.errors.push(`Erro ao processar família ${familyName}`)
           }
@@ -316,7 +319,12 @@ export function BulkOperationsPanel({
                 break
               case 'tipo':
               case 'guest_type':
-                guestData.guest_type = value as any
+                if (typeof value === 'string') {
+                  const normalized = value.toLowerCase() as Guest['guest_type']
+                  if (ALLOWED_GUEST_TYPES.includes(normalized)) {
+                    guestData.guest_type = normalized
+                  }
+                }
                 break
             }
           })
@@ -329,12 +337,12 @@ export function BulkOperationsPanel({
           }
 
           // Create guest
-          const newGuest = await EnhancedGuestService.createGuest({
+          const newGuestInput: Omit<Guest, 'id' | 'created_at' | 'updated_at'> = {
             name: guestData.name,
             email: guestData.email,
             phone: guestData.phone,
             attending: null,
-            guest_type: guestData.guest_type || 'individual',
+            invitation_code: '',
             rsvp_reminder_count: 0,
             communication_preferences: {
               email_notifications: true,
@@ -343,8 +351,13 @@ export function BulkOperationsPanel({
               language: 'pt-BR',
               preferred_time: 'afternoon'
             },
+            guest_type: guestData.guest_type && ALLOWED_GUEST_TYPES.includes(guestData.guest_type)
+              ? guestData.guest_type
+              : 'individual',
             email_delivery_status: 'pending'
-          } as any)
+          }
+
+          const newGuest = await EnhancedGuestService.createGuest(newGuestInput)
 
           if (newGuest) {
             result.success++
@@ -353,6 +366,7 @@ export function BulkOperationsPanel({
             result.errors.push(`Linha ${i + 1}: Falha ao criar convidado`)
           }
         } catch (error) {
+          console.error('Error parsing guest CSV row:', error)
           result.failed++
           result.errors.push(`Linha ${i + 1}: Erro de formatação`)
         }

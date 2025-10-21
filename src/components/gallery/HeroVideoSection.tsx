@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { Play, Pause, Volume2, VolumeX } from 'lucide-react'
 import AnimatedTitle from './AnimatedTitle'
@@ -91,22 +92,19 @@ export default function HeroVideoSection({
           onPause={() => setIsPlaying(false)}
         >
           <source src={videoUrl} type="video/mp4" />
-          {posterUrl && (
-            <img
-              src={posterUrl}
-              alt="Video fallback"
-              className="absolute inset-0 w-full h-full object-cover"
-            />
-          )}
         </video>
       ) : (
         // Mobile fallback to poster image
         posterUrl && (
-          <img
-            src={posterUrl}
-            alt="Hero background"
-            className="absolute inset-0 w-full h-full object-cover"
-          />
+          <div className="absolute inset-0">
+            <Image
+              src={posterUrl}
+              alt="Hero background"
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
         )
       )}
 

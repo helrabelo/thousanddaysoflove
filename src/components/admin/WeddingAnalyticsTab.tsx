@@ -1,26 +1,21 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import {
-  BarChart3,
   TrendingUp,
-  Calendar,
   Clock,
   Users,
   Gift,
   DollarSign,
   Heart,
-  Star,
   Target,
   Activity,
-  Zap,
   CheckCircle,
   AlertCircle,
   RefreshCw,
   Download,
   Eye,
-  PieChart
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -84,9 +79,9 @@ export function WeddingAnalyticsTab() {
 
   useEffect(() => {
     loadAnalytics()
-  }, [timeRange])
+  }, [loadAnalytics, timeRange])
 
-  const loadAnalytics = async () => {
+  const loadAnalytics = useCallback(async () => {
     setIsLoading(true)
     try {
       // TODO: Load real analytics data from various services
@@ -173,7 +168,7 @@ export function WeddingAnalyticsTab() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [daysRemaining])
 
   const formatBRL = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -390,7 +385,7 @@ export function WeddingAnalyticsTab() {
 
             <div>
               <h4 className="font-medium text-burgundy-800 mb-2">Fontes de Convite</h4>
-              {analytics.guestAnalytics.topInvitationSources.map((source, index) => (
+              {analytics.guestAnalytics.topInvitationSources.map(source => (
                 <div key={source.source} className="flex justify-between items-center py-1">
                   <span className="text-sm text-burgundy-700">{source.source}</span>
                   <div className="flex items-center gap-2">
@@ -435,7 +430,7 @@ export function WeddingAnalyticsTab() {
 
             <div>
               <h4 className="font-medium text-burgundy-800 mb-2">Categorias Populares</h4>
-              {analytics.giftRegistryAnalytics.popularCategories.slice(0, 3).map((category, index) => (
+              {analytics.giftRegistryAnalytics.popularCategories.slice(0, 3).map(category => (
                 <div key={category.category} className="flex justify-between items-center py-1">
                   <span className="text-sm text-burgundy-700">{category.category}</span>
                   <div className="flex items-center gap-2">
@@ -484,7 +479,7 @@ export function WeddingAnalyticsTab() {
 
             {/* Simple bar chart visualization */}
             <div className="space-y-2">
-              {analytics.paymentAnalytics.dailyRevenue.map((day, index) => (
+              {analytics.paymentAnalytics.dailyRevenue.map(day => (
                 <div key={day.date} className="flex items-center gap-2">
                   <div className="text-xs text-burgundy-600 w-16">
                     {new Date(day.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}

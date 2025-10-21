@@ -275,16 +275,23 @@ export interface SanityStoryMoment extends SanityDocument {
 
 export interface SanityVideoHero extends SanityDocument {
   _type: 'videoHero'
-  title: string
-  subtitle?: string
-  videoUrl?: string
-  videoFile?: SanityFile
-  posterImage?: SanityImage
-  ctaButton?: {
-    show: boolean
+  sectionId: string
+  monogram?: boolean
+  tagline: string
+  dateBadge: string
+  primaryCta: {
+    label: string
+    href: string
+  }
+  secondaryCta?: {
     label?: string
     href?: string
   }
+  scrollText?: string
+  backgroundVideo?: SanityFile
+  backgroundImage: SanityImage
+  posterImage?: SanityImage
+  isVisible?: boolean
 }
 
 export interface SanityEventDetails extends SanityDocument {

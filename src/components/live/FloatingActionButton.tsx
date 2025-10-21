@@ -12,7 +12,7 @@
  */
 
 import { motion, useReducedMotion } from 'framer-motion'
-import { MessageSquare, Image } from 'lucide-react'
+import { MessageSquare, Image as ImageIcon } from 'lucide-react'
 
 interface FloatingActionButtonProps {
   isAuthenticated: boolean
@@ -23,7 +23,6 @@ interface FloatingActionButtonProps {
 
 export function FloatingActionButton({
   isAuthenticated,
-  guestName,
   onOpenMessageComposer,
   onOpenMediaUpload
 }: FloatingActionButtonProps) {
@@ -109,7 +108,7 @@ export function FloatingActionButton({
             className="w-10 h-10 rounded-full bg-gradient-to-br from-[#2C2C2C] to-[#4A4A4A] flex items-center justify-center flex-shrink-0"
             whileHover={shouldReduceMotion ? {} : { rotate: 10 }}
           >
-            <Image className="w-5 h-5 text-[#F8F6F3]" />
+            <ImageIcon className="w-5 h-5 text-[#F8F6F3]" />
           </motion.div>
           <span
             className="font-medium whitespace-nowrap text-sm"
@@ -162,7 +161,7 @@ export function FloatingActionButton({
           className="flex items-center gap-2 bg-white text-[#2C2C2C] px-4 py-3 rounded-full shadow-lg border border-[#E8E6E3] active:border-[#A8A8A8] active:shadow-md transition-all min-w-[130px] justify-center"
           aria-label="Enviar fotos ou vídeos"
         >
-          <Image className="w-4 h-4 flex-shrink-0" />
+          <ImageIcon className="w-4 h-4 flex-shrink-0" />
           <span
             className="font-medium text-xs whitespace-nowrap"
             style={{ fontFamily: 'var(--font-crimson)' }}

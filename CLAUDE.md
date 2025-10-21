@@ -644,3 +644,4 @@ npm run db:generate
 Then follow the detailed Phase 1 implementation guide in the roadmap document.
 
 ---
+- Never add " 🤖 Generated with [Claude Code](https://claude.com/claude-code)" to commit messages

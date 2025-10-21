@@ -16,10 +16,9 @@ export interface PaymentConfirmationData {
 
 interface PaymentConfirmationProps {
   paymentData: PaymentConfirmationData
-  onClose?: () => void
 }
 
-export default function PaymentConfirmation({ paymentData, onClose }: PaymentConfirmationProps) {
+export default function PaymentConfirmation({ paymentData }: PaymentConfirmationProps) {
   const formatBRL = (amount: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -37,7 +36,7 @@ export default function PaymentConfirmation({ paymentData, onClose }: PaymentCon
           text: shareMessage,
           url: window.location.origin
         })
-      } catch (error) {
+      } catch {
         // User canceled share or sharing failed
         copyToClipboard()
       }

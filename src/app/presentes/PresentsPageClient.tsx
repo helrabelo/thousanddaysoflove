@@ -21,7 +21,7 @@ import ProjectRenderGallery from '@/components/gifts/ProjectRenderGallery'
 import type { GiftsPageSections } from '@/types/wedding'
 
 interface PresentsPageClientProps {
-  sections: GiftsPageSections | typeof defaultSections
+  sections?: GiftsPageSections
 }
 
 const defaultSections = {
@@ -49,7 +49,7 @@ E lembra: te ver na Casa HY, dia 20 de novembro, é o que importa. O resto é ca
   projectRenders: [],
 }
 
-export default function PresentsPageClient({ sections }: PresentsPageClientProps) {
+export default function PresentsPageClient({ sections = defaultSections }: PresentsPageClientProps) {
   const [gifts, setGifts] = useState<GiftWithProgress[]>([])
   const [loading, setLoading] = useState(true)
 

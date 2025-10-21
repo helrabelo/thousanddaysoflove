@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Upload, Image as ImageIcon, X, CheckCircle2, AlertCircle } from 'lucide-react';
 
@@ -11,7 +12,7 @@ interface PhotoUploadSectionProps {
 type UploadPhase = 'before' | 'during' | 'after';
 
 export default function PhotoUploadSection({ invitationCode }: PhotoUploadSectionProps) {
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<Array<{ file: File; previewUrl: string }>>([]);
   const [phase, setPhase] = useState<UploadPhase>('before');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -23,13 +24,23 @@ export default function PhotoUploadSection({ invitationCode }: PhotoUploadSectio
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const newFiles = Array.from(e.target.files);
-      setSelectedFiles((prev) => [...prev, ...newFiles]);
+      const newEntries = Array.from(e.target.files).map((file) => ({
+        file,
+        previewUrl: URL.createObjectURL(file),
+      }));
+      setSelectedFiles((prev) => [...prev, ...newEntries]);
     }
   };
 
   const removeFile = (index: number) => {
-    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+    setSelectedFiles((prev) => {
+      const next = [...prev];
+      const [removed] = next.splice(index, 1);
+      if (removed) {
+        URL.revokeObjectURL(removed.previewUrl);
+      }
+      return next;
+    });
   };
 
   const handleUpload = async () => {
@@ -40,7 +51,7 @@ export default function PhotoUploadSection({ invitationCode }: PhotoUploadSectio
 
     try {
       // Upload each file
-      const uploadPromises = selectedFiles.map(async (file) => {
+      const uploadPromises = selectedFiles.map(async ({ file }) => {
         const formData = new FormData();
         formData.append('file', file);
         formData.append('phase', phase);
@@ -81,6 +92,7 @@ export default function PhotoUploadSection({ invitationCode }: PhotoUploadSectio
       });
 
       // Clear selection and form
+      selectedFiles.forEach(({ previewUrl }) => URL.revokeObjectURL(previewUrl));
       setSelectedFiles([]);
       setTitle('');
       setDescription('');
@@ -195,16 +207,19 @@ export default function PhotoUploadSection({ invitationCode }: PhotoUploadSectio
             {selectedFiles.length} {selectedFiles.length === 1 ? 'arquivo selecionado' : 'arquivos selecionados'}
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {selectedFiles.map((file, index) => (
+            {selectedFiles.map(({ file, previewUrl }, index) => (
               <div
                 key={index}
                 className="relative group rounded-xl overflow-hidden bg-[#F8F6F3] aspect-square"
               >
                 {file.type.startsWith('image/') ? (
-                  <img
-                    src={URL.createObjectURL(file)}
+                  <Image
+                    src={previewUrl}
                     alt={file.name}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
+                    sizes="(min-width: 768px) 25vw, 50vw"
+                    unoptimized
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">

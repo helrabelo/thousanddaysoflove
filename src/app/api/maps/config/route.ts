@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const apiKey = process.env.GOOGLE_MAPS_PLATFORM_API_KEY
 
@@ -19,6 +19,7 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
+    console.error('Error loading Google Maps config route:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

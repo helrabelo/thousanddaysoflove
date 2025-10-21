@@ -37,8 +37,10 @@ export default function AdminLoginPage() {
       // Redirect to admin photos
       router.push('/admin/photos')
       router.refresh()
-    } catch (err: any) {
-      setError(err.message || 'Erro ao fazer login')
+    } catch (err: unknown) {
+      const fallbackMessage = 'Erro ao fazer login'
+      const errorMessage = err instanceof Error ? err.message : fallbackMessage
+      setError(errorMessage || fallbackMessage)
     } finally {
       setIsLoading(false)
     }

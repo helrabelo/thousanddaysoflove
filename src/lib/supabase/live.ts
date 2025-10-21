@@ -15,9 +15,41 @@ import { createServerClient } from '@/lib/supabase/server'
 import type {
   GuestPost,
   PostReaction,
-  PostComment,
-  RealtimeChannel
+  PostComment
 } from '@/types/wedding'
+
+interface GuestPhotoRow {
+  id: string
+  guest_id: string | null
+  guest_name: string | null
+  caption: string | null
+  is_video: boolean
+  storage_bucket: string
+  storage_path: string
+  timeline_event_id: string | null
+  uploaded_at: string
+  upload_phase?: 'before' | 'during' | 'after' | null
+  moderation_status?: string | null
+}
+
+const transformGuestPhotoToPost = (photo: GuestPhotoRow): GuestPost => {
+  const publicUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${photo.storage_bucket}/${photo.storage_path}`
+
+  return {
+    id: `photo-${photo.id}`,
+    guest_session_id: photo.guest_id,
+    guest_name: photo.guest_name || 'Convidado',
+    content: photo.caption || '',
+    post_type: photo.is_video ? 'video' : 'image',
+    media_urls: [publicUrl],
+    timeline_event_id: photo.timeline_event_id ?? null,
+    status: 'approved',
+    likes_count: 0,
+    comments_count: 0,
+    created_at: photo.uploaded_at,
+    updated_at: photo.uploaded_at
+  }
+}
 
 // ============================================================================
 // REAL-TIME SUBSCRIPTIONS
@@ -77,24 +109,8 @@ export function subscribeToNewPosts(
         filter: 'moderation_status=eq.approved'
       },
       (payload) => {
-        // Transform guest_photo to GuestPost format
-        const photo = payload.new as any
-        const publicUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${photo.storage_bucket}/${photo.storage_path}`
-        const transformedPost: GuestPost = {
-          id: `photo-${photo.id}`,
-          guest_session_id: photo.guest_id,
-          guest_name: photo.guest_name || 'Convidado',
-          content: photo.caption || '',
-          post_type: photo.is_video ? 'video' : 'image',
-          media_urls: [publicUrl],
-          timeline_event_id: photo.timeline_event_id ?? null,
-          status: 'approved',
-          likes_count: 0,
-          comments_count: 0,
-          created_at: photo.uploaded_at,
-          updated_at: photo.uploaded_at
-        }
-        callback(transformedPost)
+        const photo = payload.new as GuestPhotoRow
+        callback(transformGuestPhotoToPost(photo))
       }
     )
     .on(
@@ -106,24 +122,8 @@ export function subscribeToNewPosts(
         filter: 'moderation_status=eq.approved'
       },
       (payload) => {
-        // Transform guest_photo to GuestPost format
-        const photo = payload.new as any
-        const publicUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${photo.storage_bucket}/${photo.storage_path}`
-        const transformedPost: GuestPost = {
-          id: `photo-${photo.id}`,
-          guest_session_id: photo.guest_id,
-          guest_name: photo.guest_name || 'Convidado',
-          content: photo.caption || '',
-          post_type: photo.is_video ? 'video' : 'image',
-          media_urls: [publicUrl],
-          timeline_event_id: photo.timeline_event_id ?? null,
-          status: 'approved',
-          likes_count: 0,
-          comments_count: 0,
-          created_at: photo.uploaded_at,
-          updated_at: photo.uploaded_at
-        }
-        callback(transformedPost)
+        const photo = payload.new as GuestPhotoRow
+        callback(transformGuestPhotoToPost(photo))
       }
     )
     .subscribe()
@@ -254,9 +254,10 @@ export async function getPinnedPostsWithDetails(): Promise<GuestPost[]> {
   }
 
   // Extract posts from the joined data
-  return (data || [])
-    .map((item: any) => item.guest_posts)
-    .filter(Boolean) as GuestPost[]
+  const rows = (data ?? []) as Array<{ guest_posts: GuestPost | null }>
+  return rows
+    .map(({ guest_posts }) => guest_posts)
+    .filter((post): post is GuestPost => Boolean(post))
 }
 
 /**
@@ -476,8 +477,9 @@ export async function getRecentActivity(limit: number = 10): Promise<ActivityIte
     .limit(limit)
 
   if (photos) {
+    const photoRecords = photos as Array<{ id: string; guest_name: string | null; uploaded_at: string }>
     activities.push(
-      ...photos.map((photo: any) => ({
+      ...photoRecords.map((photo) => ({
         id: photo.id,
         type: 'photo' as const,
         guest_name: photo.guest_name || 'Convidado',
@@ -557,14 +559,22 @@ export async function getRecentApprovedPhotos(limit: number = 20): Promise<Recen
     return []
   }
 
+  const photoRows = (data ?? []) as GuestPhotoRow[]
+
   // Transform storage_path to public URL
-  return (data || []).map((photo: any) => ({
-    id: photo.id,
-    photo_url: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${photo.storage_bucket}/${photo.storage_path}`,
-    guest_name: photo.guest_name,
-    phase: photo.upload_phase,
-    created_at: photo.uploaded_at
-  }))
+  return photoRows.map((photo) => {
+    const phase = photo.upload_phase
+    const normalizedPhase: RecentPhoto['phase'] =
+      phase === 'before' || phase === 'after' ? phase : 'during'
+
+    return {
+      id: photo.id,
+      photo_url: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${photo.storage_bucket}/${photo.storage_path}`,
+      guest_name: photo.guest_name,
+      phase: normalizedPhase,
+      created_at: photo.uploaded_at
+    }
+  })
 }
 
 // ============================================================================
@@ -610,10 +620,8 @@ export async function getLivePosts(
   }
 
   // Transform guest_photos to GuestPost format
-  const transformedPhotos: GuestPost[] = (photosResult.data || []).map((photo: any) => {
-    // Generate public URL using storage_path
-    const publicUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${photo.storage_bucket}/${photo.storage_path}`
-
+  const photoRows = (photosResult.data ?? []) as GuestPhotoRow[]
+  const transformedPhotos: GuestPost[] = photoRows.map((photo) => {
     console.log('🔍 [getLivePosts] Transforming photo:', {
       id: photo.id,
       guest_name: photo.guest_name,
@@ -621,28 +629,16 @@ export async function getLivePosts(
       caption: photo.caption,
       moderation_status: photo.moderation_status
     })
-    return {
-      id: `photo-${photo.id}`,
-      guest_session_id: photo.guest_id, // Note: table uses guest_id not guest_session_id
-      guest_name: photo.guest_name || 'Convidado',
-      content: photo.caption || '',
-      post_type: photo.is_video ? 'video' : 'image' as const,
-      media_urls: [publicUrl],
-      timeline_event_id: photo.timeline_event_id ?? null,
-      status: 'approved' as const,
-      likes_count: 0,
-      comments_count: 0,
-      created_at: photo.uploaded_at, // Note: table uses uploaded_at not created_at
-      updated_at: photo.uploaded_at
-    }
+    return transformGuestPhotoToPost(photo)
   })
 
   console.log('🔍 [getLivePosts] Transformed photos:', transformedPhotos.length)
 
   // Merge both arrays and sort by created_at descending
-  const transformedGuestPosts: GuestPost[] = (postsResult.data || []).map((post: any) => ({
+  const postRows = (postsResult.data ?? []) as GuestPost[]
+  const transformedGuestPosts: GuestPost[] = postRows.map((post) => ({
     ...post,
-    timeline_event_id: post.timeline_event_id ?? null,
+    timeline_event_id: post.timeline_event_id ?? null
   }))
 
   const allPosts = [...transformedGuestPosts, ...transformedPhotos]
