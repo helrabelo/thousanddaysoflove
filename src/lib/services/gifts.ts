@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/client'
 import { createAdminClient } from '@/lib/supabase/server'
 import { Gift } from '@/types/wedding'
 import { client as sanityClient } from '@/sanity/lib/client'
+import { MIN_PAYMENT_AMOUNT } from '@/lib/config/payments'
 
 // Sanity Gift Item type (from CMS)
 export interface SanityGiftItem {
@@ -171,13 +172,15 @@ export class GiftService {
   /**
    * Get all active gifts from Sanity with contribution progress from Supabase
    * Combines Sanity CMS content with real-time payment data
+   * Filters by MIN_PAYMENT_AMOUNT to hide test gifts in production
    * @returns Array of gifts with contribution progress
    */
   static async getAllGiftsWithProgress(): Promise<GiftWithProgress[]> {
     try {
-      // Fetch all active gifts from Sanity
+      // Fetch all active gifts from Sanity that meet minimum payment amount
+      // This filters out test gifts (R$1, R$2, R$5) when MIN_PAYMENT_AMOUNT=50 in production
       const query = `
-        *[_type == "giftItem" && isActive == true] | order(priority asc, fullPrice desc) {
+        *[_type == "giftItem" && isActive == true && fullPrice >= $minAmount] | order(priority asc, fullPrice desc) {
           _id,
           title,
           description,
@@ -194,7 +197,9 @@ export class GiftService {
         }
       `
 
-      const sanityGifts = await sanityClient.fetch<SanityGiftItem[]>(query)
+      const sanityGifts = await sanityClient.fetch<SanityGiftItem[]>(query, {
+        minAmount: MIN_PAYMENT_AMOUNT,
+      })
 
       // Fetch contribution progress for each gift
       const giftsWithProgress = await Promise.all(
@@ -226,13 +231,14 @@ export class GiftService {
 
   /**
    * Get gifts filtered by category with contribution progress
+   * Filters by MIN_PAYMENT_AMOUNT to hide test gifts in production
    * @param category - Gift category (e.g., 'kitchen', 'honeymoon')
    * @returns Array of gifts in that category with progress
    */
   static async getGiftsByCategoryWithProgress(category: string): Promise<GiftWithProgress[]> {
     try {
       const query = `
-        *[_type == "giftItem" && isActive == true && category == $category] | order(priority asc, fullPrice desc) {
+        *[_type == "giftItem" && isActive == true && category == $category && fullPrice >= $minAmount] | order(priority asc, fullPrice desc) {
           _id,
           title,
           description,
@@ -249,7 +255,10 @@ export class GiftService {
         }
       `
 
-      const sanityGifts = await sanityClient.fetch<SanityGiftItem[]>(query, { category })
+      const sanityGifts = await sanityClient.fetch<SanityGiftItem[]>(query, {
+        category,
+        minAmount: MIN_PAYMENT_AMOUNT,
+      })
 
       const giftsWithProgress = await Promise.all(
         sanityGifts.map(async (gift) => {
