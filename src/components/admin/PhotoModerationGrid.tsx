@@ -65,16 +65,6 @@ export default function PhotoModerationGrid({
   const [phaseFilter, setPhaseFilter] = useState<string>('all')
   const [searchQuery, setSearchQuery] = useState('')
 
-  // Fetch photos when status filter changes
-  useEffect(() => {
-    loadPhotos()
-  }, [loadPhotos])
-
-  // Load stats on mount
-  useEffect(() => {
-    loadStats()
-  }, [loadStats])
-
   const loadPhotos = useCallback(async () => {
     setIsLoading(true)
     try {
@@ -115,6 +105,118 @@ export default function PhotoModerationGrid({
     await Promise.all([loadPhotos(), loadStats()])
     setIsRefreshing(false)
   }, [loadPhotos, loadStats])
+
+  // Moderate single photo
+  const moderatePhoto = useCallback(async (
+    id: string,
+    action: 'approved' | 'rejected',
+    rejectionReason?: string
+  ) => {
+    setIsLoading(true)
+
+    try {
+      const response = await fetch(`/api/admin/photos/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action,
+          rejection_reason: rejectionReason,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to moderate photo')
+      }
+
+      // Update local state
+      setPhotos((prev) =>
+        prev.map((p) =>
+          p.id === id
+            ? {
+              ...p,
+              moderation_status: action,
+              moderated_at: new Date().toISOString(),
+              rejection_reason: rejectionReason || null,
+            }
+            : p
+        )
+      )
+
+      // Refresh server-side data
+      router.refresh()
+    } catch (error) {
+      console.error('Moderation error:', error)
+      alert('Erro ao moderar foto')
+    } finally {
+      setIsLoading(false)
+    }
+  }, [router])
+
+  // Moderate batch
+  const moderateBatch = useCallback(async (
+    action: 'approved' | 'rejected',
+    rejectionReason?: string
+  ) => {
+    if (selectedIds.size === 0) {
+      console.log('No photos selected for batch moderation')
+      return
+    }
+
+    console.log(`Starting batch ${action} for ${selectedIds.size} photos`)
+    setIsLoading(true)
+
+    try {
+      const ids = Array.from(selectedIds)
+      const promises = ids.map(async (id) => {
+        console.log(`Moderating photo ${id} as ${action}`)
+        const response = await fetch(`/api/admin/photos/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action,
+            rejection_reason: rejectionReason,
+          }),
+        })
+
+        if (!response.ok) {
+          const error = await response.text()
+          console.error(`Failed to moderate photo ${id}:`, error)
+          throw new Error(`Failed to moderate photo ${id}`)
+        }
+
+        console.log(`Successfully moderated photo ${id}`)
+        return response
+      })
+
+      const results = await Promise.all(promises)
+      console.log(`Batch moderation completed: ${results.length} photos processed`)
+
+      // Update local state immediately
+      setPhotos((prev) =>
+        prev.map((p) =>
+          selectedIds.has(p.id)
+            ? {
+              ...p,
+              moderation_status: action,
+              moderated_at: new Date().toISOString(),
+              rejection_reason: rejectionReason || null,
+            }
+            : p
+        )
+      )
+
+      // Clear selection
+      setSelectedIds(new Set())
+
+      // Reload data
+      await Promise.all([loadPhotos(), loadStats()])
+    } catch (error) {
+      console.error('Batch moderation error:', error)
+      alert('Erro ao moderar fotos em lote')
+    } finally {
+      setIsLoading(false)
+    }
+  }, [loadPhotos, loadStats, selectedIds])
 
   // Client-side filtering for phase and search
   const filteredPhotos = photos.filter(photo => {
@@ -204,6 +306,16 @@ export default function PhotoModerationGrid({
     return () => window.removeEventListener('keydown', handleKeyboard)
   }, [focusedIndex, moderateBatch, moderatePhoto, photos, selectedIds])
 
+  // Fetch photos when status filter changes
+  useEffect(() => {
+    loadPhotos()
+  }, [loadPhotos])
+
+  // Load stats on mount
+  useEffect(() => {
+    loadStats()
+  }, [loadStats])
+
   // Toggle selection
   const toggleSelection = (id: string) => {
     setSelectedIds((prev) => {
@@ -226,118 +338,6 @@ export default function PhotoModerationGrid({
   const deselectAll = () => {
     setSelectedIds(new Set())
   }
-
-  // Moderate single photo
-  const moderatePhoto = useCallback(async (
-    id: string,
-    action: 'approved' | 'rejected',
-    rejectionReason?: string
-  ) => {
-    setIsLoading(true)
-
-    try {
-      const response = await fetch(`/api/admin/photos/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action,
-          rejection_reason: rejectionReason,
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to moderate photo')
-      }
-
-      // Update local state
-      setPhotos((prev) =>
-        prev.map((p) =>
-          p.id === id
-            ? {
-                ...p,
-                moderation_status: action,
-                moderated_at: new Date().toISOString(),
-                rejection_reason: rejectionReason || null,
-              }
-            : p
-        )
-      )
-
-      // Refresh server-side data
-      router.refresh()
-    } catch (error) {
-      console.error('Moderation error:', error)
-      alert('Erro ao moderar foto')
-    } finally {
-      setIsLoading(false)
-    }
-  }, [router])
-
-  // Moderate batch
-  const moderateBatch = useCallback(async (
-    action: 'approved' | 'rejected',
-    rejectionReason?: string
-  ) => {
-    if (selectedIds.size === 0) {
-      console.log('No photos selected for batch moderation')
-      return
-    }
-
-    console.log(`Starting batch ${action} for ${selectedIds.size} photos`)
-    setIsLoading(true)
-
-    try {
-      const ids = Array.from(selectedIds)
-      const promises = ids.map(async (id) => {
-        console.log(`Moderating photo ${id} as ${action}`)
-        const response = await fetch(`/api/admin/photos/${id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action,
-            rejection_reason: rejectionReason,
-          }),
-        })
-
-        if (!response.ok) {
-          const error = await response.text()
-          console.error(`Failed to moderate photo ${id}:`, error)
-          throw new Error(`Failed to moderate photo ${id}`)
-        }
-
-        console.log(`Successfully moderated photo ${id}`)
-        return response
-      })
-
-      const results = await Promise.all(promises)
-      console.log(`Batch moderation completed: ${results.length} photos processed`)
-
-      // Update local state immediately
-      setPhotos((prev) =>
-        prev.map((p) =>
-          selectedIds.has(p.id)
-            ? {
-                ...p,
-                moderation_status: action,
-                moderated_at: new Date().toISOString(),
-                rejection_reason: rejectionReason || null,
-              }
-            : p
-        )
-      )
-
-      // Clear selection
-      setSelectedIds(new Set())
-
-      // Reload data
-      await Promise.all([loadPhotos(), loadStats()])
-    } catch (error) {
-      console.error('Batch moderation error:', error)
-      alert('Erro ao moderar fotos em lote')
-    } finally {
-      setIsLoading(false)
-    }
-  }, [loadPhotos, loadStats, selectedIds])
 
   return (
     <div className="min-h-screen  py-6 px-4">
@@ -411,11 +411,10 @@ export default function PhotoModerationGrid({
                     key={status}
                     type="button"
                     onClick={() => setStatusFilter(status)}
-                    className={`px-4 py-2 rounded-md text-sm transition-all ${
-                      statusFilter === status
-                        ? 'bg-[#2C2C2C] text-white'
-                        : ' text-[#4A4A4A] hover:bg-[#E8E6E3]'
-                    }`}
+                    className={`px-4 py-2 rounded-md text-sm transition-all ${statusFilter === status
+                      ? 'bg-[#2C2C2C] text-white'
+                      : ' text-[#4A4A4A] hover:bg-[#E8E6E3]'
+                      }`}
                   >
                     {status === 'all' && 'Todos'}
                     {status === 'pending' && 'Pendentes'}
@@ -437,11 +436,10 @@ export default function PhotoModerationGrid({
                     key={phase}
                     type="button"
                     onClick={() => setPhaseFilter(phase)}
-                    className={`px-4 py-2 rounded-md text-sm transition-all ${
-                      phaseFilter === phase
-                        ? 'bg-[#2C2C2C] text-white'
-                        : ' text-[#4A4A4A] hover:bg-[#E8E6E3]'
-                    }`}
+                    className={`px-4 py-2 rounded-md text-sm transition-all ${phaseFilter === phase
+                      ? 'bg-[#2C2C2C] text-white'
+                      : ' text-[#4A4A4A] hover:bg-[#E8E6E3]'
+                      }`}
                   >
                     {phase === 'all' && 'Todas'}
                     {phase === 'before' && 'Antes'}
@@ -608,9 +606,8 @@ function PhotoCard({
     <div
       data-testid="photo-card"
       data-photo-id={photo.id}
-      className={`bg-white rounded-lg shadow-sm overflow-hidden transition-all ${
-        isSelected ? 'ring-4 ring-blue-500' : ''
-      } ${isFocused ? 'ring-2 ring-gray-400' : ''}`}
+      className={`bg-white rounded-lg shadow-sm overflow-hidden transition-all ${isSelected ? 'ring-4 ring-blue-500' : ''
+        } ${isFocused ? 'ring-2 ring-gray-400' : ''}`}
     >
       {/* Image */}
       <div className="relative aspect-square bg-gray-100">
@@ -679,9 +676,8 @@ function PhotoCard({
         {/* Status Badge */}
         <div
           data-testid="photo-status"
-          className={`inline-flex px-2 py-1 rounded-md text-xs font-medium border mb-3 ${
-            statusColors[photo.moderation_status]
-          }`}
+          className={`inline-flex px-2 py-1 rounded-md text-xs font-medium border mb-3 ${statusColors[photo.moderation_status]
+            }`}
         >
           {photo.moderation_status === 'pending' && 'Pendente'}
           {photo.moderation_status === 'approved' && 'Aprovado'}

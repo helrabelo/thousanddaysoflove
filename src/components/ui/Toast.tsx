@@ -195,7 +195,7 @@ export function ToastContainer({ children }: { children: React.ReactNode }) {
 export function useToast() {
   const [toasts, setToasts] = useState<ToastProps[]>([])
 
-  const showToast = (toast: Omit<ToastProps, 'id' | 'onClose'>) => {
+  const showToast = useCallback((toast: Omit<ToastProps, 'id' | 'onClose'>) => {
     const id = `toast-${Date.now()}`
     const newToast = {
       ...toast,
@@ -205,7 +205,7 @@ export function useToast() {
       }
     }
     setToasts(prev => [...prev, newToast])
-  }
+  }, [])
 
   const ToastRenderer = () => (
     <ToastContainer>
