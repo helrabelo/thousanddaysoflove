@@ -9,6 +9,7 @@ import Image from 'next/image'
 import { CreditCardForm } from './CreditCardForm'
 import { PaymentMethodOption, PaymentMethodSelector } from './PaymentMethodSelector'
 import type { Database } from '@/types/supabase'
+import { MIN_PAYMENT_AMOUNT, formatBRL as formatCurrency, getMinPaymentMessage } from '@/lib/config/payments'
 
 interface PaymentModalProps {
   isOpen: boolean
@@ -140,8 +141,8 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
     identificationNumber: string
     cardholderName: string
   }) => {
-    if (!buyerInfo.amount || buyerInfo.amount < 50) {
-      throw new Error('Escolha um valor válido para continuar.')
+    if (!buyerInfo.amount || buyerInfo.amount < MIN_PAYMENT_AMOUNT) {
+      throw new Error(`Escolha um valor válido para continuar (mínimo ${formatCurrency(MIN_PAYMENT_AMOUNT)}).`)
     }
 
     const response = await fetch('/api/payments/create-credit-card', {
@@ -380,13 +381,13 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
                         value={buyerInfo.amount || ''}
                         onChange={(e) => setBuyerInfo({ ...buyerInfo, amount: Number(e.target.value) })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                        min="50"
+                        min={MIN_PAYMENT_AMOUNT}
                         max={gift.remainingAmount}
-                        step="10"
-                        placeholder="Mínimo R$ 50"
+                        step={MIN_PAYMENT_AMOUNT === 1 ? "1" : "10"}
+                        placeholder={getMinPaymentMessage()}
                       />
                       <p className="text-xs text-gray-500 mt-1">
-                        Valor mínimo: R$ 50 • Falta: {formatBRL(gift.remainingAmount)}
+                        Valor mínimo: {formatCurrency(MIN_PAYMENT_AMOUNT)} • Falta: {formatBRL(gift.remainingAmount)}
                       </p>
                     </motion.div>
                   )}
@@ -447,7 +448,7 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
                     !buyerInfo.name ||
                     !buyerInfo.email ||
                     !buyerInfo.amount ||
-                    buyerInfo.amount < 50
+                    buyerInfo.amount < MIN_PAYMENT_AMOUNT
                   }
                   className="w-full bg-gradient-to-r from-gray-500 to-gray-700 hover:from-gray-600 hover:to-gray-800 text-white py-3 rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 >

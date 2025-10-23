@@ -33,7 +33,7 @@ export const giftItem = defineType({
           }
           return true
         }),
-      description: 'Valor total do presente em reais (mínimo R$50)',
+      description: 'Valor total do presente em reais (mínimo controlado por NEXT_PUBLIC_MIN_PAYMENT_AMOUNT)',
     }),
     defineField({
       name: 'image',
@@ -94,7 +94,7 @@ export const giftItem = defineType({
           return true
         }),
       description:
-        'Valores sugeridos para contribuição (mínimo recomendado: R$50). Deixe vazio para usar padrão [100, 250, 500, 1000]',
+        'Valores sugeridos para contribuição (mínimo controlado por NEXT_PUBLIC_MIN_PAYMENT_AMOUNT). Deixe vazio para usar padrão [100, 250, 500, 1000]',
       hidden: ({ parent }) => !parent?.allowPartialPayment,
     }),
     defineField({
