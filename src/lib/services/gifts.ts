@@ -30,6 +30,7 @@ export interface GiftWithProgress extends SanityGiftItem {
   contributors: Array<{
     payment_id: string
     guest_id?: string
+    contributor_name?: string
     amount: number
     payment_date: string
     payment_method: string

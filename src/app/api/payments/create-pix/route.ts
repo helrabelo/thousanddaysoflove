@@ -80,7 +80,8 @@ export async function POST(req: NextRequest) {
         amount,
         status: 'pending',
         payment_method: 'pix',
-        message: message || null
+        message: message || null,
+        contributor_name: buyerName || null
       })
       .select()
       .single()

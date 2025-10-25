@@ -18,6 +18,7 @@ import GiftCard from '@/components/gifts/GiftCard'
 import { GiftService, GiftWithProgress } from '@/lib/services/gifts'
 import HYBadge from '@/components/ui/HYBadge'
 import ProjectRenderGallery from '@/components/gifts/ProjectRenderGallery'
+import MessagesFromLovedOnes from '@/components/gifts/MessagesFromLovedOnes'
 import type { GiftsPageSections } from '@/types/wedding'
 
 interface PresentsPageClientProps {
@@ -185,7 +186,7 @@ export default function PresentsPageClient({ sections = defaultSections }: Prese
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 * index }}
               >
-                <GiftCard gift={gift} onPaymentSuccess={handlePaymentSuccess} />
+                <GiftCard gift={gift} allGifts={gifts} onPaymentSuccess={handlePaymentSuccess} />
               </motion.div>
             ))}
           </motion.div>
@@ -209,6 +210,9 @@ export default function PresentsPageClient({ sections = defaultSections }: Prese
             </p>
           </motion.div>
         )}
+
+        {/* Messages from Loved Ones */}
+        <MessagesFromLovedOnes gifts={gifts} />
 
         {/* Call to Action - Sanity Managed */}
         <motion.div

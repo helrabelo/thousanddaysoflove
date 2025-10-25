@@ -32,7 +32,7 @@ const giftsPageSectionsData = {
 
   // Header Section
   headerTitle: 'Presentes? A Gente Só Quer Você Lá',
-  headerContent: `Deus nos deu muita coisa. Saúde. Família. Trabalho. Esse apartamento que o Hel passava de bicicleta sonhando. Sinceramente? A gente não precisa de nada. Só de você lá dia 20 de novembro.
+  headerContent: `Deus nos deu muita coisa. Saúde. Família. Trabalho.  Sinceramente? A gente não precisa de nada. Só de você lá dia 20 de novembro.
 
 Mas a gente sabe. Tem gente que faz questão. Que quer materializar o carinho de algum jeito.
 

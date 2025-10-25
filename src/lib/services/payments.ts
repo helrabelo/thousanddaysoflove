@@ -605,7 +605,8 @@ export class PaymentService {
           amount: paymentData.amount,
           status: 'pending',
           payment_method: 'credit_card',
-          message: paymentData.message || null
+          message: paymentData.message || null,
+          contributor_name: paymentData.buyerName || null
         })
         .select()
         .single()

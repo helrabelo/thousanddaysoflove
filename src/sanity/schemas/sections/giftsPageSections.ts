@@ -34,7 +34,7 @@ export default defineType({
       description: 'Texto principal explicando a filosofia de presentes (voz casual e autêntica)',
       rows: 10,
       validation: (Rule) => Rule.required(),
-      initialValue: `Deus nos deu muita coisa. Saúde. Família. Trabalho. Esse apartamento que o Hel passava de bicicleta sonhando. Sinceramente? A gente não precisa de nada. Só de você lá dia 20 de novembro.
+      initialValue: `Deus nos deu muita coisa. Saúde. Família. Trabalho.  Sinceramente? A gente não precisa de nada. Só de você lá dia 20 de novembro.
 
 Mas a gente sabe. Tem gente que faz questão. Que quer materializar o carinho de algum jeito.
 

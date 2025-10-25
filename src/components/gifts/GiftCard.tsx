@@ -2,19 +2,24 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Heart, ShoppingCart, Users, QrCode, CheckCircle, Sparkles } from 'lucide-react'
+import { Heart, ShoppingCart, Users, QrCode, CheckCircle, Sparkles, Trophy, Star, MessageCircle } from 'lucide-react'
 import Image from 'next/image'
 import { GiftWithProgress } from '@/lib/services/gifts'
 import PaymentModal from '@/components/payments/PaymentModal'
 import { giftStories } from '@/lib/utils/wedding'
+import { getGiftContributionMessage } from '@/lib/utils/giftMessaging'
 
 interface GiftCardProps {
   gift: GiftWithProgress
+  allGifts: GiftWithProgress[] // Need all gifts for comparison logic
   onPaymentSuccess?: (paymentId: string) => void
 }
 
-export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
+export default function GiftCard({ gift, allGifts, onPaymentSuccess }: GiftCardProps) {
   const [showPaymentModal, setShowPaymentModal] = useState(false)
+
+  // Get smart messaging based on gift state and comparison
+  const contributionMsg = getGiftContributionMessage(gift, allGifts)
 
   const formatBRL = (amount: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -209,79 +214,166 @@ export default function GiftCard({ gift, onPaymentSuccess }: GiftCardProps) {
               </p>
             </div>
 
-            {/* Goal Price and Store Link */}
-            <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-              <div>
-                <p className="text-xs mb-1" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
-                  Meta do presente:
-                </p>
-                <span className="text-xl md:text-2xl font-bold" style={{ color: 'var(--decorative)', fontFamily: 'var(--font-playfair)', fontSize: 'clamp(1.25rem, 4vw, 1.5rem)' }}>
-                  {formatBRL(gift.fullPrice)}
-                </span>
+            {/* Goal Price and Store Link - Only show for cheaper gifts or if we want to show it */}
+            {gift.fullPrice <= 1000 && (
+              <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+                <div>
+                  <p className="text-xs mb-1" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
+                    Meta do presente:
+                  </p>
+                  <span className="text-xl md:text-2xl font-bold" style={{ color: 'var(--decorative)', fontFamily: 'var(--font-playfair)', fontSize: 'clamp(1.25rem, 4vw, 1.5rem)' }}>
+                    {formatBRL(gift.fullPrice)}
+                  </span>
+                </div>
+                {gift.storeUrl && !isCompleted && (
+                  <a
+                    href={gift.storeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm underline transition-colors duration-200 hover:no-underline"
+                    style={{ color: 'var(--decorative)', fontFamily: 'var(--font-crimson)' }}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--secondary-text)' }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--decorative)' }}
+                  >
+                    Ver na loja ↗
+                  </a>
+                )}
               </div>
-              {gift.storeUrl && !isCompleted && (
+            )}
+
+            {/* Store link for expensive gifts - shown separately */}
+            {gift.fullPrice > 1000 && gift.storeUrl && !isCompleted && (
+              <div className="mb-4">
                 <a
                   href={gift.storeUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm underline transition-colors duration-200 hover:no-underline"
+                  className="text-sm underline transition-colors duration-200 hover:no-underline inline-flex items-center gap-1"
                   style={{ color: 'var(--decorative)', fontFamily: 'var(--font-crimson)' }}
                   onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--secondary-text)' }}
                   onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--decorative)' }}
                 >
-                  Ver na loja ↗
+                  <ShoppingCart className="w-3.5 h-3.5" />
+                  Ver produto na loja ↗
                 </a>
-              )}
-            </div>
+              </div>
+            )}
           </div>
 
-          {/* Progress Section - Enhanced */}
+          {/* Smart Contribution Messaging */}
           <div className="mb-5">
-            <div className="flex items-center justify-between text-sm md:text-base mb-3" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)', fontSize: 'clamp(0.875rem, 2.5vw, 1rem)' }}>
-              <div className="flex items-center gap-1.5">
-                <Users className="w-4 h-4" />
-                <span className="font-medium">
-                  {gift.contributionCount} {gift.contributionCount === 1 ? 'contribuição' : 'contribuições'}
+            {/* Badge for special status */}
+            {contributionMsg.badge && (
+              <div className="mb-3 flex items-center gap-2">
+                {contributionMsg.badge === 'Mais Amado' && <Trophy className="w-4 h-4" style={{ color: 'var(--decorative)' }} />}
+                {contributionMsg.badge === 'Popular' && <Star className="w-4 h-4" style={{ color: 'var(--decorative)' }} />}
+                {contributionMsg.badge === 'Completo' && <CheckCircle className="w-4 h-4" style={{ color: 'var(--decorative)' }} />}
+                <span className="text-sm font-semibold px-3 py-1 rounded-full" style={{
+                  background: 'var(--decorative)',
+                  color: 'var(--white-soft)',
+                  fontFamily: 'var(--font-crimson)'
+                }}>
+                  {contributionMsg.badge}
                 </span>
               </div>
-              <div className="flex items-center gap-2">
-                {isPartial && (
-                  <span className="text-sm font-semibold px-2 py-0.5 rounded-full" style={{
-                    background: 'var(--accent)',
-                    color: 'var(--decorative)',
-                    fontSize: 'clamp(0.875rem, 2vw, 0.875rem)'
-                  }}>
-                    Faltam {getRemainingAmount()}
-                  </span>
-                )}
-                <span className="font-bold text-base md:text-lg" style={{ color: 'var(--primary-text)', fontSize: 'clamp(1rem, 2.5vw, 1.125rem)' }}>{progress}%</span>
-              </div>
+            )}
+
+            {/* Main headline */}
+            <div className="mb-2">
+              <h4 className="text-lg font-semibold" style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-playfair)' }}>
+                {contributionMsg.headline}
+              </h4>
+              <p className="text-sm italic" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)' }}>
+                {contributionMsg.subtext}
+              </p>
             </div>
 
-            {/* Enhanced Progress Bar */}
-            <div className="w-full rounded-full h-2.5 md:h-3 overflow-hidden relative" style={{ background: 'var(--accent)' }}>
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${progress}%` }}
-                transition={{ duration: 1.2, ease: "easeOut" }}
-                className="h-full relative overflow-hidden"
-                style={{
-                  background: isCompleted
-                    ? 'var(--decorative)'
-                    : 'linear-gradient(90deg, var(--decorative) 0%, var(--secondary-text) 100%)'
-                }}
-              >
-                {/* Shimmer effect on progress bar */}
-                {!isCompleted && (
-                  <div className="absolute inset-0 opacity-30"
+            {/* Show total collected if requested */}
+            {contributionMsg.showTotalCollected && gift.totalContributed > 0 && (
+              <div className="mb-3 p-2 rounded-lg flex items-center justify-between" style={{ background: 'var(--accent)', border: '1px solid var(--border-subtle)' }}>
+                <span className="text-sm" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)' }}>
+                  Total arrecadado:
+                </span>
+                <span className="text-lg font-bold" style={{ color: 'var(--decorative)', fontFamily: 'var(--font-playfair)' }}>
+                  {formatBRL(gift.totalContributed)}
+                </span>
+              </div>
+            )}
+
+            {/* Traditional progress bar - only for cheap gifts or if explicitly requested */}
+            {contributionMsg.showProgressBar && (
+              <>
+                <div className="flex items-center justify-between text-sm mb-2" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)' }}>
+                  <div className="flex items-center gap-1.5">
+                    <Users className="w-4 h-4" />
+                    <span>{gift.contributionCount} {gift.contributionCount === 1 ? 'contribuição' : 'contribuições'}</span>
+                  </div>
+                  <span className="font-bold" style={{ color: 'var(--primary-text)' }}>{progress}%</span>
+                </div>
+                <div className="w-full rounded-full h-2.5 overflow-hidden relative" style={{ background: 'var(--accent)' }}>
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress}%` }}
+                    transition={{ duration: 1.2, ease: "easeOut" }}
+                    className="h-full relative overflow-hidden"
                     style={{
-                      background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)',
-                      animation: 'shimmer 2s infinite'
+                      background: isCompleted
+                        ? 'var(--decorative)'
+                        : 'linear-gradient(90deg, var(--decorative) 0%, var(--secondary-text) 100%)'
                     }}
-                  />
-                )}
-              </motion.div>
-            </div>
+                  >
+                    {!isCompleted && (
+                      <div className="absolute inset-0 opacity-30"
+                        style={{
+                          background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)',
+                          animation: 'shimmer 2s infinite'
+                        }}
+                      />
+                    )}
+                  </motion.div>
+                </div>
+              </>
+            )}
+
+            {/* Contributors List with Messages */}
+            {gift.contributors && gift.contributors.length > 0 && (
+              <div className="mt-3 p-3 rounded-lg" style={{ background: 'var(--accent)', border: '1px solid var(--border-subtle)' }}>
+                <p className="text-xs font-medium mb-2" style={{ color: 'var(--decorative)', fontFamily: 'var(--font-crimson)' }}>
+                  💝 Contribuíram com carinho:
+                </p>
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {gift.contributors.map((contributor) => (
+                    <div key={contributor.payment_id} className="space-y-1">
+                      <div className="flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-2">
+                          <span className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-medium" style={{ background: 'var(--decorative)', color: 'var(--white-soft)' }}>
+                            {contributor.contributor_name?.charAt(0).toUpperCase() || '?'}
+                          </span>
+                          <span className="font-medium" style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-crimson)' }}>
+                            {contributor.contributor_name || 'Anônimo'}
+                          </span>
+                        </div>
+                        <span className="font-semibold" style={{ color: 'var(--decorative)', fontFamily: 'var(--font-playfair)' }}>
+                          {formatBRL(contributor.amount)}
+                        </span>
+                      </div>
+                      {/* Show message if they left one */}
+                      {contributor.message && contributor.message.trim().length > 0 && (
+                        <div className="ml-7 p-2 rounded text-xs italic" style={{
+                          background: 'rgba(168, 168, 168, 0.1)',
+                          color: 'var(--secondary-text)',
+                          fontFamily: 'var(--font-crimson)',
+                          borderLeft: '2px solid var(--decorative)'
+                        }}>
+                          <MessageCircle className="w-3 h-3 inline mr-1" style={{ color: 'var(--decorative)' }} />
+                          "{contributor.message}"
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Suggested Contributions - Only show if partial payment allowed and not completed */}
