@@ -12,6 +12,7 @@
  */
 
 import { GiftWithProgress } from '@/lib/services/gifts'
+import { formatBRL } from './format'
 
 export interface GiftContributionMessage {
   // Main headline message
@@ -186,27 +187,23 @@ function hashString(str: string): number {
   return hash
 }
 
+
 /**
- * Format currency in Brazilian Real
+ * Contributor message type for display
  */
-function formatBRL(amount: number): string {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL'
-  }).format(amount)
+export interface ContributorMessage {
+  contributorName: string
+  giftName: string
+  message: string
+  amount: number
+  date: string
 }
 
 /**
  * Get all messages from contributors for display
  */
-export function getAllContributorMessages(gifts: GiftWithProgress[]) {
-  const messages: Array<{
-    contributorName: string
-    giftName: string
-    message: string
-    amount: number
-    date: string
-  }> = []
+export function getAllContributorMessages(gifts: GiftWithProgress[]): ContributorMessage[] {
+  const messages: ContributorMessage[] = []
 
   gifts.forEach(gift => {
     gift.contributors

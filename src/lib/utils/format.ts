@@ -39,3 +39,25 @@ export function formatRelativeTime(date: Date | string): string {
  * Alias for formatRelativeTime (for consistency with other components)
  */
 export const formatTimeAgo = formatRelativeTime
+
+/**
+ * Format number as Brazilian Real (BRL) currency
+ * @example formatBRL(1234.56) // "R$ 1.234,56"
+ */
+export function formatBRL(value: number): string {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(value)
+}
+
+/**
+ * Format number as Brazilian Real without currency symbol
+ * @example formatBRLNumber(1234.56) // "1.234,56"
+ */
+export function formatBRLNumber(value: number): string {
+  return new Intl.NumberFormat('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value)
+}
