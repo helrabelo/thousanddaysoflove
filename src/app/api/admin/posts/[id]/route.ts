@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { moderatePost } from '@/lib/supabase/messages/admin';
 import type { GuestPost } from '@/types/wedding';
+import { isAdminAuthenticatedFromRequest, unauthorizedResponse, badRequestResponse } from '@/lib/auth/adminAuth';
 
 export const runtime = 'nodejs';
 
@@ -28,21 +29,19 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse<ErrorResponse | SuccessResponse>> {
   try {
-    const sessionCookie = request.cookies.get('admin_session');
-
-    if (!sessionCookie) {
-      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+    if (!isAdminAuthenticatedFromRequest(request)) {
+      return unauthorizedResponse();
     }
 
     const body = await request.json().catch(() => null) as ModerateRequestBody | null;
     if (!body) {
-      return NextResponse.json({ error: 'Dados inválidos' }, { status: 400 });
+      return badRequestResponse('Dados inválidos');
     }
 
     const { action, reason } = body;
 
     if (action !== 'approve' && action !== 'reject') {
-      return NextResponse.json({ error: 'Ação inválida' }, { status: 400 });
+      return badRequestResponse('Ação inválida');
     }
 
     const { id } = await params;

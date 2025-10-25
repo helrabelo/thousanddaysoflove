@@ -5,6 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getAllPosts, getPostStats } from '@/lib/supabase/messages/admin';
+import { isAdminAuthenticatedFromRequest, unauthorizedResponse } from '@/lib/auth/adminAuth';
 
 export const runtime = 'edge';
 
@@ -17,10 +18,9 @@ type PostsResponse = Awaited<ReturnType<typeof getAllPosts>>;
 
 export async function GET(request: NextRequest): Promise<NextResponse<GetResponse | StatsResponse | PostsResponse>> {
   try {
-    // Check admin auth (middleware already verified, but double-check cookie)
-    const adminSession = request.cookies.get('admin_session');
-    if (!adminSession) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // Check admin authentication
+    if (!isAdminAuthenticatedFromRequest(request)) {
+      return unauthorizedResponse();
     }
 
     // Get query params

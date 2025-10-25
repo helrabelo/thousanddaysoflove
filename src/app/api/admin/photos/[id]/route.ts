@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/server'
-import { cookies } from 'next/headers'
+import { isAdminAuthenticatedFromRequest, unauthorizedResponse, badRequestResponse } from '@/lib/auth/adminAuth'
 
 export const runtime = 'nodejs'
 
@@ -15,14 +15,8 @@ export async function PATCH(
 ) {
   try {
     // Check admin authentication
-    const cookieStore = await cookies()
-    const adminSession = cookieStore.get('admin_session')?.value
-
-    if (!adminSession) {
-      return NextResponse.json(
-        { error: 'Não autorizado' },
-        { status: 401 }
-      )
+    if (!isAdminAuthenticatedFromRequest(request)) {
+      return unauthorizedResponse()
     }
 
     const { id } = await params
@@ -31,18 +25,12 @@ export async function PATCH(
 
     // Validate action
     if (!action || !['approved', 'rejected'].includes(action)) {
-      return NextResponse.json(
-        { error: 'Ação inválida' },
-        { status: 400 }
-      )
+      return badRequestResponse('Ação inválida')
     }
 
     // Require rejection reason
     if (action === 'rejected' && !rejection_reason) {
-      return NextResponse.json(
-        { error: 'Motivo da rejeição é obrigatório' },
-        { status: 400 }
-      )
+      return badRequestResponse('Motivo da rejeição é obrigatório')
     }
 
     // Use admin client to bypass RLS

@@ -5,6 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { batchModeratePosts } from '@/lib/supabase/messages/admin';
+import { isAdminAuthenticatedFromRequest, unauthorizedResponse, badRequestResponse } from '@/lib/auth/adminAuth';
 
 export const runtime = 'nodejs';
 
@@ -25,29 +26,28 @@ interface BatchModerateRequestBody {
 
 export async function POST(request: NextRequest): Promise<NextResponse<ErrorResponse | SuccessResponse>> {
   try {
-    const sessionCookie = request.cookies.get('admin_session');
-    if (!sessionCookie) {
-      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+    if (!isAdminAuthenticatedFromRequest(request)) {
+      return unauthorizedResponse();
     }
 
     const body = await request.json().catch(() => null) as BatchModerateRequestBody | null;
     if (!body) {
-      return NextResponse.json({ error: 'Dados inválidos' }, { status: 400 });
+      return badRequestResponse('Dados inválidos');
     }
 
     const { action, postIds, reason } = body;
 
     if (action !== 'approve' && action !== 'reject') {
-      return NextResponse.json({ error: 'Ação inválida' }, { status: 400 });
+      return badRequestResponse('Ação inválida');
     }
 
     if (!Array.isArray(postIds) || postIds.length === 0) {
-      return NextResponse.json({ error: 'Nenhuma mensagem selecionada' }, { status: 400 });
+      return badRequestResponse('Nenhuma mensagem selecionada');
     }
 
     // Validate all postIds are strings
     if (!postIds.every((id): id is string => typeof id === 'string')) {
-      return NextResponse.json({ error: 'IDs de mensagem inválidos' }, { status: 400 });
+      return badRequestResponse('IDs de mensagem inválidos');
     }
 
     const updatedCount = await batchModeratePosts(postIds, action, 'Admin', reason);

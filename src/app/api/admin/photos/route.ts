@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/server'
 import { getPublicUrl } from '@/lib/supabase/storage-server'
-import { cookies } from 'next/headers'
+import { isAdminAuthenticatedFromRequest, unauthorizedResponse } from '@/lib/auth/adminAuth'
 
 const VALID_UPLOAD_PHASES = ['before', 'during', 'after'] as const
 type UploadPhase = (typeof VALID_UPLOAD_PHASES)[number]
@@ -31,11 +31,8 @@ const mapModerationStatus = (status: string | null | undefined): ModerationStatu
 export async function GET(request: NextRequest) {
   try {
     // Check admin authentication
-    const cookieStore = await cookies()
-    const adminSession = cookieStore.get('admin_session')?.value
-
-    if (!adminSession) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!isAdminAuthenticatedFromRequest(request)) {
+      return unauthorizedResponse()
     }
 
     const { searchParams } = new URL(request.url)

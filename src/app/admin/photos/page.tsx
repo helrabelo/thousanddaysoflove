@@ -4,17 +4,14 @@
  */
 
 import { redirect } from 'next/navigation'
-import { cookies } from 'next/headers'
+import { isAdminAuthenticated } from '@/lib/auth/adminAuth'
 import PhotoModerationGrid from '@/components/admin/PhotoModerationGrid'
 
 export const dynamic = 'force-dynamic'
 
 export default async function AdminPhotosPage() {
   // Check admin authentication
-  const cookieStore = await cookies()
-  const adminSession = cookieStore.get('admin_session')?.value
-
-  if (!adminSession) {
+  if (!(await isAdminAuthenticated())) {
     redirect('/admin/login')
   }
 
