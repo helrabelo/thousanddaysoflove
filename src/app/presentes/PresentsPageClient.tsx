@@ -171,6 +171,9 @@ export default function PresentsPageClient({ sections = defaultSections }: Prese
             />
           )}
 
+        {/* Gratitude and Messages Section - Before Gifts */}
+        <GratitudeAndMessages gifts={gifts} />
+
         {/* Gifts Grid */}
         {gifts.length > 0 ? (
           <motion.div
@@ -210,9 +213,6 @@ export default function PresentsPageClient({ sections = defaultSections }: Prese
             </p>
           </motion.div>
         )}
-
-        {/* Gratitude and Messages Section */}
-        <GratitudeAndMessages gifts={gifts} />
 
         {/* Call to Action - Sanity Managed */}
         <motion.div
