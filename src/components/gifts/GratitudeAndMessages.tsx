@@ -101,7 +101,8 @@ export default function GratitudeAndMessages({ gifts }: GratitudeAndMessagesProp
                   }}
                 >
                   Sério. A gente não esperava isso. Cada contribuição que cai aqui será traduzida
-                  
+                  em uma parte da nossa casa e da nossa vida juntos. Sempre guardaremos isso com muito
+                  carinho.
                 </p>
                 <p
                   className="text-lg leading-relaxed"
