@@ -47,7 +47,7 @@ export default function GratitudeAndMessages({ gifts }: GratitudeAndMessagesProp
   }
 
   return (
-    <section className="py-20 px-6 relative overflow-hidden">
+    <section className="px-6 pb-12 relative overflow-hidden">
       {/* Subtle background glow */}
       <div
         className="absolute inset-0 opacity-5"
@@ -56,42 +56,7 @@ export default function GratitudeAndMessages({ gifts }: GratitudeAndMessagesProp
             'radial-gradient(circle at 50% 50%, var(--decorative) 0%, transparent 70%)',
         }}
       />
-
       <div className="max-w-7xl mx-auto relative z-10">
-        {/* Section Title */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <Heart className="w-10 h-10" style={{ color: 'var(--decorative)' }} />
-            <h2
-              className="text-5xl md:text-6xl font-bold"
-              style={{
-                fontFamily: 'var(--font-playfair)',
-                color: 'var(--primary-text)',
-                letterSpacing: '0.05em',
-              }}
-            >
-              Gratidão em Forma de Amor
-            </h2>
-            <Heart className="w-10 h-10" style={{ color: 'var(--decorative)' }} />
-          </div>
-          <div className="w-32 h-px mx-auto mb-6" style={{ background: 'var(--decorative)' }} />
-          <p
-            className="text-xl md:text-2xl max-w-3xl mx-auto italic"
-            style={{
-              fontFamily: 'var(--font-crimson)',
-              color: 'var(--secondary-text)',
-            }}
-          >
-            Cada contribuição transforma sonhos em realidade. Aqui está o amor que vocês estão
-            enviando 💝
-          </p>
-        </motion.div>
-
         {/* Split Layout: Gratitude (Left) | Messages (Right) */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
           {/* LEFT SIDE: Gratitude & Creative Stats */}
@@ -118,30 +83,26 @@ export default function GratitudeAndMessages({ gifts }: GratitudeAndMessagesProp
               />
 
               <div className="relative z-10">
-                <Sparkles
-                  className="w-12 h-12 mb-4"
-                  style={{ color: 'var(--decorative)' }}
-                />
                 <h3
-                  className="text-3xl font-bold mb-4"
+                  className="text-3xl font-bold mb-6"
                   style={{
                     fontFamily: 'var(--font-playfair)',
                     color: 'var(--primary-text)',
                   }}
                 >
-                  Vocês São Incríveis!
+                  O nosso mais sincero obrigado
                 </h3>
                 <p
-                  className="text-lg leading-relaxed mb-6"
+                  className="text-lg leading-relaxed mb-4"
                   style={{
                     fontFamily: 'var(--font-crimson)',
                     color: 'var(--secondary-text)',
                     fontStyle: 'italic',
                   }}
                 >
-                  Não é sobre o valor. É sobre o carinho que transforma cada centavo em história.
-                  Cada PIX que cai aqui vira sofá com quatro cachorros em cima, panela que não
-                  deixa o arroz passar, marcenaria que some com os fios.
+                  Sério. A gente não esperava isso. Cada contribuição que cai aqui vira móvel,
+                  eletrodoméstico, vira o apê funcionando de verdade. Não é sobre número grande
+                  ou pequeno. É sobre vocês acreditando que a gente merece um lar decente.
                 </p>
                 <p
                   className="text-lg leading-relaxed"
@@ -151,8 +112,8 @@ export default function GratitudeAndMessages({ gifts }: GratitudeAndMessagesProp
                     fontStyle: 'italic',
                   }}
                 >
-                  A gente recebe com todo amor e transforma em detalhe pra vida toda. Obrigadaço
-                  de verdade 💕
+                  Cada mensagem que vocês deixam aqui a gente lê, relê, e guarda.
+                  Obrigado por fazer parte disso.
                 </p>
               </div>
             </div>
@@ -163,7 +124,7 @@ export default function GratitudeAndMessages({ gifts }: GratitudeAndMessagesProp
               {stats.firstGift && (
                 <StatCard
                   icon={<Clock className="w-6 h-6" />}
-                  title="Primeiro Gesto"
+                  title="Quem deu o pontapé"
                   value={stats.firstGift.contributorName}
                   subtitle={`${stats.firstGift.giftName}`}
                   accent="purple"
@@ -174,7 +135,7 @@ export default function GratitudeAndMessages({ gifts }: GratitudeAndMessagesProp
               {stats.mostLovedGift && (
                 <StatCard
                   icon={<Trophy className="w-6 h-6" />}
-                  title="Mais Amado"
+                  title="O queridinho"
                   value={stats.mostLovedGift.giftName}
                   subtitle={`${stats.mostLovedGift.contributorCount} ${
                     stats.mostLovedGift.contributorCount === 1 ? 'pessoa' : 'pessoas'
@@ -186,18 +147,18 @@ export default function GratitudeAndMessages({ gifts }: GratitudeAndMessagesProp
               {/* Total Contributors */}
               <StatCard
                 icon={<Users className="w-6 h-6" />}
-                title="Corações Generosos"
+                title="Gente boa que ajudou"
                 value={`${stats.totalContributors}`}
-                subtitle={stats.totalContributors === 1 ? 'pessoa' : 'pessoas contribuíram'}
+                subtitle={stats.totalContributors === 1 ? 'pessoa contribuiu' : 'pessoas contribuíram'}
                 accent="pink"
               />
 
               {/* Total Love (Money) */}
               <StatCard
                 icon={<TrendingUp className="w-6 h-6" />}
-                title="Amor Arrecadado"
+                title="Total arrecadado"
                 value={formatBRL(stats.totalLove)}
-                subtitle="de puro carinho"
+                subtitle="até agora"
                 accent="green"
               />
             </div>
@@ -253,7 +214,7 @@ export default function GratitudeAndMessages({ gifts }: GratitudeAndMessagesProp
                     color: 'var(--primary-text)',
                   }}
                 >
-                  Mensagens de Quem Ama
+                  O que vocês escreveram
                 </h3>
               </div>
 
@@ -282,7 +243,7 @@ export default function GratitudeAndMessages({ gifts }: GratitudeAndMessagesProp
                     color: 'var(--secondary-text)',
                   }}
                 >
-                  Cada palavra aqui é um pedacinho de amor que guardaremos para sempre 💝
+                  A gente lê tudo. De verdade.
                 </p>
               </div>
             </div>
@@ -489,17 +450,17 @@ function calculateCreativeStats(
 
   // Fun facts rotation
   const funFacts = [
-    `${messages.length} mensagens de amor já foram deixadas aqui`,
-    `O primeiro presente foi dado por ${firstGift?.contributorName || 'alguém especial'}`,
+    `${messages.length} ${messages.length === 1 ? 'mensagem deixada' : 'mensagens deixadas'} até agora`,
+    `${firstGift?.contributorName || 'Alguém'} deu a primeira contribuição`,
     `${totalContributors} ${
-      totalContributors === 1 ? 'pessoa está' : 'pessoas estão'
-    } ajudando a construir nosso lar`,
-    `Cada contribuição transforma sonhos em sofá, panela e marcenaria`,
+      totalContributors === 1 ? 'pessoa ajudou' : 'pessoas ajudaram'
+    } até agora`,
+    `Cada real que cai aqui vira móvel, panela, marcenaria funcionando`,
     mostLovedGift
-      ? `${mostLovedGift.giftName} está roubando os corações com ${mostLovedGift.contributorCount} ${
+      ? `${mostLovedGift.giftName} levou ${mostLovedGift.contributorCount} ${
           mostLovedGift.contributorCount === 1 ? 'contribuição' : 'contribuições'
         }`
-      : 'Amor nunca sobra, carinho sempre falta',
+      : 'Cada presente tem sua história',
   ]
 
   const funFact = funFacts[Math.floor(Math.random() * funFacts.length)]
