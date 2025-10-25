@@ -27,8 +27,7 @@ import {
 } from 'lucide-react';
 import type { GuestPost } from '@/types/wedding';
 import { useToast } from '@/components/ui/Toast';
-
-type StatusFilter = 'all' | 'pending' | 'approved' | 'rejected';
+import type { StatusFilter } from '@/lib/constants/moderation';
 
 interface PostStatsOverview {
   total: number;

@@ -7,25 +7,16 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/server'
 import { getPublicUrl } from '@/lib/supabase/storage-server'
 import { isAdminAuthenticatedFromRequest, unauthorizedResponse } from '@/lib/auth/adminAuth'
+import { mapToModerationStatus } from '@/lib/constants/moderation'
+import type { ModerationStatus, UploadPhase } from '@/types/interactive-features'
 
 const VALID_UPLOAD_PHASES = ['before', 'during', 'after'] as const
-type UploadPhase = (typeof VALID_UPLOAD_PHASES)[number]
 
 const mapUploadPhase = (phase: string | null | undefined): UploadPhase => {
   if (phase && VALID_UPLOAD_PHASES.includes(phase as UploadPhase)) {
     return phase as UploadPhase
   }
   return 'during'
-}
-
-const VALID_MODERATION_STATUSES = ['pending', 'approved', 'rejected'] as const
-type ModerationStatus = (typeof VALID_MODERATION_STATUSES)[number]
-
-const mapModerationStatus = (status: string | null | undefined): ModerationStatus => {
-  if (status && VALID_MODERATION_STATUSES.includes(status as ModerationStatus)) {
-    return status as ModerationStatus
-  }
-  return 'pending'
 }
 
 export async function GET(request: NextRequest) {
@@ -93,7 +84,7 @@ export async function GET(request: NextRequest) {
       width: photo.width,
       height: photo.height,
       is_video: photo.mime_type?.startsWith('video/') || false,
-      moderation_status: mapModerationStatus(photo.moderation_status as string | null),
+      moderation_status: mapToModerationStatus(photo.moderation_status as string | null),
       moderated_at: photo.moderated_at,
       moderated_by: photo.moderated_by,
       rejection_reason: photo.rejection_reason,
