@@ -29,11 +29,13 @@ const defaultSections: GiftsPageSections = {
   _id: 'default-gifts-page',
   isActive: true,
   headerTitle: 'Bora coçar os bolsos? 🎁',
-  headerContent: `Esse é o cantinho pra quem insiste em presentear. O presente gigante é ver você dia 20 de novembro, na Casa HY, mas se o coração pede pra materializar carinho, fica à vontade.
+  headerContent: `Deus nos deu muita coisa. Saúde. Família. Trabalho.  Sinceramente? A gente não precisa de nada. Só de você lá dia 20 de novembro.
 
-A gente tá deixando o apê que o Hel passava de bicicleta sonhando em morar com a nossa cara. Sala nova, cozinha funcionando, quarto sem fio pendurado. Família de seis (Linda 👑, Cacao 🍫, Olivia 🌸 e Oliver ⚡) merece lar decente.
+Mas a gente sabe. Tem gente que faz questão. Que quer materializar o carinho de algum jeito.
 
-Quer ajudar com TV, sofá, lua de mel, plantinha ou qualquer detalhe? Escolhe o que combina contigo. Até presente fora da lista a gente abraça. Amor nunca sobra.`,
+Então... a gente tá finalmente (finalmente!) reformando esse apê. Tava meio inacabado desde que a gente se mudou. Agora vai virar nosso lar de verdade. Pra sempre. Família de 6 (contando Linda 👑, Cacao 🍫, Olivia 🌸 e Oliver ⚡).
+
+Se quiser contribuir pro nosso cantinho - uma TV, um sofá, lua de mel, decoração - a gente abraça e agradece o gesto. De coração.`,
   footerTitle: 'Obrigadaço por transformar carinho em casa',
   footerContent: `Se você chegou aqui pensando em mimar a gente, obrigadaço de verdade. Cada contribuição vira história: panela que não deixa o arroz passar, sofá com quatro cachorros em cima, marcenaria que some com os fios.
 
