@@ -18,7 +18,7 @@ import GiftCard from '@/components/gifts/GiftCard'
 import { GiftService, GiftWithProgress } from '@/lib/services/gifts'
 import HYBadge from '@/components/ui/HYBadge'
 import ProjectRenderGallery from '@/components/gifts/ProjectRenderGallery'
-import MessagesFromLovedOnes from '@/components/gifts/MessagesFromLovedOnes'
+import GratitudeAndMessages from '@/components/gifts/GratitudeAndMessages'
 import type { GiftsPageSections } from '@/types/wedding'
 
 interface PresentsPageClientProps {
@@ -211,8 +211,8 @@ export default function PresentsPageClient({ sections = defaultSections }: Prese
           </motion.div>
         )}
 
-        {/* Messages from Loved Ones */}
-        <MessagesFromLovedOnes gifts={gifts} />
+        {/* Gratitude and Messages Section */}
+        <GratitudeAndMessages gifts={gifts} />
 
         {/* Call to Action - Sanity Managed */}
         <motion.div
