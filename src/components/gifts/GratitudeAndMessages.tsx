@@ -100,9 +100,8 @@ export default function GratitudeAndMessages({ gifts }: GratitudeAndMessagesProp
                     fontStyle: 'italic',
                   }}
                 >
-                  Sério. A gente não esperava isso. Cada contribuição que cai aqui vira móvel,
-                  eletrodoméstico, vira o apê funcionando de verdade. Não é sobre número grande
-                  ou pequeno. É sobre vocês acreditando que a gente merece um lar decente.
+                  Sério. A gente não esperava isso. Cada contribuição que cai aqui será traduzida
+                  
                 </p>
                 <p
                   className="text-lg leading-relaxed"

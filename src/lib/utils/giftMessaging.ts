@@ -41,8 +41,8 @@ export function getGiftContributionMessage(
   // State 3: Completed (same for all gifts)
   if (isComplete) {
     return {
-      headline: 'Sonho Realizado! 💝',
-      subtext: `${gift.contributionCount} ${gift.contributionCount === 1 ? 'pessoa ajudou' : 'pessoas ajudaram'} a realizar este sonho`,
+      headline: 'Conseguimos!',
+      subtext: `${gift.contributionCount} ${gift.contributionCount === 1 ? 'pessoa ajudou' : 'pessoas ajudaram'}`,
       badge: 'Completo',
       showProgressBar: false,
       showTotalCollected: false
@@ -77,20 +77,20 @@ export function getGiftContributionMessage(
 function getZeroContributionsMessage(gift: GiftWithProgress): GiftContributionMessage {
   const messages = [
     {
-      headline: 'Que tal ser o primeiro? 🌟',
-      subtext: 'Sua contribuição vai iniciar este sonho especial'
+      headline: 'Ninguém pegou ainda',
+      subtext: 'Seja o primeiro a contribuir'
     },
     {
-      headline: 'Seja pioneiro neste presente! ✨',
-      subtext: 'Qualquer valor faz diferença para começar'
+      headline: 'Ainda tá zerado',
+      subtext: 'Qualquer valor já começa'
     },
     {
-      headline: 'Inicie este sonho com a gente 💫',
-      subtext: 'Seja a primeira pessoa a contribuir'
+      headline: 'Esperando a primeira contribuição',
+      subtext: 'Pode ser você'
     },
     {
-      headline: 'Este sonho espera por você 💕',
-      subtext: 'Faça a primeira contribuição e inspire outros'
+      headline: 'Nenhuma contribuição ainda',
+      subtext: 'Que tal dar o pontapé?'
     }
   ]
 
@@ -130,7 +130,7 @@ function getPartialContributionsMessage(
   // Special badge for top contributor
   if (isTopContributed) {
     return {
-      headline: 'Favorito até agora! 🏆',
+      headline: 'O queridinho até agora',
       subtext: `${myContributorCount} ${myContributorCount === 1 ? 'pessoa já contribuiu' : 'pessoas já contribuíram'}`,
       badge: 'Mais Amado',
       showProgressBar: false,
@@ -141,7 +141,7 @@ function getPartialContributionsMessage(
   // Top 3 badge
   if (isTop3) {
     return {
-      headline: 'Entre os mais queridos! ⭐',
+      headline: 'Tá entre os favoritos',
       subtext: `${myContributorCount} ${myContributorCount === 1 ? 'pessoa já contribuiu' : 'pessoas já contribuíram'}`,
       badge: 'Popular',
       showProgressBar: false,
@@ -152,16 +152,16 @@ function getPartialContributionsMessage(
   // Default: show community support
   const messages = [
     {
-      headline: `${myContributorCount} ${myContributorCount === 1 ? 'pessoa acredita' : 'pessoas acreditam'} neste sonho 💫`,
-      subtext: 'Junte-se a quem já contribuiu!'
+      headline: `${myContributorCount} ${myContributorCount === 1 ? 'pessoa já ajudou' : 'pessoas já ajudaram'}`,
+      subtext: 'Quer contribuir também?'
     },
     {
-      headline: 'Este sonho está crescendo! 🌱',
-      subtext: `${myContributorCount} ${myContributorCount === 1 ? 'contribuição feita' : 'contribuições feitas'} - seja o próximo!`
+      headline: `Já tem ${myContributorCount} ${myContributorCount === 1 ? 'contribuição' : 'contribuições'}`,
+      subtext: 'Qualquer valor ajuda'
     },
     {
-      headline: 'Cada contribuição importa! 💕',
-      subtext: `${myContributorCount} ${myContributorCount === 1 ? 'pessoa já ajudou' : 'pessoas já ajudaram'} - faça parte você também`
+      headline: `${myContributorCount} ${myContributorCount === 1 ? 'pessoa apoiou' : 'pessoas apoiaram'} até agora`,
+      subtext: 'Você pode ser o próximo'
     }
   ]
 
