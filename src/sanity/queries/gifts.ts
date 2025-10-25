@@ -12,7 +12,7 @@ import { groq } from 'next-sanity'
  * Fetches the active gifts page sections document with all images resolved
  */
 export const giftsPageSectionsQuery = groq`
-  *[_type == "giftsPageSections" && isActive == true][0] {
+  *[_type == "giftsPageSections"][0] {
     _id,
 
     // Header Section
@@ -60,7 +60,7 @@ export const giftsPageSectionsQuery = groq`
  * Fetches just the project render images for gallery display
  */
 export const projectRendersQuery = groq`
-  *[_type == "giftsPageSections" && isActive == true && showProjectGallery == true][0] {
+  *[_type == "giftsPageSections" && _id == "giftsPageSections" && showProjectGallery == true][0] {
     projectGalleryTitle,
     projectGalleryDescription,
     projectRenders[] {
