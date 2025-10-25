@@ -7,7 +7,7 @@
 -- =====================================================
 
 CREATE TABLE IF NOT EXISTS public.photo_reactions (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   photo_id UUID REFERENCES public.guest_photos(id) ON DELETE CASCADE,
   guest_session_id UUID REFERENCES public.guest_sessions(id) ON DELETE SET NULL,
   guest_name TEXT,
@@ -30,7 +30,7 @@ COMMENT ON TABLE public.photo_reactions IS 'Likes and reactions on guest photos 
 -- =====================================================
 
 CREATE TABLE IF NOT EXISTS public.photo_comments (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   photo_id UUID REFERENCES public.guest_photos(id) ON DELETE CASCADE,
   parent_comment_id UUID REFERENCES public.photo_comments(id) ON DELETE CASCADE,
   guest_session_id UUID REFERENCES public.guest_sessions(id) ON DELETE SET NULL,
@@ -175,15 +175,21 @@ CREATE POLICY "Service role can manage all photo comments"
 -- =====================================================
 
 -- Migrate photo_likes to photo_reactions (as 'heart' type)
-INSERT INTO public.photo_reactions (photo_id, guest_session_id, guest_name, reaction_type, created_at)
-SELECT
-  pl.photo_id,
-  NULL as guest_session_id, -- old system didn't track sessions
-  pl.guest_name,
-  'heart' as reaction_type,
-  pl.created_at
-FROM public.photo_likes pl
-ON CONFLICT (photo_id, guest_session_id) DO NOTHING;
+-- Only run if photo_likes table exists
+DO $$
+BEGIN
+  IF EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'photo_likes') THEN
+    INSERT INTO public.photo_reactions (photo_id, guest_session_id, guest_name, reaction_type, created_at)
+    SELECT
+      pl.photo_id,
+      NULL as guest_session_id, -- old system didn't track sessions
+      pl.guest_name,
+      'heart' as reaction_type,
+      pl.created_at
+    FROM public.photo_likes pl
+    ON CONFLICT (photo_id, guest_session_id) DO NOTHING;
+  END IF;
+END $$;
 
 -- Update reactions_count based on migrated data
 UPDATE public.guest_photos gp

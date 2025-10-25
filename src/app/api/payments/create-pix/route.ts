@@ -74,7 +74,8 @@ export async function POST(req: NextRequest) {
     const { data: payment, error: createError } = await adminClient
       .from('payments')
       .insert({
-        gift_id: gift._id,
+        sanity_gift_id: gift._id,
+        gift_id: null, // Legacy UUID field, kept for backwards compatibility
         guest_id: null,
         amount,
         status: 'pending',
