@@ -72,9 +72,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Prepare update data
-    const updateData: InvitationUpdatePayload = {
+    const updateData: any = {
       rsvp_completed: true,
-      attending: attending,
+      attending: attending,  // Maps to attending field in simple_guests
     };
 
     // Update dietary restrictions if provided

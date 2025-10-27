@@ -500,7 +500,7 @@ export interface Invitation {
   opened_at?: string | null;
   open_count: number;
   rsvp_completed: boolean;
-  rsvp_confirmed?: boolean | null; // NULL = no response, TRUE = attending, FALSE = not attending
+  attending?: boolean | null; // NULL = no response, TRUE = attending, FALSE = not attending
   gift_selected: boolean;
   photos_uploaded: boolean;
 

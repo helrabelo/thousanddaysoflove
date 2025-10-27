@@ -10,11 +10,11 @@
 ALTER TABLE simple_guests
 ADD COLUMN IF NOT EXISTS rsvp_confirmed BOOLEAN DEFAULT NULL;
 
--- Update existing records where rsvp_completed is true to assume confirmed (yes)
+-- Update existing records where attending is true to migrate data
 -- This ensures backwards compatibility with existing data
 UPDATE simple_guests
-SET rsvp_confirmed = true
-WHERE rsvp_completed = true AND rsvp_confirmed IS NULL;
+SET rsvp_confirmed = attending
+WHERE rsvp_confirmed IS NULL AND attending IS NOT NULL;
 
 -- Add index for faster querying
 CREATE INDEX IF NOT EXISTS idx_simple_guests_rsvp_confirmed

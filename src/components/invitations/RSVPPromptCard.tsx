@@ -24,19 +24,23 @@ export default function RSVPPromptCard({ invitation }: RSVPPromptCardProps) {
   const [error, setError] = useState<string | null>(null);
 
   // Check cookie state on mount
+  // IMPORTANT: Always prioritize database state over cookies
   useEffect(() => {
     const dismissed = getRSVPDismissed(invitation.code);
-    const status = getRSVPStatus(invitation.code);
 
     setIsDismissed(dismissed);
 
-    if (status === 'confirmed' || status === 'declined') {
+    // Database state is the source of truth
+    if (invitation.rsvp_completed) {
       setIsConfirmed(true);
-      setAttending(status === 'confirmed');
-    } else if (invitation.rsvp_completed) {
-      // Check database state
-      setIsConfirmed(true);
-      setAttending(invitation.rsvp_confirmed ?? null);
+      setAttending(invitation.attending ?? null);
+    } else {
+      // Only use cookies as fallback if database has no RSVP yet
+      const status = getRSVPStatus(invitation.code);
+      if (status === 'confirmed' || status === 'declined') {
+        setIsConfirmed(true);
+        setAttending(status === 'confirmed');
+      }
     }
   }, [invitation]);
 
