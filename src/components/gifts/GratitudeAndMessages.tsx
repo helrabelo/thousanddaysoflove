@@ -9,7 +9,7 @@
  */
 
 import { motion } from 'framer-motion'
-import { Heart, MessageCircle, Trophy, Users, Sparkles, TrendingUp, Clock } from 'lucide-react'
+import { Heart, MessageCircle, Trophy, Users, Sparkles, Clock } from 'lucide-react'
 import { GiftWithProgress } from '@/lib/services/gifts'
 import { getAllContributorMessages, type ContributorMessage } from '@/lib/utils/giftMessaging'
 
@@ -27,15 +27,6 @@ export default function GratitudeAndMessages({ gifts }: GratitudeAndMessagesProp
 
   // Calculate creative statistics
   const stats = calculateCreativeStats(gifts, messages)
-
-  const formatBRL = (amount: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount)
-  }
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -153,12 +144,12 @@ export default function GratitudeAndMessages({ gifts }: GratitudeAndMessagesProp
                 accent="pink"
               />
 
-              {/* Total Love (Money) */}
+              {/* Total Gifts Received */}
               <StatCard
-                icon={<TrendingUp className="w-6 h-6" />}
-                title="Total arrecadado"
-                value={formatBRL(stats.totalLove)}
-                subtitle="até agora"
+                icon={<Sparkles className="w-6 h-6" />}
+                title="Presentes recebidos"
+                value={`${stats.totalGiftsReceived}`}
+                subtitle={stats.totalGiftsReceived === 1 ? 'presente' : 'presentes'}
                 accent="green"
               />
             </div>
@@ -415,7 +406,7 @@ interface CreativeStats {
   firstGift: { contributorName: string; giftName: string; date: string } | null
   mostLovedGift: { giftName: string; contributorCount: number } | null
   totalContributors: number
-  totalLove: number
+  totalGiftsReceived: number
   funFact: string
 }
 
@@ -445,8 +436,8 @@ function calculateCreativeStats(
   const uniqueContributors = new Set(messages.map((m) => m.contributorName.toLowerCase()))
   const totalContributors = uniqueContributors.size
 
-  // Total love (money) across all gifts
-  const totalLove = gifts.reduce((sum, gift) => sum + gift.totalContributed, 0)
+  // Total gifts that received at least one contribution
+  const totalGiftsReceived = gifts.filter((gift) => gift.contributionCount > 0).length
 
   // Fun facts rotation
   const funFacts = [
@@ -469,7 +460,7 @@ function calculateCreativeStats(
     firstGift,
     mostLovedGift: mostLovedGift && mostLovedGift.contributorCount > 0 ? mostLovedGift : null,
     totalContributors,
-    totalLove,
+    totalGiftsReceived,
     funFact,
   }
 }

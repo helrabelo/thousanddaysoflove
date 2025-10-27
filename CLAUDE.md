@@ -19,6 +19,7 @@ A beautiful, modern wedding website for Hel and Ylana's November 20th, 2025 wedd
 ## Key Features
 - 🎊 RSVP system with guest management
 - 🎁 Gift registry with PIX payment integration
+- 🔀 Smart gift sorting (randomized, price, funding progress)
 - 📧 Email automation (confirmations, reminders)
 - 📱 QR code generation for easy sharing
 - ⏰ Live countdown timer to wedding day
@@ -154,6 +155,57 @@ The admin area has been streamlined to avoid duplication with Sanity CMS. Conten
 #### 3. Gift Registry (`/admin/presentes`)
 - Manage wedding gift registry
 - Track gift selections
+
+### Gift Registry Sorting System ✅ NEW (2025-10-27)
+**Status**: Complete - Smart sorting with session-based randomization
+
+#### Features
+The gift registry (`/presentes`) now includes an elegant sorting system that enhances the browsing experience:
+
+**Sorting Options**:
+1. **Aleatório (Random)** - Default view, randomized order per session
+   - Uses seeded Fisher-Yates shuffle algorithm
+   - Order stays consistent during user's session (30 min)
+   - Changes on refresh after session expires
+   - Prevents bias toward specific gifts
+
+2. **Menor Preço** - Sort by price (low to high)
+   - Helps guests find affordable options
+
+3. **Maior Preço** - Sort by price (high to low)
+   - For guests looking for premium gifts
+
+4. **Mais Contribuído** - Sort by funding progress
+   - Shows most popular/funded gifts first
+   - Sorted by percentage funded, then total amount
+
+5. **Menos Contribuído** - Sort by lowest funding
+   - Helps identify gifts that need more support
+
+**Technical Implementation**:
+- **Utilities**: `src/lib/utils/sorting.ts`
+  - `getSessionSeed()`: Session-based random seed (30min TTL)
+  - `shuffleArray()`: Seeded Fisher-Yates algorithm
+  - `sortGifts()`: Main sorting logic
+  - LocalStorage for user preference persistence
+
+- **Component**: `src/components/gifts/SortingControls.tsx`
+  - Elegant dropdown with wedding aesthetic
+  - Radio selection with descriptions
+  - Animated transitions with Framer Motion
+  - Mobile-responsive design
+
+- **Integration**: `src/app/presentes/PresentsPageClient.tsx`
+  - State management with React hooks
+  - Memoized sorting for performance
+  - Preference persistence across visits
+
+**User Experience**:
+- Default view always randomized (prevents gift bias)
+- Smooth animations and transitions
+- User preference saved in localStorage
+- Session-based randomization ensures freshness
+- Item count displayed with sorting controls
 
 #### 4. Payment Tracking (`/admin/pagamentos`)
 - Track PIX payments

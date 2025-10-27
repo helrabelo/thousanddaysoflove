@@ -32,6 +32,7 @@
     "migrate:prod": "tsx scripts/apply-migration-to-prod.ts",
     "seed:invitations": "tsx scripts/seed-invitations.ts",
     "sanity:populate-gifts": "tsx scripts/populate-gifts-sections.ts",
+    "sanity:cleanup-gifts": "tsx scripts/cleanup-duplicate-gifts-sections.ts",
     "revalidate:gallery": "tsx scripts/revalidate-gallery.ts",
     "upload-gallery": "tsx scripts/upload-gallery-from-downloads.ts",
     "upload-gallery:dry-run": "tsx scripts/upload-gallery-from-downloads.ts --dry-run",

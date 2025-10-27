@@ -95,18 +95,18 @@ export default function GiftCard({ gift, allGifts, onPaymentSuccess }: GiftCardP
         whileHover={{ y: -4 }}
         className="rounded-2xl transition-all duration-300 overflow-hidden relative group"
         style={{
-          background: 'var(--white-soft)',
-          boxShadow: '0 4px 20px var(--shadow-subtle)',
-          border: `1px solid ${isCompleted ? 'var(--decorative)' : 'var(--border-subtle)'}`,
+          background: 'linear-gradient(to bottom, #FFFFFF 0%, #FAFAF9 100%)',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.03)',
+          border: `1px solid ${isCompleted ? 'rgba(168, 168, 168, 0.3)' : 'rgba(168, 168, 168, 0.12)'}`,
           opacity: isCompleted ? 0.95 : 1
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = 'translateY(-6px)'
-          e.currentTarget.style.boxShadow = '0 12px 35px var(--shadow-medium)'
+          e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04)'
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.transform = 'translateY(0)'
-          e.currentTarget.style.boxShadow = '0 4px 20px var(--shadow-subtle)'
+          e.currentTarget.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.03)'
         }}
       >
         {/* Completed Overlay */}
@@ -140,13 +140,13 @@ export default function GiftCard({ gift, allGifts, onPaymentSuccess }: GiftCardP
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: 'spring' }}
             >
-              <div className="px-3 py-1.5 rounded-full text-sm font-medium backdrop-blur-sm flex items-center gap-1.5"
+              <div className="px-3 py-1.5 rounded-full text-sm font-medium backdrop-blur-md flex items-center gap-1.5"
                 style={{
-                  background: 'rgba(248, 246, 243, 0.95)',
-                  color: 'var(--decorative)',
+                  background: 'rgba(255, 255, 255, 0.95)',
+                  color: '#78716C',
                   fontFamily: 'var(--font-crimson)',
-                  border: '1px solid var(--border-subtle)',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                  border: '1px solid rgba(120, 113, 108, 0.2)',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04)'
                 }}>
                 <Sparkles className="w-3.5 h-3.5" />
                 {getPriorityLabel(gift.priority)}
@@ -162,12 +162,12 @@ export default function GiftCard({ gift, allGifts, onPaymentSuccess }: GiftCardP
               animate={{ scale: 1, rotate: 0 }}
               transition={{ type: 'spring', duration: 0.6 }}
             >
-              <div className="px-3 py-1.5 rounded-full flex items-center gap-2 text-sm font-semibold backdrop-blur-sm"
+              <div className="px-3 py-1.5 rounded-full flex items-center gap-2 text-sm font-semibold backdrop-blur-md"
                 style={{
-                  background: 'var(--decorative)',
-                  color: 'var(--white-soft)',
+                  background: 'linear-gradient(135deg, #78716C 0%, #57534E 100%)',
+                  color: '#FFFFFF',
                   fontFamily: 'var(--font-playfair)',
-                  boxShadow: '0 4px 12px rgba(168, 168, 168, 0.4)'
+                  boxShadow: '0 4px 12px rgba(87, 83, 78, 0.3), 0 1px 3px rgba(0, 0, 0, 0.1)'
                 }}>
                 <CheckCircle className="w-4 h-4" />
                 Sonho Realizado ✨
@@ -265,13 +265,14 @@ export default function GiftCard({ gift, allGifts, onPaymentSuccess }: GiftCardP
             {/* Badge for special status */}
             {contributionMsg.badge && (
               <div className="mb-3 flex items-center gap-2">
-                {contributionMsg.badge === 'Mais Amado' && <Trophy className="w-4 h-4" style={{ color: 'var(--decorative)' }} />}
-                {contributionMsg.badge === 'Popular' && <Star className="w-4 h-4" style={{ color: 'var(--decorative)' }} />}
-                {contributionMsg.badge === 'Completo' && <CheckCircle className="w-4 h-4" style={{ color: 'var(--decorative)' }} />}
-                <span className="text-sm font-semibold px-3 py-1 rounded-full" style={{
-                  background: 'var(--decorative)',
-                  color: 'var(--white-soft)',
-                  fontFamily: 'var(--font-crimson)'
+                {contributionMsg.badge === 'Mais Amado' && <Trophy className="w-4 h-4" style={{ color: '#78716C' }} />}
+                {contributionMsg.badge === 'Popular' && <Star className="w-4 h-4" style={{ color: '#78716C' }} />}
+                {contributionMsg.badge === 'Completo' && <CheckCircle className="w-4 h-4" style={{ color: '#78716C' }} />}
+                <span className="text-sm font-semibold px-3 py-1.5 rounded-full" style={{
+                  background: 'linear-gradient(135deg, rgba(168, 168, 168, 0.15) 0%, rgba(120, 113, 108, 0.12) 100%)',
+                  color: '#57534E',
+                  fontFamily: 'var(--font-crimson)',
+                  border: '1px solid rgba(120, 113, 108, 0.2)'
                 }}>
                   {contributionMsg.badge}
                 </span>
@@ -288,18 +289,6 @@ export default function GiftCard({ gift, allGifts, onPaymentSuccess }: GiftCardP
               </p>
             </div>
 
-            {/* Show total collected if requested */}
-            {contributionMsg.showTotalCollected && gift.totalContributed > 0 && (
-              <div className="mb-3 p-2 rounded-lg flex items-center justify-between" style={{ background: 'var(--accent)', border: '1px solid var(--border-subtle)' }}>
-                <span className="text-sm" style={{ color: 'var(--secondary-text)', fontFamily: 'var(--font-crimson)' }}>
-                  Total arrecadado:
-                </span>
-                <span className="text-lg font-bold" style={{ color: 'var(--decorative)', fontFamily: 'var(--font-playfair)' }}>
-                  {formatBRL(gift.totalContributed)}
-                </span>
-              </div>
-            )}
-
             {/* Traditional progress bar - only for cheap gifts or if explicitly requested */}
             {contributionMsg.showProgressBar && (
               <>
@@ -310,7 +299,10 @@ export default function GiftCard({ gift, allGifts, onPaymentSuccess }: GiftCardP
                   </div>
                   <span className="font-bold" style={{ color: 'var(--primary-text)' }}>{progress}%</span>
                 </div>
-                <div className="w-full rounded-full h-2.5 overflow-hidden relative" style={{ background: 'var(--accent)' }}>
+                <div className="w-full rounded-full h-2.5 overflow-hidden relative" style={{
+                  background: 'rgba(168, 168, 168, 0.1)',
+                  border: '1px solid rgba(168, 168, 168, 0.08)'
+                }}>
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${progress}%` }}
@@ -318,14 +310,14 @@ export default function GiftCard({ gift, allGifts, onPaymentSuccess }: GiftCardP
                     className="h-full relative overflow-hidden"
                     style={{
                       background: isCompleted
-                        ? 'var(--decorative)'
-                        : 'linear-gradient(90deg, var(--decorative) 0%, var(--secondary-text) 100%)'
+                        ? 'linear-gradient(90deg, #78716C 0%, #57534E 100%)'
+                        : 'linear-gradient(90deg, #A8A8A8 0%, #78716C 100%)'
                     }}
                   >
                     {!isCompleted && (
-                      <div className="absolute inset-0 opacity-30"
+                      <div className="absolute inset-0 opacity-20"
                         style={{
-                          background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)',
+                          background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent)',
                           animation: 'shimmer 2s infinite'
                         }}
                       />
@@ -337,24 +329,25 @@ export default function GiftCard({ gift, allGifts, onPaymentSuccess }: GiftCardP
 
             {/* Contributors List with Messages */}
             {gift.contributors && gift.contributors.length > 0 && (
-              <div className="mt-3 p-3 rounded-lg" style={{ background: 'var(--accent)', border: '1px solid var(--border-subtle)' }}>
-                <p className="text-xs font-medium mb-2" style={{ color: 'var(--decorative)', fontFamily: 'var(--font-crimson)' }}>
+              <div className="mt-3 p-3 rounded-lg" style={{
+                background: 'linear-gradient(135deg, rgba(168, 168, 168, 0.06) 0%, rgba(168, 168, 168, 0.02) 100%)',
+                border: '1px solid rgba(168, 168, 168, 0.12)'
+              }}>
+                <p className="text-xs font-medium mb-2" style={{ color: '#78716C', fontFamily: 'var(--font-crimson)' }}>
                   💝 Contribuíram com carinho:
                 </p>
                 <div className="space-y-2 max-h-48 overflow-y-auto">
                   {gift.contributors.map((contributor) => (
                     <div key={contributor.payment_id} className="space-y-1">
-                      <div className="flex items-center justify-between text-xs">
-                        <div className="flex items-center gap-2">
-                          <span className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-medium" style={{ background: 'var(--decorative)', color: 'var(--white-soft)' }}>
-                            {contributor.contributor_name?.charAt(0).toUpperCase() || '?'}
-                          </span>
-                          <span className="font-medium" style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-crimson)' }}>
-                            {contributor.contributor_name || 'Anônimo'}
-                          </span>
-                        </div>
-                        <span className="font-semibold" style={{ color: 'var(--decorative)', fontFamily: 'var(--font-playfair)' }}>
-                          {formatBRL(contributor.amount)}
+                      <div className="flex items-center gap-2 text-xs">
+                        <span className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-medium" style={{
+                          background: 'linear-gradient(135deg, #A8A8A8 0%, #78716C 100%)',
+                          color: '#FFFFFF'
+                        }}>
+                          {contributor.contributor_name?.charAt(0).toUpperCase() || '?'}
+                        </span>
+                        <span className="font-medium" style={{ color: 'var(--primary-text)', fontFamily: 'var(--font-crimson)' }}>
+                          {contributor.contributor_name || 'Anônimo'}
                         </span>
                       </div>
                       {/* Show message if they left one */}
@@ -389,21 +382,23 @@ export default function GiftCard({ gift, allGifts, onPaymentSuccess }: GiftCardP
                     onClick={() => setShowPaymentModal(true)}
                     className="px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200"
                     style={{
-                      background: 'var(--accent)',
-                      color: 'var(--decorative)',
-                      border: '1px solid var(--border-subtle)',
+                      background: 'rgba(168, 168, 168, 0.08)',
+                      color: '#57534E',
+                      border: '1px solid rgba(168, 168, 168, 0.2)',
                       fontFamily: 'var(--font-crimson)',
                       fontSize: 'clamp(0.75rem, 2vw, 0.875rem)'
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = 'var(--decorative)'
-                      e.currentTarget.style.color = 'var(--white-soft)'
+                      e.currentTarget.style.background = 'linear-gradient(135deg, #A8A8A8 0%, #78716C 100%)'
+                      e.currentTarget.style.color = '#FFFFFF'
                       e.currentTarget.style.transform = 'scale(1.05)'
+                      e.currentTarget.style.borderColor = 'transparent'
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'var(--accent)'
-                      e.currentTarget.style.color = 'var(--decorative)'
+                      e.currentTarget.style.background = 'rgba(168, 168, 168, 0.08)'
+                      e.currentTarget.style.color = '#57534E'
                       e.currentTarget.style.transform = 'scale(1)'
+                      e.currentTarget.style.borderColor = 'rgba(168, 168, 168, 0.2)'
                     }}
                   >
                     {formatBRL(amount)}
@@ -413,8 +408,8 @@ export default function GiftCard({ gift, allGifts, onPaymentSuccess }: GiftCardP
                   onClick={() => setShowPaymentModal(true)}
                   className="px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200"
                   style={{
-                    background: 'transparent',
-                    color: 'var(--decorative)',
+                    background: 'var(--primary)',
+                    color: 'white',
                     border: '1px solid var(--decorative)',
                     fontFamily: 'var(--font-crimson)',
                     fontSize: 'clamp(0.75rem, 2vw, 0.875rem)'

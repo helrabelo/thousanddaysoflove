@@ -10,7 +10,7 @@
  * - Project render gallery
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Heart } from 'lucide-react'
 import Navigation from '@/components/ui/Navigation'
@@ -19,7 +19,9 @@ import { GiftService, GiftWithProgress } from '@/lib/services/gifts'
 import HYBadge from '@/components/ui/HYBadge'
 import ProjectRenderGallery from '@/components/gifts/ProjectRenderGallery'
 import GratitudeAndMessages from '@/components/gifts/GratitudeAndMessages'
+import SortingControls from '@/components/gifts/SortingControls'
 import type { GiftsPageSections } from '@/types/wedding'
+import { SortOption, sortGifts, getSavedSortPreference, saveSortPreference } from '@/lib/utils/sorting'
 
 interface PresentsPageClientProps {
   sections?: GiftsPageSections
@@ -58,6 +60,13 @@ E lembra: te ver na Casa HY, dia 20 de novembro, é o que importa. O resto é ca
 export default function PresentsPageClient({ sections = defaultSections }: PresentsPageClientProps) {
   const [gifts, setGifts] = useState<GiftWithProgress[]>([])
   const [loading, setLoading] = useState(true)
+  const [sortBy, setSortBy] = useState<SortOption>('random')
+
+  // Initialize sort preference from localStorage
+  useEffect(() => {
+    const savedSort = getSavedSortPreference()
+    setSortBy(savedSort)
+  }, [])
 
   useEffect(() => {
     loadGifts()
@@ -80,6 +89,17 @@ export default function PresentsPageClient({ sections = defaultSections }: Prese
     // Reload gifts to update contribution progress
     loadGifts()
   }
+
+  // Handle sort change
+  const handleSortChange = (newSort: SortOption) => {
+    setSortBy(newSort)
+    saveSortPreference(newSort)
+  }
+
+  // Memoized sorted gifts to avoid re-sorting on every render
+  const sortedGifts = useMemo(() => {
+    return sortGifts(gifts, sortBy)
+  }, [gifts, sortBy])
 
   // Format content with line breaks
   const formatContent = (content: string) => {
@@ -176,15 +196,24 @@ export default function PresentsPageClient({ sections = defaultSections }: Prese
         {/* Gratitude and Messages Section - Before Gifts */}
         <GratitudeAndMessages gifts={gifts} />
 
+        {/* Sorting Controls */}
+        {gifts.length > 0 && (
+          <SortingControls
+            currentSort={sortBy}
+            onSortChange={handleSortChange}
+            totalItems={sortedGifts.length}
+          />
+        )}
+
         {/* Gifts Grid */}
-        {gifts.length > 0 ? (
+        {sortedGifts.length > 0 ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12"
           >
-            {gifts.map((gift, index) => (
+            {sortedGifts.map((gift, index) => (
               <motion.div
                 key={gift._id}
                 initial={{ opacity: 0, y: 20 }}
