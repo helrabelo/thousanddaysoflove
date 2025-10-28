@@ -34,8 +34,8 @@ export default function AdminLoginPage() {
         throw new Error(data.error || 'Login failed')
       }
 
-      // Redirect to admin photos
-      router.push('/admin/photos')
+      // Redirect to admin dashboard
+      router.push('/admin')
       router.refresh()
     } catch (err: unknown) {
       const fallbackMessage = 'Erro ao fazer login'

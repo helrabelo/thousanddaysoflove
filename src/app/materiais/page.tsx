@@ -1,14 +1,13 @@
 'use client'
 
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { Download, FileImage, Users, Map } from 'lucide-react'
+import { Download, FileImage, Users, Map as MapIcon } from 'lucide-react'
 import Image from 'next/image'
 import { toPng, toJpeg } from 'html-to-image'
 import JSZip from 'jszip'
 import { saveAs } from 'file-saver'
 import jsPDF from 'jspdf'
-import html2canvas from 'html2canvas'
 import { createClient } from '@/lib/supabase/client'
 import type { TableWithGuests } from '@/types/wedding'
 
@@ -16,12 +15,13 @@ import type { TableWithGuests } from '@/types/wedding'
 import GuestNameCard from '@/components/assets/GuestNameCard'
 import ThankYouBox from '@/components/assets/ThankYouBox'
 import MenuCard from '@/components/assets/MenuCard'
-import SeatingChartPrintable from '@/components/seating/SeatingChartPrintable'
+import SeatingTableListPrintable, { SeatingTableListEntry } from '@/components/seating/SeatingTableListPrintable'
 
 interface Guest {
   id: string
   name: string
-  attending: boolean
+  attending: boolean | null
+  table_number: number | null
 }
 
 export default function MateriaisPage() {
@@ -38,8 +38,21 @@ export default function MateriaisPage() {
   const thankYouBoxRef = useRef<HTMLDivElement>(null)
   const menuCardRef = useRef<HTMLDivElement>(null)
   const seatingChartRef = useRef<HTMLDivElement>(null)
+  const tableListRef = useRef<HTMLDivElement>(null)
 
   const supabase = createClient()
+
+  const PX_TO_MM = 25.4 / 96
+
+  const getElementSizeInMm = (element: HTMLElement) => {
+    const rect = element.getBoundingClientRect()
+    const widthPx = rect.width || element.offsetWidth || element.clientWidth || 0
+    const heightPx = rect.height || element.offsetHeight || element.clientHeight || 0
+    const widthMm = Math.max(widthPx * PX_TO_MM, 10)
+    const heightMm = Math.max(heightPx * PX_TO_MM, 10)
+
+    return { widthMm, heightMm }
+  }
 
   // Fetch attending guests and tables on mount
   useEffect(() => {
@@ -52,12 +65,13 @@ export default function MateriaisPage() {
     try {
       const { data, error } = await supabase
         .from('simple_guests')
-        .select('id, name, attending')
-        .eq('attending', true)
+        .select('id, name, attending, table_number')
         .order('name')
 
       if (error) throw error
-      setAttendingGuests(data || [])
+
+      const guests = ((data || []) as Guest[]).filter((guest) => guest.attending !== false)
+      setAttendingGuests(guests)
     } catch (error) {
       console.error('Error fetching guests:', error)
     } finally {
@@ -125,24 +139,21 @@ export default function MateriaisPage() {
 
     try {
       if (format === 'pdf') {
-        // Use html2canvas for PDF generation
-        const canvas = await html2canvas(ref.current, {
-          scale: 2,
-          useCORS: true,
-          logging: false,
-        })
+        const element = ref.current
+        const { widthMm, heightMm } = getElementSizeInMm(element)
+        const orientation = widthMm > heightMm ? 'landscape' : 'portrait'
 
-        const imgData = canvas.toDataURL('image/png')
+        const imgData = await toPng(element, {
+          quality: 1,
+          pixelRatio: 3,
+        })
         const pdf = new jsPDF({
-          orientation: 'portrait',
+          orientation,
           unit: 'mm',
-          format: 'a4',
+          format: [widthMm, heightMm],
         })
 
-        const imgWidth = 210 // A4 width in mm
-        const imgHeight = (canvas.height * imgWidth) / canvas.width
-
-        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight)
+        pdf.addImage(imgData, 'PNG', 0, 0, widthMm, heightMm)
         pdf.save(`${filename}.pdf`)
       } else {
         const dataUrl = format === 'png'
@@ -167,10 +178,15 @@ export default function MateriaisPage() {
     try {
       if (format === 'pdf') {
         // Generate single PDF with all cards
+        const element = nameCardRef.current
+        if (!element) return
+        const { widthMm, heightMm } = getElementSizeInMm(element)
+        const orientation = widthMm > heightMm ? 'landscape' : 'portrait'
+
         const pdf = new jsPDF({
-          orientation: 'portrait',
+          orientation,
           unit: 'mm',
-          format: 'a4',
+          format: [widthMm, heightMm],
         })
 
         for (let i = 0; i < attendingGuests.length; i++) {
@@ -186,22 +202,17 @@ export default function MateriaisPage() {
 
           // Capture the updated card
           if (nameCardRef.current) {
-            const canvas = await html2canvas(nameCardRef.current, {
-              scale: 2,
-              useCORS: true,
-              logging: false,
+            const imgData = await toPng(nameCardRef.current, {
+              quality: 1,
+              pixelRatio: 3,
             })
-
-            const imgData = canvas.toDataURL('image/png')
-            const imgWidth = 210 // A4 width in mm
-            const imgHeight = (canvas.height * imgWidth) / canvas.width
 
             // Add new page for subsequent cards
             if (i > 0) {
               pdf.addPage()
             }
 
-            pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight)
+            pdf.addImage(imgData, 'PNG', 0, 0, widthMm, heightMm)
           }
 
           // Restore preview name
@@ -259,6 +270,85 @@ export default function MateriaisPage() {
       setIsBulkDownloading(false)
     }
   }
+
+  const tableListData = useMemo<SeatingTableListEntry[]>(() => {
+    const NO_TABLE_KEY = 'semMesa' as const
+    type TableKey = number | typeof NO_TABLE_KEY
+
+    const tablesMeta = new Map<number, { title?: string | null; isSpecial?: boolean }>()
+    seatingTables.forEach((table) => {
+      if (table.table_number != null) {
+        tablesMeta.set(table.table_number, {
+          title: table.table_name,
+          isSpecial: table.is_special ?? false,
+        })
+      }
+    })
+
+    const guestsByTable = new Map<TableKey, Guest[]>()
+
+    attendingGuests.forEach((guest) => {
+      const tableNumber = guest.table_number
+      if (tableNumber && tableNumber > 0) {
+        const list = guestsByTable.get(tableNumber) ?? []
+        list.push(guest)
+        guestsByTable.set(tableNumber, list)
+      } else {
+        const list = guestsByTable.get(NO_TABLE_KEY) ?? []
+        list.push(guest)
+        guestsByTable.set(NO_TABLE_KEY, list)
+      }
+    })
+
+    guestsByTable.forEach((list, key) => {
+      const sortedList = [...list].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'))
+      guestsByTable.set(key, sortedList)
+    })
+
+    const numberKeys = new Set<number>()
+    tablesMeta.forEach((_, tableNumber) => numberKeys.add(tableNumber))
+    Array.from(guestsByTable.keys()).forEach((key) => {
+      if (typeof key === 'number') {
+        numberKeys.add(key)
+      }
+    })
+
+    const orderedTableNumbers = Array.from(numberKeys).sort((a, b) => a - b)
+
+    const printable: SeatingTableListEntry[] = orderedTableNumbers.map((tableNumber) => {
+      const meta = tablesMeta.get(tableNumber)
+      const guests = guestsByTable.get(tableNumber) ?? []
+
+      return {
+        key: `table-${tableNumber}`,
+        tableNumber,
+        title: `Mesa ${tableNumber}`,
+        subtitle: meta?.title || undefined,
+        isSpecial: meta?.isSpecial ?? false,
+        guests: guests.map((guest) => ({
+          id: guest.id,
+          name: guest.name.trim(),
+        })),
+      }
+    })
+
+    const unassigned = guestsByTable.get(NO_TABLE_KEY) ?? []
+    if (unassigned.length > 0) {
+      printable.push({
+        key: 'table-unassigned',
+        tableNumber: null,
+        title: 'Atribuir Mesa',
+        subtitle: 'Convidados sem mesa definida',
+        isSpecial: false,
+        guests: unassigned.map((guest) => ({
+          id: guest.id,
+          name: guest.name.trim(),
+        })),
+      })
+    }
+
+    return printable
+  }, [attendingGuests, seatingTables])
 
   return (
     <div className="min-h-screen bg-[var(--background)] py-20">
@@ -352,7 +442,7 @@ export default function MateriaisPage() {
                   {isLoadingGuests ? (
                     'Carregando convidados...'
                   ) : (
-                    `${attendingGuests.length} convidados confirmados no Supabase`
+                    `${attendingGuests.length} convidados confirmados ou pendentes no Supabase`
                   )}
                 </p>
               </div>
@@ -525,7 +615,7 @@ export default function MateriaisPage() {
         >
           <div className="bg-white rounded-lg shadow-lg p-8">
             <div className="flex items-center gap-3 mb-6">
-              <Map className="h-6 w-6 text-[var(--decorative)]" />
+              <MapIcon className="h-6 w-6 text-[var(--decorative)]" />
               <h2 className="font-heading text-2xl text-[var(--primary-text)]">
                 Mapa de Mesas
               </h2>
@@ -654,6 +744,62 @@ export default function MateriaisPage() {
             )}
           </div>
         </motion.section>
+
+        {/* Seating Table Guest List - Verso Auxiliar */}
+        {tableListData.length > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="mb-20"
+          >
+            <div className="bg-white rounded-lg shadow-lg p-8">
+              <div className="flex items-center gap-3 mb-6">
+                <Users className="h-6 w-6 text-[var(--decorative)]" />
+                <h2 className="font-heading text-2xl text-[var(--primary-text)]">
+                  Lista de Convidados por Mesa
+                </h2>
+              </div>
+
+              <p className="text-[var(--secondary-text)] mb-6 font-body">
+                Verso auxiliar do mapa de mesas com todos os nomes por mesa. Inclui mesas 1 a 7 e a mesa 8 dedicada à equipe.
+              </p>
+
+              <div className="bg-[var(--accent)] p-8 rounded-lg mb-6 flex justify-center">
+                <div ref={tableListRef}>
+                  <SeatingTableListPrintable
+                    tables={tableListData}
+                    totalGuests={attendingGuests.length}
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-4 justify-center">
+                <button
+                  onClick={() => downloadAsset(tableListRef, 'lista-mesas-convidados', 'png')}
+                  className="flex items-center gap-2 px-6 py-3 bg-[var(--primary-text)] text-white rounded-lg hover:opacity-90 transition-opacity"
+                >
+                  <Download className="h-4 w-4" />
+                  Baixar PNG
+                </button>
+                <button
+                  onClick={() => downloadAsset(tableListRef, 'lista-mesas-convidados', 'jpg')}
+                  className="flex items-center gap-2 px-6 py-3 bg-[var(--secondary-text)] text-white rounded-lg hover:opacity-90 transition-opacity"
+                >
+                  <Download className="h-4 w-4" />
+                  Baixar JPG
+                </button>
+                <button
+                  onClick={() => downloadAsset(tableListRef, 'lista-mesas-convidados', 'pdf')}
+                  className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:opacity-90 transition-opacity"
+                >
+                  <Download className="h-4 w-4" />
+                  Baixar PDF
+                </button>
+              </div>
+            </div>
+          </motion.section>
+        )}
 
         {/* Tips Section */}
         <motion.div

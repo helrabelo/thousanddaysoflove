@@ -4,6 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { getAdminSessionSecret } from '@/lib/auth/adminAuth'
 
 export const runtime = 'edge'
 
@@ -31,8 +32,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Generate simple session token
-    const sessionToken = generateSessionToken()
+    const sessionToken = getAdminSessionSecret()
 
     // Create response
     const response = NextResponse.json(
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     )
 
-    // Set session cookie
+    // Set session cookie with shared secret
     response.cookies.set({
       name: 'admin_session',
       value: sessionToken,
@@ -62,12 +62,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
-}
-
-function generateSessionToken(): string {
-  const array = new Uint8Array(32)
-  crypto.getRandomValues(array)
-  return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join(
-    ''
-  )
 }

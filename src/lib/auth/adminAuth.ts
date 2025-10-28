@@ -8,6 +8,14 @@
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 
+export function getAdminSessionSecret(): string {
+  return (
+    process.env.ADMIN_SESSION_SECRET ||
+    process.env.ADMIN_PASSWORD ||
+    'HelYlana1000Dias!'
+  )
+}
+
 /**
  * Check if the current request has valid admin authentication
  * For use in Server Components (App Router pages)
@@ -28,7 +36,7 @@ export async function isAdminAuthenticated(): Promise<boolean> {
   const cookieStore = await cookies()
   const adminSession = cookieStore.get('admin_session')?.value
 
-  return adminSession === process.env.ADMIN_SESSION_SECRET
+  return adminSession === getAdminSessionSecret()
 }
 
 /**
@@ -50,7 +58,7 @@ export async function isAdminAuthenticated(): Promise<boolean> {
  */
 export function isAdminAuthenticatedFromRequest(request: NextRequest): boolean {
   const adminSession = request.cookies.get('admin_session')?.value
-  return adminSession === process.env.ADMIN_SESSION_SECRET
+  return adminSession === getAdminSessionSecret()
 }
 
 /**
