@@ -7,7 +7,7 @@
 -- =====================================================
 
 CREATE TABLE IF NOT EXISTS tables (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   table_number INTEGER UNIQUE NOT NULL,
   table_name TEXT,
   capacity INTEGER NOT NULL,

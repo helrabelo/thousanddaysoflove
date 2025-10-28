@@ -7,6 +7,8 @@ import Image from 'next/image'
 import { toPng, toJpeg } from 'html-to-image'
 import JSZip from 'jszip'
 import { saveAs } from 'file-saver'
+import jsPDF from 'jspdf'
+import html2canvas from 'html2canvas'
 import { createClient } from '@/lib/supabase/client'
 import type { TableWithGuests } from '@/types/wedding'
 
@@ -118,21 +120,43 @@ export default function MateriaisPage() {
   const downloadAsset = async (
     ref: React.RefObject<HTMLDivElement>,
     filename: string,
-    format: 'png' | 'jpg'
+    format: 'png' | 'jpg' | 'pdf'
   ) => {
     if (!ref.current) return
 
     try {
-      const dataUrl = format === 'png'
-        ? await toPng(ref.current, { quality: 1, pixelRatio: 3 })
-        : await toJpeg(ref.current, { quality: 0.95, pixelRatio: 3 })
+      if (format === 'pdf') {
+        // Use html2canvas for PDF generation
+        const canvas = await html2canvas(ref.current, {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+        })
 
-      const link = document.createElement('a')
-      link.download = `${filename}.${format}`
-      link.href = dataUrl
-      link.click()
+        const imgData = canvas.toDataURL('image/png')
+        const pdf = new jsPDF({
+          orientation: 'portrait',
+          unit: 'mm',
+          format: 'a4',
+        })
+
+        const imgWidth = 210 // A4 width in mm
+        const imgHeight = (canvas.height * imgWidth) / canvas.width
+
+        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight)
+        pdf.save(`${filename}.pdf`)
+      } else {
+        const dataUrl = format === 'png'
+          ? await toPng(ref.current, { quality: 1, pixelRatio: 3 })
+          : await toJpeg(ref.current, { quality: 0.95, pixelRatio: 3 })
+
+        const link = document.createElement('a')
+        link.download = `${filename}.${format}`
+        link.href = dataUrl
+        link.click()
+      }
     } catch (error) {
-      console.error('Error generating image:', error)
+      console.error('Error generating file:', error)
     }
   }
 
@@ -261,7 +285,7 @@ export default function MateriaisPage() {
             </div>
 
             {/* Download Buttons */}
-            <div className="flex gap-4 justify-center mb-6">
+            <div className="flex flex-wrap gap-4 justify-center mb-6">
               <button
                 onClick={() => downloadAsset(nameCardRef, `marcador-mesa-${guestName.replace(/\s+/g, '-').toLowerCase()}`, 'png')}
                 className="flex items-center gap-2 px-6 py-3 bg-[var(--primary-text)] text-white rounded-lg hover:opacity-90 transition-opacity"
@@ -275,6 +299,13 @@ export default function MateriaisPage() {
               >
                 <Download className="h-4 w-4" />
                 Baixar JPG
+              </button>
+              <button
+                onClick={() => downloadAsset(nameCardRef, `marcador-mesa-${guestName.replace(/\s+/g, '-').toLowerCase()}`, 'pdf')}
+                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:opacity-90 transition-opacity"
+              >
+                <Download className="h-4 w-4" />
+                Baixar PDF
               </button>
             </div>
 
@@ -354,7 +385,7 @@ export default function MateriaisPage() {
             </div>
 
             {/* Download Buttons */}
-            <div className="flex gap-4 justify-center">
+            <div className="flex flex-wrap gap-4 justify-center">
               <button
                 onClick={() => downloadAsset(thankYouBoxRef, 'etiqueta-chocolate-agradecimento', 'png')}
                 className="flex items-center gap-2 px-6 py-3 bg-[var(--primary-text)] text-white rounded-lg hover:opacity-90 transition-opacity"
@@ -368,6 +399,13 @@ export default function MateriaisPage() {
               >
                 <Download className="h-4 w-4" />
                 Baixar JPG
+              </button>
+              <button
+                onClick={() => downloadAsset(thankYouBoxRef, 'etiqueta-chocolate-agradecimento', 'pdf')}
+                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:opacity-90 transition-opacity"
+              >
+                <Download className="h-4 w-4" />
+                Baixar PDF
               </button>
             </div>
           </div>
@@ -404,20 +442,27 @@ export default function MateriaisPage() {
             </p>
 
             {/* Download Buttons */}
-            <div className="flex gap-4 justify-center">
+            <div className="flex flex-wrap gap-4 justify-center">
               <button
                 onClick={() => downloadAsset(menuCardRef, 'menu-casamento-frente-verso', 'png')}
                 className="flex items-center gap-2 px-6 py-3 bg-[var(--primary-text)] text-white rounded-lg hover:opacity-90 transition-opacity"
               >
                 <Download className="h-4 w-4" />
-                Baixar PNG (Frente + Verso)
+                Baixar PNG
               </button>
               <button
                 onClick={() => downloadAsset(menuCardRef, 'menu-casamento-frente-verso', 'jpg')}
                 className="flex items-center gap-2 px-6 py-3 bg-[var(--secondary-text)] text-white rounded-lg hover:opacity-90 transition-opacity"
               >
                 <Download className="h-4 w-4" />
-                Baixar JPG (Frente + Verso)
+                Baixar JPG
+              </button>
+              <button
+                onClick={() => downloadAsset(menuCardRef, 'menu-casamento-frente-verso', 'pdf')}
+                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:opacity-90 transition-opacity"
+              >
+                <Download className="h-4 w-4" />
+                Baixar PDF
               </button>
             </div>
           </div>
@@ -484,20 +529,27 @@ export default function MateriaisPage() {
 
             {/* Download Buttons */}
             {seatingTables.length > 0 && (
-              <div className="flex gap-4 justify-center">
+              <div className="flex flex-wrap gap-4 justify-center">
                 <button
                   onClick={() => downloadAsset(seatingChartRef, 'mapa-mesas-casamento', 'png')}
                   className="flex items-center gap-2 px-6 py-3 bg-[var(--primary-text)] text-white rounded-lg hover:opacity-90 transition-opacity"
                 >
                   <Download className="h-4 w-4" />
-                  Baixar PNG (A3)
+                  Baixar PNG
                 </button>
                 <button
                   onClick={() => downloadAsset(seatingChartRef, 'mapa-mesas-casamento', 'jpg')}
                   className="flex items-center gap-2 px-6 py-3 bg-[var(--secondary-text)] text-white rounded-lg hover:opacity-90 transition-opacity"
                 >
                   <Download className="h-4 w-4" />
-                  Baixar JPG (A3)
+                  Baixar JPG
+                </button>
+                <button
+                  onClick={() => downloadAsset(seatingChartRef, 'mapa-mesas-casamento', 'pdf')}
+                  className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:opacity-90 transition-opacity"
+                >
+                  <Download className="h-4 w-4" />
+                  Baixar PDF (A3)
                 </button>
               </div>
             )}
@@ -525,6 +577,8 @@ export default function MateriaisPage() {
             <p>• Imprima em alta resolução para melhores resultados</p>
             <p>• Para o menu, considere papel couché ou vegetal</p>
             <p>• Baixe em PNG para preservar transparências</p>
+            <p>• PDF é recomendado para impressão em gráficas (formato padrão)</p>
+            <p>• Para o mapa de mesas, imprima em A3 para melhor visualização</p>
           </div>
         </motion.div>
       </div>
