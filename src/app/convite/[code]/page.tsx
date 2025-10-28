@@ -15,12 +15,12 @@ import PhotoUploadSection from '@/components/invitations/PhotoUploadSection';
 import GeneralOrientations from '@/components/invitations/GeneralOrientations';
 import SeatingChart from '@/components/seating/SeatingChart';
 import Image from 'next/image';
+import { createClient } from '@/lib/supabase/client';
 import type { Invitation, TableWithGuests } from '@/types/wedding';
 import {
   getInvitationByCode,
   trackInvitationOpen,
 } from '@/lib/supabase/invitations';
-import { getGuestTableAssignment } from '@/lib/supabase/seating';
 
 export default function PersonalizedInvitationPage() {
   const params = useParams();
@@ -65,19 +65,47 @@ export default function PersonalizedInvitationPage() {
       // Load table assignment if exists
       if (data.table_number) {
         try {
-          const tableData = await getGuestTableAssignment(code.toUpperCase());
-          if (tableData) {
-            // Convert table to TableWithGuests format
-            const tableWithGuests: TableWithGuests = {
-              ...tableData.table!,
-              guests: tableData.tableGuests,
-              assigned_guests: tableData.tableGuests.length,
-              confirmed_guests: tableData.tableGuests.filter(g => g.rsvp_completed).length,
-            };
-            setTableAssignment({
-              table: tableWithGuests,
-              tableNumber: data.table_number,
-            });
+          const supabase = createClient();
+
+          // Get the table
+          const { data: table, error: tableError } = await supabase
+            .from('tables')
+            .select('*')
+            .eq('table_number', data.table_number)
+            .single();
+
+          if (!tableError && table) {
+            // Get guests for this table
+            const { data: invitations, error: invError } = await supabase
+              .from('invitations')
+              .select('guest_name, guest_email, plus_one_allowed, plus_one_name, rsvp_completed, dietary_restrictions')
+              .eq('table_number', data.table_number)
+              .order('guest_name', { ascending: true });
+
+            if (!invError) {
+              const tableGuests = (invitations || []).map((inv) => ({
+                guest_name: inv.guest_name,
+                guest_email: inv.guest_email || undefined,
+                plus_one_allowed: inv.plus_one_allowed || false,
+                plus_one_name: inv.plus_one_name || undefined,
+                rsvp_completed: inv.rsvp_completed || false,
+                dietary_restrictions: inv.dietary_restrictions || undefined,
+              }));
+
+              const confirmedGuests = tableGuests.filter((g) => g.rsvp_completed).length;
+
+              const tableWithGuests: TableWithGuests = {
+                ...table,
+                guests: tableGuests,
+                assigned_guests: tableGuests.length,
+                confirmed_guests: confirmedGuests,
+              };
+
+              setTableAssignment({
+                table: tableWithGuests,
+                tableNumber: data.table_number,
+              });
+            }
           }
         } catch (tableError) {
           console.warn('Error loading table assignment:', tableError);
