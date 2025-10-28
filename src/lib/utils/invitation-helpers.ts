@@ -142,20 +142,13 @@ export function getRelationshipColorClass(type: RelationshipType): string {
 
 /**
  * Generate personalized invitation title
- * Examples:
- * - "João Silva, você está convidado!" (no plus one)
- * - "Maria Santos, você e acompanhante estão convidados!" (with plus one)
+ * Example:
+ * - "João Silva, você está convidado!"
  */
 export function getInvitationTitle(
-  guestName: string,
-  plusOneAllowed: boolean
+  guestName: string
 ): string {
   const formattedName = formatGuestName(guestName);
-
-  if (plusOneAllowed) {
-    return `${formattedName}, você e acompanhante estão convidados!`;
-  }
-
   return `${formattedName}, você está convidado!`;
 }
 
@@ -241,20 +234,3 @@ export function getProgressMessage(completionPercentage: number): string {
   return 'Tudo pronto! Mal podemos esperar para te ver! 🎉';
 }
 
-// ============================================================================
-// Plus One Handling
-// ============================================================================
-
-/**
- * Get plus one text for display
- */
-export function getPlusOneText(plusOneAllowed: boolean): string {
-  return plusOneAllowed ? 'Você pode trazer acompanhante' : 'Convite individual';
-}
-
-/**
- * Get plus one emoji
- */
-export function getPlusOneEmoji(plusOneAllowed: boolean): string {
-  return plusOneAllowed ? '👥' : '👤';
-}

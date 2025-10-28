@@ -8,8 +8,6 @@ export interface RsvpFormData {
   email: string;
   phone?: string;
   attending: boolean | null;
-  plusOne?: boolean;
-  plusOneName?: string;
   dietaryRestrictions?: string;
   specialRequests?: string;
   invitationCode?: string;
@@ -31,11 +29,6 @@ export function validateRsvpForm(data: RsvpFormData): ValidationError[] {
 
   if (data.attending === null) {
     errors.push({ field: 'attending', message: 'Por favor, confirme sua presença' });
-  }
-
-  // Plus one validation
-  if (data.plusOne && !data.plusOneName?.trim()) {
-    errors.push({ field: 'plusOneName', message: 'Nome do acompanhante é obrigatório' });
   }
 
   // Phone validation (if provided)

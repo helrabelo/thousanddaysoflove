@@ -7,8 +7,6 @@ export interface Guest {
   phone?: string;
   attending: boolean | null;
   dietary_restrictions?: string | null;
-  plus_one?: boolean;
-  plus_one_name?: string | null;
   invitation_code: string;
   rsvp_date?: string;
   special_requests?: string;
@@ -90,7 +88,7 @@ export interface FamilyGroup {
 export interface InvitationCode {
   id: string;
   code: string;
-  code_type: 'individual' | 'family' | 'plus_one';
+  code_type: 'individual' | 'family';
   guest_id?: string;
   family_group_id?: string;
   is_used: boolean;
@@ -136,7 +134,6 @@ export interface GuestRsvpStats {
   confirmed_guests: number;
   declined_guests: number;
   pending_guests: number;
-  total_with_plus_ones: number;
   confirmation_rate: number;
   family_groups_count: number;
   individual_guests_count: number;
@@ -490,8 +487,6 @@ export interface Invitation {
   guest_email?: string | null;
   guest_phone?: string | null;
   relationship_type: 'family' | 'friend' | 'colleague' | 'other';
-  plus_one_allowed: boolean;
-  plus_one_name?: string | null;
   custom_message?: string | null;
   table_number?: number | null;
   dietary_restrictions?: string | null;
@@ -838,8 +833,6 @@ export interface Table {
 export interface TableGuest {
   guest_name: string;
   guest_email?: string;
-  plus_one_allowed: boolean;
-  plus_one_name?: string;
   rsvp_completed: boolean;
   dietary_restrictions?: string;
 }

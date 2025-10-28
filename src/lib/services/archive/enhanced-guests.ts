@@ -172,8 +172,6 @@ export class EnhancedGuestService {
     email: string
     phone?: string
     attending: boolean
-    plusOne?: boolean
-    plusOneName?: string
     dietaryRestrictions?: string
     specialRequests?: string
     invitationCode?: string
@@ -204,8 +202,6 @@ export class EnhancedGuestService {
         email: guestData.email,
         phone: guestData.phone || null,
         attending: guestData.attending,
-        plus_one: guestData.plusOne || false,
-        plus_one_name: guestData.plusOneName || null,
         dietary_restrictions: guestData.dietaryRestrictions || null,
         special_requests: guestData.specialRequests || null
       }
@@ -222,7 +218,6 @@ export class EnhancedGuestService {
         // Track RSVP update
         await this.trackEvent(finalGuest.id, 'rsvp_updated', {
           attending: guestData.attending,
-          plus_one: guestData.plusOne,
           session_id: guestData.sessionId,
           user_agent: guestData.userAgent,
           ip_address: guestData.ipAddress
@@ -251,7 +246,6 @@ export class EnhancedGuestService {
         // Track new RSVP
         await this.trackEvent(finalGuest.id, 'rsvp_completed', {
           attending: guestData.attending,
-          plus_one: guestData.plusOne,
           session_id: guestData.sessionId,
           user_agent: guestData.userAgent,
           ip_address: guestData.ipAddress
@@ -411,8 +405,6 @@ export class EnhancedGuestService {
         templateData: {
           guestName: guest.name,
           attending: guest.attending,
-          plusOne: guest.plus_one,
-          plusOneName: guest.plus_one_name,
           weddingDate: '20 de Novembro de 2025',
           invitationCode: guest.invitation_code
         }
@@ -594,7 +586,6 @@ export class EnhancedGuestService {
           confirmed_guests: 0,
           declined_guests: 0,
           pending_guests: 0,
-          total_with_plus_ones: 0,
           confirmation_rate: 0,
           family_groups_count: 0,
           individual_guests_count: 0,
@@ -612,7 +603,6 @@ export class EnhancedGuestService {
         confirmed_guests: 0,
         declined_guests: 0,
         pending_guests: 0,
-        total_with_plus_ones: 0,
         confirmation_rate: 0,
         family_groups_count: 0,
         individual_guests_count: 0,
@@ -739,8 +729,6 @@ export class EnhancedGuestService {
       'Email',
       'Telefone',
       'Confirmação',
-      'Acompanhante',
-      'Nome do Acompanhante',
       'Restrições Alimentares',
       'Pedidos Especiais',
       'Código do Convite',
@@ -757,8 +745,6 @@ export class EnhancedGuestService {
       guest.email,
       guest.phone || '',
       guest.attending === true ? 'Confirmado' : guest.attending === false ? 'Não Confirmado' : 'Pendente',
-      guest.plus_one ? 'Sim' : 'Não',
-      guest.plus_one_name || '',
       guest.dietary_restrictions || '',
       guest.special_requests || '',
       guest.invitation_code,

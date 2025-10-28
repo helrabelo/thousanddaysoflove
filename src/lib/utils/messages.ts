@@ -5,7 +5,6 @@
 
 export const successMessages = {
   rsvp: "Confirmado! Mal podemos esperar para celebrar com você na Casa HY! 💕",
-  rsvpWithPlusOne: "Confirmado para você e seu acompanhante! Nosso universo particular ficará ainda mais especial! 💕",
   gift: "Obrigado por ajudar a construir nosso lar! Linda 👑, Cacao 🍫, Olivia 🌸 e Oliver ⚡ também agradecem! 🐾",
   contact: "Sua mensagem chegou até nós! Respondemos assim que voltarmos de uma de nossas corridas matinais 🏃‍♀️🏃‍♂️",
   payment: "PIX recebido com muito carinho! Sua contribuição nos ajuda a construir nosso lar dos sonhos! 💕",
@@ -35,7 +34,6 @@ export const loadingMessages = {
 export const confirmationMessages = {
   rsvpAttending: "🎉 Perfeito! Você fará parte do nosso dia mais especial!",
   rsvpNotAttending: "💙 Entendemos! Mesmo de longe, você estará em nossos corações!",
-  rsvpPlusOne: "Mais amor é sempre bem-vindo! Seu acompanhante também será recebido com carinho! 💕",
   giftPurchase: "Presente escolhido com amor! Nossa casa ficará ainda mais especial! 🏠✨",
   paymentPending: "PIX em processamento... Como nossos sentimentos que foram crescendo aos poucos! ⏳",
   paymentConfirmed: "PIX confirmado! Obrigado por ajudar a construir nosso lar! 🏡💕"
@@ -57,7 +55,6 @@ export const placeholderTexts = {
   guestName: "Como gostaria de ser chamado(a)?",
   email: "Seu melhor e-mail para contato",
   phone: "WhatsApp para confirmarmos tudo",
-  plusOneName: "Nome do seu acompanhante especial",
   specialRequests: "Alguma observação especial? Somos todo ouvidos!",
   giftMessage: "Mensagem carinhosa para os noivos (opcional)",
   searchGifts: "Buscar presentes para o lar...",

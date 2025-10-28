@@ -31,7 +31,6 @@ interface Guest {
   phone: string | null
   email: string | null
   attending: boolean | null
-  plus_ones: number
   notes: string | null
   confirmed_by: string | null
   invitation_code?: string | null
@@ -43,7 +42,6 @@ interface EditingGuest {
   phone: string
   email: string
   attending: boolean | null
-  plus_ones: number
   notes: string
   invitation_code: string
 }
@@ -53,7 +51,6 @@ interface GuestStats {
   confirmed: number
   declined: number
   pending: number
-  totalPlusOnes: number
 }
 
 interface NewGuestEntry {
@@ -174,7 +171,6 @@ export default function AdminGuests(): JSX.Element {
       phone: guest.phone || '',
       email: guest.email || '',
       attending: guest.attending,
-      plus_ones: guest.plus_ones,
       notes: guest.notes || '',
       invitation_code: guest.invitation_code || ''
     })
@@ -197,7 +193,6 @@ export default function AdminGuests(): JSX.Element {
           phone: editForm.phone || undefined,
           email: editForm.email || undefined,
           attending: editForm.attending,
-          plus_ones: editForm.plus_ones,
           notes: editForm.notes || undefined,
           invitation_code: editForm.invitation_code || undefined
         })
@@ -381,13 +376,12 @@ ${inviteUrl}`
   }
 
   const exportToCSV = (): void => {
-    const headers = ['Nome', 'Email', 'Telefone', 'Status', 'Acompanhantes', 'Código Convite', 'Observações']
+    const headers = ['Nome', 'Email', 'Telefone', 'Status', 'Código Convite', 'Observações']
     const rows = filteredGuests.map(g => [
       g.name,
       g.email || '',
       g.phone || '',
       g.attending === true ? 'Confirmado' : g.attending === false ? 'Não Vai' : 'Pendente',
-      g.plus_ones.toString(),
       g.invitation_code || '',
       (g.notes || '').replace(/"/g, '""')
     ])
@@ -410,8 +404,7 @@ ${inviteUrl}`
     total: guests.length,
     confirmed: guests.filter(g => g.attending === true).length,
     declined: guests.filter(g => g.attending === false).length,
-    pending: guests.filter(g => g.attending === null).length,
-    totalPlusOnes: guests.reduce((sum, g) => sum + (g.plus_ones || 0), 0)
+    pending: guests.filter(g => g.attending === null).length
   }
 
   if (loading) {
@@ -478,7 +471,7 @@ ${inviteUrl}`
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <div className="bg-white rounded-lg border border-[#E8E6E3] p-4 text-center">
             <p className="text-sm text-[#4A4A4A] mb-1">Total</p>
             <p className="text-2xl font-semibold text-[#2C2C2C]">{stats.total}</p>
@@ -494,10 +487,6 @@ ${inviteUrl}`
           <div className="bg-amber-50 rounded-lg border border-amber-200 p-4 text-center">
             <p className="text-sm text-amber-700 mb-1">Pendentes</p>
             <p className="text-2xl font-semibold text-amber-900">{stats.pending}</p>
-          </div>
-          <div className="bg-gray-50 rounded-lg border border-gray-200 p-4 text-center">
-            <p className="text-sm text-gray-700 mb-1">Acompanhantes</p>
-            <p className="text-2xl font-semibold text-gray-900">{stats.totalPlusOnes}</p>
           </div>
         </div>
 
@@ -713,19 +702,6 @@ ${inviteUrl}`
                       )}
                     </div>
                   </th>
-                  <th
-                    className="text-center p-3 font-semibold text-[#2C2C2C] cursor-pointer hover:bg-[#E8E6E3] select-none"
-                    onClick={() => handleSort('plus_ones')}
-                  >
-                    <div className="flex items-center gap-1 justify-center">
-                      +
-                      {sortField === 'plus_ones' ? (
-                        sortDirection === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
-                      ) : (
-                        <ArrowUpDown className="w-3 h-3 opacity-30" />
-                      )}
-                    </div>
-                  </th>
                   <th className="text-left p-3 font-semibold text-[#2C2C2C]">Obs</th>
                   <th className="text-right p-3 font-semibold text-[#2C2C2C]">Ações</th>
                 </tr>
@@ -841,24 +817,6 @@ ${inviteUrl}`
                             </button>
                           </div>
                         </td>
-                        <td className="p-3 text-center align-top">
-                          <InlineEditableText
-                            active={quickEditMode}
-                            value={(guest.plus_ones ?? 0).toString()}
-                            onSave={async (next) => {
-                              const sanitized = next.trim()
-                              const parsed = sanitized === '' ? 0 : Number.parseInt(sanitized, 10)
-                              const normalized = Number.isNaN(parsed)
-                                ? 0
-                                : Math.min(5, Math.max(0, parsed))
-                              await handleQuickGuestUpdate(guest.id, { plus_ones: normalized })
-                            }}
-                            placeholder="0"
-                            type="number"
-                            className="mx-auto max-w-[70px]"
-                            inputClassName="text-center text-sm"
-                          />
-                        </td>
                         <td className="p-3 align-top">
                           <InlineEditableText
                             active={quickEditMode}
@@ -953,16 +911,6 @@ ${inviteUrl}`
                               <option value="true">Confirmado</option>
                               <option value="false">Não Vai</option>
                             </select>
-                          </td>
-                          <td className="p-2">
-                            <input
-                              type="number"
-                              min="0"
-                              max="5"
-                              value={editForm.plus_ones}
-                              onChange={(e) => setEditForm({ ...editForm, plus_ones: parseInt(e.target.value) || 0 })}
-                              className="w-16 px-2 py-1 border border-burgundy-200 rounded text-sm text-center"
-                            />
                           </td>
                           <td className="p-2">
                             <input
@@ -1069,9 +1017,6 @@ ${inviteUrl}`
                                 <Users className="w-4 h-4" />
                               </button>
                             </div>
-                          </td>
-                          <td className="p-3 text-center">
-                            <span className="text-burgundy-800 font-medium">{guest.plus_ones}</span>
                           </td>
                           <td className="p-3">
                             {guest.notes ? (

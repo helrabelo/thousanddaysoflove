@@ -8,7 +8,6 @@ import {
   Check,
   Download,
   Share2,
-  Users,
   Utensils,
 } from 'lucide-react';
 import QRCodeLib from 'qrcode';
@@ -119,23 +118,6 @@ export default function InvitationCard({ invitation }: InvitationCardProps) {
 
       {/* Details */}
       <div className="space-y-3 mb-6">
-        {/* Plus One */}
-        {invitation.plus_one_allowed && (
-          <div className=" rounded-lg p-3 flex items-center gap-3">
-            <Users className="w-5 h-5 text-[#A8A8A8] flex-shrink-0" />
-            <div>
-              <p className="font-crimson text-sm text-[#2C2C2C]">
-                Acompanhante permitido
-              </p>
-              {invitation.plus_one_name && (
-                <p className="font-crimson text-xs text-[#4A4A4A]">
-                  {invitation.plus_one_name}
-                </p>
-              )}
-            </div>
-          </div>
-        )}
-
         {/* Table Number */}
         {invitation.table_number && (
           <div className=" rounded-lg p-3 flex items-center gap-3">

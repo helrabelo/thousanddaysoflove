@@ -101,8 +101,6 @@ export class GuestService {
     email: string
     phone?: string
     attending: boolean
-    plusOne?: boolean
-    plusOneName?: string
     dietaryRestrictions?: string
     specialRequests?: string
     invitationCode?: string
@@ -122,8 +120,6 @@ export class GuestService {
         email: guestData.email,
         phone: guestData.phone || null,
         attending: guestData.attending,
-        plus_one: guestData.plusOne || false,
-        plus_one_name: guestData.plusOneName || null,
         dietary_restrictions: guestData.dietaryRestrictions || null,
         special_requests: guestData.specialRequests || null
       }
@@ -169,15 +165,14 @@ export class GuestService {
 
     const { data: guests, error } = await supabase
       .from('guests')
-      .select('attending, plus_one')
+      .select('attending')
 
     if (error || !guests) {
       return {
         total: 0,
         attending: 0,
         notAttending: 0,
-        pending: 0,
-        totalWithPlusOnes: 0
+        pending: 0
       }
     }
 
@@ -186,7 +181,6 @@ export class GuestService {
 
       if (guest.attending === true) {
         acc.attending++
-        acc.totalWithPlusOnes += guest.plus_one ? 2 : 1
       } else if (guest.attending === false) {
         acc.notAttending++
       } else {
@@ -198,8 +192,7 @@ export class GuestService {
       total: 0,
       attending: 0,
       notAttending: 0,
-      pending: 0,
-      totalWithPlusOnes: 0
+      pending: 0
     })
 
     return stats
@@ -244,8 +237,6 @@ export class GuestService {
       'Email',
       'Telefone',
       'Confirmação',
-      'Acompanhante',
-      'Nome do Acompanhante',
       'Restrições Alimentares',
       'Pedidos Especiais',
       'Código do Convite',
@@ -257,8 +248,6 @@ export class GuestService {
       guest.email,
       guest.phone || '',
       guest.attending === true ? 'Confirmado' : guest.attending === false ? 'Não Confirmado' : 'Pendente',
-      guest.plus_one ? 'Sim' : 'Não',
-      guest.plus_one_name || '',
       guest.dietary_restrictions || '',
       guest.special_requests || '',
       guest.invitation_code,

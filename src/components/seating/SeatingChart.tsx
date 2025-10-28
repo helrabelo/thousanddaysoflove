@@ -405,11 +405,6 @@ export default function SeatingChart({
                     >
                       <span className="font-crimson text-gray">
                         {guest.guest_name}
-                        {guest.plus_one_name && (
-                          <span className="text-sm italic ml-2">
-                            (+ {guest.plus_one_name})
-                          </span>
-                        )}
                       </span>
                       {guest.rsvp_completed && (
                         <span className="text-xs text-green-600 font-semibold">

@@ -24,8 +24,6 @@ export function RsvpForm({ initialGuest, onSuccess, onError }: RsvpFormProps) {
     email: initialGuest?.email || '',
     phone: initialGuest?.phone || '',
     attending: initialGuest?.attending ?? null,
-    plusOne: initialGuest?.plus_one || false,
-    plusOneName: initialGuest?.plus_one_name || '',
     dietaryRestrictions: initialGuest?.dietary_restrictions || '',
     specialRequests: initialGuest?.special_requests || '',
     invitationCode: initialGuest?.invitation_code || ''
@@ -65,9 +63,6 @@ export function RsvpForm({ initialGuest, onSuccess, onError }: RsvpFormProps) {
       if (formData.attending === null) {
         stepErrors.attending = 'Por favor, confirme sua presença'
       }
-      if (formData.plusOne && !formData.plusOneName?.trim()) {
-        stepErrors.plusOneName = 'Nome do acompanhante é obrigatório'
-      }
     }
 
     setErrors(stepErrors)
@@ -102,8 +97,6 @@ export function RsvpForm({ initialGuest, onSuccess, onError }: RsvpFormProps) {
         email: formData.email,
         phone: formData.phone,
         attending: formData.attending!,
-        plusOne: formData.plusOne,
-        plusOneName: formData.plusOneName,
         dietaryRestrictions: formData.dietaryRestrictions,
         specialRequests: formData.specialRequests,
         invitationCode: formData.invitationCode
@@ -254,36 +247,6 @@ export function RsvpForm({ initialGuest, onSuccess, onError }: RsvpFormProps) {
                 required
               />
 
-              {formData.attending === true && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  className="space-y-4"
-                >
-                  <Checkbox
-                    checked={formData.plusOne}
-                    onChange={(e) => handleInputChange('plusOne', e.target.checked)}
-                    label="Trarei um acompanhante"
-                    description={personalizedRSVPMessages.plusOne}
-                  />
-
-                  {formData.plusOne && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                    >
-                      <Input
-                        label="Nome do acompanhante"
-                        value={formData.plusOneName}
-                        onChange={(e) => handleInputChange('plusOneName', e.target.value)}
-                        error={errors.plusOneName}
-                        placeholder="Nome completo do acompanhante"
-                        required={formData.plusOne}
-                      />
-                    </motion.div>
-                  )}
-                </motion.div>
-              )}
 
               <div className="flex justify-between">
                 <Button type="button" onClick={handlePrevious} variant="outline">

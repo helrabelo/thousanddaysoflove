@@ -78,7 +78,7 @@ export default function PersonalizedInvitationPage() {
             // Get guests for this table
             const { data: invitations, error: invError } = await supabase
               .from('invitations')
-              .select('guest_name, guest_email, plus_one_allowed, plus_one_name, rsvp_completed, dietary_restrictions')
+              .select('guest_name, guest_email, rsvp_completed, dietary_restrictions')
               .eq('table_number', data.table_number)
               .order('guest_name', { ascending: true });
 
@@ -86,8 +86,6 @@ export default function PersonalizedInvitationPage() {
               const tableGuests = (invitations || []).map((inv) => ({
                 guest_name: inv.guest_name,
                 guest_email: inv.guest_email || undefined,
-                plus_one_allowed: inv.plus_one_allowed || false,
-                plus_one_name: inv.plus_one_name || undefined,
                 rsvp_completed: inv.rsvp_completed || false,
                 dietary_restrictions: inv.dietary_restrictions || undefined,
               }));
@@ -335,11 +333,6 @@ export default function PersonalizedInvitationPage() {
                     >
                       <span className="font-crimson text-gray">
                         {guest.guest_name}
-                        {guest.plus_one_name && (
-                          <span className="text-sm italic ml-2">
-                            (+ {guest.plus_one_name})
-                          </span>
-                        )}
                       </span>
                       {guest.rsvp_completed && (
                         <span className="text-xs text-green-600 font-semibold">

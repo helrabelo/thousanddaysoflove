@@ -321,7 +321,6 @@ export const personalizedRSVPMessages = {
   welcome: "Encontrando você na nossa história de 1000 dias...",
   confirmation: "Confirme sua presença em nosso grande dia na Casa HY",
   dietaryNeeds: "Cuidaremos de você com todo carinho (como sempre fizemos em casa)",
-  plusOne: "Mais amor é sempre bem-vindo em nossa celebração! 💕",
   success: "Mal podemos esperar para celebrar nossos 1000 dias com você! ✨",
   finalButton: "Confirmar presença nos mil dias 💕"
 };

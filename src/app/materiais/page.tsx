@@ -93,7 +93,7 @@ export default function MateriaisPage() {
       // Fetch all invitations with table assignments
       const { data: invitations, error: invError } = await supabase
         .from('invitations')
-        .select('guest_name, guest_email, plus_one_allowed, plus_one_name, rsvp_completed, dietary_restrictions, table_number')
+        .select('guest_name, guest_email, rsvp_completed, dietary_restrictions, table_number')
         .not('table_number', 'is', null)
         .order('guest_name')
 
@@ -106,8 +106,6 @@ export default function MateriaisPage() {
           .map((inv) => ({
             guest_name: inv.guest_name,
             guest_email: inv.guest_email || undefined,
-            plus_one_allowed: inv.plus_one_allowed || false,
-            plus_one_name: inv.plus_one_name || undefined,
             rsvp_completed: inv.rsvp_completed || false,
             dietary_restrictions: inv.dietary_restrictions || undefined,
           }))
@@ -685,9 +683,6 @@ export default function MateriaisPage() {
                               {table.guests.map((guest, idx) => (
                                 <li key={idx} className="border-b border-[var(--accent)] last:border-0 py-2">
                                   {guest.guest_name}
-                                  {guest.plus_one_name && (
-                                    <span className="text-xs italic ml-1">(+ {guest.plus_one_name})</span>
-                                  )}
                                 </li>
                               ))}
                             </ul>

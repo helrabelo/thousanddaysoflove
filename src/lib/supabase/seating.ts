@@ -30,7 +30,7 @@ export async function getTablesWithGuests(): Promise<TableWithGuests[]> {
   // Get all invitations with table assignments
   const { data: invitations, error: invitationsError } = await supabase
     .from('invitations')
-    .select('guest_name, guest_email, plus_one_allowed, plus_one_name, rsvp_completed, dietary_restrictions, table_number')
+    .select('guest_name, guest_email, rsvp_completed, dietary_restrictions, table_number')
     .not('table_number', 'is', null)
     .order('guest_name', { ascending: true });
 
@@ -46,8 +46,6 @@ export async function getTablesWithGuests(): Promise<TableWithGuests[]> {
       .map((inv) => ({
         guest_name: inv.guest_name,
         guest_email: inv.guest_email || undefined,
-        plus_one_allowed: inv.plus_one_allowed || false,
-        plus_one_name: inv.plus_one_name || undefined,
         rsvp_completed: inv.rsvp_completed || false,
         dietary_restrictions: inv.dietary_restrictions || undefined,
       }));
@@ -86,7 +84,7 @@ export async function getTableWithGuests(tableNumber: number): Promise<TableWith
   // Get guests for this table
   const { data: invitations, error: invitationsError } = await supabase
     .from('invitations')
-    .select('guest_name, guest_email, plus_one_allowed, plus_one_name, rsvp_completed, dietary_restrictions')
+    .select('guest_name, guest_email, rsvp_completed, dietary_restrictions')
     .eq('table_number', tableNumber)
     .order('guest_name', { ascending: true });
 
@@ -98,8 +96,6 @@ export async function getTableWithGuests(tableNumber: number): Promise<TableWith
   const tableGuests: TableGuest[] = (invitations || []).map((inv) => ({
     guest_name: inv.guest_name,
     guest_email: inv.guest_email || undefined,
-    plus_one_allowed: inv.plus_one_allowed || false,
-    plus_one_name: inv.plus_one_name || undefined,
     rsvp_completed: inv.rsvp_completed || false,
     dietary_restrictions: inv.dietary_restrictions || undefined,
   }));

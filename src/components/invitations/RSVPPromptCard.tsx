@@ -133,16 +133,8 @@ export default function RSVPPromptCard({ invitation }: RSVPPromptCardProps) {
             </button>
           </div>
 
-          {/* Show additional info if available */}
-          {attending && invitation.plus_one_name && (
-            <div className="mt-4 pt-4 border-t border-emerald-200">
-              <p className="font-crimson text-sm text-emerald-800">
-                <strong>Acompanhante:</strong> {invitation.plus_one_name}
-              </p>
-            </div>
-          )}
           {attending && invitation.dietary_restrictions && (
-            <div className="mt-2">
+            <div className="mt-4">
               <p className="font-crimson text-sm text-emerald-800">
                 <strong>Restrições alimentares:</strong>{' '}
                 {invitation.dietary_restrictions}

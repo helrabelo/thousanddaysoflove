@@ -504,8 +504,6 @@ export interface ConfirmedGuest {
   guest_name: string
   guest_email: string | null
   relationship_type: string
-  plus_one_allowed: boolean
-  plus_one_name: string | null
 }
 
 /**
@@ -514,9 +512,9 @@ export interface ConfirmedGuest {
 export async function getConfirmedGuests(): Promise<ConfirmedGuest[]> {
   const supabase = await createServerClient()
 
-  const { data, error } = await supabase
+  const { data, error} = await supabase
     .from('invitations')
-    .select('id, guest_name, guest_email, relationship_type, plus_one_allowed, plus_one_name')
+    .select('id, guest_name, guest_email, relationship_type')
     .eq('rsvp_completed', true)
     .order('guest_name', { ascending: true })
 

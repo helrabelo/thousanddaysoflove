@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: { params: Promise<{ code: str
   if (invitation) {
     const guestFirstName = invitation.guest_name.split(' ')[0];
     const title = `${guestFirstName}, você está convidado(a)! 💍`;
-    const description = `Hel & Ylana se casam em 20 de Novembro de 2025 na Casa HY. ${invitation.plus_one_allowed ? 'Você pode trazer acompanhante! ❤️' : 'Sua presença é fundamental! ❤️'}`;
+    const description = `Hel & Ylana se casam em 20 de Novembro de 2025 na Casa HY. Sua presença é fundamental! ❤️`;
 
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://thousanddaysof.love';
 

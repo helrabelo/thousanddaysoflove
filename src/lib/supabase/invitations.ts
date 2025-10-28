@@ -309,8 +309,6 @@ export async function createInvitation(
       guest_email: invitation.guest_email,
       guest_phone: invitation.guest_phone,
       relationship_type: invitation.relationship_type,
-      plus_one_allowed: invitation.plus_one_allowed,
-      plus_one_name: invitation.plus_one_name,
       custom_message: invitation.custom_message,
       table_number: invitation.table_number,
       dietary_restrictions: invitation.dietary_restrictions,
@@ -467,8 +465,6 @@ export async function exportInvitationsToCSV(): Promise<string> {
     'Email',
     'Phone',
     'Relationship',
-    'Plus One',
-    'Plus One Name',
     'Table',
     'Dietary Restrictions',
     'Custom Message',
@@ -487,8 +483,6 @@ export async function exportInvitationsToCSV(): Promise<string> {
     inv.guest_email || '',
     inv.guest_phone || '',
     inv.relationship_type,
-    inv.plus_one_allowed ? 'Yes' : 'No',
-    inv.plus_one_name || '',
     inv.table_number || '',
     inv.dietary_restrictions || '',
     (inv.custom_message || '').replace(/"/g, '""'), // Escape quotes
@@ -591,10 +585,6 @@ export async function getInvitationAnalytics() {
       relationship_type: i.relationship_type,
     }));
 
-  // Plus one stats
-  const plus_one_allowed = invitations.filter((i) => i.plus_one_allowed).length;
-  const plus_one_with_name = invitations.filter((i) => i.plus_one_name).length;
-
   return {
     total,
     opened,
@@ -608,10 +598,6 @@ export async function getInvitationAnalytics() {
     total_opens: invitations.reduce((sum, i) => sum + i.open_count, 0),
     by_relationship,
     recent_openings,
-    plus_one_stats: {
-      allowed: plus_one_allowed,
-      with_name: plus_one_with_name,
-    },
   };
 }
 

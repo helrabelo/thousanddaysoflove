@@ -19,7 +19,6 @@ interface Guest {
   phone: string | null
   email: string | null
   attending: boolean | null
-  plus_ones: number
   confirmed_by: string | null
   dietary_restrictions: string | null
   song_requests: string | null
@@ -166,7 +165,6 @@ export default function SimpleRSVP() {
         phone: guest.phone,
         email: guest.email,
         attending: guest.attending,
-        plus_ones: guest.plus_ones ?? 0,
         confirmed_by: guest.confirmed_by,
         dietary_restrictions: guest.dietary_restrictions,
         song_requests: guest.song_requests,
@@ -198,7 +196,7 @@ export default function SimpleRSVP() {
     setShowEnhancedForm(true)
   }
 
-  const confirmRSVP = async (guestId: string, guestName: string, attending: boolean, plusOnes: number) => {
+  const confirmRSVP = async (guestId: string, guestName: string, attending: boolean) => {
     setSaving(guestId)
     try {
       const supabase = createClient()
@@ -206,7 +204,6 @@ export default function SimpleRSVP() {
         .from('simple_guests')
         .update({
           attending,
-          plus_ones: plusOnes,
           dietary_restrictions: dietaryRestrictions || null,
           song_requests: songRequests || null,
           special_message: specialMessage || null,
@@ -242,7 +239,7 @@ export default function SimpleRSVP() {
   const quickConfirm = async (guestId: string, guestName: string, attending: boolean) => {
     // For quick "No" responses, skip the enhanced form
     if (!attending) {
-      await confirmRSVP(guestId, guestName, false, 0)
+      await confirmRSVP(guestId, guestName, false)
       return
     }
 
@@ -367,7 +364,7 @@ export default function SimpleRSVP() {
                       ) : guest.attending ? (
                         <p className="mb-4 flex items-center gap-2" style={{ color: '#22c55e', fontFamily: 'var(--font-crimson)' }}>
                           <Check className="w-5 h-5" />
-                          Confirmado! {guest.plus_ones > 0 && `+ ${guest.plus_ones} acompanhante(s)`}
+                          Confirmado!
                         </p>
                       ) : (
                         <p className="mb-4 flex items-center gap-2" style={{ color: '#ef4444', fontFamily: 'var(--font-crimson)' }}>
@@ -489,41 +486,6 @@ export default function SimpleRSVP() {
               </p>
 
               <div className="space-y-6">
-                {/* Plus Ones */}
-                <div>
-                  <label
-                    className="block text-sm font-medium mb-2"
-                    style={{ fontFamily: 'var(--font-crimson)', color: 'var(--primary-text)' }}
-                  >
-                    <Users className="w-4 h-4 inline mr-2" />
-                    Quantos acompanhantes?
-                  </label>
-                  <select
-                    className="w-full px-4 py-3 border rounded-lg min-h-[48px]"
-                    style={{
-                      borderColor: 'var(--border-subtle)',
-                      background: 'var(--background)',
-                      color: 'var(--primary-text)',
-                      fontFamily: 'var(--font-crimson)',
-                      fontSize: '16px'
-                    }}
-                    value={guests.find(g => g.id === selectedGuestId)?.plus_ones || 0}
-                    onChange={(e) => {
-                      const updatedGuests = guests.map(g =>
-                        g.id === selectedGuestId ? { ...g, plus_ones: parseInt(e.target.value) } : g
-                      )
-                      setGuests(updatedGuests)
-                    }}
-                  >
-                    {[0, 1, 2, 3, 4].map((n) => (
-                      <option key={n} value={n}>{n}</option>
-                    ))}
-                  </select>
-                  <p className="text-xs mt-1" style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-crimson)', fontStyle: 'italic' }}>
-                    * Só adicione acompanhantes que NÃO estão na nossa lista
-                  </p>
-                </div>
-
                 {/* Dietary Restrictions */}
                 <div>
                   <label
@@ -612,7 +574,7 @@ export default function SimpleRSVP() {
                   onClick={() => {
                     const guest = guests.find(g => g.id === selectedGuestId)
                     if (guest) {
-                      confirmRSVP(selectedGuestId, guest.name, true, guest.plus_ones || 0)
+                      confirmRSVP(selectedGuestId, guest.name, true)
                     }
                   }}
                   variant="wedding"

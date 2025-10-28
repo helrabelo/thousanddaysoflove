@@ -9,8 +9,6 @@ export interface Database {
           phone: string | null
           attending: boolean | null
           dietary_restrictions: string | null
-          plus_one: boolean
-          plus_one_name: string | null
           invitation_code: string
           rsvp_date: string | null
           special_requests: string | null
@@ -24,8 +22,6 @@ export interface Database {
           phone?: string | null
           attending?: boolean | null
           dietary_restrictions?: string | null
-          plus_one?: boolean
-          plus_one_name?: string | null
           invitation_code: string
           rsvp_date?: string | null
           special_requests?: string | null
@@ -39,8 +35,6 @@ export interface Database {
           phone?: string | null
           attending?: boolean | null
           dietary_restrictions?: string | null
-          plus_one?: boolean
-          plus_one_name?: string | null
           invitation_code?: string
           rsvp_date?: string | null
           special_requests?: string | null

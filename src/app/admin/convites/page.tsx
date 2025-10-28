@@ -653,79 +653,6 @@ export default function AdminInvitationsPage() {
                             maxLength={120}
                           />
 
-                          <div className="flex flex-wrap items-center gap-2 text-xs text-[#4A4A4A]">
-                            <span className="font-semibold uppercase tracking-wide text-[11px] text-[#707070]">
-                              Acompanhante
-                            </span>
-                            <div className="flex items-center gap-1">
-                              <button
-                                type="button"
-                                onClick={async () => {
-                                  if (invitation.plus_one_allowed) return
-                                  try {
-                                    await handleInvitationQuickUpdate(
-                                      invitation.id,
-                                      { plus_one_allowed: true },
-                                      'plus_one_allowed'
-                                    )
-                                  } catch {
-                                    // handled via alert in handler
-                                  }
-                                }}
-                                className={`rounded-md border px-2 py-1 text-xs font-medium transition ${
-                                  invitation.plus_one_allowed
-                                    ? 'border-green-500 bg-green-50 text-green-700'
-                                    : 'border-gray-200 bg-white text-[#4A4A4A] hover:border-gray-300'
-                                }`}
-                                disabled={isFieldSaving(invitation.id, 'plus_one_allowed') || invitation.plus_one_allowed}
-                              >
-                                Sim
-                              </button>
-                              <button
-                                type="button"
-                                onClick={async () => {
-                                  if (!invitation.plus_one_allowed) return
-                                  try {
-                                    await handleInvitationQuickUpdate(
-                                      invitation.id,
-                                      { plus_one_allowed: false, plus_one_name: null },
-                                      'plus_one_allowed'
-                                    )
-                                  } catch {
-                                    // handled via alert in handler
-                                  }
-                                }}
-                                className={`rounded-md border px-2 py-1 text-xs font-medium transition ${
-                                  !invitation.plus_one_allowed
-                                    ? 'border-red-500 bg-red-50 text-red-700'
-                                    : 'border-gray-200 bg-white text-[#4A4A4A] hover:border-gray-300'
-                                }`}
-                                disabled={isFieldSaving(invitation.id, 'plus_one_allowed') || !invitation.plus_one_allowed}
-                              >
-                                Não
-                              </button>
-                            </div>
-                          </div>
-
-                          {invitation.plus_one_allowed && (
-                            <InlineEditableText
-                              active={quickEditMode}
-                              value={invitation.plus_one_name ?? ''}
-                              onSave={async (next) => {
-                                await handleInvitationQuickUpdate(invitation.id, {
-                                  plus_one_name: next ? next : null,
-                                })
-                              }}
-                              placeholder="Nome do acompanhante"
-                              className="max-w-xs"
-                              inputClassName="text-sm"
-                              emptyDisplay={
-                                <span className="text-sm text-[#A8A8A8]">Informe o nome do acompanhante</span>
-                              }
-                              maxLength={120}
-                            />
-                          )}
-
                           <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
                             <InlineEditableText
                               active={quickEditMode}
@@ -759,12 +686,6 @@ export default function AdminInvitationsPage() {
                       ) : (
                         <div>
                           <div className="font-semibold text-[#2C2C2C]">{invitation.guest_name}</div>
-                          {invitation.plus_one_allowed && (
-                            <div className="mt-1 flex items-center gap-1 text-sm text-[#4A4A4A]">
-                              <UserPlus className="w-3 h-3" />
-                              {invitation.plus_one_name || 'Acompanhante permitido'}
-                            </div>
-                          )}
                           {invitation.table_number && (
                             <div className="mt-1 text-sm text-[#4A4A4A]">
                               Mesa{' '}
@@ -1087,8 +1008,6 @@ function CreateInvitationModal({
     guest_email: '',
     guest_phone: '',
     relationship_type: 'friend' as 'family' | 'friend' | 'colleague' | 'other',
-    plus_one_allowed: false,
-    plus_one_name: '',
     custom_message: '',
     table_number: '',
     dietary_restrictions: '',
@@ -1128,8 +1047,6 @@ function CreateInvitationModal({
         guest_email: formData.guest_email || undefined,
         guest_phone: formData.guest_phone || undefined,
         relationship_type: formData.relationship_type,
-        plus_one_allowed: formData.plus_one_allowed,
-        plus_one_name: formData.plus_one_name || undefined,
         custom_message: formData.custom_message || undefined,
         table_number: formData.table_number ? parseInt(formData.table_number) : undefined,
         dietary_restrictions: formData.dietary_restrictions || undefined,
@@ -1144,8 +1061,6 @@ function CreateInvitationModal({
         guest_email: '',
         guest_phone: '',
         relationship_type: 'friend',
-        plus_one_allowed: false,
-        plus_one_name: '',
         custom_message: '',
         table_number: '',
         dietary_restrictions: '',
@@ -1255,44 +1170,6 @@ function CreateInvitationModal({
                   <option value="other">Outro</option>
                 </select>
               </div>
-            </div>
-
-            {/* Plus One Section */}
-            <div className="space-y-4 pt-6 border-t border-[#E8E6E3]">
-              <h4 className="font-semibold text-[#2C2C2C] flex items-center gap-2">
-                <UserPlus className="w-5 h-5" />
-                Acompanhante
-              </h4>
-
-              <div className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  id="plus_one"
-                  checked={formData.plus_one_allowed}
-                  onChange={(e) =>
-                    setFormData({ ...formData, plus_one_allowed: e.target.checked })
-                  }
-                  className="w-5 h-5 rounded border-gray-300 text-[#2C2C2C] focus:ring-[#2C2C2C]"
-                />
-                <label htmlFor="plus_one" className="text-sm text-[#2C2C2C]">
-                  Permitir acompanhante
-                </label>
-              </div>
-
-              {formData.plus_one_allowed && (
-                <div>
-                  <label className="block text-sm font-medium text-[#2C2C2C] mb-2">
-                    Nome do Acompanhante
-                  </label>
-                  <Input
-                    value={formData.plus_one_name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, plus_one_name: e.target.value })
-                    }
-                    placeholder="Maria Silva"
-                  />
-                </div>
-              )}
             </div>
 
             {/* Additional Details Section */}
@@ -1416,8 +1293,6 @@ function EditInvitationModal({
     guest_email: '',
     guest_phone: '',
     relationship_type: 'friend' as 'family' | 'friend' | 'colleague' | 'other',
-    plus_one_allowed: false,
-    plus_one_name: '',
     custom_message: '',
     table_number: '',
     dietary_restrictions: '',
@@ -1431,8 +1306,6 @@ function EditInvitationModal({
         guest_email: invitation.guest_email || '',
         guest_phone: invitation.guest_phone || '',
         relationship_type: invitation.relationship_type as Invitation['relationship_type'],
-        plus_one_allowed: invitation.plus_one_allowed,
-        plus_one_name: invitation.plus_one_name || '',
         custom_message: invitation.custom_message || '',
         table_number: invitation.table_number?.toString() || '',
         dietary_restrictions: invitation.dietary_restrictions || '',
@@ -1452,8 +1325,6 @@ function EditInvitationModal({
         guest_email: formData.guest_email || undefined,
         guest_phone: formData.guest_phone || undefined,
         relationship_type: formData.relationship_type,
-        plus_one_allowed: formData.plus_one_allowed,
-        plus_one_name: formData.plus_one_name || undefined,
         custom_message: formData.custom_message || undefined,
         table_number: formData.table_number ? parseInt(formData.table_number) : undefined,
         dietary_restrictions: formData.dietary_restrictions || undefined,
@@ -1571,44 +1442,6 @@ function EditInvitationModal({
                   <option value="other">Outro</option>
                 </select>
               </div>
-            </div>
-
-            {/* Plus One Section */}
-            <div className="space-y-4 pt-6 border-t border-[#E8E6E3]">
-              <h4 className="font-semibold text-[#2C2C2C] flex items-center gap-2">
-                <UserPlus className="w-5 h-5" />
-                Acompanhante
-              </h4>
-
-              <div className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  id="edit_plus_one"
-                  checked={formData.plus_one_allowed}
-                  onChange={(e) =>
-                    setFormData({ ...formData, plus_one_allowed: e.target.checked })
-                  }
-                  className="w-5 h-5 rounded border-gray-300 text-[#2C2C2C] focus:ring-[#2C2C2C]"
-                />
-                <label htmlFor="edit_plus_one" className="text-sm text-[#2C2C2C]">
-                  Permitir acompanhante
-                </label>
-              </div>
-
-              {formData.plus_one_allowed && (
-                <div>
-                  <label className="block text-sm font-medium text-[#2C2C2C] mb-2">
-                    Nome do Acompanhante
-                  </label>
-                  <Input
-                    value={formData.plus_one_name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, plus_one_name: e.target.value })
-                    }
-                    placeholder="Maria Silva"
-                  />
-                </div>
-              )}
             </div>
 
             {/* Additional Details Section */}
@@ -1879,26 +1712,6 @@ function DetailViewModal({
                 </div>
               </div>
             </Card>
-
-            {/* Plus One Information */}
-            {invitation.plus_one_allowed && (
-              <Card className="p-4 bg-gradient-to-br from-blue-50 to-white border-blue-200">
-                <h4 className="font-semibold text-[#2C2C2C] mb-4 flex items-center gap-2">
-                  <UserPlus className="w-5 h-5" />
-                  Acompanhante
-                </h4>
-                <div className="space-y-2">
-                  <p className="text-sm text-[#4A4A4A]">
-                    Acompanhante permitido: <strong className="text-green-600">Sim</strong>
-                  </p>
-                  {invitation.plus_one_name && (
-                    <p className="text-[#2C2C2C]">
-                      Nome: <strong>{invitation.plus_one_name}</strong>
-                    </p>
-                  )}
-                </div>
-              </Card>
-            )}
 
             {/* Additional Details */}
             <Card className="p-4">

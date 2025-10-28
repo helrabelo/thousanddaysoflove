@@ -358,9 +358,6 @@ export default function SeatingChartPrintable({
                   {table.guests.map((guest, idx) => (
                     <li key={idx} className="border-b border-accent last:border-0 py-1">
                       {guest.guest_name}
-                      {guest.plus_one_name && (
-                        <span className="text-xs italic ml-1">(+ {guest.plus_one_name})</span>
-                      )}
                     </li>
                   ))}
                 </ul>

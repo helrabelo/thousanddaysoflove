@@ -379,13 +379,6 @@ Hel & Ylana 💕
             <h2>Que alegria, ${guest.name}!</h2>
             <p>Recebemos sua confirmação de presença e estamos radiantes! Não vemos a hora de celebrar este momento especial com você.</p>
 
-            ${guest.plus_one ? `
-              <div class="info-box">
-                <h3>👫 Acompanhante Confirmado</h3>
-                <p>Também estamos ansiosos para conhecer <strong>${guest.plus_one_name}</strong>!</p>
-              </div>
-            ` : ''}
-
             ${guest.dietary_restrictions ? `
               <div class="info-box">
                 <h3>🍽️ Restrições Alimentares</h3>
@@ -453,7 +446,6 @@ Que alegria, ${guest.name}!
 
 Sua presença está confirmada para nosso casamento em 20 de Novembro de 2025, às 10:30h.
 
-${guest.plus_one ? `Acompanhante: ${guest.plus_one_name}` : ''}
 ${guest.dietary_restrictions ? `Restrições alimentares: ${guest.dietary_restrictions}` : ''}
 
 PRÓXIMOS PASSOS:

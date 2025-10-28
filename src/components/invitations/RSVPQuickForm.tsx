@@ -17,8 +17,6 @@ export default function RSVPQuickForm({
   onError,
 }: RSVPQuickFormProps) {
   const [attending, setAttending] = useState<boolean | null>(null);
-  const [plusOneAttending, setPlusOneAttending] = useState<boolean>(false);
-  const [plusOneName, setPlusOneName] = useState<string>('');
   const [dietaryRestrictions, setDietaryRestrictions] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -28,17 +26,6 @@ export default function RSVPQuickForm({
 
     if (attending === null) {
       onError?.('Por favor, indique se você poderá comparecer');
-      return;
-    }
-
-    // Validation: Plus one name required if bringing someone
-    if (
-      attending &&
-      invitation.plus_one_allowed &&
-      plusOneAttending &&
-      !plusOneName.trim()
-    ) {
-      onError?.('Por favor, informe o nome do acompanhante');
       return;
     }
 
@@ -53,8 +40,6 @@ export default function RSVPQuickForm({
         body: JSON.stringify({
           code: invitation.code,
           attending,
-          plus_one_attending: attending ? plusOneAttending : false,
-          plus_one_name: attending && plusOneAttending ? plusOneName.trim() : null,
           dietary_restrictions: attending ? dietaryRestrictions.trim() : null,
         }),
       });
@@ -156,81 +141,6 @@ export default function RSVPQuickForm({
         </div>
       </div>
 
-      {/* Plus One Section (only if attending and allowed) */}
-      <AnimatePresence>
-        {attending && invitation.plus_one_allowed && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="space-y-4"
-          >
-            {/* Plus One Toggle */}
-            <div>
-              <label className="block font-crimson text-lg text-[#2C2C2C] mb-3">
-                Virá com acompanhante?
-              </label>
-              <div className="flex gap-4">
-                <button
-                  type="button"
-                  onClick={() => setPlusOneAttending(true)}
-                  disabled={isSubmitting}
-                  className={`flex-1 px-4 py-3 rounded-lg border-2 transition-all duration-200 ${
-                    plusOneAttending
-                      ? 'bg-blue-500 text-white border-blue-600'
-                      : 'bg-white text-[#4A4A4A] border-[#E8E6E3] hover:border-blue-400'
-                  } disabled:opacity-50`}
-                >
-                  <span className="font-crimson">Sim, com acompanhante</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPlusOneAttending(false);
-                    setPlusOneName('');
-                  }}
-                  disabled={isSubmitting}
-                  className={`flex-1 px-4 py-3 rounded-lg border-2 transition-all duration-200 ${
-                    !plusOneAttending
-                      ? 'bg-gray-400 text-white border-gray-500'
-                      : 'bg-white text-[#4A4A4A] border-[#E8E6E3] hover:border-gray-400'
-                  } disabled:opacity-50`}
-                >
-                  <span className="font-crimson">Só eu</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Plus One Name Input */}
-            {plusOneAttending && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <label
-                  htmlFor="plusOneName"
-                  className="block font-crimson text-base text-[#4A4A4A] mb-2"
-                >
-                  Nome do acompanhante
-                </label>
-                <input
-                  type="text"
-                  id="plusOneName"
-                  value={plusOneName}
-                  onChange={(e) => setPlusOneName(e.target.value)}
-                  disabled={isSubmitting}
-                  placeholder="Ex: Maria Silva"
-                  className="w-full px-4 py-3 rounded-lg border-2 border-[#E8E6E3] focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-200 font-crimson disabled:opacity-50 disabled:cursor-not-allowed"
-                  required={plusOneAttending}
-                />
-              </motion.div>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Dietary Restrictions (only if attending) */}
       <AnimatePresence>

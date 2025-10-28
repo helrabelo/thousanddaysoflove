@@ -13,7 +13,6 @@ interface Analytics {
     confirmed: number
     declined: number
     pending: number
-    totalWithPlusOnes: number
   }
   gifts: {
     total: number
@@ -36,7 +35,6 @@ interface Analytics {
 interface SimpleGuest {
   id: string
   attending: boolean | null
-  plus_ones: number | null
 }
 
 interface GiftItem {
@@ -55,7 +53,7 @@ interface PaymentItem {
 export default function AdminAnalytics(): JSX.Element {
   const { showToast, ToastRenderer } = useToast()
   const [analytics, setAnalytics] = useState<Analytics>({
-    guests: { total: 0, confirmed: 0, declined: 0, pending: 0, totalWithPlusOnes: 0 },
+    guests: { total: 0, confirmed: 0, declined: 0, pending: 0 },
     gifts: { total: 0, purchased: 0, remaining: 0, totalValue: 0, purchasedValue: 0 },
     payments: { total: 0, completed: 0, pending: 0, totalAmount: 0 },
     wedding: { daysToWedding: 0 }
@@ -72,7 +70,6 @@ export default function AdminAnalytics(): JSX.Element {
       const confirmed = guests?.filter(g => g.attending === true) || []
       const declined = guests?.filter(g => g.attending === false) || []
       const pending = guests?.filter(g => g.attending === null) || []
-      const totalWithPlusOnes = confirmed.reduce((sum, g) => sum + (g.plus_ones || 0) + 1, 0)
 
       // Load gifts
       const { data: gifts } = await supabase.from('gifts').select<'*', GiftItem>('*')
@@ -101,8 +98,7 @@ export default function AdminAnalytics(): JSX.Element {
           total: guests?.length || 0,
           confirmed: confirmed.length,
           declined: declined.length,
-          pending: pending.length,
-          totalWithPlusOnes
+          pending: pending.length
         },
         gifts: {
           total: gifts?.length || 0,
@@ -189,8 +185,8 @@ export default function AdminAnalytics(): JSX.Element {
               <p className="text-burgundy-600">Pendentes</p>
             </Card>
             <Card className="glass p-6 text-center">
-              <h3 className="text-3xl font-bold text-blush-600">{analytics.guests.totalWithPlusOnes}</h3>
-              <p className="text-burgundy-600">Com Acompanhantes</p>
+              <h3 className="text-3xl font-bold text-red-600">{analytics.guests.declined}</h3>
+              <p className="text-burgundy-600">Não Vão</p>
             </Card>
           </div>
         </div>

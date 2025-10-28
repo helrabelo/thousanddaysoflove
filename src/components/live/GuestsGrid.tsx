@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Users, UserPlus } from 'lucide-react'
+import { Users } from 'lucide-react'
 import { getConfirmedGuests } from '@/lib/supabase/live'
 import type { ConfirmedGuest } from '@/lib/supabase/live'
 import { Card } from '@/components/ui/card'
@@ -33,10 +33,8 @@ export function GuestsGrid() {
     ? guests
     : guests.filter(g => g.relationship_type === filter)
 
-  // Count total attendees (including plus ones)
-  const totalAttendees = guests.reduce((acc, guest) => {
-    return acc + 1 + (guest.plus_one_allowed ? 1 : 0)
-  }, 0)
+  // Count total attendees
+  const totalAttendees = guests.length
 
   if (isLoading) {
     return (
@@ -137,22 +135,9 @@ export function GuestsGrid() {
                   {guest.guest_name.charAt(0).toUpperCase()}
                 </div>
 
-                {/* Plus one indicator */}
-                {guest.plus_one_allowed && (
-                  <div
-                    className="absolute -bottom-1 -right-1 bg-white rounded-full p-1 shadow-md"
-                    title={`Acompanhante: ${guest.plus_one_name || 'Não informado'}`}
-                  >
-                    <UserPlus className="w-3 h-3 text-[#2C2C2C]" />
-                  </div>
-                )}
-
                 {/* Tooltip on hover */}
                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-[#2C2C2C] text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
                   <div className="font-semibold">{guest.guest_name}</div>
-                  {guest.plus_one_allowed && guest.plus_one_name && (
-                    <div className="text-xs opacity-80">+ {guest.plus_one_name}</div>
-                  )}
                   <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[#2C2C2C]" />
                 </div>
               </motion.div>

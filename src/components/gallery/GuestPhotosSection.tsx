@@ -41,6 +41,21 @@ export default function GuestPhotosSection({
   const [guestName, setGuestName] = useState('Convidado')
   const [isLoading, setIsLoading] = useState(true)
 
+  const loadPhotos = useCallback(async () => {
+    setIsLoading(true)
+    try {
+      const data = await getPhotosWithInteractions(
+        selectedPhase === 'all' ? undefined : selectedPhase
+      )
+      console.log('[GuestPhotosSection] Loaded photos:', data.length, data)
+      setPhotos(data)
+    } catch (error) {
+      console.error('[GuestPhotosSection] Error loading photos:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [selectedPhase])
+
   // Load guest session from cookie and verify it
   useEffect(() => {
     const loadGuestSession = async () => {
@@ -87,20 +102,7 @@ export default function GuestPhotosSection({
     void loadPhotos()
   }, [loadPhotos])
 
-  const loadPhotos = useCallback(async () => {
-    setIsLoading(true)
-    try {
-      const data = await getPhotosWithInteractions(
-        selectedPhase === 'all' ? undefined : selectedPhase
-      )
-      console.log('[GuestPhotosSection] Loaded photos:', data.length, data)
-      setPhotos(data)
-    } catch (error) {
-      console.error('[GuestPhotosSection] Error loading photos:', error)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [selectedPhase])
+
 
   const fallbackPhotoCount =
     photosByPhase.before.length + photosByPhase.during.length + photosByPhase.after.length

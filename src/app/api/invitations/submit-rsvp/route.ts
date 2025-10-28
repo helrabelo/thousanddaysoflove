@@ -5,7 +5,6 @@ interface InvitationUpdatePayload {
   rsvp_completed: boolean;
   attending: boolean;
   dietary_restrictions?: string;
-  plus_one_name?: string | null;
 }
 
 /**
@@ -16,8 +15,6 @@ interface InvitationUpdatePayload {
  * Body:
  * - code: Invitation code
  * - attending: Boolean (will attend)
- * - plus_one_attending: Boolean (only if plus_one_allowed)
- * - plus_one_name: String (only if plus_one_attending)
  * - dietary_restrictions: String (optional)
  *
  * Returns:
@@ -32,8 +29,6 @@ export async function POST(request: NextRequest) {
     const {
       code,
       attending,
-      plus_one_attending,
-      plus_one_name,
       dietary_restrictions,
     } = body;
 
@@ -80,14 +75,6 @@ export async function POST(request: NextRequest) {
     // Update dietary restrictions if provided
     if (dietary_restrictions) {
       updateData.dietary_restrictions = dietary_restrictions;
-    }
-
-    // Update plus one information if applicable
-    if (invitation.plus_one_allowed && plus_one_attending && plus_one_name) {
-      updateData.plus_one_name = plus_one_name;
-    } else if (invitation.plus_one_allowed && !plus_one_attending) {
-      // Clear plus one name if they're not bringing anyone
-      updateData.plus_one_name = null;
     }
 
     // Update invitation
