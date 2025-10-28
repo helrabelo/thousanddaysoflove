@@ -191,7 +191,7 @@ export default function MateriaisPage() {
 
           // Dynamically import and render the card
           cardElement.innerHTML = bulkCardRef.current.innerHTML
-          const nameElement = cardElement.querySelector('h2')
+          const nameElement = cardElement.querySelector('[data-guest-name="true"]')
           if (nameElement) {
             nameElement.textContent = guest.name
           }
@@ -247,7 +247,7 @@ export default function MateriaisPage() {
 
           // Dynamically import and render the card
           cardElement.innerHTML = bulkCardRef.current.innerHTML
-          const nameElement = cardElement.querySelector('h2')
+          const nameElement = cardElement.querySelector('[data-guest-name="true"]')
           if (nameElement) {
             nameElement.textContent = guest.name
           }
@@ -593,11 +593,56 @@ export default function MateriaisPage() {
               </div>
             ) : seatingTables.length > 0 ? (
               <div className="bg-[var(--accent)] p-8 rounded-lg mb-6">
-                <div ref={seatingChartRef}>
-                  <SeatingChartPrintable
-                    tables={seatingTables}
-                    showGuestNames={showGuestNames}
-                  />
+                <div ref={seatingChartRef} className="bg-white rounded-lg p-6">
+                  {/* Table Map Image */}
+                  <div className="mb-6">
+                    <h2 className="font-heading text-3xl text-[var(--primary-text)] text-center mb-4">
+                      Mapa de Mesas
+                    </h2>
+                    <p className="font-body text-[var(--secondary-text)] text-center mb-6 italic">
+                      Casamento Hel & Ylana - 20 de Novembro de 2025
+                    </p>
+                    <div className="relative w-full max-w-4xl mx-auto">
+                      <Image
+                        src="/images/Mesas.png"
+                        alt="Mapa de Mesas - Layout do Salão"
+                        width={800}
+                        height={1000}
+                        className="w-full h-auto rounded-lg shadow-md"
+                        priority
+                      />
+                    </div>
+                  </div>
+
+                  {/* Guest Lists (if enabled) */}
+                  {showGuestNames && (
+                    <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {seatingTables
+                        .filter((t) => !t.is_special && t.guests.length > 0)
+                        .map((table) => (
+                          <div key={table.id} className="border border-[var(--decorative)] rounded-lg p-4">
+                            <h3 className="font-heading text-lg text-[var(--primary-text)] mb-3 text-center">
+                              Mesa {table.table_number}
+                            </h3>
+                            <ul className="space-y-2 text-sm font-body text-[var(--secondary-text)]">
+                              {table.guests.map((guest, idx) => (
+                                <li key={idx} className="border-b border-[var(--accent)] last:border-0 py-2">
+                                  {guest.guest_name}
+                                  {guest.plus_one_name && (
+                                    <span className="text-xs italic ml-1">(+ {guest.plus_one_name})</span>
+                                  )}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+
+                  {/* Statistics */}
+                  <div className="mt-6 text-center text-sm text-[var(--secondary-text)] font-body italic">
+                    Total: {seatingTables.reduce((sum, t) => sum + t.assigned_guests, 0)} convidados em {seatingTables.length} mesas
+                  </div>
                 </div>
               </div>
             ) : (

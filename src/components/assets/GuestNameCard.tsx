@@ -88,6 +88,7 @@ export default function GuestNameCard({ name }: GuestNameCardProps) {
           <div className="mb-8">
             <h2
               className="font-heading text-4xl text-[var(--primary-text)] leading-tight"
+              data-guest-name="true"
               style={{
                 wordBreak: 'break-word',
                 hyphens: 'auto'

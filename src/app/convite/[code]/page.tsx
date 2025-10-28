@@ -14,6 +14,7 @@ import DressCodeGuide from '@/components/invitations/DressCodeGuide';
 import PhotoUploadSection from '@/components/invitations/PhotoUploadSection';
 import GeneralOrientations from '@/components/invitations/GeneralOrientations';
 import SeatingChart from '@/components/seating/SeatingChart';
+import Image from 'next/image';
 import type { Invitation, TableWithGuests } from '@/types/wedding';
 import {
   getInvitationByCode,
@@ -267,12 +268,60 @@ export default function PersonalizedInvitationPage() {
                 </p>
               </motion.div>
 
-              <SeatingChart
-                tables={[tableAssignment.table]}
-                highlightedTable={tableAssignment.tableNumber}
-                interactive={true}
-                printMode={false}
-              />
+              {/* Table Map Image */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="mb-12"
+              >
+                <div className="relative w-full max-w-3xl mx-auto bg-white rounded-lg shadow-lg p-6">
+                  <Image
+                    src={`/images/Mesa${tableAssignment.tableNumber}.png`}
+                    alt={`Mesa ${tableAssignment.tableNumber} - Sua mesa no salão`}
+                    width={800}
+                    height={1000}
+                    className="w-full h-auto rounded-lg"
+                    priority
+                  />
+                </div>
+              </motion.div>
+
+              {/* Guest list for table */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.4 }}
+                className="max-w-2xl mx-auto bg-white rounded-lg p-6 shadow-sm border border-silver-gray"
+              >
+                <h3 className="font-playfair text-2xl text-charcoal mb-4 text-center">
+                  {tableAssignment.table.table_name || `Mesa ${tableAssignment.tableNumber}`}
+                </h3>
+                <div className="space-y-2">
+                  {tableAssignment.table.guests.map((guest, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center justify-between py-2 border-b border-accent last:border-0"
+                    >
+                      <span className="font-crimson text-gray">
+                        {guest.guest_name}
+                        {guest.plus_one_name && (
+                          <span className="text-sm italic ml-2">
+                            (+ {guest.plus_one_name})
+                          </span>
+                        )}
+                      </span>
+                      {guest.rsvp_completed && (
+                        <span className="text-xs text-green-600 font-semibold">
+                          ✓ Confirmado
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
             </div>
           </section>
         )}
