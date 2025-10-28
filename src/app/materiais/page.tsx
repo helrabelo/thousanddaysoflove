@@ -37,7 +37,6 @@ export default function MateriaisPage() {
   const nameCardRef = useRef<HTMLDivElement>(null)
   const thankYouBoxRef = useRef<HTMLDivElement>(null)
   const menuCardRef = useRef<HTMLDivElement>(null)
-  const bulkCardRef = useRef<HTMLDivElement>(null)
   const seatingChartRef = useRef<HTMLDivElement>(null)
 
   const supabase = createClient()
@@ -161,7 +160,7 @@ export default function MateriaisPage() {
   }
 
   const downloadAllGuestCards = async (format: 'png' | 'pdf' = 'png') => {
-    if (!bulkCardRef.current || attendingGuests.length === 0) return
+    if (attendingGuests.length === 0) return
 
     setIsBulkDownloading(true)
 
@@ -174,55 +173,40 @@ export default function MateriaisPage() {
           format: 'a4',
         })
 
-        // Create a temporary container for rendering cards
-        const tempContainer = document.createElement('div')
-        tempContainer.style.position = 'absolute'
-        tempContainer.style.left = '-9999px'
-        tempContainer.style.top = '-9999px'
-        document.body.appendChild(tempContainer)
-
         for (let i = 0; i < attendingGuests.length; i++) {
           const guest = attendingGuests[i]
           console.log(`Generating PDF page ${i + 1}/${attendingGuests.length}: ${guest.name}`)
 
-          // Create a temporary element with the guest card
-          const cardElement = document.createElement('div')
-          tempContainer.appendChild(cardElement)
+          // Update the name in the preview card
+          const previewName = guestName
+          setGuestName(guest.name)
 
-          // Dynamically import and render the card
-          cardElement.innerHTML = bulkCardRef.current.innerHTML
-          const nameElement = cardElement.querySelector('[data-guest-name="true"]')
-          if (nameElement) {
-            nameElement.textContent = guest.name
+          // Wait for React to re-render
+          await new Promise(resolve => setTimeout(resolve, 200))
+
+          // Capture the updated card
+          if (nameCardRef.current) {
+            const canvas = await html2canvas(nameCardRef.current, {
+              scale: 2,
+              useCORS: true,
+              logging: false,
+            })
+
+            const imgData = canvas.toDataURL('image/png')
+            const imgWidth = 210 // A4 width in mm
+            const imgHeight = (canvas.height * imgWidth) / canvas.width
+
+            // Add new page for subsequent cards
+            if (i > 0) {
+              pdf.addPage()
+            }
+
+            pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight)
           }
 
-          // Wait for rendering
-          await new Promise(resolve => setTimeout(resolve, 100))
-
-          // Generate canvas
-          const canvas = await html2canvas(cardElement, {
-            scale: 2,
-            useCORS: true,
-            logging: false,
-          })
-
-          const imgData = canvas.toDataURL('image/png')
-          const imgWidth = 210 // A4 width in mm
-          const imgHeight = (canvas.height * imgWidth) / canvas.width
-
-          // Add new page for subsequent cards
-          if (i > 0) {
-            pdf.addPage()
-          }
-
-          pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight)
-
-          // Clean up
-          tempContainer.removeChild(cardElement)
+          // Restore preview name
+          setGuestName(previewName)
         }
-
-        // Remove temporary container
-        document.body.removeChild(tempContainer)
 
         // Download PDF
         pdf.save(`marcadores-mesa-todos-convidados-${attendingGuests.length}.pdf`)
@@ -230,52 +214,39 @@ export default function MateriaisPage() {
         // Generate ZIP with PNG images
         const zip = new JSZip()
 
-        // Create a temporary container for rendering cards
-        const tempContainer = document.createElement('div')
-        tempContainer.style.position = 'absolute'
-        tempContainer.style.left = '-9999px'
-        tempContainer.style.top = '-9999px'
-        document.body.appendChild(tempContainer)
-
         for (let i = 0; i < attendingGuests.length; i++) {
           const guest = attendingGuests[i]
           console.log(`Generating card ${i + 1}/${attendingGuests.length}: ${guest.name}`)
 
-          // Create a temporary element with the guest card
-          const cardElement = document.createElement('div')
-          tempContainer.appendChild(cardElement)
+          // Update the name in the preview card
+          const previewName = guestName
+          setGuestName(guest.name)
 
-          // Dynamically import and render the card
-          cardElement.innerHTML = bulkCardRef.current.innerHTML
-          const nameElement = cardElement.querySelector('[data-guest-name="true"]')
-          if (nameElement) {
-            nameElement.textContent = guest.name
+          // Wait for React to re-render
+          await new Promise(resolve => setTimeout(resolve, 200))
+
+          // Capture the updated card
+          if (nameCardRef.current) {
+            const dataUrl = await toPng(nameCardRef.current, { quality: 1, pixelRatio: 3 })
+
+            // Convert data URL to blob
+            const response = await fetch(dataUrl)
+            const blob = await response.blob()
+
+            // Add to zip with sanitized filename
+            const sanitizedName = guest.name
+              .normalize('NFD')
+              .replace(/[\u0300-\u036f]/g, '') // Remove accents
+              .replace(/[^a-zA-Z0-9\s]/g, '') // Remove special chars
+              .replace(/\s+/g, '-') // Replace spaces with dashes
+              .toLowerCase()
+
+            zip.file(`marcador-${sanitizedName}.png`, blob)
           }
 
-          // Generate image
-          await new Promise(resolve => setTimeout(resolve, 100))
-          const dataUrl = await toPng(cardElement, { quality: 1, pixelRatio: 3 })
-
-          // Convert data URL to blob
-          const response = await fetch(dataUrl)
-          const blob = await response.blob()
-
-          // Add to zip with sanitized filename
-          const sanitizedName = guest.name
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '') // Remove accents
-            .replace(/[^a-zA-Z0-9\s]/g, '') // Remove special chars
-            .replace(/\s+/g, '-') // Replace spaces with dashes
-            .toLowerCase()
-
-          zip.file(`marcador-${sanitizedName}.png`, blob)
-
-          // Clean up
-          tempContainer.removeChild(cardElement)
+          // Restore preview name
+          setGuestName(previewName)
         }
-
-        // Remove temporary container
-        document.body.removeChild(tempContainer)
 
         // Generate and download zip
         const content = await zip.generateAsync({ type: 'blob' })
@@ -432,10 +403,6 @@ export default function MateriaisPage() {
               )}
             </div>
 
-            {/* Hidden bulk render template */}
-            <div ref={bulkCardRef} className="hidden">
-              <GuestNameCard name={guestName} tableNumber={tableNumber} />
-            </div>
           </div>
         </motion.section>
 
