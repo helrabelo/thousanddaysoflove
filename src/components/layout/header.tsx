@@ -11,7 +11,8 @@ import {
   Gift,
   Calendar,
   MessageSquare,
-  Camera
+  Camera,
+  FileImage
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -30,6 +31,7 @@ const navigationItems = [
   { href: "/rsvp", label: "Confirmar Presença", icon: Users },
   { href: "/presentes", label: "Lista de Presentes", icon: Gift },
   { href: "/fotos", label: "Galeria", icon: Camera },
+  { href: "/materiais", label: "Materiais", icon: FileImage },
   { href: "/detalhes", label: "Detalhes do Evento", icon: Calendar },
   { href: "/dia-1000", label: "Dia 1000", icon: MessageSquare }
 ]
