@@ -2,17 +2,19 @@
 
 import React, { useState, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Download, FileImage, Users } from 'lucide-react'
+import { Download, FileImage, Users, Map } from 'lucide-react'
 import Image from 'next/image'
 import { toPng, toJpeg } from 'html-to-image'
 import JSZip from 'jszip'
 import { saveAs } from 'file-saver'
 import { createClient } from '@/lib/supabase/client'
+import type { TableWithGuests } from '@/types/wedding'
 
 // Asset components
 import GuestNameCard from '@/components/assets/GuestNameCard'
 import ThankYouBox from '@/components/assets/ThankYouBox'
 import MenuCard from '@/components/assets/MenuCard'
+import SeatingChartPrintable from '@/components/seating/SeatingChartPrintable'
 
 interface Guest {
   id: string
@@ -26,17 +28,22 @@ export default function MateriaisPage() {
   const [attendingGuests, setAttendingGuests] = useState<Guest[]>([])
   const [isLoadingGuests, setIsLoadingGuests] = useState(false)
   const [isBulkDownloading, setIsBulkDownloading] = useState(false)
+  const [seatingTables, setSeatingTables] = useState<TableWithGuests[]>([])
+  const [isLoadingTables, setIsLoadingTables] = useState(false)
+  const [showGuestNames, setShowGuestNames] = useState(false)
 
   const nameCardRef = useRef<HTMLDivElement>(null)
   const thankYouBoxRef = useRef<HTMLDivElement>(null)
   const menuCardRef = useRef<HTMLDivElement>(null)
   const bulkCardRef = useRef<HTMLDivElement>(null)
+  const seatingChartRef = useRef<HTMLDivElement>(null)
 
   const supabase = createClient()
 
-  // Fetch attending guests on mount
+  // Fetch attending guests and tables on mount
   useEffect(() => {
     fetchAttendingGuests()
+    fetchSeatingTables()
   }, [])
 
   const fetchAttendingGuests = async () => {
@@ -54,6 +61,57 @@ export default function MateriaisPage() {
       console.error('Error fetching guests:', error)
     } finally {
       setIsLoadingGuests(false)
+    }
+  }
+
+  const fetchSeatingTables = async () => {
+    setIsLoadingTables(true)
+    try {
+      // Fetch all tables
+      const { data: tables, error: tablesError } = await supabase
+        .from('tables')
+        .select('*')
+        .order('table_number')
+
+      if (tablesError) throw tablesError
+
+      // Fetch all invitations with table assignments
+      const { data: invitations, error: invError } = await supabase
+        .from('invitations')
+        .select('guest_name, guest_email, plus_one_allowed, plus_one_name, rsvp_completed, dietary_restrictions, table_number')
+        .not('table_number', 'is', null)
+        .order('guest_name')
+
+      if (invError) throw invError
+
+      // Map tables with guests
+      const tablesWithGuests: TableWithGuests[] = (tables || []).map((table) => {
+        const tableGuests = (invitations || [])
+          .filter((inv) => inv.table_number === table.table_number)
+          .map((inv) => ({
+            guest_name: inv.guest_name,
+            guest_email: inv.guest_email || undefined,
+            plus_one_allowed: inv.plus_one_allowed || false,
+            plus_one_name: inv.plus_one_name || undefined,
+            rsvp_completed: inv.rsvp_completed || false,
+            dietary_restrictions: inv.dietary_restrictions || undefined,
+          }))
+
+        const confirmedGuests = tableGuests.filter((g) => g.rsvp_completed).length
+
+        return {
+          ...table,
+          guests: tableGuests,
+          assigned_guests: tableGuests.length,
+          confirmed_guests: confirmedGuests,
+        }
+      })
+
+      setSeatingTables(tablesWithGuests)
+    } catch (error) {
+      console.error('Error fetching tables:', error)
+    } finally {
+      setIsLoadingTables(false)
     }
   }
 
@@ -365,11 +423,98 @@ export default function MateriaisPage() {
           </div>
         </motion.section>
 
+        {/* Seating Chart - Table Map */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="mb-20"
+        >
+          <div className="bg-white rounded-lg shadow-lg p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <Map className="h-6 w-6 text-[var(--decorative)]" />
+              <h2 className="font-heading text-2xl text-[var(--primary-text)]">
+                Mapa de Mesas
+              </h2>
+            </div>
+
+            <p className="text-[var(--secondary-text)] mb-6 font-body">
+              Formato A3 (297mm x 420mm) - Layout completo do salão com todas as mesas
+            </p>
+
+            {/* Show guest names toggle */}
+            <div className="mb-6 flex items-center justify-center gap-3">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={showGuestNames}
+                  onChange={(e) => setShowGuestNames(e.target.checked)}
+                  className="w-4 h-4 text-[var(--primary-text)] border-[var(--decorative)] rounded focus:ring-2 focus:ring-[var(--decorative)]"
+                />
+                <span className="text-sm font-medium text-[var(--secondary-text)]">
+                  Incluir nomes dos convidados
+                </span>
+              </label>
+            </div>
+
+            {/* Preview */}
+            {isLoadingTables ? (
+              <div className="bg-[var(--accent)] p-8 rounded-lg mb-6 flex justify-center items-center min-h-[400px]">
+                <div className="text-center">
+                  <div className="h-8 w-8 border-2 border-[var(--primary-text)] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                  <p className="text-[var(--secondary-text)] font-body">Carregando mapa de mesas...</p>
+                </div>
+              </div>
+            ) : seatingTables.length > 0 ? (
+              <div className="bg-[var(--accent)] p-8 rounded-lg mb-6">
+                <div ref={seatingChartRef}>
+                  <SeatingChartPrintable
+                    tables={seatingTables}
+                    showGuestNames={showGuestNames}
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="bg-[var(--accent)] p-8 rounded-lg mb-6 text-center">
+                <p className="text-[var(--secondary-text)] font-body">
+                  Nenhuma mesa configurada ainda.
+                </p>
+              </div>
+            )}
+
+            {/* Download Buttons */}
+            {seatingTables.length > 0 && (
+              <div className="flex gap-4 justify-center">
+                <button
+                  onClick={() => downloadAsset(seatingChartRef, 'mapa-mesas-casamento', 'png')}
+                  className="flex items-center gap-2 px-6 py-3 bg-[var(--primary-text)] text-white rounded-lg hover:opacity-90 transition-opacity"
+                >
+                  <Download className="h-4 w-4" />
+                  Baixar PNG (A3)
+                </button>
+                <button
+                  onClick={() => downloadAsset(seatingChartRef, 'mapa-mesas-casamento', 'jpg')}
+                  className="flex items-center gap-2 px-6 py-3 bg-[var(--secondary-text)] text-white rounded-lg hover:opacity-90 transition-opacity"
+                >
+                  <Download className="h-4 w-4" />
+                  Baixar JPG (A3)
+                </button>
+              </div>
+            )}
+
+            {seatingTables.length > 0 && (
+              <p className="text-sm text-[var(--secondary-text)] text-center mt-4 font-body italic">
+                💡 Total: {seatingTables.reduce((sum, t) => sum + t.assigned_guests, 0)} convidados em {seatingTables.length} mesas
+              </p>
+            )}
+          </div>
+        </motion.section>
+
         {/* Tips Section */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
+          transition={{ delay: 0.5 }}
           className="bg-white rounded-lg shadow-lg p-8 text-center"
         >
           <h3 className="font-heading text-xl text-[var(--primary-text)] mb-4">

@@ -809,3 +809,72 @@ export interface LiveTimelineData {
   weddingStartTime: string;
   weddingEndTime: string;
 }
+
+// =====================================================
+// SEATING CHART TYPES
+// =====================================================
+
+/**
+ * Table in the venue
+ * Represents a physical table with its position and capacity
+ */
+export interface Table {
+  id: string;
+  table_number: number;
+  table_name?: string;
+  capacity: number;
+  position_x?: number; // X coordinate for visual layout (percentage)
+  position_y?: number; // Y coordinate for visual layout (percentage)
+  is_special: boolean; // Head table, ceremony table, etc.
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Guest assigned to a table
+ * Simplified guest info for seating chart display
+ */
+export interface TableGuest {
+  guest_name: string;
+  guest_email?: string;
+  plus_one_allowed: boolean;
+  plus_one_name?: string;
+  rsvp_completed: boolean;
+  dietary_restrictions?: string;
+}
+
+/**
+ * Table with assigned guests
+ * Complete table information including guest list
+ */
+export interface TableWithGuests extends Table {
+  guests: TableGuest[];
+  assigned_guests: number; // Total invited to this table
+  confirmed_guests: number; // Total confirmed RSVPs
+}
+
+/**
+ * Venue Layout Configuration
+ * Overall venue dimensions and layout settings
+ */
+export interface VenueLayout {
+  width: number; // SVG viewBox width
+  height: number; // SVG viewBox height
+  background_color: string;
+  show_grid: boolean;
+  grid_spacing: number;
+}
+
+/**
+ * Seating Chart Props
+ * Configuration for rendering the seating chart component
+ */
+export interface SeatingChartProps {
+  tables: TableWithGuests[];
+  highlightedTable?: number; // Table number to highlight (for personalized view)
+  showGuestNames?: boolean; // Show guest names on tables (admin/print view)
+  interactive?: boolean; // Enable hover/click interactions
+  printMode?: boolean; // Optimize for printing (A3 format)
+  layout?: VenueLayout;
+}

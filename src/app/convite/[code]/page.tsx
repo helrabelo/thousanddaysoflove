@@ -13,11 +13,13 @@ import VenueMap from '@/components/invitations/VenueMap';
 import DressCodeGuide from '@/components/invitations/DressCodeGuide';
 import PhotoUploadSection from '@/components/invitations/PhotoUploadSection';
 import GeneralOrientations from '@/components/invitations/GeneralOrientations';
-import type { Invitation } from '@/types/wedding';
+import SeatingChart from '@/components/seating/SeatingChart';
+import type { Invitation, TableWithGuests } from '@/types/wedding';
 import {
   getInvitationByCode,
   trackInvitationOpen,
 } from '@/lib/supabase/invitations';
+import { getGuestTableAssignment } from '@/lib/supabase/seating';
 
 export default function PersonalizedInvitationPage() {
   const params = useParams();
@@ -25,6 +27,10 @@ export default function PersonalizedInvitationPage() {
   const code = params?.code as string;
 
   const [invitation, setInvitation] = useState<Invitation | null>(null);
+  const [tableAssignment, setTableAssignment] = useState<{
+    table: TableWithGuests | null;
+    tableNumber: number | null;
+  }>({ table: null, tableNumber: null });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
 
@@ -54,6 +60,29 @@ export default function PersonalizedInvitationPage() {
 
       // Track invitation open (first time + view count)
       await trackInvitationOpen(code);
+
+      // Load table assignment if exists
+      if (data.table_number) {
+        try {
+          const tableData = await getGuestTableAssignment(code.toUpperCase());
+          if (tableData) {
+            // Convert table to TableWithGuests format
+            const tableWithGuests: TableWithGuests = {
+              ...tableData.table!,
+              guests: tableData.tableGuests,
+              assigned_guests: tableData.tableGuests.length,
+              confirmed_guests: tableData.tableGuests.filter(g => g.rsvp_completed).length,
+            };
+            setTableAssignment({
+              table: tableWithGuests,
+              tableNumber: data.table_number,
+            });
+          }
+        } catch (tableError) {
+          console.warn('Error loading table assignment:', tableError);
+          // Non-critical error, don't block invitation load
+        }
+      }
 
       // Authenticate guest automatically with invitation code
       // This creates a session in the database and sets a cookie
@@ -218,6 +247,35 @@ export default function PersonalizedInvitationPage() {
             <DressCodeGuide />
           </div>
         </section>
+
+        {/* 5.5. Seating Chart (if table assigned) */}
+        {tableAssignment.tableNumber && tableAssignment.table && (
+          <section className="py-16 px-4 bg-cream">
+            <div className="max-w-5xl mx-auto">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className="text-center mb-12"
+              >
+                <h2 className="font-playfair text-4xl md:text-5xl text-[#2C2C2C] mb-4">
+                  Sua Mesa
+                </h2>
+                <p className="font-crimson text-xl text-[#4A4A4A] italic">
+                  Veja onde você estará sentado no salão
+                </p>
+              </motion.div>
+
+              <SeatingChart
+                tables={[tableAssignment.table]}
+                highlightedTable={tableAssignment.tableNumber}
+                interactive={true}
+                printMode={false}
+              />
+            </div>
+          </section>
+        )}
 
         {/* 6. Website Guide Section */}
         <section className="py-16 px-4">
