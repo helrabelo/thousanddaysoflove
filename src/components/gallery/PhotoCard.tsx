@@ -127,7 +127,6 @@ export default function PhotoCard({
             photoId={photo.id}
             guestSessionId={guestSessionId}
             guestName={guestName}
-            initialCount={photo.reactions_count}
           />
           <PhotoComments
             photoId={photo.id}

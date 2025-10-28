@@ -5,30 +5,32 @@
  */
 
 import { createClient } from '@/lib/supabase/client'
-import { createAdminClient } from '@/lib/supabase/server'
+import {
+  addMediaReaction,
+  removeMediaReaction,
+  getMediaReactions,
+  getUserReaction,
+  addMediaComment,
+  getMediaComments,
+  deleteMediaComment,
+} from '@/lib/supabase/media-interactions'
 import type { Database } from '@/types/supabase'
+import type { MediaComment, MediaReaction, MediaReactionType } from '@/types/media-interactions'
 
 // =====================================================
 // TYPES
 // =====================================================
 
-export type ReactionType = 'heart' | 'clap' | 'laugh' | 'celebrate' | 'love'
+export type ReactionType = MediaReactionType
 
-export interface PhotoReaction {
-  id: string
-  photo_id: string
-  guest_session_id: string | null
-  guest_name: string | null
-  reaction_type: ReactionType
-  created_at: string
-}
+export type PhotoReaction = MediaReaction & { photo_id: string }
 
 export interface PhotoComment {
   id: string
   photo_id: string
   parent_comment_id: string | null
   guest_session_id: string | null
-  guest_name: string
+  guest_name: string | null
   content: string
   created_at: string
   updated_at: string
@@ -52,6 +54,20 @@ type GuestPhotoRowWithCounts = Database['public']['Tables']['guest_photos']['Row
   comment_count?: number | null
 }
 
+function mapMediaComment(comment: MediaComment): PhotoComment {
+  return {
+    id: comment.id,
+    photo_id: comment.media_id,
+    parent_comment_id: comment.parent_id ?? null,
+    guest_session_id: comment.guest_session_id ?? null,
+    guest_name: comment.guest_name ?? null,
+    content: comment.comment_text,
+    created_at: comment.created_at,
+    updated_at: comment.created_at,
+    replies: comment.replies?.map(mapMediaComment),
+  }
+}
+
 // =====================================================
 // REACTIONS
 // =====================================================
@@ -65,35 +81,13 @@ export async function addPhotoReaction(
   guestSessionId: string,
   guestName: string
 ): Promise<{ success: boolean; error?: string }> {
-  const supabase = createClient()
+  const result = await addMediaReaction('guest_photo', photoId, reactionType, {
+    guestSessionId,
+    guestName,
+  })
 
-  const { error } = await supabase
-    .from('photo_reactions')
-    .insert({
-      photo_id: photoId,
-      guest_session_id: guestSessionId,
-      guest_name: guestName,
-      reaction_type: reactionType,
-    })
-
-  if (error) {
-    // Check if it's a unique constraint violation (user already reacted)
-    if (error.code === '23505') {
-      // Update existing reaction instead
-      const { error: updateError } = await supabase
-        .from('photo_reactions')
-        .update({ reaction_type: reactionType })
-        .eq('photo_id', photoId)
-        .eq('guest_session_id', guestSessionId)
-
-      if (updateError) {
-        return { success: false, error: updateError.message }
-      }
-
-      return { success: true }
-    }
-
-    return { success: false, error: error.message }
+  if (!result.success) {
+    return { success: false, error: result.error }
   }
 
   return { success: true }
@@ -106,16 +100,12 @@ export async function removePhotoReaction(
   photoId: string,
   guestSessionId: string
 ): Promise<{ success: boolean; error?: string }> {
-  const supabase = createClient()
+  const result = await removeMediaReaction('guest_photo', photoId, {
+    guestSessionId,
+  })
 
-  const { error } = await supabase
-    .from('photo_reactions')
-    .delete()
-    .eq('photo_id', photoId)
-    .eq('guest_session_id', guestSessionId)
-
-  if (error) {
-    return { success: false, error: error.message }
+  if (!result.success) {
+    return { success: false, error: result.error }
   }
 
   return { success: true }
@@ -125,20 +115,11 @@ export async function removePhotoReaction(
  * Get all reactions for a photo
  */
 export async function getPhotoReactions(photoId: string): Promise<PhotoReaction[]> {
-  const supabase = createClient()
-
-  const { data, error } = await supabase
-    .from('photo_reactions')
-    .select('*')
-    .eq('photo_id', photoId)
-    .order('created_at', { ascending: false })
-
-  if (error) {
-    console.error('Error fetching photo reactions:', error)
-    return []
-  }
-
-  return data || []
+  const reactions = await getMediaReactions('guest_photo', photoId)
+  return reactions.map((reaction) => ({
+    ...reaction,
+    photo_id: reaction.media_id,
+  }))
 }
 
 /**
@@ -147,7 +128,7 @@ export async function getPhotoReactions(photoId: string): Promise<PhotoReaction[
 export async function getPhotoReactionCounts(
   photoId: string
 ): Promise<Record<ReactionType, number>> {
-  const reactions = await getPhotoReactions(photoId)
+  const reactions = await getMediaReactions('guest_photo', photoId)
 
   const counts: Record<ReactionType, number> = {
     heart: 0,
@@ -171,20 +152,11 @@ export async function getUserPhotoReaction(
   photoId: string,
   guestSessionId: string
 ): Promise<ReactionType | null> {
-  const supabase = createClient()
+  const reaction = await getUserReaction('guest_photo', photoId, {
+    guestSessionId,
+  })
 
-  const { data, error } = await supabase
-    .from('photo_reactions')
-    .select('reaction_type')
-    .eq('photo_id', photoId)
-    .eq('guest_session_id', guestSessionId)
-    .maybeSingle()
-
-  if (error || !data) {
-    return null
-  }
-
-  return data.reaction_type as ReactionType
+  return reaction?.reaction_type ?? null
 }
 
 // =====================================================
@@ -201,74 +173,24 @@ export async function addPhotoComment(
   guestName: string,
   parentCommentId?: string
 ): Promise<{ success: boolean; comment?: PhotoComment; error?: string }> {
-  const supabase = createClient()
+  const result = await addMediaComment('guest_photo', photoId, content, {
+    guestSessionId,
+    guestName,
+  }, parentCommentId)
 
-  const { data, error } = await supabase
-    .from('photo_comments')
-    .insert({
-      photo_id: photoId,
-      parent_comment_id: parentCommentId || null,
-      guest_session_id: guestSessionId,
-      guest_name: guestName,
-      content: content.trim(),
-    })
-    .select()
-    .single()
-
-  if (error) {
-    return { success: false, error: error.message }
+  if (!result.success || !result.data) {
+    return { success: false, error: result.error }
   }
 
-  return { success: true, comment: data }
+  return { success: true, comment: mapMediaComment(result.data) }
 }
 
 /**
  * Get all comments for a photo with nested replies
  */
 export async function getPhotoComments(photoId: string): Promise<PhotoComment[]> {
-  const supabase = createClient()
-
-  // Get all comments for the photo
-  const { data, error } = await supabase
-    .from('photo_comments')
-    .select('*')
-    .eq('photo_id', photoId)
-    .order('created_at', { ascending: true })
-
-  if (error) {
-    console.error('Error fetching photo comments:', error)
-    return []
-  }
-
-  if (!data) return []
-
-  // Build nested structure
-  const commentMap = new Map<string, PhotoComment>()
-  const rootComments: PhotoComment[] = []
-
-  // Initialize all comments in the map
-  data.forEach((comment) => {
-    commentMap.set(comment.id, { ...comment, replies: [] })
-  })
-
-  // Build tree structure
-  data.forEach((comment) => {
-    const commentWithReplies = commentMap.get(comment.id)!
-
-    if (comment.parent_comment_id) {
-      // This is a reply
-      const parent = commentMap.get(comment.parent_comment_id)
-      if (parent) {
-        parent.replies = parent.replies || []
-        parent.replies.push(commentWithReplies)
-      }
-    } else {
-      // This is a root comment
-      rootComments.push(commentWithReplies)
-    }
-  })
-
-  return rootComments
+  const comments = await getMediaComments('guest_photo', photoId)
+  return comments.map(mapMediaComment)
 }
 
 /**
@@ -277,18 +199,8 @@ export async function getPhotoComments(photoId: string): Promise<PhotoComment[]>
 export async function deletePhotoComment(
   commentId: string
 ): Promise<{ success: boolean; error?: string }> {
-  const supabase = createAdminClient()
-
-  const { error } = await supabase
-    .from('photo_comments')
-    .delete()
-    .eq('id', commentId)
-
-  if (error) {
-    return { success: false, error: error.message }
-  }
-
-  return { success: true }
+  const result = await deleteMediaComment(commentId)
+  return { success: result.success, error: result.error }
 }
 
 // =====================================================

@@ -4,10 +4,10 @@ import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MessageCircle, Send, User } from 'lucide-react'
 import {
-  getPhotoComments,
-  addPhotoComment,
-  type PhotoComment,
-} from '@/lib/supabase/photo-interactions'
+  getMediaComments,
+  addMediaComment,
+} from '@/lib/supabase/media-interactions'
+import type { MediaComment } from '@/types/media-interactions'
 import { formatTimeAgo } from '@/lib/utils/format'
 
 interface PhotoCommentsProps {
@@ -17,6 +17,9 @@ interface PhotoCommentsProps {
   initialCount?: number
 }
 
+const countReplies = (comment: MediaComment): number =>
+  (comment.replies ?? []).reduce((acc, reply) => acc + 1 + countReplies(reply), 0)
+
 export default function PhotoComments({
   photoId,
   guestSessionId,
@@ -24,7 +27,7 @@ export default function PhotoComments({
   initialCount = 0,
 }: PhotoCommentsProps) {
   const [showComments, setShowComments] = useState(false)
-  const [comments, setComments] = useState<PhotoComment[]>([])
+  const [comments, setComments] = useState<MediaComment[]>([])
   const [newComment, setNewComment] = useState('')
   const [replyingTo, setReplyingTo] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -33,7 +36,7 @@ export default function PhotoComments({
   const loadComments = useCallback(async () => {
     setIsLoading(true)
     try {
-      const data = await getPhotoComments(photoId)
+      const data = await getMediaComments('guest_photo', photoId)
       setComments(data)
     } catch (error) {
       console.error('Error loading comments:', error)
@@ -49,7 +52,7 @@ export default function PhotoComments({
   }, [loadComments, showComments])
 
   const handleSubmitComment = async () => {
-    if (!guestSessionId) {
+    if (!guestSessionId && !guestName) {
       alert('Por favor, faça login para comentar')
       return
     }
@@ -59,11 +62,14 @@ export default function PhotoComments({
     setIsSubmitting(true)
 
     try {
-      const result = await addPhotoComment(
+      const result = await addMediaComment(
+        'guest_photo',
         photoId,
         newComment,
-        guestSessionId,
-        guestName,
+        {
+          guestSessionId,
+          guestName,
+        },
         replyingTo || undefined
       )
 
@@ -87,7 +93,7 @@ export default function PhotoComments({
   }
 
   const totalComments = showComments
-    ? comments.reduce((count, comment) => count + 1 + (comment.replies?.length || 0), 0)
+    ? comments.reduce((count, comment) => count + 1 + countReplies(comment), 0)
     : initialCount
 
   return (
@@ -113,7 +119,7 @@ export default function PhotoComments({
           <>
             {/* Backdrop */}
             <div
-              className="fixed inset-0 z-40 bg-black/30"
+              className="fixed inset-0 z-[90] bg-black/35"
               onClick={() => setShowComments(false)}
             />
 
@@ -123,7 +129,7 @@ export default function PhotoComments({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
               transition={{ duration: 0.3 }}
-              className="fixed inset-x-4 bottom-4 md:absolute md:inset-x-auto md:bottom-auto md:left-0 md:top-full md:mt-2 md:w-96 bg-white rounded-2xl shadow-2xl z-50 border border-[#E8E6E3] max-h-[70vh] flex flex-col"
+              className="fixed inset-x-4 bottom-4 z-[100] max-h-[70vh] rounded-2xl border border-[#E8E6E3] bg-white shadow-2xl md:absolute md:inset-x-auto md:bottom-auto md:left-0 md:top-full md:mt-2 md:w-96 md:shadow-[0_18px_40px_rgba(25,25,25,0.15)] flex flex-col"
             >
               {/* Header */}
               <div className="px-4 py-3 border-b border-[#E8E6E3]">
@@ -221,7 +227,7 @@ function CommentItem({
   onReply,
   isReply = false,
 }: {
-  comment: PhotoComment
+  comment: MediaComment
   onReply: () => void
   isReply?: boolean
 }) {
@@ -243,7 +249,7 @@ function CommentItem({
               className="font-medium text-sm text-[#2C2C2C]"
               style={{ fontFamily: 'var(--font-playfair)' }}
             >
-              {comment.guest_name}
+              {comment.guest_name ?? 'Convidado'}
             </p>
             <p
               className="text-xs text-[#A8A8A8]"
@@ -256,7 +262,7 @@ function CommentItem({
             className="text-sm text-[#4A4A4A] break-words"
             style={{ fontFamily: 'var(--font-crimson)' }}
           >
-            {comment.content}
+            {comment.comment_text}
           </p>
           {!isReply && (
             <button

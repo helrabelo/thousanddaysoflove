@@ -1,4 +1,5 @@
 import type { UploadPhase } from './interactive-features'
+import type { MediaReaction, MediaComment } from './media-interactions'
 
 export interface Guest {
   id: string;
@@ -551,29 +552,9 @@ export interface GuestPost {
  * Post Reaction
  * Likes and reactions on guest posts
  */
-export interface PostReaction {
-  id: string;
-  post_id: string;
-  guest_session_id?: string;
-  guest_name?: string;
-  reaction_type: 'heart' | 'clap' | 'laugh' | 'celebrate' | 'love';
-  created_at: string;
-}
+export type PostReaction = MediaReaction;
 
-/**
- * Post Comment
- * Comments and replies on guest posts
- */
-export interface PostComment {
-  id: string;
-  post_id: string;
-  parent_comment_id?: string;
-  guest_session_id?: string;
-  guest_name: string;
-  content: string;
-  created_at: string;
-  updated_at: string;
-}
+export type PostComment = MediaComment;
 
 /**
  * Pinned Post

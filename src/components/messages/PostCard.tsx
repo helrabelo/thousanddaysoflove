@@ -21,13 +21,19 @@ import { MessageCircle, User } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import {
-  addReaction,
-  removeReaction,
-  getGuestReaction,
-  getPostReactions,
-  getPostComments,
-} from '@/lib/supabase/messages/client';
-import type { GuestPost, PostReaction, PostComment } from '@/types/wedding';
+  getMediaReactions,
+  addMediaReaction,
+  removeMediaReaction,
+  getUserReaction,
+  getMediaComments,
+} from '@/lib/supabase/media-interactions';
+import type {
+  MediaReaction,
+  MediaComment,
+  MediaReactionType,
+  MediaType,
+} from '@/types/media-interactions';
+import type { GuestPost } from '@/types/wedding';
 import CommentThread from './CommentThread';
 
 interface PostCardProps {
@@ -54,59 +60,62 @@ const REACTION_EMOJIS = {
   love: '💕',
 };
 
+const countReplies = (comment: MediaComment): number =>
+  (comment.replies ?? []).reduce((acc, reply) => acc + 1 + countReplies(reply), 0);
+
 export default function PostCard({
   post,
   currentGuestName,
   showComments = true,
   timelineEventTitle,
 }: PostCardProps) {
-  const [reactions, setReactions] = useState<PostReaction[]>([]);
-  const [comments, setComments] = useState<PostComment[]>([]);
-  const [userReaction, setUserReaction] = useState<PostReaction | null>(null);
+  const [reactions, setReactions] = useState<MediaReaction[]>([]);
+  const [comments, setComments] = useState<MediaComment[]>([]);
+  const [userReaction, setUserReaction] = useState<MediaReaction | null>(null);
   const [showCommentInput, setShowCommentInput] = useState(false);
   const [isReacting, setIsReacting] = useState(false);
 
-  // Check if this is a guest photo (not a regular post)
-  // Guest photos have IDs like "photo-{uuid}" and don't support reactions/comments
   const isGuestPhoto = post.id.startsWith('photo-');
+  const mediaType: MediaType = isGuestPhoto ? 'guest_photo' : 'guest_post';
+  const mediaId = isGuestPhoto ? post.id.replace('photo-', '') : post.id;
 
   // Load reactions and comments (skip for guest photos)
   const loadReactions = useCallback(async () => {
-    const data = await getPostReactions(post.id);
+    const data = await getMediaReactions(mediaType, mediaId);
     setReactions(data);
-  }, [post.id]);
+  }, [mediaId, mediaType]);
 
   const loadComments = useCallback(async () => {
-    const data = await getPostComments(post.id);
+    const data = await getMediaComments(mediaType, mediaId);
     setComments(data);
-  }, [post.id]);
+  }, [mediaId, mediaType]);
 
   const loadUserReaction = useCallback(async () => {
     if (!currentGuestName) return;
-    const reaction = await getGuestReaction(post.id, currentGuestName);
+    const reaction = await getUserReaction(
+      mediaType,
+      mediaId,
+      { guestName: currentGuestName }
+    );
     setUserReaction(reaction);
-  }, [currentGuestName, post.id]);
+  }, [currentGuestName, mediaId, mediaType]);
 
   useEffect(() => {
-    if (!isGuestPhoto) {
-      loadReactions();
-      if (showComments) {
-        loadComments();
-      }
+    loadReactions();
+    if (showComments) {
+      loadComments();
     }
-  }, [isGuestPhoto, loadComments, loadReactions, showComments]);
+  }, [loadComments, loadReactions, showComments]);
 
   // Load user's reaction (skip for guest photos)
   useEffect(() => {
-    if (!isGuestPhoto && currentGuestName) {
+    if (currentGuestName) {
       loadUserReaction();
     }
-  }, [currentGuestName, isGuestPhoto, loadUserReaction]);
+  }, [currentGuestName, loadUserReaction]);
 
   // Handle reaction toggle
-  const handleReaction = async (
-    reactionType: 'heart' | 'clap' | 'laugh' | 'celebrate' | 'love'
-  ) => {
+  const handleReaction = async (reactionType: MediaReactionType) => {
     if (!currentGuestName || isReacting) return;
 
     setIsReacting(true);
@@ -114,34 +123,44 @@ export default function PostCard({
     try {
       // If user already reacted with this type, remove it
       if (userReaction?.reaction_type === reactionType) {
-        const success = await removeReaction(post.id, currentGuestName);
-        if (success) {
+        const result = await removeMediaReaction(
+          mediaType,
+          mediaId,
+          { guestName: currentGuestName }
+        );
+        if (result.success) {
           setUserReaction(null);
           await loadReactions();
         }
       }
       // If user reacted with different type, remove old and add new
       else if (userReaction) {
-        await removeReaction(post.id, currentGuestName);
-        const newReaction = await addReaction({
-          post_id: post.id,
-          guest_name: currentGuestName,
-          reaction_type: reactionType,
-        });
-        if (newReaction) {
-          setUserReaction(newReaction);
+        await removeMediaReaction(
+          mediaType,
+          mediaId,
+          { guestName: currentGuestName }
+        );
+        const newReaction = await addMediaReaction(
+          mediaType,
+          mediaId,
+          reactionType,
+          { guestName: currentGuestName }
+        );
+        if (newReaction.success && newReaction.data) {
+          setUserReaction(newReaction.data);
           await loadReactions();
         }
       }
       // User hasn't reacted, add new reaction
       else {
-        const newReaction = await addReaction({
-          post_id: post.id,
-          guest_name: currentGuestName,
-          reaction_type: reactionType,
-        });
-        if (newReaction) {
-          setUserReaction(newReaction);
+        const newReaction = await addMediaReaction(
+          mediaType,
+          mediaId,
+          reactionType,
+          { guestName: currentGuestName }
+        );
+        if (newReaction.success && newReaction.data) {
+          setUserReaction(newReaction.data);
           await loadReactions();
         }
       }
@@ -158,7 +177,12 @@ export default function PostCard({
       acc[reaction.reaction_type] = (acc[reaction.reaction_type] || 0) + 1;
       return acc;
     },
-    {} as Record<string, number>
+    {} as Record<MediaReactionType, number>
+  );
+
+  const totalComments = comments.reduce(
+    (total, comment) => total + 1 + countReplies(comment),
+    0
   );
 
   // Format timestamp
@@ -250,85 +274,82 @@ export default function PostCard({
       )}
 
       {/* Engagement Stats - Hide for guest photos */}
-      {!isGuestPhoto && (
-        <div className="flex items-center gap-4 mb-4 pb-4 border-b border-[#E8E6E3]">
-          {/* Reaction Summary */}
-          {post.likes_count > 0 && (
-            <div className="flex items-center gap-1 text-sm text-[#4A4A4A]">
-              <div className="flex -space-x-1">
-                {Object.entries(reactionCounts)
-                  .slice(0, 3)
-                  .map(([type]) => (
-                    <span
-                      key={type}
-                      className="inline-block text-base"
-                      title={REACTION_LABELS[type as keyof typeof REACTION_LABELS]}
-                    >
-                      {REACTION_EMOJIS[type as keyof typeof REACTION_EMOJIS]}
-                    </span>
-                  ))}
-              </div>
-              <span>{post.likes_count}</span>
+      <div className="flex items-center gap-4 mb-4 pb-4 border-b border-[#E8E6E3]">
+        {/* Reaction Summary */}
+        {reactions.length > 0 && (
+          <div className="flex items-center gap-1 text-sm text-[#4A4A4A]">
+            <div className="flex -space-x-1">
+              {Object.entries(reactionCounts)
+                .filter(([, count]) => count > 0)
+                .slice(0, 3)
+                .map(([type]) => (
+                  <span
+                    key={type}
+                    className="inline-block text-base"
+                    title={REACTION_LABELS[type as keyof typeof REACTION_LABELS]}
+                  >
+                    {REACTION_EMOJIS[type as keyof typeof REACTION_EMOJIS]}
+                  </span>
+                ))}
             </div>
-          )}
+            <span>{reactions.length}</span>
+          </div>
+        )}
 
-          {/* Comment Count */}
-          {post.comments_count > 0 && (
-            <div className="flex items-center gap-1 text-sm text-[#4A4A4A]">
-              <MessageCircle className="w-4 h-4" />
-              <span>
-                {post.comments_count} comentário{post.comments_count !== 1 && 's'}
-              </span>
-            </div>
-          )}
-        </div>
-      )}
+        {/* Comment Count */}
+        {totalComments > 0 && (
+          <div className="flex items-center gap-1 text-sm text-[#4A4A4A]">
+            <MessageCircle className="w-4 h-4" />
+            <span>
+              {totalComments} comentário{totalComments !== 1 && 's'}
+            </span>
+          </div>
+        )}
+      </div>
 
       {/* Actions - Hide for guest photos */}
-      {!isGuestPhoto && (
-        <div className="flex items-center gap-2 mb-4 flex-wrap">
-          {/* Reaction Buttons */}
-          {(['heart', 'clap', 'laugh', 'celebrate'] as const).map((type) => {
-            const count = reactionCounts[type] || 0;
-            const isActive = userReaction?.reaction_type === type;
+      <div className="flex items-center gap-2 mb-4 flex-wrap">
+        {/* Reaction Buttons */}
+        {(['heart', 'clap', 'laugh', 'celebrate'] as const).map((type) => {
+          const count = reactionCounts[type] || 0;
+          const isActive = userReaction?.reaction_type === type;
 
-            return (
-              <motion.button
-                key={type}
-                type="button"
-                onClick={() => handleReaction(type)}
-                disabled={!currentGuestName || isReacting}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className={`flex items-center gap-1 px-3 py-2 rounded-full border transition-all disabled:opacity-50 disabled:cursor-not-allowed !w-fit ${
-                  isActive
-                    ? 'bg-[#2C2C2C] text-white border-[#2C2C2C]'
-                    : 'bg-white text-[#4A4A4A] border-[#E8E6E3] hover:'
-                }`}
-                title={REACTION_LABELS[type]}
-              >
-                <span className="text-base">{REACTION_EMOJIS[type]}</span>
-                {count > 0 && <span className="text-xs">{count}</span>}
-              </motion.button>
-            );
-          })}
-
-          {/* Comment Button */}
-          {currentGuestName && showComments && (
-            <button
+          return (
+            <motion.button
+              key={type}
               type="button"
-              onClick={() => setShowCommentInput(!showCommentInput)}
-              className="flex items-center gap-1 px-3 py-2 rounded-full border border-[#E8E6E3] bg-white text-[#4A4A4A] hover: transition-all !w-fit"
+              onClick={() => handleReaction(type)}
+              disabled={!currentGuestName || isReacting}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              className={`flex items-center gap-1 px-3 py-2 rounded-full border transition-all disabled:opacity-50 disabled:cursor-not-allowed !w-fit ${
+                isActive
+                  ? 'bg-[#2C2C2C] text-white border-[#2C2C2C]'
+                  : 'bg-white text-[#4A4A4A] border-[#E8E6E3] hover:'
+              }`}
+              title={REACTION_LABELS[type]}
             >
-              <MessageCircle className="w-4 h-4" />
-              <span className="text-sm">Comentar</span>
-            </button>
-          )}
-        </div>
-      )}
+              <span className="text-base">{REACTION_EMOJIS[type]}</span>
+              {count > 0 && <span className="text-xs">{count}</span>}
+            </motion.button>
+          );
+        })}
+
+        {/* Comment Button */}
+        {currentGuestName && showComments && (
+          <button
+            type="button"
+            onClick={() => setShowCommentInput(!showCommentInput)}
+            className="flex items-center gap-1 px-3 py-2 rounded-full border border-[#E8E6E3] bg-white text-[#4A4A4A] hover: transition-all !w-fit"
+          >
+            <MessageCircle className="w-4 h-4" />
+            <span className="text-sm">Comentar</span>
+          </button>
+        )}
+      </div>
 
       {/* Comments Section - Hide for guest photos */}
-      {!isGuestPhoto && showComments && (
+      {showComments && (
         <AnimatePresence>
           {(showCommentInput || comments.length > 0) && (
             <motion.div
@@ -338,7 +359,8 @@ export default function PostCard({
               className="pt-4 border-t border-[#E8E6E3]"
             >
               <CommentThread
-                postId={post.id}
+                mediaType={mediaType}
+                mediaId={mediaId}
                 comments={comments}
                 currentGuestName={currentGuestName}
                 showInput={showCommentInput}

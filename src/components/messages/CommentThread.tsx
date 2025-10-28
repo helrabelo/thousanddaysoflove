@@ -14,24 +14,27 @@
  * - Mobile-first responsive design
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, User, Loader2, CornerDownRight } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { createComment, getCommentReplies } from '@/lib/supabase/messages/client';
-import type { PostComment } from '@/types/wedding';
+import { addMediaComment } from '@/lib/supabase/media-interactions';
+import type { MediaComment, MediaType } from '@/types/media-interactions';
 
 interface CommentThreadProps {
-  postId: string;
-  comments: PostComment[];
+  mediaType: MediaType;
+  mediaId: string;
+  comments: MediaComment[];
   currentGuestName?: string;
   showInput?: boolean;
   onCommentAdded?: () => void;
 }
 
 interface CommentItemProps {
-  comment: PostComment;
+  mediaType: MediaType;
+  mediaId: string;
+  comment: MediaComment;
   currentGuestName?: string;
   onReplyAdded?: () => void;
   depth?: number;
@@ -42,29 +45,17 @@ const MAX_DEPTH = 3; // Maximum nesting level
 
 // Individual Comment Component
 function CommentItem({
+  mediaType,
+  mediaId,
   comment,
   currentGuestName,
   onReplyAdded,
   depth = 0,
 }: CommentItemProps) {
-  const [replies, setReplies] = useState<PostComment[]>([]);
   const [showReplyInput, setShowReplyInput] = useState(false);
   const [replyContent, setReplyContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showReplies, setShowReplies] = useState(false);
-
-  const loadReplies = useCallback(async () => {
-    const data = await getCommentReplies(comment.id);
-    setReplies(data);
-    if (data.length > 0) {
-      setShowReplies(true);
-    }
-  }, [comment.id]);
-
-  // Load replies for this comment
-  useEffect(() => {
-    loadReplies();
-  }, [loadReplies]);
+  const [showReplies, setShowReplies] = useState((comment.replies?.length ?? 0) > 0);
 
   // Submit reply
   const handleSubmitReply = async () => {
@@ -73,17 +64,18 @@ function CommentItem({
     setIsSubmitting(true);
 
     try {
-      const newComment = await createComment({
-        post_id: comment.post_id,
-        guest_name: currentGuestName,
-        content: replyContent.trim(),
-        parent_comment_id: comment.id,
-      });
+      const result = await addMediaComment(
+        mediaType,
+        mediaId,
+        replyContent.trim(),
+        { guestName: currentGuestName },
+        comment.id
+      );
 
-      if (newComment) {
+      if (result.success) {
         setReplyContent('');
         setShowReplyInput(false);
-        await loadReplies();
+        setShowReplies(true);
         onReplyAdded?.();
       }
     } catch (error) {
@@ -99,6 +91,7 @@ function CommentItem({
   });
 
   const canReply = depth < MAX_DEPTH && currentGuestName;
+  const replies = comment.replies ?? [];
   const hasReplies = replies.length > 0;
 
   return (
@@ -121,7 +114,7 @@ function CommentItem({
 
           {/* Content */}
           <p className="text-sm text-[#2C2C2C] whitespace-pre-wrap break-words mb-2">
-            {comment.content}
+            {comment.comment_text}
           </p>
 
           {/* Actions */}
@@ -215,6 +208,8 @@ function CommentItem({
             {replies.map((reply) => (
               <CommentItem
                 key={reply.id}
+                mediaType={mediaType}
+                mediaId={mediaId}
                 comment={reply}
                 currentGuestName={currentGuestName}
                 onReplyAdded={onReplyAdded}
@@ -230,7 +225,8 @@ function CommentItem({
 
 // Main Comment Thread Component
 export default function CommentThread({
-  postId,
+  mediaType,
+  mediaId,
   comments,
   currentGuestName,
   showInput = false,
@@ -246,13 +242,14 @@ export default function CommentThread({
     setIsSubmitting(true);
 
     try {
-      const newComment = await createComment({
-        post_id: postId,
-        guest_name: currentGuestName,
-        content: commentContent.trim(),
-      });
+      const result = await addMediaComment(
+        mediaType,
+        mediaId,
+        commentContent.trim(),
+        { guestName: currentGuestName }
+      );
 
-      if (newComment) {
+      if (result.success) {
         setCommentContent('');
         onCommentAdded?.();
       }
@@ -317,6 +314,8 @@ export default function CommentThread({
           {comments.map((comment) => (
             <CommentItem
               key={comment.id}
+              mediaType={mediaType}
+              mediaId={mediaId}
               comment={comment}
               currentGuestName={currentGuestName}
               onReplyAdded={onCommentAdded}

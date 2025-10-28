@@ -1,23 +1,16 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useEffect, useCallback, useMemo } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import {
-  addPhotoReaction,
-  removePhotoReaction,
-  getPhotoReactionCounts,
-  getUserPhotoReaction,
-  type ReactionType,
-} from '@/lib/supabase/photo-interactions'
+  addMediaReaction,
+  removeMediaReaction,
+  getMediaReactions,
+  getUserReaction,
+} from '@/lib/supabase/media-interactions'
+import type { MediaReactionType } from '@/types/media-interactions'
 
-interface PhotoReactionsProps {
-  photoId: string
-  guestSessionId: string | null
-  guestName: string
-  initialCount?: number
-}
-
-const REACTION_EMOJIS: Record<ReactionType, string> = {
+const REACTION_EMOJIS: Record<MediaReactionType, string> = {
   heart: '❤️',
   clap: '👏',
   laugh: '😂',
@@ -25,7 +18,7 @@ const REACTION_EMOJIS: Record<ReactionType, string> = {
   love: '💕',
 }
 
-const REACTION_LABELS: Record<ReactionType, string> = {
+const REACTION_LABELS: Record<MediaReactionType, string> = {
   heart: 'Adorei',
   clap: 'Parabéns',
   laugh: 'Engraçado',
@@ -33,61 +26,100 @@ const REACTION_LABELS: Record<ReactionType, string> = {
   love: 'Amor',
 }
 
-export default function PhotoReactions({
-  photoId,
-  guestSessionId,
-  guestName,
-  initialCount = 0,
-}: PhotoReactionsProps) {
+interface PhotoReactionsProps {
+  photoId: string
+  guestSessionId: string | null
+  guestName: string
+}
+
+export default function PhotoReactions({ photoId, guestSessionId, guestName }: PhotoReactionsProps) {
   const [showPicker, setShowPicker] = useState(false)
-  const [userReaction, setUserReaction] = useState<ReactionType | null>(null)
-  const [reactionCounts, setReactionCounts] = useState<Record<ReactionType, number>>({
+  const [userReaction, setUserReaction] = useState<MediaReactionType | null>(null)
+  const [reactionCounts, setReactionCounts] = useState<Record<MediaReactionType, number>>({
     heart: 0,
     clap: 0,
     laugh: 0,
     celebrate: 0,
     love: 0,
   })
-  const [totalCount, setTotalCount] = useState(initialCount)
   const [isLoading, setIsLoading] = useState(false)
+  const totalReactions = useMemo(
+    () => Object.values(reactionCounts).reduce((sum, count) => sum + count, 0),
+    [reactionCounts]
+  )
 
   // Load user's reaction and counts on mount
   const loadReactions = useCallback(async () => {
-    if (!guestSessionId) return
-
     try {
-      // Get user's reaction
-      const reaction = await getUserPhotoReaction(photoId, guestSessionId)
-      setUserReaction(reaction)
+      if (guestSessionId || guestName) {
+        const reaction = await getUserReaction(
+          'guest_photo',
+          photoId,
+          {
+            guestSessionId,
+            guestName,
+          }
+        )
+        setUserReaction(reaction?.reaction_type ?? null)
+      } else {
+        setUserReaction(null)
+      }
 
-      // Get reaction counts
-      const counts = await getPhotoReactionCounts(photoId)
+      const reactions = await getMediaReactions('guest_photo', photoId)
+      const counts: Record<MediaReactionType, number> = {
+        heart: 0,
+        clap: 0,
+        laugh: 0,
+        celebrate: 0,
+        love: 0,
+      }
+
+      reactions.forEach((reaction) => {
+        counts[reaction.reaction_type] = (counts[reaction.reaction_type] || 0) + 1
+      })
+
       setReactionCounts(counts)
-
-      // Calculate total
-      const total = Object.values(counts).reduce((sum, count) => sum + count, 0)
-      setTotalCount(total)
     } catch (error) {
       console.error('Error loading reactions:', error)
     }
-  }, [guestSessionId, photoId])
+  }, [guestSessionId, guestName, photoId])
 
   useEffect(() => {
     loadReactions()
   }, [loadReactions])
 
-  const handleReaction = async (reactionType: ReactionType) => {
-    if (!guestSessionId) {
+  useEffect(() => {
+    if (!showPicker) return
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setShowPicker(false)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [showPicker])
+
+  const handleReaction = async (reactionType: MediaReactionType) => {
+    if (!guestSessionId && !guestName) {
       alert('Por favor, faça login para reagir às fotos')
       return
     }
 
     setIsLoading(true)
+    const previousReaction = userReaction
 
     try {
-      if (userReaction === reactionType) {
+      if (previousReaction === reactionType) {
         // Remove reaction if clicking the same one
-        const result = await removePhotoReaction(photoId, guestSessionId)
+        const result = await removeMediaReaction(
+          'guest_photo',
+          photoId,
+          {
+            guestSessionId,
+            guestName,
+          }
+        )
 
         if (result.success) {
           setUserReaction(null)
@@ -95,15 +127,18 @@ export default function PhotoReactions({
             ...prev,
             [reactionType]: Math.max(0, prev[reactionType] - 1),
           }))
-          setTotalCount((prev) => Math.max(0, prev - 1))
+          setShowPicker(false)
         }
       } else {
         // Add or change reaction
-        const result = await addPhotoReaction(
+        const result = await addMediaReaction(
+          'guest_photo',
           photoId,
           reactionType,
-          guestSessionId,
-          guestName
+          {
+            guestSessionId,
+            guestName,
+          }
         )
 
         if (result.success) {
@@ -112,11 +147,8 @@ export default function PhotoReactions({
             const newCounts = { ...prev }
 
             // Remove old reaction count
-            if (userReaction) {
-              newCounts[userReaction] = Math.max(0, newCounts[userReaction] - 1)
-            } else {
-              // New reaction, increment total
-              setTotalCount((t) => t + 1)
+            if (previousReaction) {
+              newCounts[previousReaction] = Math.max(0, newCounts[previousReaction] - 1)
             }
 
             // Add new reaction count
@@ -126,10 +158,9 @@ export default function PhotoReactions({
           })
 
           setUserReaction(reactionType)
+          setShowPicker(false)
         }
       }
-
-      setShowPicker(false)
     } catch (error) {
       console.error('Error handling reaction:', error)
     } finally {
@@ -139,81 +170,92 @@ export default function PhotoReactions({
 
   return (
     <div className="relative">
-      {/* Reaction Button */}
       <button
-        onClick={() => setShowPicker(!showPicker)}
+        type="button"
+        onClick={() => setShowPicker((prev) => !prev)}
         disabled={isLoading}
-        className="flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 hover:bg-[#F8F6F3] disabled:opacity-50"
-        style={{
-          fontFamily: 'var(--font-crimson)',
-          color: userReaction ? '#4A7C59' : 'var(--secondary-text)',
-        }}
+        aria-haspopup="dialog"
+        aria-expanded={showPicker}
+        className={`flex items-center gap-2 rounded-full border px-3 py-2 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-[#4A7C59]/30 focus-visible:outline-none ${
+          userReaction
+            ? 'border-[#4A7C59]/30 bg-[#F8F6F3] text-[#2C2C2C] shadow-sm'
+            : 'border-[#E8E6E3] bg-white/90 text-[#4A4A4A] shadow-[0_4px_16px_rgba(26,26,26,0.05)] hover:shadow-md'
+        }`}
+        style={{ fontFamily: 'var(--font-crimson)' }}
       >
-        <span className="text-lg">
+        <span className="text-lg leading-none">
           {userReaction ? REACTION_EMOJIS[userReaction] : '❤️'}
         </span>
         <span className="text-sm font-medium">
-          {totalCount > 0 ? totalCount : 'Curtir'}
+          {userReaction ? 'Sua reação' : 'Reagir'}
         </span>
+        {totalReactions > 0 && (
+          <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#4A7C59]/10 text-[#336146]">
+            {totalReactions}
+          </span>
+        )}
       </button>
 
-      {/* Reaction Picker Popup */}
       <AnimatePresence>
         {showPicker && (
           <>
-            {/* Backdrop */}
             <div
-              className="fixed inset-0 z-40"
+              className="fixed inset-0 z-[45]"
               onClick={() => setShowPicker(false)}
+              aria-hidden="true"
             />
 
-            {/* Picker */}
             <motion.div
-              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              initial={{ opacity: 0, y: 12, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 10, scale: 0.95 }}
-              transition={{ duration: 0.2 }}
-              className="absolute bottom-full left-0 mb-2 bg-white rounded-2xl shadow-2xl p-3 z-50 border border-[#E8E6E3]"
+              exit={{ opacity: 0, y: 12, scale: 0.96 }}
+              transition={{ duration: 0.18 }}
+              className="absolute bottom-full left-0 z-[60] mb-3 rounded-2xl border border-[#E8E6E3] bg-white/95 shadow-[0_20px_45px_rgba(12,12,12,0.12)] backdrop-blur-sm px-4 py-3"
             >
-              <div className="flex items-center gap-2">
-                {(Object.keys(REACTION_EMOJIS) as ReactionType[]).map((type) => (
-                  <button
-                    key={type}
-                    onClick={() => handleReaction(type)}
-                    disabled={isLoading}
-                    className="group relative flex flex-col items-center gap-1 p-2 rounded-xl transition-all duration-300 hover:bg-[#F8F6F3] disabled:opacity-50"
-                    style={{
-                      background: userReaction === type ? '#F8F6F3' : 'transparent',
-                    }}
-                  >
-                    <motion.span
-                      className="text-2xl"
-                      whileHover={{ scale: 1.2 }}
-                      whileTap={{ scale: 0.9 }}
+              <div className="flex items-end gap-2">
+                {(Object.keys(REACTION_EMOJIS) as MediaReactionType[]).map((type) => {
+                  const count = reactionCounts[type]
+                  const isActive = userReaction === type
+
+                  return (
+                    <button
+                      key={type}
+                      type="button"
+                      onClick={() => handleReaction(type)}
+                      disabled={isLoading}
+                      className={`group relative flex h-16 w-14 flex-col items-center justify-center gap-1 rounded-xl border transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4A7C59]/30 ${
+                        isActive
+                          ? 'border-transparent bg-[#F8F6F3]'
+                          : 'border-transparent bg-transparent hover:bg-[#F8F6F3]'
+                      } disabled:opacity-50`}
+                      aria-label={REACTION_LABELS[type]}
                     >
-                      {REACTION_EMOJIS[type]}
-                    </motion.span>
-
-                    {/* Count Badge */}
-                    {reactionCounts[type] > 0 && (
-                      <span
-                        className="text-xs font-medium px-1.5 py-0.5 rounded-full"
-                        style={{
-                          fontFamily: 'var(--font-crimson)',
-                          background: 'var(--accent)',
-                          color: 'var(--secondary-text)',
-                        }}
+                      <motion.span
+                        className="text-2xl"
+                        whileHover={{ scale: 1.15 }}
+                        whileTap={{ scale: 0.9 }}
                       >
-                        {reactionCounts[type]}
-                      </span>
-                    )}
+                        {REACTION_EMOJIS[type]}
+                      </motion.span>
 
-                    {/* Tooltip */}
-                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-[#2C2C2C] text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
-                      {REACTION_LABELS[type]}
-                    </div>
-                  </button>
-                ))}
+                      {count > 0 && (
+                        <span
+                          className="text-xs font-medium px-1.5 py-0.5 rounded-full"
+                          style={{
+                            background: 'var(--accent)',
+                            color: 'var(--secondary-text)',
+                          }}
+                        >
+                          {count}
+                        </span>
+                      )}
+
+                      <div className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 rounded bg-[#2C2C2C] px-2 py-1 text-xs text-white opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+                        {REACTION_LABELS[type]}
+                      </div>
+                    </button>
+                  )
+                })}
               </div>
             </motion.div>
           </>

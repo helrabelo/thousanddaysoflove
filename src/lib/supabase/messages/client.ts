@@ -12,11 +12,19 @@
  */
 
 import { createClient } from '@/lib/supabase/client'
-import type {
-  GuestPost,
-  PostReaction,
-  PostComment,
-} from '@/types/wedding'
+import {
+  addMediaReaction,
+  removeMediaReaction,
+  getMediaReactions,
+  getUserReaction,
+  getMediaComments,
+  addMediaComment,
+} from '@/lib/supabase/media-interactions'
+import type { GuestPost } from '@/types/wedding'
+import type { MediaReaction, MediaComment } from '@/types/media-interactions'
+
+type PostReaction = MediaReaction
+type PostComment = MediaComment
 
 /**
  * Fetch approved guest posts with optional filtering/pagination.
@@ -67,20 +75,21 @@ export async function addReaction(reaction: {
   guest_name: string
   reaction_type: 'heart' | 'clap' | 'laugh' | 'celebrate' | 'love'
 }): Promise<PostReaction | null> {
-  const supabase = createClient()
+  const result = await addMediaReaction(
+    'guest_post',
+    reaction.post_id,
+    reaction.reaction_type,
+    { guestName: reaction.guest_name }
+  )
 
-  const { data, error } = await supabase
-    .from('post_reactions')
-    .insert(reaction)
-    .select()
-    .single()
-
-  if (error) {
-    console.error('Error adding reaction:', error)
+  if (!result.success) {
+    if (result.error) {
+      console.error('Error adding reaction:', result.error)
+    }
     return null
   }
 
-  return data as PostReaction
+  return result.data ?? null
 }
 
 /**
@@ -90,16 +99,16 @@ export async function removeReaction(
   postId: string,
   guestName: string
 ): Promise<boolean> {
-  const supabase = createClient()
+  const result = await removeMediaReaction(
+    'guest_post',
+    postId,
+    { guestName }
+  )
 
-  const { error } = await supabase
-    .from('post_reactions')
-    .delete()
-    .eq('post_id', postId)
-    .eq('guest_name', guestName)
-
-  if (error) {
-    console.error('Error removing reaction:', error)
+  if (!result.success) {
+    if (result.error) {
+      console.error('Error removing reaction:', result.error)
+    }
     return false
   }
 
@@ -110,20 +119,8 @@ export async function removeReaction(
  * Fetch every reaction for a post.
  */
 export async function getPostReactions(postId: string): Promise<PostReaction[]> {
-  const supabase = createClient()
-
-  const { data, error } = await supabase
-    .from('post_reactions')
-    .select('*')
-    .eq('post_id', postId)
-    .order('created_at', { ascending: true })
-
-  if (error) {
-    console.error('Error fetching reactions:', error)
-    return []
-  }
-
-  return data as PostReaction[]
+  const data = await getMediaReactions('guest_post', postId)
+  return data
 }
 
 /**
@@ -133,21 +130,11 @@ export async function getGuestReaction(
   postId: string,
   guestName: string
 ): Promise<PostReaction | null> {
-  const supabase = createClient()
-
-  const { data, error } = await supabase
-    .from('post_reactions')
-    .select('*')
-    .eq('post_id', postId)
-    .eq('guest_name', guestName)
-    .maybeSingle()
-
-  if (error) {
-    console.error('Error checking guest reaction:', error)
-    return null
-  }
-
-  return (data as PostReaction) ?? null
+  return getUserReaction(
+    'guest_post',
+    postId,
+    { guestName }
+  )
 }
 
 /**
@@ -159,41 +146,30 @@ export async function createComment(comment: {
   content: string
   parent_comment_id?: string
 }): Promise<PostComment | null> {
-  const supabase = createClient()
+  const result = await addMediaComment(
+    'guest_post',
+    comment.post_id,
+    comment.content,
+    { guestName: comment.guest_name },
+    comment.parent_comment_id
+  )
 
-  const { data, error } = await supabase
-    .from('post_comments')
-    .insert(comment)
-    .select()
-    .single()
-
-  if (error) {
-    console.error('Error creating comment:', error)
+  if (!result.success) {
+    if (result.error) {
+      console.error('Error creating comment:', result.error)
+    }
     return null
   }
 
-  return data as PostComment
+  return result.data ?? null
 }
 
 /**
  * Fetch the top-level comments for a post.
  */
 export async function getPostComments(postId: string): Promise<PostComment[]> {
-  const supabase = createClient()
-
-  const { data, error } = await supabase
-    .from('post_comments')
-    .select('*')
-    .eq('post_id', postId)
-    .is('parent_comment_id', null)
-    .order('created_at', { ascending: true })
-
-  if (error) {
-    console.error('Error fetching comments:', error)
-    return []
-  }
-
-  return data as PostComment[]
+  const data = await getMediaComments('guest_post', postId)
+  return data
 }
 
 /**
@@ -205,9 +181,9 @@ export async function getCommentReplies(
   const supabase = createClient()
 
   const { data, error } = await supabase
-    .from('post_comments')
+    .from('media_comments')
     .select('*')
-    .eq('parent_comment_id', commentId)
+    .eq('parent_id', commentId)
     .order('created_at', { ascending: true })
 
   if (error) {
@@ -215,7 +191,7 @@ export async function getCommentReplies(
     return []
   }
 
-  return data as PostComment[]
+  return (data as MediaComment[]) ?? []
 }
 
 /**
@@ -225,9 +201,10 @@ export async function getAllPostComments(postId: string): Promise<PostComment[]>
   const supabase = createClient()
 
   const { data, error } = await supabase
-    .from('post_comments')
+    .from('media_comments')
     .select('*')
-    .eq('post_id', postId)
+    .eq('media_type', 'guest_post')
+    .eq('media_id', postId)
     .order('created_at', { ascending: true })
 
   if (error) {
@@ -235,7 +212,7 @@ export async function getAllPostComments(postId: string): Promise<PostComment[]>
     return []
   }
 
-  return data as PostComment[]
+  return (data as MediaComment[]) ?? []
 }
 
 /**

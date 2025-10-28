@@ -12,11 +12,8 @@
 
 import { createClient } from '@/lib/supabase/client'
 import { createServerClient } from '@/lib/supabase/server'
-import type {
-  GuestPost,
-  PostReaction,
-  PostComment
-} from '@/types/wedding'
+import type { GuestPost } from '@/types/wedding'
+import type { MediaReaction, MediaComment } from '@/types/media-interactions'
 
 interface GuestPhotoRow {
   id: string
@@ -137,7 +134,7 @@ export function subscribeToNewPosts(
  * Subscribe to post reactions in real-time
  */
 export function subscribeToReactions(
-  callback: (reaction: PostReaction) => void
+  callback: (reaction: MediaReaction) => void
 ): () => void {
   const supabase = createClient()
 
@@ -148,10 +145,11 @@ export function subscribeToReactions(
       {
         event: 'INSERT',
         schema: 'public',
-        table: 'post_reactions'
+        table: 'media_reactions',
+        filter: 'media_type=eq.guest_post'
       },
       (payload) => {
-        callback(payload.new as PostReaction)
+        callback(payload.new as MediaReaction)
       }
     )
     .subscribe()
@@ -165,7 +163,7 @@ export function subscribeToReactions(
  * Subscribe to post comments in real-time
  */
 export function subscribeToComments(
-  callback: (comment: PostComment) => void
+  callback: (comment: MediaComment) => void
 ): () => void {
   const supabase = createClient()
 
@@ -176,10 +174,11 @@ export function subscribeToComments(
       {
         event: 'INSERT',
         schema: 'public',
-        table: 'post_comments'
+        table: 'media_comments',
+        filter: 'media_type=eq.guest_post'
       },
       (payload) => {
-        callback(payload.new as PostComment)
+        callback(payload.new as MediaComment)
       }
     )
     .subscribe()
@@ -405,13 +404,15 @@ export async function getLiveCelebrationStats(): Promise<LiveCelebrationStats> {
 
     // Total reactions given
     supabase
-      .from('post_reactions')
-      .select('id', { count: 'exact', head: true }),
+      .from('media_reactions')
+      .select('id', { count: 'exact', head: true })
+      .eq('media_type', 'guest_post'),
 
     // Comments posted today
     supabase
-      .from('post_comments')
+      .from('media_comments')
       .select('id', { count: 'exact', head: true })
+      .eq('media_type', 'guest_post')
       .gte('created_at', todayStr)
   ])
 

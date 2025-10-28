@@ -142,8 +142,9 @@ export async function getGuestActivity(
 
   // Fetch comments by guest
   const { data: comments } = await supabase
-    .from('post_comments')
-    .select('id, created_at, content, post_id')
+    .from('media_comments')
+    .select('id, created_at, comment_text, media_id')
+    .eq('media_type', 'guest_post')
     .eq('guest_name', guestName)
     .order('created_at', { ascending: false })
     .limit(limit);
@@ -158,15 +159,16 @@ export async function getGuestActivity(
           description: 'Você comentou em um post',
           icon: '💬',
           timestamp: comment.created_at!,
-          metadata: { comment_id: comment.id, post_id: comment.post_id },
+          metadata: { comment_id: comment.id, media_id: comment.media_id },
         }))
     );
   }
 
   // Fetch reactions by guest
   const { data: reactions } = await supabase
-    .from('post_reactions')
-    .select('id, created_at, reaction_type, post_id')
+    .from('media_reactions')
+    .select('id, created_at, reaction_type, media_id')
+    .eq('media_type', 'guest_post')
     .eq('guest_name', guestName)
     .order('created_at', { ascending: false })
     .limit(limit);
@@ -181,7 +183,7 @@ export async function getGuestActivity(
           description: `Você reagiu com ${getReactionEmoji(reaction.reaction_type)}`,
           icon: getReactionEmoji(reaction.reaction_type),
           timestamp: reaction.created_at!,
-          metadata: { reaction_id: reaction.id, post_id: reaction.post_id },
+          metadata: { reaction_id: reaction.id, media_id: reaction.media_id },
         }))
     );
   }
@@ -276,12 +278,14 @@ export async function getGuestStats(code: string): Promise<GuestStats> {
         .eq('guest_name', guestName)
         .eq('status', 'approved'),
       supabase
-        .from('post_comments')
+        .from('media_comments')
         .select('id', { count: 'exact', head: true })
+        .eq('media_type', 'guest_post')
         .eq('guest_name', guestName),
       supabase
-        .from('post_reactions')
+        .from('media_reactions')
         .select('id', { count: 'exact', head: true })
+        .eq('media_type', 'guest_post')
         .eq('guest_name', guestName),
       supabase
         .from('guest_photos')
