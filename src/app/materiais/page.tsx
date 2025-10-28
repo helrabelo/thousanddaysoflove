@@ -160,65 +160,127 @@ export default function MateriaisPage() {
     }
   }
 
-  const downloadAllGuestCards = async () => {
+  const downloadAllGuestCards = async (format: 'png' | 'pdf' = 'png') => {
     if (!bulkCardRef.current || attendingGuests.length === 0) return
 
     setIsBulkDownloading(true)
-    const zip = new JSZip()
 
     try {
-      // Create a temporary container for rendering cards
-      const tempContainer = document.createElement('div')
-      tempContainer.style.position = 'absolute'
-      tempContainer.style.left = '-9999px'
-      tempContainer.style.top = '-9999px'
-      document.body.appendChild(tempContainer)
+      if (format === 'pdf') {
+        // Generate single PDF with all cards
+        const pdf = new jsPDF({
+          orientation: 'portrait',
+          unit: 'mm',
+          format: 'a4',
+        })
 
-      for (let i = 0; i < attendingGuests.length; i++) {
-        const guest = attendingGuests[i]
+        // Create a temporary container for rendering cards
+        const tempContainer = document.createElement('div')
+        tempContainer.style.position = 'absolute'
+        tempContainer.style.left = '-9999px'
+        tempContainer.style.top = '-9999px'
+        document.body.appendChild(tempContainer)
 
-        // Update progress (optional - you could show this to user)
-        console.log(`Generating card ${i + 1}/${attendingGuests.length}: ${guest.name}`)
+        for (let i = 0; i < attendingGuests.length; i++) {
+          const guest = attendingGuests[i]
+          console.log(`Generating PDF page ${i + 1}/${attendingGuests.length}: ${guest.name}`)
 
-        // Create a temporary element with the guest card
-        const cardElement = document.createElement('div')
-        tempContainer.appendChild(cardElement)
+          // Create a temporary element with the guest card
+          const cardElement = document.createElement('div')
+          tempContainer.appendChild(cardElement)
 
-        // Dynamically import and render the card (simplified approach)
-        cardElement.innerHTML = bulkCardRef.current.innerHTML
-        const nameElement = cardElement.querySelector('h2')
-        if (nameElement) {
-          nameElement.textContent = guest.name
+          // Dynamically import and render the card
+          cardElement.innerHTML = bulkCardRef.current.innerHTML
+          const nameElement = cardElement.querySelector('h2')
+          if (nameElement) {
+            nameElement.textContent = guest.name
+          }
+
+          // Wait for rendering
+          await new Promise(resolve => setTimeout(resolve, 100))
+
+          // Generate canvas
+          const canvas = await html2canvas(cardElement, {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+          })
+
+          const imgData = canvas.toDataURL('image/png')
+          const imgWidth = 210 // A4 width in mm
+          const imgHeight = (canvas.height * imgWidth) / canvas.width
+
+          // Add new page for subsequent cards
+          if (i > 0) {
+            pdf.addPage()
+          }
+
+          pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight)
+
+          // Clean up
+          tempContainer.removeChild(cardElement)
         }
 
-        // Generate image
-        await new Promise(resolve => setTimeout(resolve, 100)) // Small delay for rendering
-        const dataUrl = await toPng(cardElement, { quality: 1, pixelRatio: 3 })
+        // Remove temporary container
+        document.body.removeChild(tempContainer)
 
-        // Convert data URL to blob
-        const response = await fetch(dataUrl)
-        const blob = await response.blob()
+        // Download PDF
+        pdf.save(`marcadores-mesa-todos-convidados-${attendingGuests.length}.pdf`)
+      } else {
+        // Generate ZIP with PNG images
+        const zip = new JSZip()
 
-        // Add to zip with sanitized filename
-        const sanitizedName = guest.name
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '') // Remove accents
-          .replace(/[^a-zA-Z0-9\s]/g, '') // Remove special chars
-          .replace(/\s+/g, '-') // Replace spaces with dashes
-          .toLowerCase()
+        // Create a temporary container for rendering cards
+        const tempContainer = document.createElement('div')
+        tempContainer.style.position = 'absolute'
+        tempContainer.style.left = '-9999px'
+        tempContainer.style.top = '-9999px'
+        document.body.appendChild(tempContainer)
 
-        zip.file(`marcador-${sanitizedName}.png`, blob)
+        for (let i = 0; i < attendingGuests.length; i++) {
+          const guest = attendingGuests[i]
+          console.log(`Generating card ${i + 1}/${attendingGuests.length}: ${guest.name}`)
 
-        // Clean up
-        tempContainer.removeChild(cardElement)
+          // Create a temporary element with the guest card
+          const cardElement = document.createElement('div')
+          tempContainer.appendChild(cardElement)
+
+          // Dynamically import and render the card
+          cardElement.innerHTML = bulkCardRef.current.innerHTML
+          const nameElement = cardElement.querySelector('h2')
+          if (nameElement) {
+            nameElement.textContent = guest.name
+          }
+
+          // Generate image
+          await new Promise(resolve => setTimeout(resolve, 100))
+          const dataUrl = await toPng(cardElement, { quality: 1, pixelRatio: 3 })
+
+          // Convert data URL to blob
+          const response = await fetch(dataUrl)
+          const blob = await response.blob()
+
+          // Add to zip with sanitized filename
+          const sanitizedName = guest.name
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '') // Remove accents
+            .replace(/[^a-zA-Z0-9\s]/g, '') // Remove special chars
+            .replace(/\s+/g, '-') // Replace spaces with dashes
+            .toLowerCase()
+
+          zip.file(`marcador-${sanitizedName}.png`, blob)
+
+          // Clean up
+          tempContainer.removeChild(cardElement)
+        }
+
+        // Remove temporary container
+        document.body.removeChild(tempContainer)
+
+        // Generate and download zip
+        const content = await zip.generateAsync({ type: 'blob' })
+        saveAs(content, `marcadores-mesa-todos-convidados-${attendingGuests.length}.zip`)
       }
-
-      // Remove temporary container
-      document.body.removeChild(tempContainer)
-
-      // Generate and download zip
-      const content = await zip.generateAsync({ type: 'blob' })
-      saveAs(content, `marcadores-mesa-todos-convidados-${attendingGuests.length}.zip`)
     } catch (error) {
       console.error('Error generating bulk download:', error)
       alert('Erro ao gerar os marcadores. Tente novamente.')
@@ -324,30 +386,49 @@ export default function MateriaisPage() {
                 </p>
               </div>
 
-              <div className="flex justify-center">
+              <div className="flex flex-wrap gap-4 justify-center">
                 <button
-                  onClick={downloadAllGuestCards}
+                  onClick={() => downloadAllGuestCards('png')}
                   disabled={isBulkDownloading || attendingGuests.length === 0}
                   className="flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-[var(--primary-text)] to-[var(--secondary-text)] text-white rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isBulkDownloading ? (
                     <>
                       <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>Gerando {attendingGuests.length} marcadores...</span>
+                      <span>Gerando...</span>
                     </>
                   ) : (
                     <>
                       <Users className="h-5 w-5" />
-                      <span>Baixar Todos os {attendingGuests.length} Marcadores (ZIP)</span>
+                      <span>Baixar Todos em ZIP (PNG)</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  onClick={() => downloadAllGuestCards('pdf')}
+                  disabled={isBulkDownloading || attendingGuests.length === 0}
+                  className="flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isBulkDownloading ? (
+                    <>
+                      <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>Gerando...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Users className="h-5 w-5" />
+                      <span>Baixar Todos em PDF</span>
                     </>
                   )}
                 </button>
               </div>
 
               {attendingGuests.length > 0 && !isBulkDownloading && (
-                <p className="text-xs text-[var(--secondary-text)] text-center mt-3 font-body italic">
-                  💡 Isso vai gerar um arquivo ZIP com {attendingGuests.length} marcadores personalizados
-                </p>
+                <div className="text-xs text-[var(--secondary-text)] text-center mt-3 font-body space-y-1">
+                  <p className="italic">💡 ZIP: {attendingGuests.length} arquivos PNG individuais</p>
+                  <p className="italic">📄 PDF: Arquivo único com {attendingGuests.length} páginas (recomendado para gráficas)</p>
+                </div>
               )}
             </div>
 
