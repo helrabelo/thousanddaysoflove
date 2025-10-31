@@ -132,7 +132,7 @@ export default function MenuCard() {
             <div>
               <h3 className="font-heading text-xs uppercase tracking-wider mb-1.5 text-center">Principal</h3>
               <div className="font-body text-[10px] leading-relaxed space-y-0.5 text-[var(--secondary-text)]">
-                <p>• Filé mignon ao molho de vinho e cogumelos</p>
+                <p>• Filé mignon ao molho de queijos</p>
                 <p>• Salmão mediterrâneo grelhado</p>
                 <p>• Arroz branco com amêndoas</p>
                 <p>• Risotinho de limão siciliano</p>
