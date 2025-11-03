@@ -8,9 +8,9 @@ export default function ThankYouBox() {
     <div
       className="relative bg-[var(--background)] flex flex-col items-center justify-center"
       style={{
-        width: '450px',
-        height: '550px',
-        aspectRatio: '4.5/5.5'
+        width: '550px',
+        height: '450px',
+        aspectRatio: '5.5/4.5'
       }}
     >
       {/* Top Right botanical corner */}
