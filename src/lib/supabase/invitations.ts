@@ -26,9 +26,9 @@ export async function getInvitationByCode(
   const supabase = createClient();
 
   const { data, error } = await supabase
-    .from('invitations')
+    .from('simple_guests')
     .select('*')
-    .eq('code', code.toUpperCase())
+    .eq('invitation_code', code.toUpperCase())
     .single();
 
   if (error) {
@@ -36,7 +36,30 @@ export async function getInvitationByCode(
     return null;
   }
 
-  return data as Invitation;
+  // Map simple_guests fields to Invitation interface
+  if (!data) return null;
+
+  return {
+    id: data.id,
+    code: data.invitation_code,
+    guest_name: data.name,
+    guest_email: data.email,
+    guest_phone: data.phone,
+    relationship_type: data.relationship_type,
+    plus_one_allowed: data.plus_one_allowed || false,
+    plus_one_name: data.plus_one_name,
+    custom_message: data.custom_message,
+    table_number: data.table_number,
+    dietary_restrictions: data.notes, // notes field in simple_guests
+    opened_at: data.opened_at,
+    open_count: data.open_count || 0,
+    rsvp_completed: data.rsvp_completed || false,
+    gift_selected: data.gift_selected || false,
+    photos_uploaded: data.photos_uploaded || false,
+    created_at: data.created_at,
+    updated_at: data.updated_at,
+    created_by: data.created_by
+  } as Invitation;
 }
 
 /**

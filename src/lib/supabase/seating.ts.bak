@@ -123,7 +123,7 @@ export async function getGuestTableAssignment(invitationCode: string): Promise<{
   const { data: invitation, error: invError } = await supabase
     .from('simple_guests')
     .select('table_number')
-    .eq('invitation_code', invitationCode)
+    .eq('code', invitationCode)
     .single();
 
   if (invError || !invitation || !invitation.table_number) {

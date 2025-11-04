@@ -67,9 +67,9 @@ export async function authenticateWithInvitationCode(
 
   // Find invitation by code
   const { data: invitation, error: invitationError } = await supabase
-    .from('invitations')
-    .select('id, guest_name, code, relationship_type')
-    .eq('code', invitationCode.toUpperCase())
+    .from('simple_guests')
+    .select('id, name, invitation_code, relationship_type')
+    .eq('invitation_code', invitationCode.toUpperCase())
     .single()
 
   if (invitationError || !invitation) {
@@ -82,36 +82,8 @@ export async function authenticateWithInvitationCode(
   // Find or create guest in simple_guests table
   let guestId: string
 
-  const { data: existingGuest } = await supabase
-    .from('simple_guests')
-    .select('id')
-    .eq('invitation_code', invitation.code)
-    .single()
-
-  if (existingGuest) {
-    guestId = existingGuest.id
-  } else {
-    // Create guest record
-    const { data: newGuest, error: createError } = await supabase
-      .from('simple_guests')
-      .insert({
-        name: invitation.guest_name,
-        invitation_code: invitation.code,
-        attending: false,
-      })
-      .select('id')
-      .single()
-
-    if (createError || !newGuest) {
-      console.error('Error creating guest:', createError)
-      return {
-        success: false,
-        error: 'Erro ao criar registro de convidado',
-      }
-    }
-
-    guestId = newGuest.id
-  }
+  // Guest already exists (we queried by invitation_code above)
+  guestId = invitation.id
 
   // Create session
   const sessionResult = await createGuestSession(guestId, 'invitation_code')

@@ -54,9 +54,9 @@ export async function POST(request: NextRequest) {
 
     // Fetch invitation to validate it exists
     const { data: invitation, error: fetchError } = await supabase
-      .from('invitations')
+      .from('simple_guests')
       .select('*')
-      .eq('code', code.toUpperCase())
+      .eq('invitation_code', code.toUpperCase())
       .single();
 
     if (fetchError || !invitation) {
@@ -79,9 +79,9 @@ export async function POST(request: NextRequest) {
 
     // Update invitation
     const { data: updatedInvitation, error: updateError } = await supabase
-      .from('invitations')
+      .from('simple_guests')
       .update(updateData)
-      .eq('code', code.toUpperCase())
+      .eq('invitation_code', code.toUpperCase())
       .select()
       .single();
 

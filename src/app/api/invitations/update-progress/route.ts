@@ -33,9 +33,9 @@ export async function POST(request: NextRequest) {
 
     // Update progress
     const { data, error } = await supabase
-      .from('invitations')
+      .from('simple_guests')
       .update(progress)
-      .eq('code', code.toUpperCase())
+      .eq('invitation_code', code.toUpperCase())
       .select()
       .single()
 

@@ -90,12 +90,12 @@ export default function MateriaisPage() {
 
       if (tablesError) throw tablesError
 
-      // Fetch all invitations with table assignments
+      // Fetch all guests with table assignments
       const { data: invitations, error: invError } = await supabase
-        .from('invitations')
-        .select('guest_name, guest_email, rsvp_completed, dietary_restrictions, table_number')
+        .from('simple_guests')
+        .select('name, email, rsvp_completed, notes, table_number')
         .not('table_number', 'is', null)
-        .order('guest_name')
+        .order('name')
 
       if (invError) throw invError
 
@@ -104,10 +104,10 @@ export default function MateriaisPage() {
         const tableGuests = (invitations || [])
           .filter((inv) => inv.table_number === table.table_number)
           .map((inv) => ({
-            guest_name: inv.guest_name,
-            guest_email: inv.guest_email || undefined,
+            guest_name: inv.name,
+            guest_email: inv.email || undefined,
             rsvp_completed: inv.rsvp_completed || false,
-            dietary_restrictions: inv.dietary_restrictions || undefined,
+            dietary_restrictions: inv.notes || undefined,
           }))
 
         const confirmedGuests = tableGuests.filter((g) => g.rsvp_completed).length

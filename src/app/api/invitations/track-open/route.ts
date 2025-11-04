@@ -33,9 +33,9 @@ export async function POST(request: NextRequest) {
 
     // Get current invitation
     const { data: invitation, error: fetchError } = await supabase
-      .from('invitations')
+      .from('simple_guests')
       .select('id, open_count, opened_at')
-      .eq('code', code.toUpperCase())
+      .eq('invitation_code', code.toUpperCase())
       .single()
 
     if (fetchError || !invitation) {
@@ -58,9 +58,9 @@ export async function POST(request: NextRequest) {
 
     // Update invitation
     const { data, error: updateError } = await supabase
-      .from('invitations')
+      .from('simple_guests')
       .update(updates)
-      .eq('code', code.toUpperCase())
+      .eq('invitation_code', code.toUpperCase())
       .select()
       .single()
 
