@@ -450,7 +450,60 @@ export class PaymentService {
           }
 
           console.error('❌ Mercado Pago API error:', errorPayload)
-          throw new Error(`Mercado Pago API error: ${response.status} - ${JSON.stringify(errorData)}`)
+
+          // Create user-friendly error message
+          let userMessage = 'Erro ao processar o pagamento'
+
+          // Check for common Mercado Pago error codes
+          if (errorData.cause) {
+            const causes = Array.isArray(errorData.cause) ? errorData.cause : [errorData.cause]
+            const causeMessages = causes.map((cause: any) => {
+              switch (cause.code) {
+                case '205':
+                case 'invalid_parameter':
+                  return 'Número do cartão inválido'
+                case '208':
+                  return 'Data de validade inválida'
+                case '209':
+                case '212':
+                  return 'Código de segurança (CVV) inválido'
+                case '316':
+                  return 'Nome do titular inválido'
+                case '322':
+                case '323':
+                  return 'CPF inválido'
+                case 'E301':
+                  return 'Cartão recusado - entre em contato com seu banco'
+                case 'E302':
+                  return 'Cartão desabilitado'
+                case 'cc_rejected_bad_filled_card_number':
+                  return 'Revise o número do cartão'
+                case 'cc_rejected_bad_filled_date':
+                  return 'Revise a data de validade'
+                case 'cc_rejected_bad_filled_security_code':
+                  return 'Revise o código de segurança'
+                case 'cc_rejected_call_for_authorize':
+                  return 'Cartão recusado - autorize o pagamento com seu banco'
+                case 'cc_rejected_insufficient_amount':
+                  return 'Saldo insuficiente'
+                case 'cc_rejected_high_risk':
+                  return 'Pagamento recusado - tente outro cartão'
+                default:
+                  return cause.description || 'Erro no processamento'
+              }
+            })
+            userMessage = causeMessages.join('. ')
+          } else if (errorData.message) {
+            userMessage = errorData.message
+          } else if (response.status === 400) {
+            userMessage = 'Dados do cartão inválidos. Verifique as informações e tente novamente.'
+          } else if (response.status === 401) {
+            userMessage = 'Erro de autenticação no processamento do pagamento.'
+          } else if (response.status === 404) {
+            userMessage = 'Erro ao processar pagamento. Tente novamente.'
+          }
+
+          throw new Error(userMessage)
         }
 
         const result = await response.json()

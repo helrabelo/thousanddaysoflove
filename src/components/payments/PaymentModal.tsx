@@ -55,6 +55,7 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
   const [showCustomAmount, setShowCustomAmount] = useState(false)
   const [selectedSuggestedAmount, setSelectedSuggestedAmount] = useState<number | null>(null)
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethodOption>('pix')
+  const [errorMessage, setErrorMessage] = useState<string>('')
 
   // Check payment status every 5 seconds when showing PIX
   useEffect(() => {
@@ -126,6 +127,8 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
       }
     } catch (error) {
       console.error('Error creating PIX payment:', error)
+      const message = error instanceof Error ? error.message : 'Ocorreu um erro ao gerar o PIX. Tente novamente.'
+      setErrorMessage(message)
       setStep('error')
     } finally {
       setLoading(false)
@@ -141,40 +144,47 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
     identificationNumber: string
     cardholderName: string
   }) => {
-    if (!buyerInfo.amount || buyerInfo.amount < MIN_PAYMENT_AMOUNT) {
-      throw new Error(`Escolha um valor válido para continuar (mínimo ${formatCurrency(MIN_PAYMENT_AMOUNT)}).`)
-    }
+    try {
+      if (!buyerInfo.amount || buyerInfo.amount < MIN_PAYMENT_AMOUNT) {
+        throw new Error(`Escolha um valor válido para continuar (mínimo ${formatCurrency(MIN_PAYMENT_AMOUNT)}).`)
+      }
 
-    const response = await fetch('/api/payments/create-credit-card', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        sanityGiftId: gift._id,
-        amount: buyerInfo.amount,
-        payerEmail: buyerInfo.email,
-        buyerName: buyerInfo.name,
-        message: buyerInfo.message,
-        installments: cardDetails.installments,
-        cardToken: cardDetails.token,
-        paymentMethodId: cardDetails.paymentMethodId,
-        issuerId: cardDetails.issuerId,
-        identificationType: cardDetails.identificationType,
-        identificationNumber: cardDetails.identificationNumber,
-        cardholderName: cardDetails.cardholderName
+      const response = await fetch('/api/payments/create-credit-card', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          sanityGiftId: gift._id,
+          amount: buyerInfo.amount,
+          payerEmail: buyerInfo.email,
+          buyerName: buyerInfo.name,
+          message: buyerInfo.message,
+          installments: cardDetails.installments,
+          cardToken: cardDetails.token,
+          paymentMethodId: cardDetails.paymentMethodId,
+          issuerId: cardDetails.issuerId,
+          identificationType: cardDetails.identificationType,
+          identificationNumber: cardDetails.identificationNumber,
+          cardholderName: cardDetails.cardholderName
+        })
       })
-    })
 
-    const result = await response.json()
+      const result = await response.json()
 
-    if (!response.ok || !result.success) {
-      throw new Error(result.error || result.details || 'Falha ao processar pagamento com cartão.')
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || result.details || 'Falha ao processar pagamento com cartão.')
+      }
+
+      setPaymentData(result)
+      setStep('success')
+      onPaymentSuccess(result.payment.id)
+    } catch (error) {
+      console.error('Error processing credit card payment:', error)
+      const message = error instanceof Error ? error.message : 'Não foi possível processar o pagamento. Verifique os dados do cartão e tente novamente.'
+      setErrorMessage(message)
+      setStep('error')
     }
-
-    setPaymentData(result)
-    setStep('success')
-    onPaymentSuccess(result.payment.id)
   }
 
   const copyPixCode = async () => {
@@ -209,6 +219,7 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
     setShowCustomAmount(false)
     setSelectedSuggestedAmount(null)
     setSelectedMethod('pix')
+    setErrorMessage('')
   }
 
   // Handle selecting a suggested amount
@@ -680,22 +691,52 @@ export default function PaymentModal({ isOpen, onClose, gift, onPaymentSuccess }
                   <h4 className="text-xl font-semibold text-gray-900 mb-2">
                     Erro no Pagamento
                   </h4>
-                  <p className="text-gray-600">
-                    Ocorreu um erro ao processar seu pagamento.
+                  <p className="text-gray-600 mb-3">
+                    Não foi possível processar seu pagamento.
                   </p>
+                  {errorMessage && (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-left">
+                      <p className="text-sm text-red-800 font-medium mb-1">Detalhes do erro:</p>
+                      <p className="text-sm text-red-700">{errorMessage}</p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="bg-gray-50 rounded-xl p-4 text-left space-y-2">
+                  <p className="text-sm font-medium text-gray-900">O que fazer agora?</p>
+                  <ul className="text-sm text-gray-700 space-y-1 list-disc list-inside">
+                    <li>Verifique os dados do cartão e tente novamente</li>
+                    <li>Tente usar outro cartão</li>
+                    <li>Use PIX como forma de pagamento alternativa</li>
+                    <li>Entre em contato se o problema persistir</li>
+                  </ul>
                 </div>
 
                 <div className="space-y-3">
                   <Button
-                    onClick={() => setStep('form')}
+                    onClick={() => {
+                      setErrorMessage('')
+                      setStep('form')
+                    }}
                     className="w-full bg-gradient-to-r from-gray-500 to-gray-700 hover:from-gray-600 hover:to-gray-800 text-white py-3 rounded-xl font-medium"
                   >
                     Tentar Novamente
                   </Button>
                   <Button
-                    onClick={handleClose}
+                    onClick={() => {
+                      setSelectedMethod('pix')
+                      setErrorMessage('')
+                      setStep('form')
+                    }}
                     variant="outline"
                     className="w-full"
+                  >
+                    Pagar com PIX
+                  </Button>
+                  <Button
+                    onClick={handleClose}
+                    variant="outline"
+                    className="w-full text-gray-600"
                   >
                     Fechar
                   </Button>
