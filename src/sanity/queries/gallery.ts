@@ -58,6 +58,7 @@ const legacyMediaFragment = groq`
 /**
  * Gallery Album Fields
  * Standard fields to fetch for all gallery queries
+ * Note: displayOrder removed - use dateTaken or _createdAt for ordering
  */
 const galleryAlbumFields = groq`
   _id,
@@ -73,7 +74,6 @@ const galleryAlbumFields = groq`
   location,
   isFeatured,
   isPublic,
-  displayOrder,
   aspectRatio,
   photographer,
   cameraInfo
@@ -81,11 +81,10 @@ const galleryAlbumFields = groq`
 
 /**
  * Get all public gallery albums
- * Sorted by date taken (newest first) or display order
+ * Sorted by date taken (newest first), then by creation date
  */
 export const galleryImagesQuery = groq`
   *[_type == "galleryImage" && isPublic == true] | order(
-    displayOrder asc,
     dateTaken desc,
     _createdAt desc
   ) {
@@ -100,7 +99,6 @@ export function getGalleryImagesByCategoryQuery(category: string) {
   void category
   return groq`
     *[_type == "galleryImage" && isPublic == true && category == $category] | order(
-      displayOrder asc,
       dateTaken desc,
       _createdAt desc
     ) {
@@ -114,7 +112,6 @@ export function getGalleryImagesByCategoryQuery(category: string) {
  */
 export const featuredGalleryImagesQuery = groq`
   *[_type == "galleryImage" && isPublic == true && isFeatured == true] | order(
-    displayOrder asc,
     dateTaken desc,
     _createdAt desc
   ) {
@@ -177,7 +174,6 @@ export function searchGalleryImagesQuery(searchTerm: string) {
         $searchTerm in tags
       )
     ] | order(
-      displayOrder asc,
       dateTaken desc,
       _createdAt desc
     ) {
@@ -233,7 +229,6 @@ export interface SanityGalleryAlbum {
   location?: string
   isFeatured: boolean
   isPublic: boolean
-  displayOrder?: number
   aspectRatio?: number
   photographer?: string
   cameraInfo?: {
@@ -336,7 +331,6 @@ export class SanityGalleryService {
       if (filters?.categories && filters.categories.length > 0) {
         query = groq`
           *[_type == "galleryImage" && isPublic == true && category in $categories] | order(
-            displayOrder asc,
             dateTaken desc,
             _createdAt desc
           ) {
@@ -350,7 +344,6 @@ export class SanityGalleryService {
       if (filters?.is_featured !== undefined) {
         query = groq`
           *[_type == "galleryImage" && isPublic == true && isFeatured == $isFeatured] | order(
-            displayOrder asc,
             dateTaken desc,
             _createdAt desc
           ) {

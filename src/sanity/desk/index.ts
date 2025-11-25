@@ -193,8 +193,8 @@ export const deskStructure: StructureResolver = (S) =>
                     .title('Galeria Completa')
                     .filter('_type == "galleryImage"')
                     .defaultOrdering([
-                      {field: 'displayOrder', direction: 'asc'},
                       {field: 'dateTaken', direction: 'desc'},
+                      {field: '_createdAt', direction: 'desc'},
                     ])
                 ),
 
@@ -206,7 +206,7 @@ export const deskStructure: StructureResolver = (S) =>
                   S.documentTypeList('galleryImage')
                     .title('Imagens Destacadas')
                     .filter('_type == "galleryImage" && isFeatured == true')
-                    .defaultOrdering([{field: 'displayOrder', direction: 'asc'}])
+                    .defaultOrdering([{field: 'dateTaken', direction: 'desc'}])
                 ),
 
               S.divider(),
